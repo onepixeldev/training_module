@@ -227,7 +227,7 @@ class Training_parameter_setup_2 extends MY_Controller
         $form = $this->input->post('form', true);
 
         // form / input validation
-        $rule = array('code' => 'required|max_length[ ]', 'description' => 'required|max_length[200]',
+        $rule = array('code' => 'required|max_length[10]', 'description' => 'required|max_length[200]',
         'order' => 'required|is_natural_no_zero|max_length[40]', 'status' => 'required|max_length[10]');
 
         $codeTAC = $form['code'];

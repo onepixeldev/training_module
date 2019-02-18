@@ -434,7 +434,7 @@ class Training_speaker_facilitator extends MY_Controller
 
         $data['count_list'] = $this->dropdown($this->mdl->getCountryList(), 'CM_COUNTRY_CODE', 'CM_COUNTRY_DESC', ' ---Please select--- ');
 
-        $country_list = $this->post('country_es');
+        // /$country_list = $this->post('country_es');
         $ESID = $this->post('esID',true);
 
         /*if (!empty($countCode)) {

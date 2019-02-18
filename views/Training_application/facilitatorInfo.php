@@ -1,36 +1,30 @@
 <p>
-<h4 class="panel-heading bg-color-blueDark txt-color-white">Speaker Info</h4>
+<h4 class="panel-heading bg-color-blueDark txt-color-white">Facilitator Info</h4>
 <br>
 <div class="text-right">
-	<button type="button" class="btn btn-primary btn-sm add_nt"><i class="fa fa-plus"></i> Add New Speaker <b>(Referrence ID: <?php echo $refid ?>)</b></button>
+	<button type="button" class="btn btn-primary btn-sm add_nt"><i class="fa fa-plus"></i> Add New Facilitator <b>(Referrence ID: <?php echo $refid ?>)</b></button>
 </div>
 <br>
 <div class="well">
 	<div class="row">
-		<table class="table table-bordered table-hover" id="tbl_list_si">
+		<table class="table table-bordered table-hover" id="tbl_list_fi">
 		<thead>
 		<tr>
-			<th class="text-center">Reference ID</th>
+            <th class="text-center">Reference ID</th>
             <th class="text-center">Type</th>
-			<th class="text-center">Speaker ID</th>
-			<th class="text-left">Speaker Name</th>
-			<th class="text-left">Department/Organization</th>
-            <th class="text-center">Contact/Phone No</th>
+			<th class="text-left">Facilitator</th>
 			<th class="text-center">Action</th>
 		</tr>
 		</thead>
 		<tbody>
 		<?php
-			if (!empty($speakerInfoExternal)) {
-				foreach ($speakerInfoExternal as $sie) {
+			if (!empty($facilitatorInfoExternal)) {
+				foreach ($facilitatorInfoExternal as $fie) {
 					echo '
                     <tr>
-                        <td class="text-center">' . $refid .'</td>
-						<td class="text-center">' . $sie->TS_TYPE . '</td>
-						<td class="text-center">' . $sie->TS_SPEAKER_ID . '</td>
-						<td class="text-left">' . $sie->ES_SPEAKER_NAME . '</td>
-						<td class="text-left">' . $sie->ES_DEPT . '</td>
-						<td class="text-center">' . $sie->TS_CONTACT . '</td>
+                        <td class="text-center col-md-2">' . $refid .'</td>
+						<td class="text-center col-md-1">' . $fie->TF_TYPE . '</td>
+						<td class="text-left">' . $fie->EF_FACILITATOR_NAME . '</td>
                         <td class="text-center col-md-2">
 							<button type="button" class="btn btn-success btn-xs edit_training_btn"><i class="fa fa-edit"></i> Edit</button>
 							<button type="button" class="btn btn-danger btn-xs delete_training_btn"><i class="fa fa-trash"></i> Delete</button>
@@ -39,16 +33,13 @@
 					';
 				}
 			}
-			if (!empty($speakerInfoStaff)) {
-				foreach ($speakerInfoStaff as $sis) {
+			if (!empty($facilitatorInfoStaff)) {
+				foreach ($facilitatorInfoStaff as $fis) {
 					echo '
                     <tr>
-                        <td class="text-center">' . $refid .'</td>
-						<td class="text-center">' . $sis->TS_TYPE . '</td>
-						<td class="text-center">' . $sis->TS_SPEAKER_ID . '</td>
-						<td class="text-left">' . $sis->SM_STAFF_NAME . '</td>
-						<td class="text-left">' . $sis->SM_DEPT_CODE . '</td>
-						<td class="text-center">' . $sis->TS_CONTACT . '</td>
+                        <td class="text-center col-md-2">' . $refid .'</td>
+						<td class="text-center col-md-1">' . $fis->TF_TYPE . '</td>
+						<td class="text-left">' . $fis->SM_STAFF_NAME . '</td>
                         <td class="text-center col-md-2">
 							<button type="button" class="btn btn-success btn-xs edit_training_btn"><i class="fa fa-edit"></i> Edit</button>
 							<button type="button" class="btn btn-danger btn-xs delete_training_btn"><i class="fa fa-trash"></i> Delete</button>
@@ -57,7 +48,7 @@
 					';
 				}
 			} 
-			if (empty($speakerInfoStaff) && empty($speakerInfoExternal)) {
+			if (empty($facilitatorInfoExternal) && empty($facilitatorInfoStaff)) {
 				echo '<tr><td colspan="8" class="text-center">No record found.</td></tr>';
 			}
 		?>

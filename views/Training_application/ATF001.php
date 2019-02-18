@@ -28,27 +28,66 @@
                         <!-- end widget edit box -->
                             <ul id="myTab1" class="nav nav-tabs bordered">
                                 <li class="active">
-                                    <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Training Info</a>
+                                    <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Training List</a>
                                 </li>
                                 <li class="">
-                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Target Group</a>
+                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Add/Edit Training Info</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Module Setup</a>
+                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Target Group & Module Setup</a>
                                 </li>
 								<li class="">
                                     <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">CPD Setup</a>
                                 </li>
+								<!--<li class="">
+                                    <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">CPD Setup</a>
+                                </li>-->
                             </ul>
 							<!-- myTabContent1 -->
                             <div id="myTabContent1" class="tab-content padding-10">
                                 <div class="tab-pane fade active in" id="s1">
 									<div id="trainingInfo">
+									
 									</div>
 							
-									<div>
-										<div id="speakerInfo">
-											<h4 class="panel-heading bg-color-blueDark txt-color-white">Speaker Info</h4>
+									<!--<div id="speakerInfo">
+										<h4 class="panel-heading bg-color-blueDark txt-color-white">Speaker Info</h4>
+										<table class="table table-bordered table-hover" id="tbl_list_si">
+											<thead>
+											<tr>
+												<th class="text-center">Please select training from Training Info</th>
+											</tr>
+											</thead>
+										</table>
+									</div>
+
+									<div id="facilitatorInfo">
+										<h4 class="panel-heading bg-color-blueDark txt-color-white">Facilitator Info</h4>
+										<table class="table table-bordered table-hover" id="tbl_list_fi">
+											<thead>
+											<tr>
+												<th class="text-center">Please select training from Training Info</th>
+											</tr>
+											</thead>
+										</table>
+									</div>-->
+                                </div>
+
+                                <div class="tab-pane fade" id="s2">
+									<div id="add_edit_tr_info">
+										<table class="table table-bordered table-hover">
+											<thead>
+											<tr>
+												<th class="text-center">Please select training from Training Info</th>
+											</tr>
+											</thead>
+										</table>	
+									</div>
+                                </div>
+
+								<div class="tab-pane fade" id="s3">
+									<div id="group_module_setup">
+										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
@@ -56,34 +95,21 @@
 												</tr>
 												</thead>
 											</table>
-										</div>
-									</div>
-                                </div>
-
-                                <div class="tab-pane fade" id="s2">
-									<div class="text-right">
-										<button type="button" class="btn btn-primary btn-sm add_tac"><i class="fa fa-plus"></i> Add New Effectiveness Category</button>
-									</div>
-									<div id="trEffectivenessSetup">
-
-									</div>
-                                </div>
-
-								<div class="tab-pane fade" id="s3">
-									<div class="text-right">
-										<button type="button" class="btn btn-primary btn-sm add_egs"><i class="fa fa-plus"></i> Add New Effectiveness Grading Setup</button>
-									</div>
-									<div id="effGraSetup">
-
+										</p>
 									</div>
                                 </div>
 
 								<div class="tab-pane fade" id="s4">
-									<div class="text-right">
-										<button type="button" class="btn btn-primary btn-sm add_tcl"><i class="fa fa-plus"></i> Add New Training Competency Level</button>
-									</div>
-									<div id="trainingCompetencyLevel">
-
+									<div id="cpd_setup">
+										<p>
+											<table class="table table-bordered table-hover">
+												<thead>
+												<tr>
+													<th class="text-center">Please select training from Training Info</th>
+												</tr>
+												</thead>
+											</table>
+										</p>
 									</div>
                                 </div>
 
@@ -111,7 +137,7 @@
 
 <script>
 	var dt_row = '';		// assign new object for DataTable
-	//var dt_row2 = '';
+	var dt_row2 = '';
 	
 	$(document).ready(function(){
 		// navigate to selected tab
@@ -140,8 +166,7 @@
     });
 
     // populate training info
-	$('#trainingInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');	
-	
+	$('#trainingInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
 	$.ajax({
 		type: 'POST',
 		url: '<?php echo $this->lib->class_url('trainingInfo')?>',
@@ -151,29 +176,38 @@
 			$('#trainingInfo').html(res);
 			dt_row = $('#tbl_list_ti').DataTable({
 				"ordering":false,
-				"lengthMenu": [[4, 8], [4, 8]]
+				//"lengthMenu": [[4, 8], [4, 8]]
 			});
 		}
     });
+
+	// add new training tab form
+	$('#add_edit_tr_info').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+	$.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('addNewTraining')?>',
+		data: '',
+		success: function(res) {
+			$('#add_edit_tr_info').html(res);
+		}
+    });
     
-	// ADD - New Training
-	$('.add_nt').click(function () {
-		
-		$('#myModalis .modal-content').empty();
-		$('#myModalis').modal('show');
-		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	// add new training tab form (click button)
+	$('#trainingInfo').on('click','.add_nt', function(){
+		$('#add_edit_tr_info').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
 		
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('addNewTraining')?>',
 			success: function(res) {
-				$('#myModalis .modal-content').hide().html(res).slideDown();
+				$('.nav-tabs li:eq(1) a').tab('show');
+				$('#add_edit_tr_info').html(res);
 			}
 		});
 	});
 
-	// populate state add new training
-	$('.modal-content').on('change','#country', function() {
+	// populate state add new training form
+	$('#add_edit_tr_info').on('change','#country', function() {
             var countCode = $(this).val();
             $('#faspinner').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
             $('#state').html('');
@@ -200,8 +234,8 @@
             });
 	});
 		
-	// populate organizer info add new training
-	$('.modal-content').on('change', '#orginfo', function() {
+	// populate organizer info in add new training form
+	$('#add_edit_tr_info').on('change', '#orginfo', function() {
 		var organizerCode = $(this).val();
 		$('#faspinner2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
 		$('#orgAddress').html('');
@@ -228,36 +262,193 @@
 		});
 	});
 
-	//$('.select_training_btn').click(function() 
+	// populate organizer info in add new training modal
+	$('#add_edit_tr_info').on('click', '#search_str_tr', function() {
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setupStructuredTraining')?>',
+			data: '',
+			//dataType: 'json',
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+				dt_row = $('#tbl_list_str_tr').DataTable({
+					"ordering":false,
+					"lengthMenu": [[5, 10], [5, 10]]
+				});		
+			}
+		});
+	});
+
+	// populate structured training field with selected value
+	$('.modal-content').on('click', '.select_str_tr', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var strCode = td.eq(0).html().trim();
+		var trTitle = td.eq(1).html().trim().replace(/&amp;/g, '&');
+		//alert(trTitle);
+		if(strCode != null && trTitle != null){
+			$('#strTraining').val(strCode);
+			$('#trTitle').val(trTitle);
+			$('#myModalis').modal('hide');
+		}
+	});
+
+	/* select training btn
 	$('#trainingInfo').on('click', '.select_training_btn', function(){
 		var thisBtn = $(this);
 		var tsRefID = thisBtn.val();
-		//alert(tsRefID);
 
-		//$('#assessment_list_spinner').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
 		$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		//$('#ef_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('speakerInfo')?>',
 			data: {'tsRefID' : tsRefID},
 			success: function(res) {
 				$('#speakerInfo').html(res);
-				dt_row = $('#tbl_list_si').DataTable({
-					"ordering":false,
-					"lengthMenu": [[3, 6], [3, 6]]
-				});
+			}
+		});
 
-				/*$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('effSetup')?>',
-					data: {'codeTAC' : codeTAC, 'descTAC' : descTAC},
-					success: function(res2) {
-						$('#ef_setup').html(res2);
-					}
-				});	*/
+		$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
+			data: {'tsRefID' : tsRefID},
+			success: function(res) {
+				$('#facilitatorInfo').html(res);
 			}
 		});
 	});
+
+	// select training - target group, module & CPD setup
+	$('#trainingInfo').on('click', '.target_group_btn', function(){
+		var thisBtn = $(this);
+		var tsRefID = thisBtn.val();
+		var td = thisBtn.parent().siblings();
+		var trainingN = td.eq(1).html().trim();
+		
+		$('#target_group_spinner').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$('#target_group').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('targetGroup')?>',
+			data: {'tsRefID' : tsRefID, 'tName' : trainingN},
+			success: function(res) {
+				$('.nav-tabs li:eq(1) a').tab('show');
+				$('#target_group').html(res);
+				$('#target_group_spinner').html('');
+
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('moduleSetup')?>',
+					data: {'tsRefID' : tsRefID, 'tName' : trainingN},
+					success: function(res) {
+						$('#module_setup').html(res);
+					}
+				});
+
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('cpdSetup')?>',
+					data: {'tsRefID' : tsRefID, 'tName' : trainingN},
+					success: function(res) {
+						$('#cpd_setup').html(res);
+					}
+				});
+			}
+		});
+	});*/
+	
+	// update - training
+	$('#trainingInfo').on('click','.edit_training_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var trRefID = td.eq(0).html().trim();
+
+		$('#add_edit_tr_info').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editTraining')?>',
+			data: {'refID' : trRefID},
+			success: function(res) {
+				$('.nav-tabs li:eq(1) a').tab('show');
+				$('#add_edit_tr_info').html(res);
+			}
+		});
+	});
+
+	// structured training setup - training
+	$('#trainingInfo').on('click','.structured_tr_set_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var trRefID = td.eq(0).html().trim();
+		//alert(trRefID);
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('verifyStructuredTrainingSetup')?>',
+			data: {'refID' : trRefID},
+			dataType: 'JSON',
+			success: function(res) {
+				if(res.sts==1){
+					//dt_appl_row.row( thisBtn.parents('tr') ).remove().draw();
+					$('#myModalis .modal-content').hide()
+					$.alert({
+						title: 'Alert!',
+						content: res.msg,
+						type: 'red',
+					});
+					return;
+				} else {
+					$('#myModalis .modal-content').empty();
+					$('#myModalis').modal('show');
+					$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('setupStructuredTraining')?>',
+						data: {'refID' : trRefID},
+						success: function(res) {
+							$('#myModalis .modal-content').hide().html(res).slideDown();
+						}
+					});
+				}
+			}
+		});
+	});
+
+	// populate structured training in structured training setup modal
+	/*$('.modal-content').on('change', '#strCode', function() {
+		var structuredTrainingCode = $(this).val();
+		$('#faspinner2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$('#title').html('');
+		$('#category').html('');
+		$('#area').html('');
+		$('#type').html('');
+		$('#competency').html('');
+		//$('#orgCountry').html('');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('structuredTrainingInfo')?>',
+			data: {'strCode' : structuredTrainingCode},
+			dataType: 'json',
+			success: function(res) {
+				if (res.sts == 1) {
+					$('#faspinner2').html('');
+					$('#title').val(res.strTrInfo.TTH_TRAINING_TITLE);
+					$('#category').val(res.strTrInfo.TTH_CATEGORY);
+					$('#area').val(res.strTrInfo.TTH_TF_FIELD_DESC);
+					$('#type').val(res.strTrInfo.TTH_TT_TYPE_DESC);
+					$('#competency').val(res.strTrInfo.TTH_COMPETENCY);
+				}			
+			}
+		});
+	});*/
+
 </script>

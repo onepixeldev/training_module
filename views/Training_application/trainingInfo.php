@@ -1,34 +1,28 @@
 <p>
-<h4 class="panel-heading bg-color-blueDark txt-color-white">Training Info</h4>
-<br>
 <div class="text-right">
 	<button type="button" class="btn btn-primary btn-sm add_nt"><i class="fa fa-plus"></i> Add New Training</button>
 </div>
 <br>
 <div class="well">
 	<div class="row">
+	<div id="target_group_spinner"></div>
 		<table class="table table-bordered table-hover" id="tbl_list_ti">
 		<thead>
 		<tr>
-            <th class="text-center">No.</th>
 			<th class="text-center">Ref ID</th>
-			<th class="text-center">Training</th>
-			<th class="text-center">Action</th>
+			<th class="text-left">Training</th>
+			<th class="text-center col-md-5">Action</th>
 		</tr>
 		</thead>
 		<tbody>
 		<?php
-			$no = 0;
 			if (!empty($trainingInfo)) {
 				foreach ($trainingInfo as $ti) {
-                    $no++;
 					echo '
                     <tr>
-                        <td class="text-center col-md-1">' . $no. '.</td>
 						<td class="text-center col-md-2">' . $ti->TH_REF_ID . '</td>
                         <td class="text-left">' . $ti->TH_TRAINING_TITLE . '</td>
-                        <td class="text-center col-md-3">
-                        	<button type="button" class="btn btn-info btn-xs select_training_btn" value="'.$ti->TH_REF_ID.'"><i class="fa fa-arrow-down"></i> Select</button>
+                        <td class="text-center col-md-2">
 							<button type="button" class="btn btn-success btn-xs edit_training_btn"><i class="fa fa-edit"></i> Edit</button>
 							<button type="button" class="btn btn-danger btn-xs delete_training_btn"><i class="fa fa-trash"></i> Delete</button>
 						</td>
@@ -45,36 +39,7 @@
 </div>
 </p>
 
-<!--<div>
-	<h4 class="panel-heading bg-color-blueDark txt-color-white">Facilitator Info</h4>
-
-	<div id="facilitatorInfo">
-	<table class="table table-bordered table-hover">
-		<thead>
-		<tr>
-			<th class="text-center">Please select training from Training Info</th>
-		</tr>
-		</thead>
-	</table>
-	</div>
-</div>	
-
-<div>
-	<h4 class="panel-heading bg-color-blueDark txt-color-white">Training Need Analysis</h4>
-
-	<div id="trainingNeedAnalysis">
-	<table class="table table-bordered table-hover">
-		<thead>
-		<tr>
-			<th class="text-center">Please select training from Training Info</th>
-		</tr>
-		</thead>
-	</table>
-	</div>
-</div>	-->
 <script>
-	//var dt_obj = '';
-	//var dt_obj2 = '';
 
 	// DELETE page - category setup
 	$('.delete_tac').click(function () {
