@@ -1,4 +1,13 @@
-<h4 class="panel-heading txt-color-black">REFERENCE ID : <b><?php echo $refid. " ($tname)"?></b></h4>
+<div class="row">
+	<div class="col-sm-2">
+		<div class="form-group text-right">
+			<label><b>REFERENCE ID : </b></label>
+		</div>
+	</div> 
+	<div class="col-sm-10">
+		<div class="form-group text-left"><?php echo $refid. " - " .$tname?></div>
+	</div> 
+</div>
 <p>
 <?php
 	if (empty($cpdSetup)) {

@@ -6,6 +6,9 @@
         <div id="alertInsTrSp">
             <b>Note : </b> ( <b><font color="red">*</font></b> ) <b><font color="red">compulsory fields</font></b><br>&nbsp; <span id="note"></span>
         </div>
+
+        <input name="form[refid]" class="form-control" value="<?php echo $refid ?>" type="hidden" readonly>
+        
         <div class="form-group">
             <label class="col-md-2 control-label">Type <b><font color="red">* </font></b></label>
             <div class="col-md-4">
@@ -38,8 +41,6 @@
                 <input name="form[contact_phone_no]" placeholder="Contact Info" class="form-control" type="text" id="spCtc">
             </div>
         </div>
-
-        <input name="form[refid]" class="form-control" value="<?php echo $refid ?>" type="hidden" readonly>
     </div>
     
     <div class="modal-footer">

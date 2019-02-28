@@ -369,7 +369,7 @@
 						$('#facilitatorInfo').html(res);
 					}
 				});
-			
+				
 				$.ajax({
 					type: 'POST',
 					url: '<?php echo $this->lib->class_url('targetGroup')?>',
@@ -385,15 +385,15 @@
 								$('#module_setup').html(res);
 							}
 						});
+					}
+				});
 
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('cpdSetup')?>',
-							data: {'tsRefID' : trRefID, 'tName' : trainingN},
-							success: function(res) {
-								$('#cpd_setup').html(res);
-							}
-						});
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('cpdSetup')?>',
+					data: {'tsRefID' : trRefID, 'tName' : trainingN},
+					success: function(res) {
+						$('#cpd_setup').html(res);
 					}
 				});
 
@@ -632,6 +632,168 @@
 				msg.danger('Please contact administrator.', '#alert');
 			}
 		});	
+	});
+
+	// DELETE TRAINING SPEAKER
+	$('#add_edit_tr_info').on('click','.del_sp_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var spID = td.eq(2).html().trim();
+		var spName = td.eq(3).html().trim();
+		//alert(refid+' ' +spID);
+		
+		$.confirm({
+		    title: 'Delete Training Speaker',
+		    content: 'Are you sure to delete this record? <br> <b>'+spID+' - '+spName+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteTrainingSpeaker')?>',
+						data: {'refid' : refid, 'spID' : spID},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Speaker Info Record!');
+		        }
+		    }
+		});
+		
+	});
+	
+	// ADD FACILITATOR //
+	// ADD TRAINING SPEAKER INFO MODAL
+	$('#add_edit_tr_info').on('click', '.add_tr_fi', function() {
+		var thisBtn = $(this);
+		var trRefID = thisBtn.val();
+		//alert(trRefID);
+
+		$('#myModalis2 #mContent2').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('addTrainingFacilitator')?>',
+			data: {'RefID' : trRefID},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// populate speaker list
+	$('#myModalis2').on('change', '#typeFacilitator', function() {
+		var typeFacilitator = $(this).val();
+		//alert(typeFacilitator);
+
+		$('#faspinner3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('facilitatorList')?>',
+			data: {'tpFacilitator' : typeFacilitator},
+			dataType: 'json',
+			success: function(res) {
+				$('#faspinner3').html('');
+
+				var resList = '<option value="" selected > ---Please select--- </option>';
+				
+				if (res.sts == 1) {
+					for (var i in res.fiList) {
+						resList += '<option value="'+res.fiList[i]['SM_STAFF_ID']+'">'+res.fiList[i]['STAFF_ID_NAME']+'</option>';
+					}
+				}
+
+				if (res.sts == 2) {
+					for (var i in res.fiList) {
+						resList += '<option value="'+res.fiList[i]['EF_FACILITATOR_ID']+'">'+res.fiList[i]['ES_FACILITATOR_ID_NAME']+'</option>';
+					}
+				}  
+				
+				$("#trFacilitator").html(resList);
+								
+			}
+		});
+	});
+
+	// SAVE TRAINING SPEAKER
+	$('#myModalis2').on('click', '.ins_fi_info', function () {
+		var data = $('#formTrainingFacilitator').serialize();
+		msg.wait('#alertInsTrFi');
+		//msg.wait('#alertFooter');
+		//alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveTrainingFacilitator')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertInsTrFi');
+				//msg.show(res.msg, res.alert, '#alertFooter');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						$('#tbl_list_fi tbody').append(res.fi_row);
+					}, 1500);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				//$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
+			}
+		});	
+	});
+
+
+
+	// DELETE TRAINING SPEAKER
+	$('#add_edit_tr_info').on('click','.del_fi_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var fiID = td.eq(2).html().trim();
+		var fiName = td.eq(3).html().trim();
+		//alert(refid+' ' +spID);
+		
+		$.confirm({
+		    title: 'Delete Training Facilitator',
+		    content: 'Are you sure to delete this record? <br> <b>'+fiID+' - '+fiName+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteTrainingFacilitator')?>',
+						data: {'refid' : refid, 'fiID' : fiID},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Facilitator Info Record!');
+		        }
+		    }
+		});
+		
 	});
 
 	/* select training btn

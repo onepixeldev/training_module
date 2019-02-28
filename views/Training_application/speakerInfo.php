@@ -1,7 +1,7 @@
 <h4 class="panel-heading bg-color-blueDark txt-color-white">Speaker Info</h4>
 <br>
 <div class="text-right">
-	<button type="button" class="btn btn-primary btn-sm add_tr_sp" value="<?php echo $refid ?>"><i class="fa fa-plus"></i> Add New Speaker</button>
+	<button type="button" class="btn btn-primary btn-sm add_tr_sp" value="<?php echo $refid ?>"><i class="fa fa-plus"></i> Add Speaker</button>
 </div>
 <br>
 

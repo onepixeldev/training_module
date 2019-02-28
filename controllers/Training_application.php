@@ -172,7 +172,7 @@ class Training_application extends MY_Controller
         echo json_encode($json);
     }
 
-    // Populate state list
+    // Populate speaker list
     public function speakerList(){
         $this->isAjax();
         
@@ -239,6 +239,79 @@ class Training_application extends MY_Controller
                 $success = 0;
                 
                 $json = array('sts' => $success, 'spList' => $spList);
+            }
+        }
+        
+        echo json_encode($json);
+    }
+
+    // Populate facilitator list
+    public function facilitatorList(){
+        $this->isAjax();
+        
+        //$trSpeakerCode = $this->input->post('trSpeakerCode', true);
+        $tpFacilitator = $this->input->post('tpFacilitator', true);
+
+        // if(!empty($trSpeakerCode)) {
+        //     if($tpSpeaker == 'STAFF') {
+        //         $spList = $this->mdl->getSpeakerList($tpSpeaker, $trSpeakerCode);
+                   
+        //         if (!empty($spList)) {
+        //             $success = 1;
+        //         } else {
+        //             $success = 0;
+        //         }
+                
+        //         $json = array('sts' => $success, 'spList' => $spList);
+        //     } 
+        //     elseif($tpSpeaker == 'EXTERNAL') {
+        //         $spList = $this->mdl->getSpeakerList($tpSpeaker, $trSpeakerCode);
+                   
+        //         if (!empty($spList)) {
+        //             $success = 2;
+        //         } else {
+        //             $success = 0;
+        //         }
+                
+        //         $json = array('sts' => $success, 'spList' => $spList);
+        //     } 
+        //     else {
+        //         $spList = '';
+        //         $success = 0;
+                
+        //         $json = array('sts' => $success, 'spList' => $spList);
+        //     }
+        // }
+        
+        // get available records
+        if(!empty($tpFacilitator)) {
+            if($tpFacilitator == 'STAFF') {
+                $fiList = $this->mdl->getFacilitatorList($tpFacilitator);
+                   
+                if (!empty($fiList)) {
+                    $success = 1;
+                } else {
+                    $success = 0;
+                }
+                
+                $json = array('sts' => $success, 'fiList' => $fiList);
+            } 
+            elseif($tpFacilitator == 'EXTERNAL') {
+                $fiList = $this->mdl->getFacilitatorList($tpFacilitator);
+                   
+                if (!empty($fiList)) {
+                    $success = 2;
+                } else {
+                    $success = 0;
+                }
+                
+                $json = array('sts' => $success, 'fiList' => $fiList);
+            } 
+            else {
+                $fiList = '';
+                $success = 0;
+                
+                $json = array('sts' => $success, 'fiList' => $fiList);
             }
         }
         
@@ -589,6 +662,86 @@ class Training_application extends MY_Controller
 		return $this->load->view('Training_application/SpRow', $data, true);	
     }
 
+    // add training facilitator
+    public function addTrainingFacilitator()
+    {
+        $refid = $this->input->post('RefID', true);
+        $tpFacilitator = $this->input->post('tpFacilitator', true);
+
+        if(!empty($refid)){
+            $data['refid'] = $refid;
+        }
+
+        if ($tpFacilitator == 'STAFF') {
+            $data['facilitator_list'] = $this->dropdown($this->mdl->getFacilitatorList($tpFacilitator), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
+        } 
+        elseif($tpFacilitator == 'EXTERNAL') {
+            $data['facilitator_list'] = $this->dropdown($this->mdl->getFacilitatorList($tpFacilitator), 'EF_FACILITATOR_ID', 'ES_FACILITATOR_ID_NAME', ' ---Please select--- ');
+        } else {
+            $data['facilitator_list'] = '';
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // save training facilitator    
+    public function saveTrainingFacilitator()
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // TRAINING REF ID
+        $refid = $form['refid'];
+
+        // FACILITATOR ID
+        $fiID = $form['facilitator'];
+
+        // form / input validation
+        $rule = array(
+            'type' => 'required|max_length[20]', 
+            'facilitator' => 'required|max_length[10]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        // Begin Insert New Record
+        if ($status == 1 && !empty($refid)) {
+            // check training speaker
+            $check = $this->mdl->checkTrainingFacilitator($refid, $fiID);
+
+            if(empty($check)) {
+                $insert = $this->mdl->insertTrainingFacilitator($form, $refid);
+
+                if($insert > 0) {
+                    $fi_row = $this->FiRow($refid, $fiID);
+
+                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'fi_row' => $fi_row);
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                }
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist', 'alert' => 'danger');
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // training facilitator row
+    private function FiRow($refid, $fiID){
+        $data['refid'] = $refid;
+        $data['facilitatorInfoExternal'] = $this->mdl->getFacilitatorInfoExternal($refid, $fiID);
+        $data['facilitatorInfoStaff'] = $this->mdl->getFacilitatorInfoStaff($refid, $fiID);
+		
+		return $this->load->view('Training_application/FiRow', $data, true);	
+    }
+
 
     /*_____________________
         UPDATE PROCESS
@@ -936,8 +1089,51 @@ class Training_application extends MY_Controller
         echo json_encode($json);
     }
 
+    /*_____________________
+        DELETE PROCESS
+    _____________________*/
+    
+    // DELETE TRAINING SPEAKER
+    public function deleteTrainingSpeaker() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $spID = $this->input->post('spID', true);
+        
+        if (!empty($refid) && !empty($spID)) {
+        	$del = $this->mdl->delTrainingSpeaker($refid, $spID);
+            
+        	if ($del > 0) {
+          		$json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+        	} else {
+          		$json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+        	}
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
 
-
+    // DELETE TRAINING FACILITATOR
+    public function deleteTrainingFacilitator() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $fiID = $this->input->post('fiID', true);
+        
+        if (!empty($refid) && !empty($fiID)) {
+        	$del = $this->mdl->delTrainingFacilitator($refid, $fiID);
+            
+        	if ($del > 0) {
+          		$json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+        	} else {
+          		$json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+        	}
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
 
 
     // select table modal structured training

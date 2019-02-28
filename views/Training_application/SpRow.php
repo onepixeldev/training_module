@@ -10,7 +10,7 @@
             <td class="text-center">' . $speakerInfoExternal->TS_CONTACT . '</td>
             <td class="text-center col-md-2">
                 <button type="button" class="btn btn-success btn-xs edit_sp_btn"><i class="fa fa-edit"></i> Edit</button>
-                <button type="button" class="btn btn-danger btn-xs delete_training_btn"><i class="fa fa-trash"></i> Delete</button>
+                <button type="button" class="btn btn-danger btn-xs del_sp_btn"><i class="fa fa-trash"></i> Delete</button>
             </td>
         </tr>
         ';

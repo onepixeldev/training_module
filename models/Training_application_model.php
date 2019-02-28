@@ -141,26 +141,44 @@ class Training_application_model extends MY_Model
         }
     }
 
-    public function getFacilitatorInfoExternal($tsrefID)
+    public function getFacilitatorInfoExternal($tsrefID, $fiID = null)
     {
-        $this->db->select("TF_TYPE, EF_FACILITATOR_NAME");
+        $this->db->select("TF_TYPE, EF_FACILITATOR_NAME, TF_FACILITATOR_ID");
         $this->db->from("TRAINING_FACILITATOR, EXTERNAL_FACILITATOR");
         $this->db->where("EF_FACILITATOR_ID = TF_FACILITATOR_ID");
         $this->db->where("TF_TRAINING_REFID", $tsrefID);
-        $q = $this->db->get();
         
-        return $q->result();
+        if(!empty($fiID)) {
+            $this->db->where("TF_FACILITATOR_ID", $fiID);
+
+            $q = $this->db->get();
+            
+            return $q->row();
+        } else {
+            $q = $this->db->get();
+        
+            return $q->result();
+        }
     }
 
-    public function getFacilitatorInfoStaff($tsrefID)
+    public function getFacilitatorInfoStaff($tsrefID, $fiID = null)
     {
-        $this->db->select("TF_TYPE, SM_STAFF_NAME");
+        $this->db->select("TF_TYPE, SM_STAFF_NAME, TF_FACILITATOR_ID");
         $this->db->from("TRAINING_FACILITATOR, STAFF_MAIN");
         $this->db->where("SM_STAFF_ID = TF_FACILITATOR_ID");
         $this->db->where("TF_TRAINING_REFID", $tsrefID);
-        $q = $this->db->get();
         
-        return $q->result();
+        if(!empty($fiID)) {
+            $this->db->where("TF_FACILITATOR_ID", $fiID);
+
+            $q = $this->db->get();
+            
+            return $q->row();
+        } else {
+            $q = $this->db->get();
+        
+            return $q->result();
+        }
     }
 
     public function getTypeList()
@@ -491,11 +509,81 @@ class Training_application_model extends MY_Model
         }
     }
 
+    // get facilitator list
+    public function getFacilitatorList($tpFacilitator, $trSpeakerCode = null) {
+        // if(empty($trSpeakerCode)) {
+        //     if($tpSpeaker == 'STAFF') {
+        //         $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, SM_STAFF_ID ||' - '|| SM_STAFF_NAME AS STAFF_ID_NAME");
+        //         $this->db->from("STAFF_MAIN, STAFF_STATUS, DEPARTMENT_MAIN");
+        //         $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
+        //         $this->db->where("SS_STATUS_STS = 'ACTIVE'");
+        //         $this->db->where("SM_DEPT_CODE = DM_DEPT_CODE");
+        //         $this->db->order_by("2,1");
+        //     } 
+        //     elseif($tpSpeaker == 'EXTERNAL') {
+        //         $this->db->select("ES_SPEAKER_ID, ES_SPEAKER_NAME, ES_DEPT, ES_TELNO_WORK, ES_SPEAKER_ID ||' - '|| ES_SPEAKER_NAME AS ES_SPEAKER_ID_NAME");
+        //         $this->db->from("EXTERNAL_SPEAKER");
+        //         $this->db->where("ES_STATUS = 'ACTIVE'");
+        //         $this->db->order_by("2");
+        //     }
+    
+        //     $q = $this->db->get();
+        //     return $q->result();
+        // } 
+        // elseif(!empty($trSpeakerCode)) {
+        //     if($tpSpeaker == 'STAFF') {
+        //         $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, SM_TELNO_WORK, SM_STAFF_ID ||' - '|| SM_STAFF_NAME AS STAFF_ID_NAME");
+        //         $this->db->from("STAFF_MAIN, STAFF_STATUS, DEPARTMENT_MAIN");
+        //         $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
+        //         $this->db->where("SS_STATUS_STS = 'ACTIVE'");
+        //         $this->db->where("SM_DEPT_CODE = DM_DEPT_CODE");
+        //         $this->db->where("SM_STAFF_ID", $trSpeakerCode);
+        //     } 
+        //     elseif($tpSpeaker == 'EXTERNAL') {
+        //         $this->db->select("ES_SPEAKER_ID, ES_SPEAKER_NAME, ES_DEPT, ES_TELNO_WORK, ES_SPEAKER_ID ||' - '|| ES_SPEAKER_NAME AS ES_SPEAKER_ID_NAME");
+        //         $this->db->from("EXTERNAL_SPEAKER");
+        //         $this->db->where("ES_STATUS = 'ACTIVE'");
+        //         $this->db->where("ES_SPEAKER_ID", $trSpeakerCode);
+        //     }
+    
+        //     $q = $this->db->get();
+        //     return $q->row();        
+        // }
+
+        if(!empty($tpFacilitator)) {
+            if($tpFacilitator == 'STAFF') {
+                $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID ||' - '|| SM_STAFF_NAME AS STAFF_ID_NAME");
+                $this->db->from("STAFF_MAIN, STAFF_STATUS");
+                $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
+                $this->db->where("SS_STATUS_STS = 'ACTIVE'");
+                $this->db->order_by("2,1");
+            } 
+            elseif($tpFacilitator == 'EXTERNAL') {
+                $this->db->select("EF_FACILITATOR_ID, EF_FACILITATOR_NAME, EF_FACILITATOR_ID ||' - '|| EF_FACILITATOR_NAME AS ES_FACILITATOR_ID_NAME");
+                $this->db->from("EXTERNAL_FACILITATOR");
+                $this->db->order_by("2");
+            }
+    
+            $q = $this->db->get();
+            return $q->result();
+        }
+    }
+
     public function checkTrainingSpeaker($refID, $spID) {
         $this->db->select("TS_TRAINING_REFID, TS_SPEAKER_ID, TS_TYPE, TS_CONTACT");
         $this->db->from("TRAINING_SPEAKER");
         $this->db->where("TS_SPEAKER_ID", $spID);
         $this->db->where("TS_TRAINING_REFID", $refID);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    public function checkTrainingFacilitator($refID, $fiID) {
+        $this->db->select("*");
+        $this->db->from("TRAINING_FACILITATOR");
+        $this->db->where("TF_FACILITATOR_ID", $fiID);
+        $this->db->where("TF_TRAINING_REFID", $refID);
         $q = $this->db->get();
         
         return $q->row();
@@ -660,6 +748,17 @@ class Training_application_model extends MY_Model
         );
 
         return $this->db->insert("TRAINING_SPEAKER", $data);
+    }
+
+    public function insertTrainingFacilitator($form, $refid)
+    {
+        $data = array(
+            "TF_TRAINING_REFID" => $refid,
+            "TF_FACILITATOR_ID" => $form['facilitator'],
+            "TF_TYPE" => $form['type'],
+        );
+
+        return $this->db->insert("TRAINING_FACILITATOR", $data);
     }
 
     /*public function insertStrTrTargetGroup($strRefID)
@@ -886,6 +985,22 @@ class Training_application_model extends MY_Model
         $this->db->where("TS_SPEAKER_ID", $spID);
 
         return $this->db->update("TRAINING_SPEAKER", $data);
+    }
+
+    /*_____________________
+        DELETE PROCESS
+    _______________________*/
+
+    public function delTrainingSpeaker($refid, $spID) {
+        $this->db->where('TS_TRAINING_REFID', $refid);
+        $this->db->where('TS_SPEAKER_ID', $spID);
+        return $this->db->delete('TRAINING_SPEAKER');
+    }
+
+    public function delTrainingFacilitator($refid, $fiID) {
+        $this->db->where('TF_TRAINING_REFID', $refid);
+        $this->db->where('TF_FACILITATOR_ID', $fiID);
+        return $this->db->delete('TRAINING_FACILITATOR');
     }
 
     /*public function updateTrainingHead($form, $refID)
