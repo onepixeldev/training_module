@@ -2,7 +2,7 @@
 <h4 class="panel-heading bg-color-blueDark txt-color-white">Facilitator Info</h4>
 <br>
 <div class="text-right">
-	<button type="button" class="btn btn-primary btn-sm add_nt"><i class="fa fa-plus"></i> Add New Facilitator <b>(Referrence ID: <?php echo $refid ?>)</b></button>
+	<button type="button" class="btn btn-primary btn-sm add_nt"><i class="fa fa-plus"></i> Add New Facilitator</button>
 </div>
 <br>
 <div class="well">

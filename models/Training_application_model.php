@@ -101,26 +101,44 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
-    public function getSpeakerInfoExternal($tsrefID)
+    public function getSpeakerInfoExternal($tsrefID, $spID = null)
     {
-        $this->db->select("TS_TRAINING_REFID, TS_SPEAKER_ID, TS_TYPE, TS_CONTACT, ES_SPEAKER_NAME, ES_DEPT");
+        $this->db->select("TRAINING_SPEAKER.ROWID AS SPRD, TS_TRAINING_REFID, TS_SPEAKER_ID, TS_TYPE, TS_CONTACT, ES_SPEAKER_NAME, ES_DEPT");
         $this->db->from("EXTERNAL_SPEAKER, TRAINING_SPEAKER");
         $this->db->where("ES_SPEAKER_ID = TS_SPEAKER_ID");
         $this->db->where("TS_TRAINING_REFID", $tsrefID);
-        $q = $this->db->get();
         
-        return $q->result();
+        if(!empty($spID)) {
+            $this->db->where("TS_SPEAKER_ID", $spID);
+
+            $q = $this->db->get();
+            
+            return $q->row();
+        } else {
+            $q = $this->db->get();
+        
+            return $q->result();
+        }
     }
 
-    public function getSpeakerInfoStaff($tsrefID)
+    public function getSpeakerInfoStaff($tsrefID, $spID = null)
     {
         $this->db->select("TS_TYPE, TS_SPEAKER_ID, SM_STAFF_NAME, SM_DEPT_CODE, TS_CONTACT");
         $this->db->from("STAFF_MAIN, TRAINING_SPEAKER");
         $this->db->where("SM_STAFF_ID = TS_SPEAKER_ID");
         $this->db->where("TS_TRAINING_REFID", $tsrefID);
-        $q = $this->db->get();
+
+        if(!empty($spID)) {
+            $this->db->where("TS_SPEAKER_ID", $spID);
+
+            $q = $this->db->get();
+            
+            return $q->row();
+        } else {
+            $q = $this->db->get();
         
-        return $q->result();
+            return $q->result();
+        }
     }
 
     public function getFacilitatorInfoExternal($tsrefID)
@@ -310,17 +328,29 @@ class Training_application_model extends MY_Model
         
     }
 
-    public function getTargetGroup($tsrefID) {
+    public function getTargetGroup($tsrefID, $gpCode = null) {
         $this->db->select("TTG_TRAINING_REFID, TTG_GROUP_CODE, TG_GROUP_DESC, TG_SCHEME, TG_GRADE_FROM, 
                             TG_GRADE_TO, TG_SERVICE_YEAR_FROM, TG_SERVICE_YEAR_TO, TG_SERVICE_GROUP, 
                             TG_ACADEMIC, TG_NEW_STAFF, TG_COMPULSORY ");
         $this->db->from("TRAINING_TARGET_GROUP, TNA_GROUP");
         $this->db->where("TTG_TRAINING_REFID", $tsrefID);
         $this->db->where("TTG_GROUP_CODE = TG_GROUP_CODE");
-        $this->db->order_by("TRAINING.GETTARGETGROUPDESC(TTG_GROUP_CODE)");
-        $q = $this->db->get();
-        
-        return $q->result();
+
+        if(!empty($gpCode)) {
+            $this->db->where("TTG_GROUP_CODE", $gpCode);
+
+            $this->db->order_by("TRAINING.GETTARGETGROUPDESC(TTG_GROUP_CODE)");
+            $q = $this->db->get();
+            
+            return $q->row();
+        } 
+        else 
+        {
+            $this->db->order_by("TRAINING.GETTARGETGROUPDESC(TTG_GROUP_CODE)");
+            $q = $this->db->get();
+            
+            return $q->result();
+        }
     }
 
     public function getmoduleSetup($tsrefID) {
@@ -408,6 +438,67 @@ class Training_application_model extends MY_Model
         $q = $this->db->get();
         
         return $q->result();
+    }
+
+    public function getTrHeadDetl($refID) {
+        $this->db->select("*");
+        $this->db->from("TRAINING_HEAD_DETL");
+        $this->db->where("THD_REF_ID", $refID);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // get speaker list
+    public function getSpeakerList($tpSpeaker, $trSpeakerCode = null) {
+        if(empty($trSpeakerCode)) {
+            if($tpSpeaker == 'STAFF') {
+                $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, SM_STAFF_ID ||' - '|| SM_STAFF_NAME AS STAFF_ID_NAME");
+                $this->db->from("STAFF_MAIN, STAFF_STATUS, DEPARTMENT_MAIN");
+                $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
+                $this->db->where("SS_STATUS_STS = 'ACTIVE'");
+                $this->db->where("SM_DEPT_CODE = DM_DEPT_CODE");
+                $this->db->order_by("2,1");
+            } 
+            elseif($tpSpeaker == 'EXTERNAL') {
+                $this->db->select("ES_SPEAKER_ID, ES_SPEAKER_NAME, ES_DEPT, ES_TELNO_WORK, ES_SPEAKER_ID ||' - '|| ES_SPEAKER_NAME AS ES_SPEAKER_ID_NAME");
+                $this->db->from("EXTERNAL_SPEAKER");
+                $this->db->where("ES_STATUS = 'ACTIVE'");
+                $this->db->order_by("2");
+            }
+    
+            $q = $this->db->get();
+            return $q->result();
+        } 
+        elseif(!empty($trSpeakerCode)) {
+            if($tpSpeaker == 'STAFF') {
+                $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, SM_TELNO_WORK, SM_STAFF_ID ||' - '|| SM_STAFF_NAME AS STAFF_ID_NAME");
+                $this->db->from("STAFF_MAIN, STAFF_STATUS, DEPARTMENT_MAIN");
+                $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
+                $this->db->where("SS_STATUS_STS = 'ACTIVE'");
+                $this->db->where("SM_DEPT_CODE = DM_DEPT_CODE");
+                $this->db->where("SM_STAFF_ID", $trSpeakerCode);
+            } 
+            elseif($tpSpeaker == 'EXTERNAL') {
+                $this->db->select("ES_SPEAKER_ID, ES_SPEAKER_NAME, ES_DEPT, ES_TELNO_WORK, ES_SPEAKER_ID ||' - '|| ES_SPEAKER_NAME AS ES_SPEAKER_ID_NAME");
+                $this->db->from("EXTERNAL_SPEAKER");
+                $this->db->where("ES_STATUS = 'ACTIVE'");
+                $this->db->where("ES_SPEAKER_ID", $trSpeakerCode);
+            }
+    
+            $q = $this->db->get();
+            return $q->row();        
+        }
+    }
+
+    public function checkTrainingSpeaker($refID, $spID) {
+        $this->db->select("TS_TRAINING_REFID, TS_SPEAKER_ID, TS_TYPE, TS_CONTACT");
+        $this->db->from("TRAINING_SPEAKER");
+        $this->db->where("TS_SPEAKER_ID", $spID);
+        $this->db->where("TS_TRAINING_REFID", $refID);
+        $q = $this->db->get();
+        
+        return $q->row();
     }
 
     /*_____________________
@@ -507,7 +598,7 @@ class Training_application_model extends MY_Model
         return $this->db->insert("TRAINING_HEAD", $data);
     }
 
-    public function insertTrainingTargetGroup($refid, $trCode, $gpCode)
+    public function insertTrainingTargetGroup($refid, $gpCode)
     {
         $insertDate = 'SYSDATE';
         $enterBy = $this->staff_id;
@@ -557,6 +648,18 @@ class Training_application_model extends MY_Model
         );
 
         return $this->db->insert("TRAINING_HEAD_DETL", $data);
+    }
+
+    public function insertTrainingSpeaker($form, $refid)
+    {
+        $data = array(
+            "TS_TRAINING_REFID" => $refid,
+            "TS_SPEAKER_ID" => $form['speaker'],
+            "TS_TYPE" => $form['type'],
+            "TS_CONTACT" => $form['contact_phone_no'],
+        );
+
+        return $this->db->insert("TRAINING_SPEAKER", $data);
     }
 
     /*public function insertStrTrTargetGroup($strRefID)
@@ -620,7 +723,172 @@ class Training_application_model extends MY_Model
         UPDATE PROCESS
     _______________________*/
 
-    public function updateTrainingHead($form, $refID)
+    public function updateTrainingHead($form, $refid)
+    {
+        $umg = $this->staff_id;
+        $staff_dept_code = "(SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE SM_STAFF_ID = '$umg')";
+        $enter_date = 'SYSDATE';
+
+        //$refID = $refid;
+
+        $data = array(
+            "TH_TYPE" => $form['type'],
+            "TH_CATEGORY" => $form['category'],
+            "TH_TRAINING_CODE" => $form['structured_training'],
+            "TH_LEVEL" => $form['level'],
+            "TH_FIELD" => $form['area'],
+            "TH_SERVICE_GROUP" => $form['service_group'],
+            "TH_TRAINING_TITLE" => $form['training_title'],
+            "TH_TRAINING_DESC" => $form['training_description'],
+            "TH_TRAINING_VENUE" => $form['venue'],
+            "TH_TRAINING_COUNTRY" => $form['country'],
+            "TH_TRAINING_STATE" => $form['state'],
+            "TH_TOTAL_HOURS" => $form['total_hours'],
+            "TH_INTERNAL_EXTERNAL" => $form['internal_external'],
+            "TH_SPONSOR" => $form['sponsor'],
+            "TH_OFFER" => $form['offer'],
+            "TH_MAX_PARTICIPANT" => $form['participants'],
+            "TH_OPEN" => $form['online_application'],
+            "TH_COMPETENCY_CODE" => $form['competency_code'],
+
+            // organizer info
+            "TH_ORGANIZER_LEVEL" => $form['organizer_level'],
+            "TH_ORGANIZER_NAME" => $form['organizer_name'],
+
+            // completion info
+            "TH_EVALUATION_COMPULSORY" => $form['evaluation_compulsary'],
+            "TH_ATTENDANCE_TYPE" => $form['attendance_type'],
+            "TH_PRINT_CERTIFICATE" => $form['print_certificate'],
+
+            "TH_ENTER_BY" => $umg,
+            "TH_STATUS" => 'ENTRY'
+        );
+
+        //$this->db->set("TH_REF_ID", $refID, false);
+        $this->db->set("TH_DEPT_CODE", $staff_dept_code, false);
+        $this->db->set("TH_ENTER_DATE", $enter_date, false);
+
+        if(!empty($form['date_from'])){
+            $date_from = "TO_DATE('".$form['date_from']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_DATE_FROM", $date_from, false);
+
+            if(!empty($form['time_from'])){
+                $time_from = "TO_DATE('".$form['date_from']." ".$form['time_from']."', 'DD/MM/YYYY HH12:MI PM')";
+                $this->db->set("TH_TIME_FROM", $time_from, false);
+            }
+
+            if(!empty($form['time_to'])){
+                $time_to = "TO_DATE('".$form['date_from']." ".$form['time_to']."', 'DD/MM/YYYY HH12:MI PM')";
+                $this->db->set("TH_TIME_TO", $time_to, false);
+            }
+        }
+
+        if(!empty($form['date_to'])){
+            $date_to = "TO_DATE('".$form['date_to']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_DATE_TO", $date_to, false);
+        }
+
+        if(!empty($form['closing_date'])){
+            $closing_date = "TO_DATE('".$form['closing_date']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_APPLY_CLOSING_DATE", $closing_date, false);
+        }
+
+        if(!empty($form['evaluation_period_from'])){
+            $evaluation_period_from = "TO_DATE('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_EVALUATION_DATE_FROM", $evaluation_period_from, false);
+        }
+
+        if(!empty($form['evaluation_period_to'])){
+            $evaluation_period_to = "TO_DATE('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_EVALUATION_DATE_TO", $evaluation_period_to, false);
+        }
+
+        if(!empty($form['confirmation_due_date_from'])){
+            $confirmation_due_date_from = "TO_DATE('".$form['confirmation_due_date_from']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_CONFIRM_DATE_FROM", $confirmation_due_date_from, false);
+        }
+
+        if(!empty($form['confirmation_due_date_to'])){
+            $confirmation_due_date_to = "TO_DATE('".$form['confirmation_due_date_to']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_CONFIRM_DATE_TO", $confirmation_due_date_to, false);
+        }
+
+        $this->db->where("TH_REF_ID",$refid);
+
+        return $this->db->update("TRAINING_HEAD", $data);
+    }
+
+    /*public function updateTrainingTargetGroup($refid, $trCode, $gpCode)
+    {
+        $insertDate = 'SYSDATE';
+        $enterBy = $this->staff_id;
+
+        $data = array(
+            "TTG_TRAINING_REFID" => $refid,
+            "TTG_GROUP_CODE" => $gpCode,
+            "TTG_STRUCTURED" => 'Y',
+            "TTG_ENTER_BY" => $enterBy,
+        );
+
+        $this->db->set("TTG_ENTER_DATE", $insertDate, false);
+
+        $this->db->where();
+
+        return $this->db->update("TRAINING_TARGET_GROUP", $data);
+    }
+
+    public function updateTrainingGroupService($gpCode, $tgsSeq, $tgsSvcCode)
+    {
+        $data = array(
+            "TGS_GRPSERV_CODE" => $gpCode,
+            "TGS_SEQ" => $tgsSeq,
+            "TGS_SERVICE_CODE" => $tgsSvcCode
+        );
+
+        return $this->db->insert("TRAINING_GROUP_SERVICE", $data);
+    }*/
+
+    public function updateCPDHead($refid, $competency)
+    {
+        $data = array(
+            //"CH_TRAINING_REFID" => $refid,
+            "CH_COMPETENCY" => $competency,
+            "CH_REPORT_SUBMISSION" => 'N'
+        );
+
+        $this->db->where("CH_TRAINING_REFID", $refid);
+
+        return $this->db->update("CPD_HEAD", $data);
+    }
+
+    public function updateTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD)
+    {
+        $data = array(
+            //"THD_REF_ID" => $refid,
+            "THD_COORDINATOR" => $coor,
+            "THD_COORDINATOR_SECTOR" => $coorSeq,
+            "THD_COORDINATOR_TELNO" => $coorContact,
+            "THD_EVALUATION" => $evaluationTHD,
+        );
+
+        $this->db->where("THD_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD_DETL", $data);
+    }
+
+    public function updateTrainingSpeaker($form, $refid, $spID)
+    {
+        $data = array(
+            "TS_CONTACT" => $form['contact_phone_no']
+        );
+
+        $this->db->where("TS_TRAINING_REFID", $refid);
+        $this->db->where("TS_SPEAKER_ID", $spID);
+
+        return $this->db->update("TRAINING_SPEAKER", $data);
+    }
+
+    /*public function updateTrainingHead($form, $refID)
     {
         $data = array(
             "TH_TYPE" => $form['type'],
@@ -709,5 +977,5 @@ class Training_application_model extends MY_Model
         );
 
         return $this->db->update("TRAINING_HEAD", $data);
-    }
+    }*/
 }

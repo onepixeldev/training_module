@@ -2,11 +2,13 @@
     <div class="modal-header btn-success">
         <h4 class="modal-title" id="myModalLabel">Edit Training</h4>
     </div>
-    <div class="modal-body">
         <div id="alert">
         	<b>Note : </b> ( <b><font color="red">*</font></b> ) <b><font color="red">compulsory fields</font></b><br>&nbsp; <span id="note"></span>
     	</div>
-        <h4 class="panel-heading bg-success txt-color-black">Training Info</h4>
+
+        <div class="alert alert-success fade in">
+            <b>Training Info</b>
+        </div>
         <br>
         <div class="form-group">
             <label class="col-md-2 control-label"><b>Ref ID</b></label>
@@ -31,6 +33,12 @@
                     echo form_dropdown('form[category]', $category, $trInfo->TH_CATEGORY, 'class="selectpicker form-control width-50"')
                 ?>
             </div>
+
+            <label class="col-md-2 control-label">Structured Training <b><font color="red">* </font></b></label>
+            <div class="col-md-2">
+                <input name="form[structured_training]" placeholder="Ref ID" class="form-control" type="text" value="<?php echo $trInfo->TH_TRAINING_CODE?>" id="strTraining" readonly>
+            </div>
+            <button type="button" class="btn btn-primary" id="search_str_tr_ver" value="<?php echo $trInfo->TH_REF_ID?>"><i class="fa fa-search"></i> Search</button>
         </div>
 
         <div class="form-group">
@@ -61,7 +69,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Training Title <b><font color="red">* </font></b></label>
             <div class="col-md-10">
-				<input name="form[training_title]" placeholder="Training Title" class="form-control" type="text" value="<?php echo $trInfo->TH_TRAINING_TITLE?>">
+				<input name="form[training_title]" placeholder="Training Title" class="form-control" type="text" value="<?php echo $trInfo->TH_TRAINING_TITLE?>" id="trTitle">
             </div>
         </div>
 
@@ -167,7 +175,7 @@
 
         <div class="form-group">
             <label class="col-md-2 control-label">Competency Code</label>
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <?php echo form_dropdown('form[competency_code]', $com_lvl_code, $trInfo->TH_COMPETENCY_CODE, 'class="selectpicker form-control width-50"')?>
             </div>
         </div>
@@ -194,7 +202,7 @@
             <label class="col-md-2 control-label">Coordinator</label>
             <div class="col-md-5">
                 <?php
-                    echo form_dropdown('form[coordinator]', $coor, $trInfoDetl->THD_COORDINATOR, 'class="selectpicker form-control width-50"')
+                    echo form_dropdown('form[coordinator]', $coor, $coordinator, 'class="selectpicker form-control width-50"')
                 ?>
             </div>
         </div>
@@ -203,24 +211,26 @@
             <label class="col-md-2 control-label">Coordinator Sector</label>
             <div class="col-md-4">
                 <?php
-                    echo form_dropdown('form[coordinator_sector]', $coor_sec, $trInfoDetl->THD_COORDINATOR_SECTOR, 'class="selectpicker form-control width-50"')
+                    echo form_dropdown('form[coordinator_sector]', $coor_sec, $coor_sector, 'class="selectpicker form-control width-50"')
                 ?>
             </div>
 
             <label class="col-md-2 control-label">Phone Number</label>
             <div class="col-md-4">
-                <input name="form[phone_number]" placeholder="Coordinator contact / phone number" class="form-control" type="text" value="<?php echo $trInfoDetl->THD_COORDINATOR_TELNO?>">
+                <input name="form[phone_number]" placeholder="Coordinator contact / phone number" class="form-control" type="text" value="<?php echo $coor_p_no?>">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-md-2 control-label">Evaluation?</label>
             <div class="col-md-2">
-                <?php echo form_dropdown('form[evaluation]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $trInfoDetl->THD_EVALUATION, 'class="selectpicker form-control width-50"')?>
+                <?php echo form_dropdown('form[evaluation]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $evaluation, 'class="selectpicker form-control width-50"')?>
             </div>
         </div>
 
-        <h4 class="panel-heading bg-success txt-color-black">Confirmation Due Info</h4>
+        <div class="alert alert-success fade in">
+            <b>Confirmation Due Info</b>
+        </div>
         <br>
         <div class="form-group">
             <label class="col-md-2 control-label">Date From <b><font color="red">* </font></b></label>
@@ -234,8 +244,9 @@
             </div>
         </div>
 
-
-        <h4 class="panel-heading bg-success txt-color-black">Organizer Info</h4>
+        <div class="alert alert-success fade in">
+            <b>Organizer Info</b>
+        </div>
         <br>
         <div class="form-group">
             <label class="col-md-2 control-label">Organizer Level</label>
@@ -257,7 +268,7 @@
             <label class="col-md-2 control-label">Address</label>
             <div class="col-md-10">
                 <div id="faspinner2"></div>
-                <textarea name="" placeholder="Address" class="form-control" type="text" rows="5"  id="orgAddress" readonly></textarea>
+                <textarea name="" placeholder="Address" class="form-control" type="text" rows="5" id="orgAddress" readonly><?php echo $OrgAdd?></textarea>
             </div>
         </div>
 
@@ -265,13 +276,13 @@
             <label class="col-md-2 control-label">Postcode</label>
             <div class="col-md-4">
                 <div id="faspinner2"></div>
-                <input name="" placeholder="Postcode" class="form-control" type="text" id="orgPostcode" readonly>
+                <input name="" placeholder="Postcode" class="form-control" type="text" value="<?php echo $OrgPost?>" id="orgPostcode" readonly>
             </div>
 
             <label class="col-md-2 control-label">City</label>
             <div class="col-md-4">
                 <div id="faspinner2"></div>
-                <input name="" placeholder="City" class="form-control" type="text" id="orgCity" readonly>
+                <input name="" placeholder="City" class="form-control" type="text" value="<?php echo $OrgCity?>" id="orgCity" readonly>
             </div>
         </div>
 
@@ -279,17 +290,19 @@
             <label class="col-md-2 control-label">State</label>
             <div class="col-md-4">
             <div id="faspinner2"></div>
-                <input name="" placeholder="State" class="form-control" type="text" id="orgState" readonly>
+                <input name="" placeholder="State" class="form-control" type="text" value="<?php echo $OrgState?>" id="orgState" readonly>
             </div>
 
             <label class="col-md-2 control-label">Country</label>
             <div class="col-md-4">
                 <div id="faspinner2"></div>
-                <input name="" placeholder="Country" class="form-control" type="text" id="orgCountry" readonly>
+                <input name="" placeholder="Country" class="form-control" type="text" value="<?php echo $OrgCountry?>" id="orgCountry" readonly>
             </div>
         </div>
 
-        <h4 class="panel-heading bg-success txt-color-black">Completion Info</h4>
+        <div class="alert alert-success fade in">
+            <b>Completion Info</b>
+        </div>
         <br>
         <div class="form-group">
             <label class="col-md-2 control-label">Evaluation Compulsory? <b><font color="red">* </font></b></label>
@@ -317,14 +330,19 @@
         </div>
 
         <div id="alertFooter"></div>
-
-    </div>
     
     <div class="modal-footer">
-		<button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-hand-o-left"></i> Close</button>
-        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save Changes</button>
     </div>
 </form>
+
+<p>
+    <div id="speakerInfo">
+    </div>
+    <br>
+    <div id="facilitatorInfo">
+    </div>
+</p>
 
 <script>
     //var recc = '';
@@ -336,7 +354,7 @@
 			msg.wait('#alert');
 			msg.wait('#alertFooter');
 			
-			$('.btn').attr('disabled', 'disabled');
+			//$('.btn').attr('disabled', 'disabled');
 			$.ajax({
 				type: 'POST',
 				url: '<?php echo $this->lib->class_url('saveUpdateTraining')?>',
@@ -345,19 +363,21 @@
 				success: function(res) {
 					msg.show(res.msg, res.alert, '#alert');
 					msg.show(res.msg, res.alert, '#alertFooter');
+
+                    //$('.btn').removeAttr('disabled');
 					
-					if (res.sts == 1) {
-						setTimeout(function () {
-							location = '<?php echo $this->lib->class_url('viewTabFilter','s1')?>';
-						}, 1000);
-					} else {
-						$('.btn').removeAttr('disabled');
-					}
+					// if (res.sts == 1) {
+					// 	setTimeout(function () {
+					// 		location = '<?php echo $this->lib->class_url('viewTabFilter','s1')?>';
+					// 	}, 1000);
+					// } else {
+					// 	$('.btn').removeAttr('disabled');
+					// }
 				},
 				error: function() {
 					$('.btn').removeAttr('disabled');
 					msg.danger('Please contact administrator.', '#alert');
-					//msg.danger('Please contact administrator.', '#alertFooter');
+					msg.danger('Please contact administrator.', '#alertFooter');
 				}
 			});	
 		});  				

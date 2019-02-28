@@ -1,3 +1,4 @@
+<h4 class="panel-heading txt-color-black">REFERENCE ID : <b><?php echo $refid. " ($tname)"?></b></h4>
 <p>
 <?php
 	if (empty($cpdSetup)) {

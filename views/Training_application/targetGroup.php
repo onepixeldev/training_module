@@ -50,7 +50,7 @@
 					';
 				}
 			} else {
-				echo '<tr><td colspan="8" class="text-center">No record found.</td></tr>';
+				echo '<tr><td colspan="12" class="text-center">No record found.</td></tr>';
 			}
 		?>
 		</tbody>
@@ -64,22 +64,6 @@
 <div>
     <h4 class="panel-heading bg-color-blueDark txt-color-white">Module Setup</h4>
 	<div id="module_setup">
-        <table class="table table-bordered table-hover">
-            <thead>
-            <tr>
-                <th class="text-center">Please select training from Training Info</th>
-            </tr>
-            </thead>
-        </table>
-	</div>
-</div>	
-<!-------------------------->
-
-<br>
-<!-------------------------->
-<div>
-    <h4 class="panel-heading bg-color-blueDark txt-color-white">CPD Setup</h4>
-	<div id="cpd_setup">
         <table class="table table-bordered table-hover">
             <thead>
             <tr>

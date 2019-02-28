@@ -3,9 +3,9 @@
 	<button type="button" class="btn btn-primary btn-sm add_nt"><i class="fa fa-plus"></i> Add New Training</button>
 </div>
 <br>
+<div id="loader"></div>
 <div class="well">
 	<div class="row">
-	<div id="target_group_spinner"></div>
 		<table class="table table-bordered table-hover" id="tbl_list_ti">
 		<thead>
 		<tr>
