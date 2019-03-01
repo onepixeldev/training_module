@@ -12,7 +12,7 @@
 <h4 class="panel-heading bg-color-blueDark txt-color-white">Target Group</h4>
 <br>
 <div class="text-right">
-	<button type="button" class="btn btn-primary btn-sm add_nt"><i class="fa fa-plus"></i> Add Target Group</button>
+	<button type="button" class="btn btn-primary btn-sm add_tg" value="<?php echo $refid?>"><i class="fa fa-plus"></i> Add Target Group</button>
 </div>
 <br>
 <div class="well">

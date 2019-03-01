@@ -99,16 +99,16 @@
 
 <!-- ADD / EDIT / DELETE page will be displayed here -->
 <div class="modal fade" id="myModalis" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <!--<div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content" id="mContent">
 		
         </div>
-    </div>--><!-- /.modal-dialog -->
+    </div><!-- /.modal-dialog -->
 </div>
 <!-- end ADD / EDIT / DELETE -->
 
 <!-- ADD / EDIT / DELETE page will be displayed here -->
-<div class="modal fade" id="myModalis2" data-backdrop="static" tabindex="-2" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true" style="display: none;">
+<div class="modal fade" id="myModalis2" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-md">
         <div class="modal-content" id="mContent2">
 		
@@ -252,9 +252,14 @@
 
 	// table modal list of structured training
 	$('#add_edit_tr_info').on('click', '#search_str_tr', function() {
-		$('#myModalis').empty();
+		$('#myModalis .modal-content').empty();
 		$('#myModalis').modal('show');
-		$('#myModalis').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+
+
+		// $('#myModalis').empty();
+		// $('#myModalis').modal('show');
+		// $('#myModalis').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
 		$.ajax({
 			type: 'POST',
@@ -262,7 +267,7 @@
 			data: '',
 			//dataType: 'json',
 			success: function(res) {
-				$('#myModalis').html(res);
+				$('#myModalis .modal-content').html(res);
 				dt_row = $('#tbl_list_str_tr').DataTable({
 					"ordering":false,
 					"lengthMenu": [[5, 10], [5, 10]]
@@ -307,8 +312,10 @@
 				if (res.sts == 1) {
 
 					setTimeout(function () {
-					    var trRefID = res.refid;
-					    alert(trRefID);
+						var trRefID = res.refid;
+						var trainingN = res.trName;
+						//alert(trRefID);
+						
 					    $('#add_edit_tr_info').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
 
 					    $.ajax({
@@ -317,7 +324,52 @@
 					        data: {'refID' : trRefID},
 					        success: function(res) {
 					            //$('.nav-tabs li:eq(1) a').tab('show');
-					            $('#add_edit_tr_info').html(res);
+								$('#add_edit_tr_info').html(res);
+								
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('speakerInfo')?>',
+									data: {'tsRefID' : trRefID},
+									success: function(res) {
+										$('#speakerInfo').html(res);
+									}
+								});
+
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
+									data: {'tsRefID' : trRefID},
+									success: function(res) {
+										$('#facilitatorInfo').html(res);
+									}
+								});
+								
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('targetGroup')?>',
+									data: {'trRefID' : trRefID, 'tName' : trainingN},
+									success: function(res) {
+										$('#group_module_setup').html(res);
+
+										$.ajax({
+											type: 'POST',
+											url: '<?php echo $this->lib->class_url('moduleSetup')?>',
+											data: {'tsRefID' : trRefID, 'tName' : trainingN},
+											success: function(res) {
+												$('#module_setup').html(res);
+											}
+										});
+									}
+								});
+
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('cpdSetup')?>',
+									data: {'tsRefID' : trRefID, 'tName' : trainingN},
+									success: function(res) {
+										$('#cpd_setup').html(res);
+									}
+								});
 					        }
 					    });
 						
@@ -427,9 +479,13 @@
 					});
 					return;
 				} else {
-					$('#myModalis').empty();
+					$('#myModalis .modal-content').empty();
 					$('#myModalis').modal('show');
-					$('#myModalis').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+					$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+
+					// $('#myModalis').empty();
+					// $('#myModalis').modal('show');
+					// $('#myModalis').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 				
 					$.ajax({
 						type: 'POST',
@@ -437,7 +493,7 @@
 						data: '',
 						//dataType: 'json',
 						success: function(res) {
-							$('#myModalis').html(res);
+							$('#myModalis .modal-content').html(res);
 							dt_row = $('#tbl_list_str_tr').DataTable({
 								"ordering":false,
 								"lengthMenu": [[5, 10], [5, 10]]
@@ -634,7 +690,7 @@
 		});	
 	});
 
-	// DELETE TRAINING SPEAKER
+	// DELETE TRAINING SPEAKER //
 	$('#add_edit_tr_info').on('click','.del_sp_btn', function() {
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
@@ -669,7 +725,7 @@
 		
 	});
 	
-	// ADD FACILITATOR //
+	// ADD TRAINING FACILITATOR //
 	// ADD TRAINING SPEAKER INFO MODAL
 	$('#add_edit_tr_info').on('click', '.add_tr_fi', function() {
 		var thisBtn = $(this);
@@ -759,9 +815,7 @@
 		});	
 	});
 
-
-
-	// DELETE TRAINING SPEAKER
+	// DELETE TRAINING FACILITATOR //
 	$('#add_edit_tr_info').on('click','.del_fi_btn', function() {
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
@@ -796,99 +850,79 @@
 		
 	});
 
-	/* select training btn
-	$('#trainingInfo').on('click', '.select_training_btn', function(){
+	// ADD TARGET GROUP //
+	// ADD TARGET GROUP MODAL
+	$('#group_module_setup').on('click', '.add_tg', function() {
 		var thisBtn = $(this);
-		var tsRefID = thisBtn.val();
+		var trRefID = thisBtn.val();
+		//alert(trRefID);
 
-		$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('speakerInfo')?>',
-			data: {'tsRefID' : tsRefID},
+			url: '<?php echo $this->lib->class_url('addTargetGroup')?>',
+			data: {'RefID' : trRefID},
 			success: function(res) {
-				$('#speakerInfo').html(res);
-			}
-		});
-
-		$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
-			data: {'tsRefID' : tsRefID},
-			success: function(res) {
-				$('#facilitatorInfo').html(res);
+				$('#myModalis .modal-content').html(res);
 			}
 		});
 	});
 
-	// select training - target group, module & CPD setup
-	$('#trainingInfo').on('click', '.target_group_btn', function(){
-		var thisBtn = $(this);
-		var tsRefID = thisBtn.val();
-		var td = thisBtn.parent().siblings();
-		var trainingN = td.eq(1).html().trim();
+	// SAVE TARGET GROUP
+	$('#myModalis2').on('click', '.ins_tg', function () {
+		var data = $('#insFormTargetGroup').serialize();
+		msg.wait('#alertInsTg');
+		//msg.wait('#alertFooter');
+		//alert(data);
 		
-		$('#target_group_spinner').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		$('#target_group').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		
+		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('targetGroup')?>',
-			data: {'tsRefID' : tsRefID, 'tName' : trainingN},
+			url: '<?php echo $this->lib->class_url('saveTrainingFacilitator')?>',
+			data: data,
+			dataType: 'JSON',
 			success: function(res) {
-				$('.nav-tabs li:eq(1) a').tab('show');
-				$('#target_group').html(res);
-				$('#target_group_spinner').html('');
+				msg.show(res.msg, res.alert, '#alertInsTg');
+				//msg.show(res.msg, res.alert, '#alertFooter');
 
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('moduleSetup')?>',
-					data: {'tsRefID' : tsRefID, 'tName' : trainingN},
-					success: function(res) {
-						$('#module_setup').html(res);
-					}
-				});
-
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('cpdSetup')?>',
-					data: {'tsRefID' : tsRefID, 'tName' : trainingN},
-					success: function(res) {
-						$('#cpd_setup').html(res);
-					}
-				});
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						$('#tbl_list_fi tbody').append(res.fi_row);
+					}, 1500);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				//$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
 			}
-		});
-	});*/
+		});	
+	});
 
-	// populate structured training in structured training setup modal
-	/*$('.modal-content').on('change', '#strCode', function() {
-		var structuredTrainingCode = $(this).val();
-		$('#faspinner2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		$('#title').html('');
-		$('#category').html('');
-		$('#area').html('');
-		$('#type').html('');
-		$('#competency').html('');
-		//$('#orgCountry').html('');
-	
+	// populate target group info (add target group)
+	$('#myModalis').on('change', '#groupCode', function() {
+		var grpCode = $(this).val();
+		//alert(grpCode);
+
+		$('#faspinner3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('structuredTrainingInfo')?>',
-			data: {'strCode' : structuredTrainingCode},
+			url: '<?php echo $this->lib->class_url('tgList')?>',
+			data: {'grpCode' : grpCode},
 			dataType: 'json',
 			success: function(res) {
-				if (res.sts == 1) {
-					$('#faspinner2').html('');
-					$('#title').val(res.strTrInfo.TTH_TRAINING_TITLE);
-					$('#category').val(res.strTrInfo.TTH_CATEGORY);
-					$('#area').val(res.strTrInfo.TTH_TF_FIELD_DESC);
-					$('#type').val(res.strTrInfo.TTH_TT_TYPE_DESC);
-					$('#competency').val(res.strTrInfo.TTH_COMPETENCY);
-				}			
+				$('#faspinner3').html('');
+				$('#tgDesc').val(res.tgList.TG_GROUP_DESC);
+				$('#schemeCode').val(res.tgList.TG_SCHEME);
 			}
 		});
-	});*/
+	});
 
 </script>

@@ -318,6 +318,34 @@ class Training_application extends MY_Controller
         echo json_encode($json);
     }
 
+    // Populate target group details
+    public function tgList(){
+        $this->isAjax();
+        
+        $groupCode = $this->input->post('grpCode', true);
+        
+        // get available records
+        if(!empty($groupCode)) {
+            $tgList = $this->mdl->getTargetGroupList($groupCode);
+                
+            if (!empty($tgList)) {
+                $success = 1;
+            } else {
+                $success = 0;
+            }
+            
+            $json = array('sts' => $success, 'tgList' => $tgList);
+            
+        } else {
+            $tgList = '';
+            $success = 0;
+            
+            $json = array('sts' => $success, 'tgList' => $tgList);
+        }
+        
+        echo json_encode($json);
+    }
+
     // Populate structured training
     /*public function structuredTrainingInfo(){
         $this->isAjax();
@@ -421,6 +449,9 @@ class Training_application extends MY_Controller
         $coorSeq = $form['coordinator_sector'];
         $coorContact = $form['phone_number'];
         $evaluationTHD = $form['evaluation'];
+
+        // training name
+        $trName = $form['training_title'];
 
         // form / input validation
         $rule = array(
@@ -565,7 +596,7 @@ class Training_application extends MY_Controller
                     }
 
                     $stsMsg = nl2br("\n".$insTrHeadMsg."\n".$insCpdHeadMsg."\n".$insTTGMsg."\n".$insTGSMsg."\n".$insTHDMsg);
-                    $json = array('sts' => 1, 'msg' => nl2br("Record has been saved \n".$stsMsg), 'alert' => 'success', 'refid' => $refid);
+                    $json = array('sts' => 1, 'msg' => nl2br("Record has been saved \n".$stsMsg), 'alert' => 'success', 'refid' => $refid, 'trName' => $trName);
                 }
                 else {
                     $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
@@ -740,6 +771,19 @@ class Training_application extends MY_Controller
         $data['facilitatorInfoStaff'] = $this->mdl->getFacilitatorInfoStaff($refid, $fiID);
 		
 		return $this->load->view('Training_application/FiRow', $data, true);	
+    }
+
+    // add target group
+    public function addTargetGroup()
+    {
+        $refid = $this->input->post('RefID', true);
+
+        if(!empty($refid)){
+            $data['refid'] = $refid;
+            $data['tg_list'] = $this->dropdown($this->mdl->getTargetGroupList(), 'TG_GROUP_CODE', 'TG_GROUP_CODE_DESC', ' ---Please select--- ');
+        }
+
+        $this->renderAjax($data);
     }
 
 
@@ -1049,7 +1093,8 @@ class Training_application extends MY_Controller
 
         $this->renderAjax($data);
     }
-
+    
+    // save update training speaker
     public function saveUpdateTrainingSpeaker() {
         $this->isAjax();
 

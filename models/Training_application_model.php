@@ -511,44 +511,6 @@ class Training_application_model extends MY_Model
 
     // get facilitator list
     public function getFacilitatorList($tpFacilitator, $trSpeakerCode = null) {
-        // if(empty($trSpeakerCode)) {
-        //     if($tpSpeaker == 'STAFF') {
-        //         $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, SM_STAFF_ID ||' - '|| SM_STAFF_NAME AS STAFF_ID_NAME");
-        //         $this->db->from("STAFF_MAIN, STAFF_STATUS, DEPARTMENT_MAIN");
-        //         $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
-        //         $this->db->where("SS_STATUS_STS = 'ACTIVE'");
-        //         $this->db->where("SM_DEPT_CODE = DM_DEPT_CODE");
-        //         $this->db->order_by("2,1");
-        //     } 
-        //     elseif($tpSpeaker == 'EXTERNAL') {
-        //         $this->db->select("ES_SPEAKER_ID, ES_SPEAKER_NAME, ES_DEPT, ES_TELNO_WORK, ES_SPEAKER_ID ||' - '|| ES_SPEAKER_NAME AS ES_SPEAKER_ID_NAME");
-        //         $this->db->from("EXTERNAL_SPEAKER");
-        //         $this->db->where("ES_STATUS = 'ACTIVE'");
-        //         $this->db->order_by("2");
-        //     }
-    
-        //     $q = $this->db->get();
-        //     return $q->result();
-        // } 
-        // elseif(!empty($trSpeakerCode)) {
-        //     if($tpSpeaker == 'STAFF') {
-        //         $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, SM_TELNO_WORK, SM_STAFF_ID ||' - '|| SM_STAFF_NAME AS STAFF_ID_NAME");
-        //         $this->db->from("STAFF_MAIN, STAFF_STATUS, DEPARTMENT_MAIN");
-        //         $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
-        //         $this->db->where("SS_STATUS_STS = 'ACTIVE'");
-        //         $this->db->where("SM_DEPT_CODE = DM_DEPT_CODE");
-        //         $this->db->where("SM_STAFF_ID", $trSpeakerCode);
-        //     } 
-        //     elseif($tpSpeaker == 'EXTERNAL') {
-        //         $this->db->select("ES_SPEAKER_ID, ES_SPEAKER_NAME, ES_DEPT, ES_TELNO_WORK, ES_SPEAKER_ID ||' - '|| ES_SPEAKER_NAME AS ES_SPEAKER_ID_NAME");
-        //         $this->db->from("EXTERNAL_SPEAKER");
-        //         $this->db->where("ES_STATUS = 'ACTIVE'");
-        //         $this->db->where("ES_SPEAKER_ID", $trSpeakerCode);
-        //     }
-    
-        //     $q = $this->db->get();
-        //     return $q->row();        
-        // }
 
         if(!empty($tpFacilitator)) {
             if($tpFacilitator == 'STAFF') {
@@ -587,6 +549,33 @@ class Training_application_model extends MY_Model
         $q = $this->db->get();
         
         return $q->row();
+    }
+
+    public function getTargetGroupList($groupCode = null) {
+
+        if(!empty($groupCode)) {
+            $this->db->select("TTG_TRAINING_REFID, TTG_GROUP_CODE, TG_GROUP_DESC, TG_SCHEME, TG_GRADE_FROM, 
+                               TG_GRADE_TO, TG_SERVICE_YEAR_FROM, TG_SERVICE_YEAR_TO, TG_SERVICE_GROUP, 
+                               TG_ACADEMIC, TG_NEW_STAFF, TG_COMPULSORY ");
+            $this->db->from("TRAINING_TARGET_GROUP, TNA_GROUP");
+            $this->db->where("TG_GROUP_CODE", $groupCode);
+            $this->db->where("TTG_GROUP_CODE = TG_GROUP_CODE");
+
+            $q = $this->db->get();
+            return $q->row();
+        } else {
+            $this->db->select("TG_GROUP_CODE, TG_GROUP_DESC, TG_GROUP_CODE ||' - '|| TG_GROUP_DESC AS TG_GROUP_CODE_DESC, 
+                           TG_SCHEME, TG_SERVICE_GROUP, 
+                           TG_GRADE_FROM, TG_GRADE_TO, TG_ACADEMIC, TG_COMPULSORY,
+                           TG_NEW_STAFF, TG_SERVICE_YEAR_FROM, TG_SERVICE_YEAR_TO,
+                           TG_OPTION, TG_STATUS");
+            $this->db->from("TNA_GROUP");
+            $this->db->where("TG_STATUS = 'ACTIVE'");
+            $this->db->order_by("TG_GROUP_DESC");
+
+            $q = $this->db->get();
+            return $q->result();
+        }
     }
 
     /*_____________________
