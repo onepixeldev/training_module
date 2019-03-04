@@ -4,8 +4,6 @@
 	<button type="button" class="btn btn-primary btn-sm add_tr_sp" value="<?php echo $refid ?>"><i class="fa fa-plus"></i> Add Speaker</button>
 </div>
 <br>
-
-<div style="max-height:500px;overflow-y:auto;overflow-x:hidden">
 	<table class="table table-bordered table-hover" id="tbl_list_si">
 	<thead>
 	<tr>

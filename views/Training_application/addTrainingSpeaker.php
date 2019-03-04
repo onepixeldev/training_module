@@ -31,7 +31,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Department</label>
             <div class="col-md-9">
-                <input name="form[department]" placeholder="Department" class="form-control" type="text" readonly id="spDept">
+                <input name="" placeholder="Department" class="form-control" type="text" readonly id="spDept">
             </div>
         </div>
 

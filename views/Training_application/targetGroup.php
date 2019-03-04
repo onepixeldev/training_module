@@ -48,18 +48,16 @@
                         <td class="text-center">' . $tg->TG_SERVICE_YEAR_FROM . '</td>
                         <td class="text-center">' . $tg->TG_SERVICE_YEAR_TO . '</td>
                         <td class="text-center">' . $tg->TG_SERVICE_GROUP . '</td>
-                        <td class="text-center">' . $tg->TG_ACADEMIC . '</td>
-                        <td class="text-center">' . $tg->TG_NEW_STAFF . '</td>
-                        <td class="text-center">' . $tg->TG_COMPULSORY . '</td>
-                        <td class="text-center col-md-3">
-							<button type="button" class="btn btn-success btn-xs edit_training_btn"><i class="fa fa-edit"></i> Edit</button>
-							<button type="button" class="btn btn-danger btn-xs delete_training_btn"><i class="fa fa-trash"></i> Delete</button>
+                        <td class="text-center">' . $tg->TGACADEMIC . '</td>
+                        <td class="text-center">' . $tg->TGNEWSTAFF . '</td>
+                        <td class="text-center">' . $tg->TGCOMPULSORY . '</td>
+						<td class="text-center col-md-3">
+							<button type="button" class="btn btn-info btn-xs pos_tg_btn"><i class="fa fa-info-circle"></i> Position</button>
+							<button type="button" class="btn btn-danger btn-xs del_tg_btn" value='.$refid.'><i class="fa fa-trash"></i> Delete</button>
 						</td>
 					</tr>
 					';
 				}
-			} else {
-				echo '<tr><td colspan="12" class="text-center">No record found.</td></tr>';
 			}
 		?>
 		</tbody>

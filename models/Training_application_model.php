@@ -348,7 +348,22 @@ class Training_application_model extends MY_Model
 
     public function getTargetGroup($tsrefID, $gpCode = null) {
         $this->db->select("TTG_TRAINING_REFID, TTG_GROUP_CODE, TG_GROUP_DESC, TG_SCHEME, TG_GRADE_FROM, 
-                            TG_GRADE_TO, TG_SERVICE_YEAR_FROM, TG_SERVICE_YEAR_TO, TG_SERVICE_GROUP, 
+                            TG_GRADE_TO, TG_SERVICE_YEAR_FROM, TG_SERVICE_YEAR_TO, TG_SERVICE_GROUP,
+                            CASE TG_ACADEMIC
+                                WHEN 'Y' THEN 'YES'
+                                WHEN 'N' THEN 'NO'
+                            END
+                            AS TGACADEMIC,
+                            CASE TG_NEW_STAFF
+                                WHEN 'Y' THEN 'YES'
+                                WHEN 'N' THEN 'NO'
+                            END
+                            AS TGNEWSTAFF,
+                            CASE TG_COMPULSORY
+                                WHEN 'Y' THEN 'YES'
+                                WHEN 'N' THEN 'NO'
+                            END
+                            AS TGCOMPULSORY, 
                             TG_ACADEMIC, TG_NEW_STAFF, TG_COMPULSORY ");
         $this->db->from("TRAINING_TARGET_GROUP, TNA_GROUP");
         $this->db->where("TTG_TRAINING_REFID", $tsrefID);
@@ -373,17 +388,20 @@ class Training_application_model extends MY_Model
 
     public function getmoduleSetup($tsrefID) {
         $this->db->select("THD_TRAINING_OBJECTIVE2, THD_TRAINING_CONTENT, THD_MODULE_CATEGORY, THD_MODULE_CATEGORY ||' - '|| TMC_COMPONENT_DESC AS TMCDESC,
-        THD_EVALUATION, THD_COORDINATOR, THD_COORDINATOR_TELNO, THD_COORDINATOR_SECTOR ");
-        $this->db->from("TRAINING_HEAD_DETL, TRAINING_MODULE_COMPONENT");
+        THD_EVALUATION, THD_COORDINATOR, THD_COORDINATOR_TELNO, THD_COORDINATOR_SECTOR");
+        $this->db->from("TRAINING_HEAD_DETL");
+        $this->db->join("TRAINING_MODULE_COMPONENT", "TMC_COMPONENT_CODE = THD_MODULE_CATEGORY", "LEFT");
         $this->db->where("THD_REF_ID", $tsrefID);
-        $this->db->where("TMC_COMPONENT_CODE = THD_MODULE_CATEGORY");
         $q = $this->db->get();
         
         return $q->row();
     }
 
     public function getCpdSetup($tsrefID) {
-        $this->db->select("CH_COMPETENCY, CH_CATEGORY, CH_MARK, CASE WHEN CH_REPORT_SUBMISSION = 'Y' THEN 'YES' ELSE 'NO' END AS REP_SUB, CH_AUTO");
+        $this->db->select("CH_COMPETENCY, CH_CATEGORY, CH_MARK, 
+                           CASE WHEN CH_REPORT_SUBMISSION = 'Y' THEN 'YES' ELSE 'NO' END AS REP_SUB, 
+                           CASE WHEN CH_COMPULSORY = 'Y' THEN 'YES' ELSE 'NO' END AS CHCOMPULSORY,
+                           CH_AUTO");
         $this->db->from("CPD_HEAD");
         $this->db->where("CH_TRAINING_REFID", $tsrefID);
         //$this->db->where("CC_CATEGORY_CODE = CH_CATEGORY");
@@ -462,8 +480,8 @@ class Training_application_model extends MY_Model
         $this->db->select("*");
         $this->db->from("TRAINING_HEAD_DETL");
         $this->db->where("THD_REF_ID", $refID);
-        $q = $this->db->get();
         
+        $q = $this->db->get();
         return $q->row();
     }
 
@@ -554,21 +572,38 @@ class Training_application_model extends MY_Model
     public function getTargetGroupList($groupCode = null) {
 
         if(!empty($groupCode)) {
-            $this->db->select("TTG_TRAINING_REFID, TTG_GROUP_CODE, TG_GROUP_DESC, TG_SCHEME, TG_GRADE_FROM, 
-                               TG_GRADE_TO, TG_SERVICE_YEAR_FROM, TG_SERVICE_YEAR_TO, TG_SERVICE_GROUP, 
+            $this->db->select("TG_GROUP_DESC, TG_SCHEME, TG_GRADE_FROM, 
+                               TG_GRADE_TO, TG_SERVICE_YEAR_FROM, TG_SERVICE_YEAR_TO, 
+                               TG_SERVICE_GROUP,
+                               CASE TG_ACADEMIC
+                                WHEN 'Y' THEN 'YES'
+                                WHEN 'N' THEN 'NO'
+                                END
+                               AS TGACADEMIC,
+                               CASE TG_NEW_STAFF
+                                    WHEN 'Y' THEN 'YES'
+                                    WHEN 'N' THEN 'NO'
+                                END
+                               AS TGNEWSTAFF,
+                               CASE TG_COMPULSORY
+                                    WHEN 'Y' THEN 'YES'
+                                    WHEN 'N' THEN 'NO'
+                                END
+                               AS TGCOMPULSORY,
                                TG_ACADEMIC, TG_NEW_STAFF, TG_COMPULSORY ");
-            $this->db->from("TRAINING_TARGET_GROUP, TNA_GROUP");
+            $this->db->from("TNA_GROUP");
             $this->db->where("TG_GROUP_CODE", $groupCode);
-            $this->db->where("TTG_GROUP_CODE = TG_GROUP_CODE");
 
             $q = $this->db->get();
             return $q->row();
-        } else {
+        } 
+        
+        if(empty($groupCode)) {
             $this->db->select("TG_GROUP_CODE, TG_GROUP_DESC, TG_GROUP_CODE ||' - '|| TG_GROUP_DESC AS TG_GROUP_CODE_DESC, 
-                           TG_SCHEME, TG_SERVICE_GROUP, 
-                           TG_GRADE_FROM, TG_GRADE_TO, TG_ACADEMIC, TG_COMPULSORY,
-                           TG_NEW_STAFF, TG_SERVICE_YEAR_FROM, TG_SERVICE_YEAR_TO,
-                           TG_OPTION, TG_STATUS");
+                               TG_SCHEME, TG_SERVICE_GROUP, 
+                               TG_GRADE_FROM, TG_GRADE_TO, TG_ACADEMIC, TG_COMPULSORY,
+                               TG_NEW_STAFF, TG_SERVICE_YEAR_FROM, TG_SERVICE_YEAR_TO,
+                               TG_OPTION, TG_STATUS");
             $this->db->from("TNA_GROUP");
             $this->db->where("TG_STATUS = 'ACTIVE'");
             $this->db->order_by("TG_GROUP_DESC");
@@ -576,6 +611,52 @@ class Training_application_model extends MY_Model
             $q = $this->db->get();
             return $q->result();
         }
+    }
+
+    public function getTargetGroupDetail($refid, $gpCode) {
+        $this->db->select("*");
+        $this->db->from("TRAINING_TARGET_GROUP");
+        $this->db->where("TTG_TRAINING_REFID", $refid);
+        $this->db->where("TTG_GROUP_CODE", $gpCode);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    public function delTargetGroupVerify($gpCode) {
+        $this->db->select("1");
+        $this->db->from("TRAINING_GROUP_SERVICE");
+        $this->db->where("TGS_GRPSERV_CODE", $gpCode);
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    public function getListEgPosition($groupCode) {
+        $this->db->select("TGS_GRPSERV_CODE, TGS_SEQ, TGS_SERVICE_CODE, SS_SERVICE_DESC");
+        $this->db->from("TRAINING_GROUP_SERVICE");
+        $this->db->join('SERVICE_SCHEME', 'TRAINING_GROUP_SERVICE.TGS_SERVICE_CODE = SERVICE_SCHEME.SS_SERVICE_CODE', 'LEFT');
+        $this->db->where("TGS_GRPSERV_CODE", $groupCode);
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    public function getCompList() {
+        $this->db->select("TMC_COMPONENT_CODE, TMC_COMPONENT_CODE ||' - '|| TMC_COMPONENT_DESC TMC_CODE_DESC");
+        $this->db->from("TRAINING_MODULE_COMPONENT");
+        $this->db->order_by("TMC_COMPONENT_CODE");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    public function getCpdCategoryList() {
+        $this->db->select("CC_CATEGORY_CODE, CC_CATEGORY_CODE ||' - '|| CC_CATEGORY_DESC AS CC_CODE_DESC");
+        $this->db->from("CPD_CATEGORY");
+
+        $q = $this->db->get();
+        return $q->result();
     }
 
     /*_____________________
@@ -748,6 +829,49 @@ class Training_application_model extends MY_Model
         );
 
         return $this->db->insert("TRAINING_FACILITATOR", $data);
+    }
+
+    public function insertTrainingTG($form, $refid)
+    {
+        $umg = $this->staff_id;
+        $eDate = 'SYSDATE';
+
+        $data = array(
+            "TTG_TRAINING_REFID" => $refid,
+            "TTG_GROUP_CODE" => $form['group_code'],
+            "TTG_ENTER_BY" => $umg,
+        );
+        
+        //$this->db->set("TTG_ENTER_BY", $umg, false);
+        $this->db->set("TTG_ENTER_DATE", $eDate, false);
+
+        return $this->db->insert("TRAINING_TARGET_GROUP", $data);
+    }
+
+    public function insertModuleSetup($form, $refid)
+    {
+        $data = array(
+            "THD_REF_ID" => $refid,
+            "THD_TRAINING_OBJECTIVE2" => $form['specific_objectives'],
+            "THD_TRAINING_CONTENT" => $form['contents'],
+            "THD_MODULE_CATEGORY" => $form['component_category'],
+        );
+
+        return $this->db->insert("TRAINING_HEAD_DETL", $data);
+    }
+
+    public function insertCpdSetup($form, $refid)
+    {
+        $data = array(
+            "CH_TRAINING_REFID" => $refid,
+            "CH_COMPETENCY" => $form['competency'],
+            "CH_CATEGORY" => $form['category'],
+            "CH_MARK" => $form['mark'],
+            "CH_REPORT_SUBMISSION" => $form['report_submission'],
+            "CH_COMPULSORY" => $form['compulsory']
+        );
+
+        return $this->db->insert("CPD_HEAD", $data);
     }
 
     /*public function insertStrTrTargetGroup($strRefID)
@@ -976,6 +1100,50 @@ class Training_application_model extends MY_Model
         return $this->db->update("TRAINING_SPEAKER", $data);
     }
 
+    public function updateMs1($form, $refid)
+    {
+        $data = array(
+            "THD_TRAINING_OBJECTIVE2" => $form['specific_objectives']
+        );
+
+        $this->db->where("THD_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD_DETL", $data);
+    }
+
+    public function updateMs2($form, $refid)
+    {
+        $data = array(
+            "THD_TRAINING_CONTENT" => $form['contents']
+        );
+
+        $this->db->where("THD_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD_DETL", $data);
+    }
+
+    public function updateMs3($form, $refid)
+    {
+        $data = array(
+            "THD_MODULE_CATEGORY" => $form['component_category']
+        );
+
+        $this->db->where("THD_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD_DETL", $data);
+    }
+
+    public function updateCpd1($form, $refid)
+    {
+        $data = array(
+            "CH_COMPETENCY" => $form['competency']
+        );
+
+        $this->db->where("CH_TRAINING_REFID", $refid);
+
+        return $this->db->update("CPD_HEAD", $data);
+    }
+
     /*_____________________
         DELETE PROCESS
     _______________________*/
@@ -990,6 +1158,18 @@ class Training_application_model extends MY_Model
         $this->db->where('TF_TRAINING_REFID', $refid);
         $this->db->where('TF_FACILITATOR_ID', $fiID);
         return $this->db->delete('TRAINING_FACILITATOR');
+    }
+
+    public function delTargetGroup($refid, $gpCode) {
+        $this->db->where('TTG_TRAINING_REFID', $refid);
+        $this->db->where('TTG_GROUP_CODE', $gpCode);
+        return $this->db->delete('TRAINING_TARGET_GROUP');
+    }
+
+    public function delTrainingGpService($gpCode, $tgsSeq) {
+        $this->db->where('TGS_GRPSERV_CODE', $gpCode);
+        $this->db->where('TGS_SEQ', $tgsSeq);
+        return $this->db->delete('TRAINING_GROUP_SERVICE');
     }
 
     /*public function updateTrainingHead($form, $refID)

@@ -9,13 +9,13 @@
 	</div> 
 </div>
 <p>
-<?php
+<?php 
 	if (empty($cpdSetup)) {
 		echo '
-		<div class="text-right">
-			<button type="button" class="btn btn-primary btn-sm add_nt"><i class="fa fa-plus"></i> Add CPD</button>
-		</div>
-		';
+			<div class="text-right">
+				<button type="button" class="btn btn-primary btn-sm add_cpd_btn" value='.$refid.'><i class="fa fa-plus"></i> Add CPD</button>
+			</div>
+		';	
 	}
 ?>
 <br>
@@ -26,40 +26,46 @@
 		<?php
 			if (!empty($cpdSetup)) {
 				echo '
-				<tr data-parm-id="">
+				<tr>
 					<td class="text-right col-md-2"><b>Competency</b></td>
-					<td class="text-left col-md-4">'.$cpdSetup->CH_COMPETENCY.'</td>
+					<td class="text-left col-md-5">'.$cpdSetup->CH_COMPETENCY.'</td>
 					<td class="text-left">
-						<button type="button" class="btn btn-success btn-xs edit_hod_mem" value="<?php echo $hod_memo->HP_PARM_NO?>" title="Edit Record" ><i class="fa fa-edit"></i> Update</button>
+						<button type="button" class="btn btn-success btn-xs edit_cpd1_btn" value='.$refid.' title="Edit Record" ><i class="fa fa-edit"></i> Update</button>
 					</td>
 				</tr>
 
-				<tr data-parm-id="">
+				<tr>
 					<td class="text-right col-md-2"><b>Category</b></td>
-					<td class="text-left col-md-4">'.$cpdSetupCatDesc.'</td>
+					<td class="text-left col-md-5">'.$cpdSetupCatDesc.'</td>
 					<td class="text-left">
-						<button type="button" class="btn btn-success btn-xs edit_hod_mem" value="<?php echo $hod_memo->HP_PARM_NO?>" title="Edit Record" ><i class="fa fa-edit"></i> Update</button>
+						<button type="button" class="btn btn-success btn-xs edit_cpd2_btn" value='.$refid.' title="Edit Record" ><i class="fa fa-edit"></i> Update</button>
 					</td>
 				</tr>
 
-				<tr data-parm-id="">
+				<tr>
 					<td class="text-right col-md-2"><b>Mark</b></td>
-					<td class="text-left col-md-4">'.$cpdSetup->CH_MARK.'</td>
+					<td class="text-left col-md-5">'.$cpdSetup->CH_MARK.'</td>
 					<td class="text-left">
-						<button type="button" class="btn btn-success btn-xs edit_hod_mem" value="<?php echo $hod_memo->HP_PARM_NO?>" title="Edit Record" ><i class="fa fa-edit"></i> Update</button>
+						<button type="button" class="btn btn-success btn-xs edit_cpd3_btn" value='.$refid.' title="Edit Record" ><i class="fa fa-edit"></i> Update</button>
 					</td>
                 </tr>
                 
-                <tr data-parm-id="">
+                <tr>
 					<td class="text-right col-md-2"><b>Report Submission?</b></td>
-					<td class="text-left col-md-4">'.$cpdSetup->REP_SUB.'</td>
+					<td class="text-left col-md-5">'.$cpdSetup->REP_SUB.'</td>
 					<td class="text-left">
-						<button type="button" class="btn btn-success btn-xs edit_hod_mem" value="<?php echo $hod_memo->HP_PARM_NO?>" title="Edit Record" ><i class="fa fa-edit"></i> Update</button>
+						<button type="button" class="btn btn-success btn-xs edit_cpd4_btn" value='.$refid.' title="Edit Record" ><i class="fa fa-edit"></i> Update</button>
+					</td>
+				</tr>
+
+				<tr>
+					<td class="text-right col-md-2"><b>Compulsory ?</b></td>
+					<td class="text-left col-md-5">'.$cpdSetup->CHCOMPULSORY.'</td>
+					<td class="text-left">
+						<button type="button" class="btn btn-success btn-xs edit_cpd5_btn" value='.$refid.' title="Edit Record" ><i class="fa fa-edit"></i> Update</button>
 					</td>
 				</tr>
 				';
-			} else {
-				echo '<tr><td colspan="8" class="text-center">No record found.</td></tr>';
 			}
 		?>
 		</tbody>

@@ -17,14 +17,15 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Speaker</label>
             <div class="col-md-9">
-                <input name="form[speaker]" value="<?php echo $sp_info->TS_SPEAKER_ID ?>" class="form-control" type="text" readonly>
+                <input name="" value="<?php echo $spname ?>" class="form-control" type="text" readonly>
+                <input name="form[speaker]" value="<?php echo $sp_info->TS_SPEAKER_ID ?>" class="form-control" type="hidden" readonly>
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-md-2 control-label">Department</label>
             <div class="col-md-9">
-                <input name="form[department]" placeholder="Department" value="<?php echo $sp_telno ?>" class="form-control" type="text" readonly id="spDept">
+                <input name="" placeholder="Department" value="<?php echo $spdept ?>" class="form-control" type="text" readonly id="spDept">
             </div>
         </div>
 

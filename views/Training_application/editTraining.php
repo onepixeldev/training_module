@@ -1,4 +1,4 @@
-<form class="form-horizontal" method="post">
+<form id="updTrainingInfo" class="form-horizontal" method="post">
     <div class="modal-header btn-success">
         <h4 class="modal-title" id="myModalLabel">Edit Training</h4>
     </div>
@@ -138,7 +138,7 @@
 
             <label class="col-md-2 control-label">Internal/External? <b><font color="red">* </font></b></label>
             <div class="col-md-4">
-                <?php echo form_dropdown('form[internal_external]', array('---Please Select---','INTERNAL'=>'INTERNAL','EXTERNAL'=>'EXTERNAL'), $trInfo->TH_INTERNAL_EXTERNAL, 'class="selectpicker form-control width-50"')?>
+                <?php echo form_dropdown('form[internal_external]', array(''=>'---Please Select---','INTERNAL'=>'INTERNAL','EXTERNAL'=>'EXTERNAL'), $trInfo->TH_INTERNAL_EXTERNAL, 'class="selectpicker form-control width-50"')?>
             </div>
         </div>
 
@@ -152,7 +152,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Offer?</label>
             <div class="col-md-4">
-                <?php echo form_dropdown('form[offer]', array('---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_OFFER, 'class="selectpicker form-control width-50"')?>
+                <?php echo form_dropdown('form[offer]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_OFFER, 'class="selectpicker form-control width-50"')?>
             </div>
 
             <label class="col-md-2 control-label">Participants</label>
@@ -164,7 +164,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Online application?</label>
             <div class="col-md-2">
-                <?php echo form_dropdown('form[online_application]', array('---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_OPEN, 'class="selectpicker form-control width-50"')?>
+                <?php echo form_dropdown('form[online_application]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_OPEN, 'class="selectpicker form-control width-50"')?>
             </div>
 
             <label class="col-md-4 control-label">Closing Date</label>
@@ -308,7 +308,7 @@
             <label class="col-md-2 control-label">Evaluation Compulsory? <b><font color="red">* </font></b></label>
             <div class="col-md-2">
                 <?php
-                    echo form_dropdown('form[evaluation_compulsary]', array('---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_EVALUATION_COMPULSORY, 'class="selectpicker form-control width-50"')
+                    echo form_dropdown('form[evaluation_compulsary]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_EVALUATION_COMPULSORY, 'class="selectpicker form-control width-50"')
                 ?>
             </div>
             
@@ -324,7 +324,7 @@
             <label class="col-md-2 control-label">Print Certificate? <b><font color="red">* </font></b></label>
             <div class="col-md-2">
                 <?php
-                    echo form_dropdown('form[print_certificate]', array('---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_PRINT_CERTIFICATE, 'class="selectpicker form-control width-50"')
+                    echo form_dropdown('form[print_certificate]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_PRINT_CERTIFICATE, 'class="selectpicker form-control width-50"')
                 ?>
             </div>
         </div>
@@ -332,7 +332,7 @@
         <div id="alertFooter"></div>
     
     <div class="modal-footer">
-        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save Changes</button>
+        <button type="submit" class="btn btn-primary save_upd_tr_info"><i class="fa fa-save"></i> Save Changes</button>
     </div>
 </form>
 
@@ -348,39 +348,6 @@
     //var recc = '';
 
 	$(document).ready(function(){	
-		$('form').submit(function (e) { 
-			e.preventDefault();
-			var data = $('form').serialize();
-			msg.wait('#alert');
-			msg.wait('#alertFooter');
-			
-			//$('.btn').attr('disabled', 'disabled');
-			$.ajax({
-				type: 'POST',
-				url: '<?php echo $this->lib->class_url('saveUpdateTraining')?>',
-				data: data,
-				dataType: 'JSON',
-				success: function(res) {
-					msg.show(res.msg, res.alert, '#alert');
-					msg.show(res.msg, res.alert, '#alertFooter');
-
-                    //$('.btn').removeAttr('disabled');
-					
-					// if (res.sts == 1) {
-					// 	setTimeout(function () {
-					// 		location = '<?php echo $this->lib->class_url('viewTabFilter','s1')?>';
-					// 	}, 1000);
-					// } else {
-					// 	$('.btn').removeAttr('disabled');
-					// }
-				},
-				error: function() {
-					$('.btn').removeAttr('disabled');
-					msg.danger('Please contact administrator.', '#alert');
-					msg.danger('Please contact administrator.', '#alertFooter');
-				}
-			});	
-		});  				
         
         $('#datepicker').datetimepicker({
             format: 'L',

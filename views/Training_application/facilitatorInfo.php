@@ -5,7 +5,6 @@
 	<button type="button" class="btn btn-primary btn-sm add_tr_fi" value="<?php echo $refid ?>"><i class="fa fa-plus"></i> Add Facilitator</button>
 </div>
 <br>
-<div style="max-height:500px;overflow-y:auto;overflow-x:hidden">
 	<table class="table table-bordered table-hover" id="tbl_list_fi">
 	<thead>
 	<tr>
