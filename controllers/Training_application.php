@@ -519,12 +519,13 @@ class Training_application extends MY_Controller
             $data['refID'] = $this->mdl->getRefID();
 
             if(!empty($data['refID'])){
-                $refid = $data['refID']->TESTREFID;
+                $refid = $data['refID']->REF_ID;
                 $insert = $this->mdl->insertTrainingHead($form, $refid);
 
                 if ($insert > 0 && !empty($trCode)) {
 
-                    $insTrHeadMsg = 'TRAINING_HEAD success! ';
+                    //$insTrHeadMsg = 'TRAINING_HEAD success! ';
+                    $insTrHeadMsg = $refid;
 
                     $data['compt'] = $this->mdl->getStructuredTraining($trCode);
                     $data['resultTTG'] = $this->mdl->getResultTTG($trCode);
@@ -951,8 +952,8 @@ class Training_application extends MY_Controller
             'competency' => 'required|max_length[20]',
             'category' => 'required|max_length[10]',
             'mark' => 'numeric|max_length[40]',
-            'report_submission' => 'required|required|max_length[10]',
-            'compulsory' => 'required|required|max_length[10]'
+            'report_submission' => 'required|max_length[10]',
+            'compulsory' => 'required|max_length[10]'
         );
 
         $exclRule = null;
@@ -1155,7 +1156,7 @@ class Training_application extends MY_Controller
         if ($status == 1) {
 
             if(!empty($refid)){
-                //$refid = $data['refID']->TESTREFID;
+                //$refid = $data['refID']->REFID;
                 $insert = $this->mdl->updateTrainingHead($form, $refid);
 
                 if ($insert > 0 && !empty($trCode)) {
@@ -1527,7 +1528,7 @@ class Training_application extends MY_Controller
 
         // form / input validation
         $rule = array(
-            'competency' => 'max_length[20]'
+            'competency' => 'required|max_length[20]'
         );
 
         $exclRule = null;
@@ -1561,7 +1562,8 @@ class Training_application extends MY_Controller
 
         if(!empty($refid)){
             $data['refid'] = $refid;
-            $data['cpd_comp_val'] = $cpdComp;
+            $data['category_list'] = $this->dropdown($this->mdl->getCpdCategoryList(), 'CC_CATEGORY_CODE', 'CC_CODE_DESC', ' ---Please select--- ');
+            $data['cpd_cat_val'] = $this->mdl->getCpdSetup($refid);
         }
 
         $this->renderAjax($data);
@@ -1579,7 +1581,7 @@ class Training_application extends MY_Controller
 
         // form / input validation
         $rule = array(
-            'competency' => 'max_length[20]'
+            'category' => 'required|max_length[10]'
         );
 
         $exclRule = null;
@@ -1588,12 +1590,172 @@ class Training_application extends MY_Controller
 
         // Begin Insert New Record
         if ($status == 1 && !empty($refid)) {
-            $update = $this->mdl->updateCpd1($form, $refid);
+            $update = $this->mdl->updateCpd2($form, $refid);
 
             if($update > 0) {
-                $cpd1_row = $this->mdl->getCpdSetup($refid);
+                $data['cpdSetup'] = $this->mdl->getCpdSetup($refid);
 
-                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'cpd1_row' => $cpd1_row);
+                if (!empty($data['cpdSetup']->CH_CATEGORY)){
+                    $data['cpdSetupCat'] = $this->mdl->getCpdSetupCategory($data['cpdSetup']->CH_CATEGORY);
+                    $cpd2_row = $data['cpdSetupCat']->CH_CC_CATEGORY_DESC;
+                } else {
+                    $cpd2_row = '';
+                }
+
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'cpd2_row' => $cpd2_row);
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // update cpd setup 3
+    public function editCpdSetup3()
+    {
+        $refid = $this->input->post('refid', true);
+        $cpdMark = $this->input->post('cpdMark', true);
+
+        if(!empty($refid)){
+            $data['refid'] = $refid;
+            $data['cpd_mark_val'] = $cpdMark;
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // save update cpd setup 3
+    public function saveUpdateCpd3() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // TRAINING REF ID
+        $refid = $form['refid'];
+
+        // form / input validation
+        $rule = array(
+            'mark' => 'required|numeric|max_length[40]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        // Begin Insert New Record
+        if ($status == 1 && !empty($refid)) {
+            $update = $this->mdl->updateCpd3($form, $refid);
+
+            if($update > 0) {
+                $cpd3_row = $this->mdl->getCpdSetup($refid);
+
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'cpd3_row' => $cpd3_row);
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // update cpd setup 4
+    public function editCpdSetup4()
+    {
+        $refid = $this->input->post('refid', true);
+        $rpSub = $this->input->post('rpSub', true);
+
+        if(!empty($refid)){
+            $data['refid'] = $refid;
+            $data['cpd_rpsub_val'] = $rpSub;
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // save update cpd setup 4
+    public function saveUpdateCpd4() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // TRAINING REF ID
+        $refid = $form['refid'];
+
+        // form / input validation
+        $rule = array(
+            'report_submission' => 'required|max_length[10]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        // Begin Insert New Record
+        if ($status == 1 && !empty($refid)) {
+            $update = $this->mdl->updateCpd4($form, $refid);
+
+            if($update > 0) {
+                $cpd4_row = $this->mdl->getCpdSetup($refid);
+
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'cpd4_row' => $cpd4_row);
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // update cpd setup 4
+    public function editCpdSetup5()
+    {
+        $refid = $this->input->post('refid', true);
+        $cpdCmpy = $this->input->post('cpdCmpy', true);
+
+        if(!empty($refid)){
+            $data['refid'] = $refid;
+            $data['cpd_cpd_cmpy_val'] = $cpdCmpy;
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // save update cpd setup 4
+    public function saveUpdateCpd5() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // TRAINING REF ID
+        $refid = $form['refid'];
+
+        // form / input validation
+        $rule = array(
+            'compulsory' => 'required|max_length[10]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        // Begin Insert New Record
+        if ($status == 1 && !empty($refid)) {
+            $update = $this->mdl->updateCpd5($form, $refid);
+
+            if($update > 0) {
+                $cpd5_row = $this->mdl->getCpdSetup($refid);
+
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'cpd5_row' => $cpd5_row);
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
             }
@@ -1607,6 +1769,43 @@ class Training_application extends MY_Controller
     /*_____________________
         DELETE PROCESS
     _____________________*/
+
+    // DELETE TRAINING INFO
+    public function deleteTrainingInfo() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        //$tgsSeq = $this->input->post('tgsSeq', true);
+        
+        if (!empty($refid)) {
+
+            // check training speaker
+            $delVerify1 = $this->mdl->delVerifyTrSP($refid);
+            // check training facilitator
+            $delVerify2 = $this->mdl->delVerifyTrFi($refid);
+            // check training target group
+            $delVerify3 = $this->mdl->delVerifyTrGrp($refid);
+            // check training module setup
+            $delVerify4 = $this->mdl->delVerifyModSet($refid);
+            // check training cpd setup
+            $delVerify5 = $this->mdl->delVerifyCpdSet($refid);
+
+            if(empty($delVerify1) && empty($delVerify2) && empty($delVerify3) && empty($delVerify4) && empty($delVerify5)) {
+                $del = $this->mdl->delTrainingInfo($refid);
+            
+                if ($del > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+                }
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Cannot delete master record when matching detail records exist.', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
     
     // DELETE TRAINING SPEAKER
     public function deleteTrainingSpeaker() {
@@ -1650,7 +1849,7 @@ class Training_application extends MY_Controller
         echo json_encode($json);
     }
 
-    // DELETE TRAINING FACILITATOR
+    // DELETE TRAINING TARGET GROUP
     public function deleteTargetGroup() {
 		$this->isAjax();
 		
@@ -1687,6 +1886,46 @@ class Training_application extends MY_Controller
         
         if (!empty($gpCode) && !empty($tgsSeq)) {
             $del = $this->mdl->delTrainingGpService($gpCode, $tgsSeq);
+        
+            if ($del > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // DELETE TRAINING MODULE SETUP
+    public function deleteModuleSetup() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        
+        if (!empty($refid)) {
+            $del = $this->mdl->delModuleSetup($refid);
+        
+            if ($del > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // DELETE TRAINING CPD SETUP
+    public function deleteCpdSetup() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        
+        if (!empty($refid)) {
+            $del = $this->mdl->delCpdSetup($refid);
         
             if ($del > 0) {
                 $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');

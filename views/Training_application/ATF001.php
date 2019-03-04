@@ -290,7 +290,7 @@
 		}
 	});
 
-	// INSERT training info - submit
+	// save INSERT training info
 	$('#add_edit_tr_info').on('click', '.ins_tr_info', function (e) { 
 		e.preventDefault();
 		var data = $('form').serialize();
@@ -639,6 +639,51 @@
 				}
 			}
 		});
+	});
+
+	// DELETE TRAINING INFO //
+	$('#trainingInfo').on('click','.delete_training_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var tName = td.eq(1).html().trim();
+		//alert(refid);
+		
+		$.confirm({
+		    title: 'Delete Training Info',
+		    content: 'Are you sure to delete this record? <br> <b>'+refid+' - '+tName+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteTrainingInfo')?>',
+						data: {'refid' : refid},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+		
 	});
 
 	// ADD TRAINING SPEAKER //
@@ -1219,7 +1264,7 @@
 	$('#group_module_setup').on('click', '.add_ms_btn', function() {
 		var thisBtn = $(this);
 		var refid = thisBtn.val();
-		alert(refid);
+		//alert(refid);
 
 		$('#myModalis2 #mContent2').empty();
 		$('#myModalis2').modal('show');
@@ -1254,6 +1299,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('#group_module_setup .add_ms_btn').hide();
+						$('#group_module_setup #remMs').show();
 						$('.btn').removeAttr('disabled');
 						$('#tbl_list_ms tbody').append(res.msRow);
 					}, 1500);
@@ -1266,6 +1312,53 @@
 				msg.danger('Please contact administrator.', '#alert');
 			}
 		});	
+	});
+
+	// DELETE MODULE SETUP //
+	$('#group_module_setup').on('click','.delete_ms_btn', function() {
+		var thisBtn = $(this);
+		var refid = thisBtn.val();
+
+		//alert(refid);
+		
+		$.confirm({
+		    title: 'Delete Module Setup Record',
+		    content: 'Are you sure to delete this record? <br> Training Refference ID: <b>'+refid+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteModuleSetup')?>',
+						data: {'refid' : refid},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('#module_setup tr').fadeOut().delay(1000).remove();
+								//$('#tbl_list_ms tbody').fadeOut().delay(1000).detach();
+								$('#group_module_setup #insMs').show();
+								$('#group_module_setup .delete_ms_btn').hide();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+		
 	});
 
 	// UPDATE HEAD DETL 1 //
@@ -1477,6 +1570,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('#cpd_setup .add_cpd_btn').hide();
+						$('#cpd_setup #remCPD').show();
 						$('.btn').removeAttr('disabled');
 						$('#tbl_list_cs tbody').append(res.cpdRow);
 					}, 1500);
@@ -1488,6 +1582,53 @@
 				msg.danger('Please contact administrator.', '#alert');
 			}
 		});	
+	});
+
+	// DELETE CPD SETUP //
+	$('#cpd_setup').on('click','.delete_cpd_btn', function() {
+		var thisBtn = $(this);
+		var refid = thisBtn.val();
+
+		//alert(refid);
+		
+		$.confirm({
+		    title: 'Delete CPD Setup Record',
+		    content: 'Are you sure to delete this record? <br> Training Refference ID: <b>'+refid+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteCpdSetup')?>',
+						data: {'refid' : refid},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('#cpd_setup tr').fadeOut().delay(1000).remove();
+								//$('#tbl_list_ms tbody').fadeOut().delay(1000).detach();
+								$('#cpd_setup #insCPD').show();
+								$('#cpd_setup .delete_cpd_btn').hide();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+		
 	});
 
 	// UPDATE CPD HEAD 1 //
@@ -1549,7 +1690,7 @@
 
 	// UPDATE CPD HEAD 2 //
 	// UPDATE CPD SETUP 2 MODAL
-	$('#cpd_setup').on('click', '.edit_cpd1_btn', function() {
+	$('#cpd_setup').on('click', '.edit_cpd2_btn', function() {
 		var thisBtn = $(this);
 		var refid = thisBtn.val();
 
@@ -1571,9 +1712,9 @@
 	});
 
 	// SAVE UPDATE CPD SETUP 2
-	$('#myModalis2').on('click', '.upd_cpd1', function () {
-		var data = $('#formUpdCpd1').serialize();
-		msg.wait('#alertUpdCpd1');
+	$('#myModalis2').on('click', '.upd_cpd2', function () {
+		var data = $('#formUpdCpd2').serialize();
+		msg.wait('#alertUpdCpd2');
 		
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
@@ -1582,14 +1723,197 @@
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertUpdCpd1');
+				msg.show(res.msg, res.alert, '#alertUpdCpd2');
 				//msg.show(res.msg, res.alert, '#alertFooter');
 
 				if (res.sts == 1) {
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						srow.find('td:eq(1)').html(res.cpd1_row.CH_COMPETENCY);
+						srow.find('td:eq(1)').html(res.cpd2_row);
+					}, 1500);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
+			}
+		});	
+	});
+
+	// UPDATE CPD HEAD 3 //
+	// UPDATE CPD SETUP 3 MODAL
+	$('#cpd_setup').on('click', '.edit_cpd3_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var cpdMark = td.eq(1).html().trim();
+		var refid = thisBtn.val();
+
+		srow = $(this).parents('tr');
+		//alert(cpdMark);
+
+		$('#myModalis2 #mContent2').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editCpdSetup3')?>',
+			data: {'refid' : refid, 'cpdMark' : cpdMark},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE UPDATE CPD SETUP 3
+	$('#myModalis2').on('click', '.upd_cpd3', function () {
+		var data = $('#formUpdCpd3').serialize();
+		msg.wait('#alertUpdCpd3');
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveUpdateCpd3')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertUpdCpd3');
+				//msg.show(res.msg, res.alert, '#alertFooter');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						srow.find('td:eq(1)').html(res.cpd3_row.CH_MARK);
+					}, 1500);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
+			}
+		});	
+	});
+
+	// UPDATE CPD HEAD 4 //
+	// UPDATE CPD SETUP 4 MODAL
+	$('#cpd_setup').on('click', '.edit_cpd4_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var rpSub = td.eq(1).html().trim();
+		var refid = thisBtn.val();
+
+		srow = $(this).parents('tr');
+
+		if(rpSub == 'YES') {
+			rpSub = 'Y';
+		} 
+		else if(rpSub == 'NO') {
+			rpSub = 'N';
+		}
+		alert(rpSub);
+
+		$('#myModalis2 #mContent2').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editCpdSetup4')?>',
+			data: {'refid' : refid, 'rpSub' : rpSub},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE UPDATE CPD SETUP 4
+	$('#myModalis2').on('click', '.upd_cpd4', function () {
+		var data = $('#formUpdCpd4').serialize();
+		msg.wait('#alertUpdCpd4');
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveUpdateCpd4')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertUpdCpd4');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						srow.find('td:eq(1)').html(res.cpd4_row.REP_SUB);
+					}, 1500);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
+			}
+		});	
+	});
+
+	// UPDATE CPD HEAD 5 //
+	// UPDATE CPD SETUP 5 MODAL
+	$('#cpd_setup').on('click', '.edit_cpd5_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var cpdCmpy = td.eq(1).html().trim();
+		var refid = thisBtn.val();
+
+		srow = $(this).parents('tr');
+
+		if(cpdCmpy == 'YES') {
+			cpdCmpy = 'Y';
+		} 
+		else if(cpdCmpy == 'NO') {
+			cpdCmpy = 'N';
+		}
+		//alert(cpdCmpy);
+
+		$('#myModalis2 #mContent2').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editCpdSetup5')?>',
+			data: {'refid' : refid, 'cpdCmpy' : cpdCmpy},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE UPDATE CPD SETUP 5
+	$('#myModalis2').on('click', '.upd_cpd5', function () {
+		var data = $('#formUpdCpd5').serialize();
+		msg.wait('#alertUpdCpd5');
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveUpdateCpd5')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertUpdCpd5');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						srow.find('td:eq(1)').html(res.cpd5_row.CHCOMPULSORY);
 					}, 1500);
 				} else {
 					$('.btn').removeAttr('disabled');

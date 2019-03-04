@@ -16,8 +16,19 @@
 				<button type="button" class="btn btn-primary btn-sm add_cpd_btn" value='.$refid.'><i class="fa fa-plus"></i> Add CPD</button>
 			</div>
 		';	
+	} else {
+		echo '
+			<div class="text-right">
+				<button type="button" class="btn btn-danger btn-sm delete_cpd_btn" value='.$refid.'><i class="fa fa-trash"></i> Delete CPD</button>
+			</div>
+		';	
 	}
 ?>
+
+	<div class="text-right">
+		<button type="button" class="btn btn-primary btn-sm add_cpd_btn" id="insCPD" value="<?php echo $refid ?>" style="display: none;"><i class="fa fa-plus"></i> Add CPD</button>
+		<button type="button" class="btn btn-danger btn-sm delete_cpd_btn" id="remCPD" value="<?php echo $refid ?>" style="display: none;"><i class="fa fa-trash"></i> Delete CPD</button>
+	</div>
 <br>
 <div class="well">
 	<div class="row">

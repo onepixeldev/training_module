@@ -439,8 +439,11 @@ class Training_application_model extends MY_Model
     }
 
     public function getRefID() {
-        $this->db->select("MAX(TO_NUMBER(REGEXP_REPLACE(TH_REF_ID,'\D',''))) + 1 AS TESTREFID");
-        $this->db->from('TRAINING_HEAD');
+        // $this->db->select("MAX(TO_NUMBER(REGEXP_REPLACE(TH_REF_ID,'\D',''))) + 1 AS TESTREFID");
+        // $this->db->from('TRAINING_HEAD');
+
+        $this->db->select("to_char(sysdate,'yyyy')||'-'||ltrim(to_char(training_head_seq.nextval,'000000')) AS REF_ID");
+        $this->db->from("DUAL");
         $q = $this->db->get();
         
         return $q->row();
@@ -659,6 +662,56 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // verify delete training speaker
+    public function delVerifyTrSP($refid) {
+        $this->db->select("1");
+        $this->db->from("TRAINING_SPEAKER T");
+        $this->db->where("T.TS_TRAINING_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // verify delete training facilitator
+    public function delVerifyTrFi($refid) {
+        $this->db->select("1");
+        $this->db->from("TRAINING_FACILITATOR T");
+        $this->db->where("T.TF_TRAINING_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // verify delete training target group
+    public function delVerifyTrGrp($refid) {
+        $this->db->select("1");
+        $this->db->from("TRAINING_TARGET_GROUP T");
+        $this->db->where("T.TTG_TRAINING_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // verify delete training module setup
+    public function delVerifyModSet($refid) {
+        $this->db->select("1");
+        $this->db->from("TRAINING_HEAD_DETL T");
+        $this->db->where("T.THD_REF_ID", $refid);
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // verify delete training cpd setup
+    public function delVerifyCpdSet($refid) {
+        $this->db->select("1");
+        $this->db->from("CPD_HEAD C");
+        $this->db->where("C.CH_TRAINING_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
     /*_____________________
         ADD PROCESS
     _______________________*/
@@ -672,6 +725,7 @@ class Training_application_model extends MY_Model
         $refID = $refid;
 
         $data = array(
+            "TH_REF_ID" => $refID,
             "TH_TYPE" => $form['type'],
             "TH_CATEGORY" => $form['category'],
             "TH_TRAINING_CODE" => $form['structured_training'],
@@ -704,7 +758,7 @@ class Training_application_model extends MY_Model
             "TH_STATUS" => 'ENTRY'
         );
 
-        $this->db->set("TH_REF_ID", $refID, false);
+        //$this->db->set("TH_REF_ID", $refID, false);
         $this->db->set("TH_DEPT_CODE", $staff_dept_code, false);
         $this->db->set("TH_ENTER_DATE", $enter_date, false);
 
@@ -874,63 +928,6 @@ class Training_application_model extends MY_Model
         return $this->db->insert("CPD_HEAD", $data);
     }
 
-    /*public function insertStrTrTargetGroup($strRefID)
-    {
-        $insertDate = 'SYSDATE';
-        $enterBy = $this->staff_id;
-        $data['assign'] = $this->mdl->getValueStrTrTargetGroup($strRefID);
-        $groupCode = $data['assign']->TTG_GROUP_CODE;
-
-        $data = array(
-            "TTG_GROUP_CODE" => $groupCode,
-            "TTG_STRUCTURED" => 'Y',
-        );
-
-        $this->db->set("TTG_TRAINING_REFID", $strRefID, false);
-        $this->db->set("TTG_ENTER_DATE", $insertDate, false);
-        $this->db->set("TTG_ENTER_BY", $enterBy, false);
-
-        return $this->db->insert("TRAINING_TARGET_GROUP", $data);
-    }*/
-
-    /*public function insertStrTrGroupService($refID)
-    {
-
-        $data = array(
-            "TH_TYPE" => $form['type'],
-            "TH_CATEGORY" => $form['category'],
-            "TH_LEVEL" => $form['level'],
-            "TH_FIELD" => $form['area'],
-            "TH_SERVICE_GROUP" => $form['service_group'],
-            "TH_TRAINING_TITLE" => $form['training_title'],
-            "TH_TRAINING_DESC" => $form['training_description'],
-            "TH_TRAINING_VENUE" => $form['venue'],
-            "TH_TRAINING_COUNTRY" => $form['country'],
-            "TH_TRAINING_STATE" => $form['state'],
-            "TH_TOTAL_HOURS" => $form['total_hours'],
-            "TH_INTERNAL_EXTERNAL" => $form['internal_external'],
-            "TH_SPONSOR" => $form['sponsor'],
-            "TH_OFFER" => $form['offer'],
-            "TH_MAX_PARTICIPANT" => $form['participants'],
-            "TH_OPEN" => $form['online_application'],
-            "TH_COMPETENCY_CODE" => $form['competency_code'],
-
-            // organizer info
-            "TH_ORGANIZER_LEVEL" => $form['organizer_level'],
-            "TH_ORGANIZER_NAME" => $form['organizer_name'],
-
-            // completion info
-            "TH_EVALUATION_COMPULSORY" => $form['evaluation_compulsary'],
-            "TH_ATTENDANCE_TYPE" => $form['attendance_type'],
-            "TH_PRINT_CERTIFICATE" => $form['print_certificate'],
-
-            "TH_ENTER_BY" => $umg,
-            "TH_STATUS" => 'ENTRY'
-        );
-
-        return $this->db->insert("TRAINING_GROUP_SERVICE", $data);
-    }*/
-
     /*_____________________
         UPDATE PROCESS
     _______________________*/
@@ -1030,36 +1027,6 @@ class Training_application_model extends MY_Model
         return $this->db->update("TRAINING_HEAD", $data);
     }
 
-    /*public function updateTrainingTargetGroup($refid, $trCode, $gpCode)
-    {
-        $insertDate = 'SYSDATE';
-        $enterBy = $this->staff_id;
-
-        $data = array(
-            "TTG_TRAINING_REFID" => $refid,
-            "TTG_GROUP_CODE" => $gpCode,
-            "TTG_STRUCTURED" => 'Y',
-            "TTG_ENTER_BY" => $enterBy,
-        );
-
-        $this->db->set("TTG_ENTER_DATE", $insertDate, false);
-
-        $this->db->where();
-
-        return $this->db->update("TRAINING_TARGET_GROUP", $data);
-    }
-
-    public function updateTrainingGroupService($gpCode, $tgsSeq, $tgsSvcCode)
-    {
-        $data = array(
-            "TGS_GRPSERV_CODE" => $gpCode,
-            "TGS_SEQ" => $tgsSeq,
-            "TGS_SERVICE_CODE" => $tgsSvcCode
-        );
-
-        return $this->db->insert("TRAINING_GROUP_SERVICE", $data);
-    }*/
-
     public function updateCPDHead($refid, $competency)
     {
         $data = array(
@@ -1144,9 +1111,58 @@ class Training_application_model extends MY_Model
         return $this->db->update("CPD_HEAD", $data);
     }
 
+    public function updateCpd2($form, $refid)
+    {
+        $data = array(
+            "CH_CATEGORY" => $form['category']
+        );
+
+        $this->db->where("CH_TRAINING_REFID", $refid);
+
+        return $this->db->update("CPD_HEAD", $data);
+    }
+
+    public function updateCpd3($form, $refid)
+    {
+        $data = array(
+            "CH_MARK" => $form['mark']
+        );
+
+        $this->db->where("CH_TRAINING_REFID", $refid);
+
+        return $this->db->update("CPD_HEAD", $data);
+    }
+
+    public function updateCpd4($form, $refid)
+    {
+        $data = array(
+            "CH_REPORT_SUBMISSION" => $form['report_submission']
+        );
+
+        $this->db->where("CH_TRAINING_REFID", $refid);
+
+        return $this->db->update("CPD_HEAD", $data);
+    }
+
+    public function updateCpd5($form, $refid)
+    {
+        $data = array(
+            "CH_COMPULSORY" => $form['compulsory']
+        );
+
+        $this->db->where("CH_TRAINING_REFID", $refid);
+
+        return $this->db->update("CPD_HEAD", $data);
+    }
+
     /*_____________________
         DELETE PROCESS
     _______________________*/
+
+    public function delTrainingInfo($refid) {
+        $this->db->where('TH_REF_ID', $refid);
+        return $this->db->delete('TRAINING_HEAD');
+    }
 
     public function delTrainingSpeaker($refid, $spID) {
         $this->db->where('TS_TRAINING_REFID', $refid);
@@ -1166,100 +1182,19 @@ class Training_application_model extends MY_Model
         return $this->db->delete('TRAINING_TARGET_GROUP');
     }
 
+    public function delModuleSetup($refid) {
+        $this->db->where('THD_REF_ID', $refid);
+        return $this->db->delete('TRAINING_HEAD_DETL');
+    }
+
+    public function delCpdSetup($refid) {
+        $this->db->where('CH_TRAINING_REFID', $refid);
+        return $this->db->delete('CPD_HEAD');
+    }
+
     public function delTrainingGpService($gpCode, $tgsSeq) {
         $this->db->where('TGS_GRPSERV_CODE', $gpCode);
         $this->db->where('TGS_SEQ', $tgsSeq);
         return $this->db->delete('TRAINING_GROUP_SERVICE');
     }
-
-    /*public function updateTrainingHead($form, $refID)
-    {
-        $data = array(
-            "TH_TYPE" => $form['type'],
-            "TH_CATEGORY" => $form['category'],
-            "TH_LEVEL" => $form['level'],
-            "TH_FIELD" => $form['area'],
-            "TH_SERVICE_GROUP" => $form['service_group'],
-            "TH_TRAINING_TITLE" => $form['training_title'],
-            "TH_TRAINING_DESC" => $form['training_description'],
-            "TH_TRAINING_VENUE" => $form['venue'],
-            "TH_TRAINING_COUNTRY" => $form['country'],
-            "TH_TRAINING_STATE" => $form['state'],
-            "TH_TOTAL_HOURS" => $form['total_hours'],
-            "TH_INTERNAL_EXTERNAL" => $form['internal_external'],
-            "TH_SPONSOR" => $form['sponsor'],
-            "TH_OFFER" => $form['offer'],
-            "TH_MAX_PARTICIPANT" => $form['participants'],
-            "TH_OPEN" => $form['online_application'],
-            "TH_COMPETENCY_CODE" => $form['competency_code'],
-
-            // organizer info
-            "TH_ORGANIZER_LEVEL" => $form['organizer_level'],
-            "TH_ORGANIZER_NAME" => $form['organizer_name'],
-
-            // completion info
-            "TH_EVALUATION_COMPULSORY" => $form['evaluation_compulsary'],
-            "TH_ATTENDANCE_TYPE" => $form['attendance_type'],
-            "TH_PRINT_CERTIFICATE" => $form['print_certificate']
-        );
-
-        if(!empty($form['date_from'])){
-            $date_from = "TO_DATE('".$form['date_from']."', 'DD/MM/YYYY')";
-            $this->db->set("TH_DATE_FROM", $date_from, false);
-
-            if(!empty($form['time_from'])){
-                $time_from = "TO_DATE('".$form['date_from']." ".$form['time_from']."', 'DD/MM/YYYY HH12:MI PM')";
-                $this->db->set("TH_TIME_FROM", $time_from, false);
-            }
-
-            if(!empty($form['time_to'])){
-                $time_to = "TO_DATE('".$form['date_from']." ".$form['time_to']."', 'DD/MM/YYYY HH12:MI PM')";
-                $this->db->set("TH_TIME_TO", $time_to, false);
-            }
-        }
-
-        if(!empty($form['date_to'])){
-            $date_to = "TO_DATE('".$form['date_to']."', 'DD/MM/YYYY')";
-            $this->db->set("TH_DATE_TO", $date_to, false);
-        }
-
-        if(!empty($form['closing_date'])){
-            $closing_date = "TO_DATE('".$form['closing_date']."', 'DD/MM/YYYY')";
-            $this->db->set("TH_APPLY_CLOSING_DATE", $closing_date, false);
-        }
-
-        if(!empty($form['evaluation_period_from'])){
-            $evaluation_period_from = "TO_DATE('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
-            $this->db->set("TH_EVALUATION_DATE_FROM", $evaluation_period_from, false);
-        }
-
-        if(!empty($form['evaluation_period_to'])){
-            $evaluation_period_to = "TO_DATE('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
-            $this->db->set("TH_EVALUATION_DATE_TO", $evaluation_period_to, false);
-        }
-
-        if(!empty($form['confirmation_due_date_from'])){
-            $confirmation_due_date_from = "TO_DATE('".$form['confirmation_due_date_from']."', 'DD/MM/YYYY')";
-            $this->db->set("TH_CONFIRM_DATE_FROM", $confirmation_due_date_from, false);
-        }
-
-        if(!empty($form['confirmation_due_date_to'])){
-            $confirmation_due_date_to = "TO_DATE('".$form['confirmation_due_date_to']."', 'DD/MM/YYYY')";
-            $this->db->set("TH_CONFIRM_DATE_TO", $confirmation_due_date_to, false);
-        }
-
-        $this->db->where("TH_REF_ID", $refID);
-
-        return $this->db->update("TRAINING_HEAD", $data);
-    }
-
-    public function updateTrainingHeadStrTr($form)
-    {
-
-        $data = array(
-            "TH_TRAINING_CODE" => $form['code'],
-        );
-
-        return $this->db->update("TRAINING_HEAD", $data);
-    }*/
 }
