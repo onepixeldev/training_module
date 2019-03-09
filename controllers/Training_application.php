@@ -5,6 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Training_application extends MY_Controller
 {
     private $staff_id;
+    private $username;
 
     public function __construct()
     {
@@ -12,6 +13,7 @@ class Training_application extends MY_Controller
         //$this->loadModel('mdl');
         $this->load->model('Training_application_model', 'mdl');
         $this->staff_id = $this->lib->userid();
+        $this->username = $this->lib->username();
     }
 
     // View MAIN Page
@@ -19,8 +21,6 @@ class Training_application extends MY_Controller
     {
         // clear filter
         $this->session->set_userdata('tabID', '');
-        //$this->session->set_userdata('sTraining', '');
-        //$this->session->set_userdata('trSts', '');
 
         $this->redirect($this->class_uri('ATF001'));
     }
@@ -28,6 +28,41 @@ class Training_application extends MY_Controller
     public function ATF001()
     {   
         $this->render();
+    }
+
+    public function ATF002($selDept = null, $selMonth = null, $selYear = null)
+    { 
+        // default value filter
+        if(empty($selDept)) {
+            $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+            $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        } 
+        if(empty($selMonth)) {
+            $data['defMonth'] = '';
+        }  
+        if(empty($selYear)) {
+            $data['cur_year'] = $this->mdl->getCurYear();
+            $data['curYear'] = $data['cur_year']->CUR_YEAR;
+        } 
+        if(!empty($selDept)) {
+            $curUsrDept = $selDept; 
+        } 
+        if(!empty($selMonth)) {
+            $defMonth = $selMonth;
+        }  
+        if(!empty($selYear)) {
+            $curYear = $selYear;
+        } 
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        $this->render($data);
     }
 
     // View Page Filter
@@ -40,7 +75,7 @@ class Training_application extends MY_Controller
     }
 
     /*===========================================================
-       TRAINING SETUP
+       TRAINING APPLICATION [TRAINING SETUP]
     =============================================================*/
     /*_____________________
         GET DETAILS
@@ -246,39 +281,7 @@ class Training_application extends MY_Controller
     public function facilitatorList(){
         $this->isAjax();
         
-        //$trSpeakerCode = $this->input->post('trSpeakerCode', true);
         $tpFacilitator = $this->input->post('tpFacilitator', true);
-
-        // if(!empty($trSpeakerCode)) {
-        //     if($tpSpeaker == 'STAFF') {
-        //         $spList = $this->mdl->getSpeakerList($tpSpeaker, $trSpeakerCode);
-                   
-        //         if (!empty($spList)) {
-        //             $success = 1;
-        //         } else {
-        //             $success = 0;
-        //         }
-                
-        //         $json = array('sts' => $success, 'spList' => $spList);
-        //     } 
-        //     elseif($tpSpeaker == 'EXTERNAL') {
-        //         $spList = $this->mdl->getSpeakerList($tpSpeaker, $trSpeakerCode);
-                   
-        //         if (!empty($spList)) {
-        //             $success = 2;
-        //         } else {
-        //             $success = 0;
-        //         }
-                
-        //         $json = array('sts' => $success, 'spList' => $spList);
-        //     } 
-        //     else {
-        //         $spList = '';
-        //         $success = 0;
-                
-        //         $json = array('sts' => $success, 'spList' => $spList);
-        //     }
-        // }
         
         // get available records
         if(!empty($tpFacilitator)) {
@@ -357,33 +360,6 @@ class Training_application extends MY_Controller
         $this->render($data);
     }
 
-
-    // Populate structured training
-    /*public function structuredTrainingInfo(){
-        $this->isAjax();
-        
-        $strTrCode = $this->input->post('strCode', true);
-        
-        // get available records
-        $structuredTrainingInfo = $this->mdl->getStructuredTraining($strTrCode);
-               
-        if (!empty($structuredTrainingInfo)) {
-            $success = 1;
-        } else {
-            $success = 0;
-        }
-        
-        $json = array('sts' => $success, 'strTrInfo' => $structuredTrainingInfo);
-        
-        echo json_encode($json);
-    }*/
-
-    /*private function trainingInfoRow($thRefID){
-		$data['trInfo'] = $this->mdl->getCityDetail($cityCode);
-		
-		return $this->load->view('training_application/trainingInfoRow', $data, true);	
-    }*/
-
     public function verifyStructuredTrainingSetup()
     {
         $refID = $this->input->post('refID',true);
@@ -401,6 +377,16 @@ class Training_application extends MY_Controller
             
             echo json_encode($json);
         }
+    }
+
+    // SELECT TABLE MODAL STRUCTURED TRAINING
+    public function setupStructuredTraining()
+    {
+
+        $data['str_tr'] = $this->mdl->getStructuredTraining();
+
+
+        $this->renderAjax($data);
     }
 
     /*_____________________
@@ -467,47 +453,47 @@ class Training_application extends MY_Controller
 
         // form / input validation
         $rule = array(
-        // 0
-        'type' => 'required|max_length[100]', 
-        'category' => 'required|max_length[200]',
-        'structured_training' => 'required|max_length[20]',
-        'level' => 'required|max_length[10]', 
-        'area' => 'required|max_length[200]', 
-        'service_group' => 'max_length[10]',
-        'training_title' => 'required|max_length[100]', 
-        'training_description' => 'max_length[500]', 
-        'venue' => 'max_length[100]',
-        'country' => 'max_length[10]', 
-        'state' => 'max_length[10]', 
-        'date_from' => 'required|max_length[11]',
-        'date_to' => 'required|max_length[11]', 
-        'time_from' => 'required|max_length[11]', 
-        'time_to' => 'required|max_length[11]',
-        'total_hours' => 'required|max_length[12]', 
-        'internal_external' => 'required|max_length[20]', 
-        'sponsor' => 'required|max_length[100]',
-        'offer' => 'max_length[1]', 
-        'participants' => 'max_length[11]', 
-        'online_application' => 'max_length[1]',
-        'closing_date' => 'max_length[11]', 
-        'competency_code' => 'max_length[10]', 
-        'evaluation_period_from' => 'required|max_length[30]',
-        'evaluation_period_to' => 'required|max_length[30]', 
+            // 0
+            'type' => 'required|max_length[100]', 
+            'category' => 'required|max_length[200]',
+            'structured_training' => 'max_length[20]',
+            'level' => 'required|max_length[10]', 
+            'area' => 'required|max_length[200]', 
+            'service_group' => 'max_length[10]',
+            'training_title' => 'required|max_length[100]', 
+            'training_description' => 'max_length[500]', 
+            'venue' => 'max_length[100]',
+            'country' => 'max_length[10]', 
+            'state' => 'max_length[10]', 
+            'date_from' => 'required|max_length[11]',
+            'date_to' => 'required|max_length[11]', 
+            'time_from' => 'required|max_length[11]', 
+            'time_to' => 'required|max_length[11]',
+            'total_hours' => 'required|max_length[12]', 
+            'internal_external' => 'required|max_length[20]', 
+            'sponsor' => 'required|max_length[100]',
+            'offer' => 'max_length[1]', 
+            'participants' => 'max_length[11]', 
+            'online_application' => 'max_length[1]',
+            'closing_date' => 'max_length[11]', 
+            'competency_code' => 'max_length[10]', 
+            'evaluation_period_from' => 'required|max_length[30]',
+            'evaluation_period_to' => 'required|max_length[30]', 
 
-        // TRAINING_HEAD_DETL
-        'coordinator' => 'max_length[10]', 
-        'coordinator_sector' => 'max_length[10]',
-        'phone_number' => 'max_length[15]', 
-        'evaluation' => 'max_length[1]', 
-        
-        // confirmation due info
-        'confirmation_due_date_from' => 'required|max_length[11]', 'confirmation_due_date_to' => 'required|max_length[11]',
-        
-        // organizer info
-        'organizer_level' => 'max_length[10]', 'organizer_name' => 'max_length[100]', 
+            // TRAINING_HEAD_DETL
+            'coordinator' => 'max_length[10]', 
+            'coordinator_sector' => 'max_length[10]',
+            'phone_number' => 'max_length[15]', 
+            'evaluation' => 'max_length[1]', 
+            
+            // confirmation due info
+            'confirmation_due_date_from' => 'required|max_length[11]', 'confirmation_due_date_to' => 'required|max_length[11]',
+            
+            // organizer info
+            'organizer_level' => 'max_length[10]', 'organizer_name' => 'max_length[100]', 
 
-        // completion info
-        'evaluation_compulsary' => 'required|max_length[1]', 'attendance_type' => 'required|max_length[20]', 'print_certificate' => 'required|max_length[1]'
+            // completion info
+            'evaluation_compulsary' => 'required|max_length[1]', 'attendance_type' => 'required|max_length[20]', 'print_certificate' => 'required|max_length[1]'
         );
 
         $exclRule = null;
@@ -522,10 +508,30 @@ class Training_application extends MY_Controller
                 $refid = $data['refID']->REF_ID;
                 $insert = $this->mdl->insertTrainingHead($form, $refid);
 
-                if ($insert > 0 && !empty($trCode)) {
+                if($insert > 0){
+                    $insTrHeadMsg = 'TRAINING_HEAD success! ';
+                    $insertTHD = 0; // tr head detl
+                    $insTHD = 0; // tr head detl
 
-                    //$insTrHeadMsg = 'TRAINING_HEAD success! ';
-                    $insTrHeadMsg = $refid;
+                    // INSERT TRAINING HEAD DETAIL
+                    if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD)) {
+                        $insertTHD = $this->mdl->insertTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
+                        $insTHD++;
+                    }
+                    
+                    if($insertTHD == $insTHD) {
+                        $insTHDMsg = 'TRAINING_HEAD_DETL success! ';
+                    } else {
+                        $insTHDMsg = '';
+                    }
+
+                    $stsMsg = nl2br("\n".$insTrHeadMsg."\n".$insTHDMsg);
+                    $json = array('sts' => 1, 'msg' => nl2br("Record has been saved \n".$stsMsg), 'alert' => 'success', 'refid' => $refid, 'trName' => $trName);
+                }
+                elseif ($insert > 0 && !empty($trCode)) {
+
+                    $insTrHeadMsg = 'TRAINING_HEAD success! ';
+                    //$insTrHeadMsg = $refid;
 
                     $data['compt'] = $this->mdl->getStructuredTraining($trCode);
                     $data['resultTTG'] = $this->mdl->getResultTTG($trCode);
@@ -1012,10 +1018,13 @@ class Training_application extends MY_Controller
         $refID = $this->input->post('refID',true);
         $countCode = $this->input->post('countryCode',true);
         $organizerCode = $this->input->post('orgCode',true);
+
+        // ATF002
+        $scCode = $this->input->post('scCode',true);
         
         if(!empty($refID)) {
 
-            $data['trInfo'] = $this->mdl->getTrainingInfoDetail($refID);
+            $data['trInfo'] = $this->mdl->getTrainingInfoDetail($refID, $scCode);
             if(!empty($data['trInfo']->TH_ORGANIZER_NAME)) {
                 $data['trOrg'] = $this->mdl->getOrganizerName($data['trInfo']->TH_ORGANIZER_NAME);
                 if(!empty($data['trOrg'])) {
@@ -1105,47 +1114,47 @@ class Training_application extends MY_Controller
 
         // form / input validation
         $rule = array(
-        // training info
-        'type' => 'required|max_length[100]', 
-        'category' => 'required|max_length[200]',
-        'structured_training' => 'required|max_length[20]',
-        'level' => 'required|max_length[10]', 
-        'area' => 'required|max_length[200]', 
-        'service_group' => 'max_length[10]',
-        'training_title' => 'required|max_length[100]', 
-        'training_description' => 'max_length[500]', 
-        'venue' => 'max_length[100]',
-        'country' => 'max_length[10]', 
-        'state' => 'max_length[10]', 
-        'date_from' => 'required|max_length[11]',
-        'date_to' => 'required|max_length[11]', 
-        'time_from' => 'required|max_length[11]', 
-        'time_to' => 'required|max_length[11]',
-        'total_hours' => 'required|max_length[12]', 
-        'internal_external' => 'required|max_length[20]', 
-        'sponsor' => 'required|max_length[100]',
-        'offer' => 'max_length[1]', 
-        'participants' => 'max_length[11]', 
-        'online_application' => 'max_length[1]',
-        'closing_date' => 'max_length[11]', 
-        'competency_code' => 'max_length[10]', 
-        'evaluation_period_from' => 'required|max_length[30]',
-        'evaluation_period_to' => 'required|max_length[30]', 
+            // training info
+            'type' => 'required|max_length[100]', 
+            'category' => 'required|max_length[200]',
+            'structured_training' => 'max_length[20]',
+            'level' => 'required|max_length[10]', 
+            'area' => 'required|max_length[200]', 
+            'service_group' => 'max_length[10]',
+            'training_title' => 'required|max_length[100]', 
+            'training_description' => 'max_length[500]', 
+            'venue' => 'max_length[100]',
+            'country' => 'max_length[10]', 
+            'state' => 'max_length[10]', 
+            'date_from' => 'required|max_length[11]',
+            'date_to' => 'required|max_length[11]', 
+            'time_from' => 'required|max_length[11]', 
+            'time_to' => 'required|max_length[11]',
+            'total_hours' => 'required|max_length[12]', 
+            'internal_external' => 'required|max_length[20]', 
+            'sponsor' => 'required|max_length[100]',
+            'offer' => 'max_length[1]', 
+            'participants' => 'max_length[11]', 
+            'online_application' => 'max_length[1]',
+            'closing_date' => 'max_length[11]', 
+            'competency_code' => 'max_length[10]', 
+            'evaluation_period_from' => 'required|max_length[30]',
+            'evaluation_period_to' => 'required|max_length[30]', 
 
-        // TRAINING_HEAD_DETL
-        'coordinator' => 'max_length[10]', 
-        'coordinator_sector' => 'max_length[10]',
-        'phone_number' => 'max_length[15]', 
-        'evaluation' => 'max_length[1]', 
-        
-        // confirmation due info
-        'confirmation_due_date_from' => 'required|max_length[11]', 'confirmation_due_date_to' => 'required|max_length[11]',
-        
-        // organizer info
-        'organizer_level' => 'max_length[10]', 'organizer_name' => 'max_length[100]', 
+            // TRAINING_HEAD_DETL
+            'coordinator' => 'max_length[10]', 
+            'coordinator_sector' => 'max_length[10]',
+            'phone_number' => 'max_length[15]', 
+            'evaluation' => 'max_length[1]', 
+            
+            // confirmation due info
+            'confirmation_due_date_from' => 'required|max_length[11]', 'confirmation_due_date_to' => 'required|max_length[11]',
+            
+            // organizer info
+            'organizer_level' => 'max_length[10]', 'organizer_name' => 'max_length[100]', 
 
-        // completion info
-        'evaluation_compulsary' => 'required|max_length[1]', 'attendance_type' => 'required|max_length[20]', 'print_certificate' => 'required|max_length[1]'
+            // completion info
+            'evaluation_compulsary' => 'required|max_length[1]', 'attendance_type' => 'required|max_length[20]', 'print_certificate' => 'required|max_length[1]'
         );
 
         $exclRule = null;
@@ -1157,9 +1166,36 @@ class Training_application extends MY_Controller
 
             if(!empty($refid)){
                 //$refid = $data['refID']->REFID;
-                $insert = $this->mdl->updateTrainingHead($form, $refid);
+                $update = $this->mdl->updateTrainingHead($form, $refid);
 
-                if ($insert > 0 && !empty($trCode)) {
+                if($update > 0){
+                    $data['trInfo'] = $this->mdl->getTrainingInfoDetail($refid);
+                    $trName = $data['trInfo']->TH_TRAINING_TITLE;
+
+                    $updTrHeadMsg = 'TRAINING_HEAD success! ';
+
+                    $insertTHD = 0; // tr head detl
+                    $updTHD = 0; // tr head detl
+
+                    // update training head detail
+                    $updateTHD = $this->mdl->updateTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
+
+                    if($updateTHD > 0) {
+                        $updTHD++;
+                    } else {
+                        $updateTHD = 0;
+                    }
+
+                    if($updateTHD == $updTHD) {
+                        $updTHDMsg = 'TRAINING_HEAD_DETL success! ';
+                    } else {
+                        $updTHDMsg = '';
+                    }
+
+                    $stsMsg = nl2br("\n".$updTrHeadMsg."\n".$updTHDMsg);
+                    $json = array('sts' => 1, 'msg' => nl2br("Record has been saved \n".$stsMsg), 'alert' => 'success', 'refid' => $refid, 'trName' => $trName);
+                }
+                elseif ($update > 0 && !empty($trCode)) {
                     
                     $data['trInfo'] = $this->mdl->getTrainingInfoDetail($refid);
                     $trName = $data['trInfo']->TH_TRAINING_TITLE;
@@ -1171,8 +1207,8 @@ class Training_application extends MY_Controller
                     $data['resultTGS'] = $this->mdl->getResultTGS($trCode);
                     $insCount = 0; // tr grp
                     $insCount2 = 0; // tr grp service
-                    $insertTHD = 0; // tr head detl
-                    $updTHD = 0; // tr head detl
+                    // $insertTHD = 0; // tr head detl
+                    // $updTHD = 0; // tr head detl
 
                     // update CPD head
                     if(!empty($data['compt']->TTH_COMPETENCY)){
@@ -1247,20 +1283,20 @@ class Training_application extends MY_Controller
                         $insTGSMsg = '';
                     }
 
-                    // update training head detail
-                    $updateTHD = $this->mdl->updateTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
+                    // // update training head detail
+                    // $updateTHD = $this->mdl->updateTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
 
-                    if($updateTHD > 0) {
-                        $updTHD++;
-                    } else {
-                        $updateTHD = 0;
-                    }
+                    // if($updateTHD > 0) {
+                    //     $updTHD++;
+                    // } else {
+                    //     $updateTHD = 0;
+                    // }
 
-                    if($updateTHD == $updTHD) {
-                        $updTHDMsg = 'TRAINING_HEAD_DETL success! ';
-                    } else {
-                        $updTHDMsg = '';
-                    }
+                    // if($updateTHD == $updTHD) {
+                    //     $updTHDMsg = 'TRAINING_HEAD_DETL success! ';
+                    // } else {
+                    //     $updTHDMsg = '';
+                    // }
 
 
                     $stsMsg = nl2br("\n".$updTrHeadMsg."\n".$updCpdHeadMsg."\n".$insTTGMsg."\n".$insTGSMsg."\n".$updTHDMsg);
@@ -1799,7 +1835,7 @@ class Training_application extends MY_Controller
                     $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
                 }
             } else {
-                $json = array('sts' => 0, 'msg' => 'Cannot delete master record when matching detail records exist.', 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => 'Cannot delete master record when matching detail records exist. Please make sure to delete records in <b><font color="red">Training Speaker</font></b>, <b><font color="red">Training Facilitator</font></b>, <b><font color="red">Target Group</font></b>, <b><font color="red">Module Setup</font></b>, and <b><font color="red">CPD Setup</font></b> first!', 'alert' => 'danger');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
@@ -1869,7 +1905,7 @@ class Training_application extends MY_Controller
                     $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
                 }
             } else {
-                $json = array('sts' => 0, 'msg' => 'Cannot delete master record when matching detail records exist.', 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => 'Cannot delete master record when matching detail records exist. Please delete <b><font color="red">Position</font></b> first!', 'alert' => 'danger');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
@@ -1939,17 +1975,189 @@ class Training_application extends MY_Controller
     }
 
 
+    /*===========================================================
+       TRAINING APPLICATION [APPROVE TRAINING APPLICATIONS]
+    =============================================================*/
 
-    // select table modal structured training
-    public function setupStructuredTraining()
-    {
+    /*_____________________
+        GET BASIC INFO
+    _______________________*/
 
-        $data['str_tr'] = $this->mdl->getStructuredTraining();
+    // TRAINING LIST
+    public function getTrainingList()
+    {   
+        // selected filter value
+        $selDept = $this->input->post('sDept', true);
+        $selMonth = $this->input->post('sMonth', true);
+        $selYear = $this->input->post('sYear', true);
 
+        // default filter value
+        if(empty($selDept) || empty($selMonth) || empty($selYear)) {
+            $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+            $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+
+            $defMonth = '';
+
+            $data['cur_year'] = $this->mdl->getCurYear();
+            $curYear = $data['cur_year']->CUR_YEAR;
+        } 
+        elseif(!empty($selDept) || !empty($selMonth) || !empty($selYear)) {
+            $curUsrDept = $selDept; 
+            $defMonth = $selMonth;
+            $curYear = $selYear;
+        }
+
+        // get available records
+        $data['tr_list'] = $this->mdl->getTrainingList($curUsrDept, $defMonth, $curYear);
+
+        $this->render($data);
+    }
+
+    // APPLICANT LIST
+    public function getStaffTrainingApplication()
+    {   
+        $refid = $this->input->post('refid', true);
+        $tName = $this->input->post('tName', true);
+
+        //$data2 = array();
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $data['tname'] = $tName;
+            $data['staff_tr_list'] = $this->mdl->getStaffTrainingApplication($refid);
+        } 
 
         $this->renderAjax($data);
     }
 
+    // APPLICANT DETAIL
+    public function detailSTA()
+    {   
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('staffID', true);
+
+        if(!empty($refid) && !empty($staffID)) {
+            $data['refid'] = $refid;
+            $data['staffID'] = $staffID;
+            $data['staff_tr_list'] = $this->mdl->getStaffTrainingApplication($refid, $staffID);
+            $data['eva_tr_info'] = $this->mdl->getEvaluatorInfo($refid, $staffID);
+        } 
+
+        $this->renderAjax($data);
+    }
+
+    /*_____________________
+        UPDATE PROCESS
+    _______________________*/
+
+    // APPROVE APPLICANT
+    public function approveStf()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('staffID', true);
+
+        if (!empty($refid) && !empty($staffID)) {   
+            $data['eva_id'] = $this->mdl->getEvaluatorID($refid, $staffID);
+
+            if(!empty($data['eva_id'])) {
+                $eveluatorID = $data['eva_id']->EVAID;
+            } else {
+                $eveluatorID = '';
+            }
+
+            //$approve = $this->mdl->approveStf($refid, $staffID, $eveluatorID);
+            $approve = '1';
+
+            if($approve > 0) {
+                //$cpd5_row = $this->mdl->getCpdSetup($refid);
+
+                $json = array('sts' => 1, 'msg' => 'Record has been approved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    /*_____________________
+        EMAIL PROCESS
+    _______________________*/
+    
+    // SEND EMAIL APPLICANT
+    public function sendEmailApplicant()
+    {
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('staffID', true);
+
+        if(!empty($refid) && !empty($staffID)) {
+            $data['refid'] = $refid;
+
+            // MEMO FROM 
+            $data['memo_from'] = 'bsm.latihan@upsi.edu.my';
+
+            // GET TRAINING NAME
+            $data['tr_detl'] = $this->mdl->getTrDetl($refid);
+            if(!empty($data['tr_detl'])) {
+                // TRAINING TITLE
+                $trTitle = $data['tr_detl']->TH_TRAINING_TITLE;
+            } else {
+                $trTitle = '';
+            }
+
+            // GET STAFF EMAIL
+            $data['staff_app'] = $this->mdl->getCurUserDept($staffID);
+
+            // GET EVALUATOR STAFF EMAIL DISTINCT
+            $data['staff_eva'] = $this->mdl->getStaffMainDis($refid, $staffID);
+            if(!empty($data['staff_eva'])) {
+                $data['eva_email'] = $data['staff_eva']->SM_EMAIL_ADDR;
+                $data['eva_id'] = $data['staff_eva']->STAFF;
+                $data['eva_name'] = $data['staff_eva']->SM_STAFF_NAME;
+            } else {
+                $data['eva_email'] = '';
+                $data['eva_id'] = '';
+                $data['eva_name'] = '';
+            }
+
+            // GET TRAINING DATE
+            // $data['tr_date'] = $this->mdl->getTrDetl($refid);
+
+            // // GET TRAINING COORDINATOR
+            // $data['tr_coor'] = $this->mdl->getTrCoor($refid);
+
+            // // GET EVALUATOR ID
+            // $data['eva_id'] = $this->mdl->getEvaluatorID($refid, $staffID);
+
+            // // VERIFY TRAINING
+            // $data['verify'] = $this->mdl->getEvaluatorID($refid, $staffID);
+
+            // EMAIL CC
+            $data['email_cc'] = $data['eva_email']. ', ' .$data['memo_from'];
 
 
+            // MEMO TITLE AND CONTENT
+            $data['msg_title'] = '<b>'.'MEMO TAWARAN KURSUS : '. '</b>' .$trTitle.'';
+            $data['msg_content'] = 'Adalah dimaklumkan tuan/puan telah ditawarkan untuk mengikuti kursus seperti butiran berikut : '		
+                                    ||'<br><br>Kursus : '||$trTitle||'</br></br>'
+                                    ||'<br>Tarikh : '||from_date||' hingga '||to_date||'</br>'
+                                    ||'<br>Masa : '||from_time||' hingga '||to_time||'</br>'
+                                    ||'<br>Tempat : '||venue||'</br>'
+                                    ||'<p>2. Sehubungan itu, tuan/puan diminta hadir sepenuh masa ke kursus tersebut.  Kehadiran adalah diwajibkan. '
+                                    ||'Tuan/puan dimohon untuk membuat pengesahan kehadiran di '||'<b>'||'MyUPSI Portal > Human Resource > Training '||'</b>'||'selewat-lewatnya pada '||'<b>'||confirm_date||'</b>.</p>'|| chr(10) || chr(10)
+                                    ||'<p>3. Sekiranya tuan/puan tidak membuat pengesahan ini sehingga tarikh yang dinyatakan, tuan/puan dianggap bersetuju menghadiri '
+                                    ||'kursus tersebut.  Sebarang ketidakhadiran tanpa makluman akan dikenakan denda (RM50.00 sehari untuk kursus dalaman / '
+                                    ||'RM200 sehari untuk kursus luar) seperti yang telah diputuskan oleh Mesyuarat Lembaga Pengarah Universiti kali ke-90, Bil 6/2013 '
+                                    ||'bertarikh 11 Disember 2013.</p>'|| chr(10) || chr(10)
+                                    ||'<p>4. Sebarang pertanyaan berkenaan perkara di atas, sila berhubung dengan urusetia kursus '||COORDINATOR_NAME||' di talian '
+                                    ||COORDINATOR_TEL||'.</p>'|| chr(10) || chr(10)
+                                    ||'<p>Sekian, terima kasih.</p>';
+        }
+
+        $this->renderAjax($data);
+    }
 }

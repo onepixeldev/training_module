@@ -29,61 +29,10 @@
 					</tr>
 					';
 				}
-			} else {
-				echo '<tr><td colspan="8" class="text-center">No record found.</td></tr>';
-			}
+			} 
 		?>
 		</tbody>
 		</table>	
 	</div>
 </div>
 </p>
-
-<script>
-
-	// DELETE page - category setup
-	$('.delete_tac').click(function () {
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var recCode = td.eq(0).html().trim();
-		//alert(recCode);
-		
-		if (recCode) {
-			$('#myModalis .modal-content').empty();
-			$('#myModalis').modal('show');
-			$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-
-			$.ajax({
-				type: 'POST',
-				url: '<?php echo $this->lib->class_url('delTAC')?>',
-				data: {'codeTAC' : recCode},
-				success: function(res) {
-					$('#myModalis .modal-content').hide().html(res).fadeIn();
-				}
-			});
-		}
-	});
-
-	// EDIT page - category setup
-	$('.edit_tac').click(function () {
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var recCode = td.eq(0).html().trim();
-		//alert(recCode);
-		
-		if (recCode) {
-			$('#myModalis .modal-content').empty();
-			$('#myModalis').modal('show');
-			$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-
-			$.ajax({
-				type: 'POST',
-				url: '<?php echo $this->lib->class_url('editTAC')?>',
-				data: {'codeTAC' : recCode},
-				success: function(res) {
-					$('#myModalis .modal-content').hide().html(res).fadeIn();
-				}
-			});
-		}
-	});	
-</script>

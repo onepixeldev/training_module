@@ -15,13 +15,14 @@ class Training_application_model extends MY_Model
     }
     
     /*===========================================================
-       TRAINING SETUP
+       TRAINING APPLICATION [TRAINING SETUP]
     =============================================================*/
 
    /*_____________________
         GET BASIC INFO
     _______________________*/
 
+    // TRAINING HEAD
     public function getTrainingInfo()
     {
         $umg = $this->username;
@@ -38,7 +39,8 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
-    public function getTrainingInfoDetail($refID)
+    // TRAINING HEAD BASED ON REFID
+    public function getTrainingInfoDetail($refID, $scCode = null)
     {
         $umg = $this->username;
 
@@ -92,15 +94,19 @@ class Training_application_model extends MY_Model
         TH_FIELD");
         $this->db->from('TRAINING_HEAD');
         
-        $this->db->where("TH_STATUS = 'ENTRY'");
-        $this->db->where("TH_DEPT_CODE = (SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE UPPER(SM_APPS_USERNAME) = UPPER('$umg'))");
-        $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
+        if(empty($scCode)) {
+            $this->db->where("TH_STATUS = 'ENTRY'");
+            $this->db->where("TH_DEPT_CODE = (SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE UPPER(SM_APPS_USERNAME) = UPPER('$umg'))");
+            $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
+        }
+    
         $this->db->where("TH_REF_ID", $refID);
         $q = $this->db->get();
         
         return $q->row();
     }
 
+    // SPEAKER INFO EXTERNAL
     public function getSpeakerInfoExternal($tsrefID, $spID = null)
     {
         $this->db->select("TRAINING_SPEAKER.ROWID AS SPRD, TS_TRAINING_REFID, TS_SPEAKER_ID, TS_TYPE, TS_CONTACT, ES_SPEAKER_NAME, ES_DEPT");
@@ -121,6 +127,7 @@ class Training_application_model extends MY_Model
         }
     }
 
+    // SPEAKER INFO STAFF
     public function getSpeakerInfoStaff($tsrefID, $spID = null)
     {
         $this->db->select("TS_TYPE, TS_SPEAKER_ID, SM_STAFF_NAME, SM_DEPT_CODE, TS_CONTACT");
@@ -141,6 +148,7 @@ class Training_application_model extends MY_Model
         }
     }
 
+    // FACILITATOR INFO EXTERNAL
     public function getFacilitatorInfoExternal($tsrefID, $fiID = null)
     {
         $this->db->select("TF_TYPE, EF_FACILITATOR_NAME, TF_FACILITATOR_ID");
@@ -161,6 +169,7 @@ class Training_application_model extends MY_Model
         }
     }
 
+    // FACILITATOR INFO STAFF
     public function getFacilitatorInfoStaff($tsrefID, $fiID = null)
     {
         $this->db->select("TF_TYPE, SM_STAFF_NAME, TF_FACILITATOR_ID");
@@ -181,6 +190,7 @@ class Training_application_model extends MY_Model
         }
     }
 
+    // DROPDOWN TYPE LIST
     public function getTypeList()
     {
         $this->db->select("TT_CODE, TT_CODE ||' - '|| TT_DESC AS TT_CODE_DESC");
@@ -190,6 +200,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // SELECT STRUCTURED TRAINING
     public function getStructuredTraining($strTrCode = null)
     {
         $this->db->select("TTH_REF_ID, TTH_REF_ID ||' - '|| TTH_TRAINING_TITLE AS TTH_REF_TITLE, 
@@ -212,6 +223,7 @@ class Training_application_model extends MY_Model
         }
     }
 
+    // DROPDOWN CATEGORY LIST
     public function getCategoryList()
     {
         $this->db->select("TC_CATEGORY");
@@ -223,6 +235,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // DROPDOWN LEVEL LIST
     public function getLevelList()
     {
         $this->db->select("TL_CODE, TL_CODE ||' - '|| TL_DESC AS TL_CODE_DESC");
@@ -233,6 +246,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // DROPDOWN AREA LIST
     public function getAreaList()
     {
         $this->db->select("TF_CODE, TF_CODE ||' - '|| TF_FIELD_DESC AS TF_CODE_DESC");
@@ -244,6 +258,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // DROPDOWN GROUP LIST
     public function getSgroupList()
     {
         //select SG_GROUP_CODE,SG_GROUP_DESC from service_group order by 1
@@ -255,6 +270,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // DROPDOWN COUNTRY LIST
     public function getCountryList() {
         $this->db->select('CM_COUNTRY_CODE, CM_COUNTRY_DESC');
         $this->db->from('COUNTRY_MAIN');
@@ -264,6 +280,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // DEFAULT COUNTRY
     public function getCountryDef() {
         $this->db->select('CM_COUNTRY_CODE, CM_COUNTRY_DESC');
         $this->db->from('COUNTRY_MAIN');
@@ -273,6 +290,7 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
+    // DROPDOWN STATE LIST
     public function getCountryStateList($countCode) {
         $this->db->select('SM_STATE_CODE, SM_STATE_DESC, SM_COUNTRY_CODE');
         $this->db->from('STATE_MAIN');
@@ -283,6 +301,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // DROPDOWN COMPETENCY LEVEL LIST
     public function getCompetencyLevel() {
         $this->db->select("TCL_COMPETENCY_CODE, TCL_COMPETENCY_CODE ||' - '|| TCL_COMPETENCY_DESC AS TCL_COMPETENCY_CODE_DESC, TCL_SERVICE_YEAR_FROM, TCL_SERVICE_YEAR_TO,TCL_ORDERING");
         $this->db->from('TRAINING_COMPETENCY_LEVEL');
@@ -293,6 +312,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // DROPDOWN STAFF LIST
     public function getCoordinator() {
         $this->db->select("SM_STAFF_ID, SM_STAFF_ID ||' - '|| SM_STAFF_NAME AS SM_STAFF_ID_NAME");
         $this->db->from('STAFF_MAIN, STAFF_STATUS');
@@ -305,6 +325,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // DROPDOWN SECTOR LEVEL LIST
     public function getCoordinatorSec() {
         $this->db->select("TSL_CODE, TSL_CODE ||' - '|| TSL_DESC AS TSL_CODE_DESC");
         $this->db->from('TRAINING_SECTOR_LEVEL');
@@ -314,6 +335,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // DROPDOWN ORGANIZER LEVEL LIST
     public function getOrganizerLevel() {
         $this->db->select("TOL_CODE, TOL_CODE ||' - '|| TOL_DESC AS TOL_CODE_DESC");
         $this->db->from('TRAINING_ORGANIZER_LEVEL');
@@ -323,6 +345,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // GET ORGANIZER DETAILS
     public function getOrganizerName($organizerCode = null) {
         $this->db->select("TOH_ORG_CODE, TOH_ORG_DESC, TOH_ORG_CODE ||' - '|| TOH_ORG_DESC AS TOH_ORG_CODE_DESC, TOH_ADDRESS, TOH_POSTCODE, TOH_CITY, SM_STATE_DESC, CM_COUNTRY_DESC");
         $this->db->from('TRAINING_ORGANIZER_HEAD, STATE_MAIN, COUNTRY_MAIN');
@@ -346,6 +369,7 @@ class Training_application_model extends MY_Model
         
     }
 
+    // GET TARGET GROUP LIST
     public function getTargetGroup($tsrefID, $gpCode = null) {
         $this->db->select("TTG_TRAINING_REFID, TTG_GROUP_CODE, TG_GROUP_DESC, TG_SCHEME, TG_GRADE_FROM, 
                             TG_GRADE_TO, TG_SERVICE_YEAR_FROM, TG_SERVICE_YEAR_TO, TG_SERVICE_GROUP,
@@ -386,6 +410,7 @@ class Training_application_model extends MY_Model
         }
     }
 
+    // SELECT TRAINING HEAD DETL
     public function getmoduleSetup($tsrefID) {
         $this->db->select("THD_TRAINING_OBJECTIVE2, THD_TRAINING_CONTENT, THD_MODULE_CATEGORY, THD_MODULE_CATEGORY ||' - '|| TMC_COMPONENT_DESC AS TMCDESC,
         THD_EVALUATION, THD_COORDINATOR, THD_COORDINATOR_TELNO, THD_COORDINATOR_SECTOR");
@@ -397,6 +422,7 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
+    // SELECT CPD HEAD
     public function getCpdSetup($tsrefID) {
         $this->db->select("CH_COMPETENCY, CH_CATEGORY, CH_MARK, 
                            CASE WHEN CH_REPORT_SUBMISSION = 'Y' THEN 'YES' ELSE 'NO' END AS REP_SUB, 
@@ -410,6 +436,7 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
+    // SELECT CPD CATEGORY
     public function getCpdSetupCategory($cCode) {
         $this->db->select("CC_CATEGORY_CODE ||' - '|| CC_CATEGORY_DESC AS CH_CC_CATEGORY_DESC");
         $this->db->from("CPD_CATEGORY");
@@ -419,6 +446,7 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
+    // COUNT TARGET GROUP
     public function getCountTargetGroup($tsrefID) {
         $this->db->select("COUNT(1) AS COUNT_TG");
         $this->db->from("TRAINING_TARGET_GROUP");
@@ -428,6 +456,7 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
+    // TARGET GROUP STRUCTURED TRAINING
     public function getValueStrTrTargetGroup($strRefID) {
         $this->db->select("TTG_GROUP_CODE");
         $this->db->from("TNA_TARGET_GROUP, TNA_GROUP");
@@ -438,6 +467,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // GET REFID
     public function getRefID() {
         // $this->db->select("MAX(TO_NUMBER(REGEXP_REPLACE(TH_REF_ID,'\D',''))) + 1 AS TESTREFID");
         // $this->db->from('TRAINING_HEAD');
@@ -449,6 +479,7 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
+    // GET ALL TNA_TARGET_GROUP BASED ON STRUCTURED TRAINING CODE
     public function getResultTTG($trCode) {
         $this->db->select("TTG_GROUP_CODE");
         $this->db->from("TNA_TARGET_GROUP, TNA_GROUP");
@@ -459,6 +490,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // GET ALL TRAINING GROUP SERVICE BASED ON STRUCTURED TRAINING CODE
     public function getResultTGS($trCode) {
         $this->db->select("TTG_GROUP_CODE, TGS_SEQ, TGS_SERVICE_CODE");
         $this->db->from("TNA_GROUP_SERVICE, TNA_TARGET_GROUP");
@@ -469,6 +501,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // SELECT TRAINING GROUP SERVICE 
     public function checkTGS($gpCode, $tgsSeq) {
         $this->db->select("TGS_GRPSERV_CODE, TGS_SEQ");
         $this->db->from("TRAINING_GROUP_SERVICE");
@@ -479,6 +512,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // SELECT TRAINING HEAD DETAIL
     public function getTrHeadDetl($refID) {
         $this->db->select("*");
         $this->db->from("TRAINING_HEAD_DETL");
@@ -488,7 +522,7 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
-    // get speaker list
+    // GET SPEAKER LIST AND SELECT SPEAKER
     public function getSpeakerList($tpSpeaker, $trSpeakerCode = null) {
         if(empty($trSpeakerCode)) {
             if($tpSpeaker == 'STAFF') {
@@ -530,7 +564,7 @@ class Training_application_model extends MY_Model
         }
     }
 
-    // get facilitator list
+    // GET FACILITATOR LIST AND SELECT FACILITATOR
     public function getFacilitatorList($tpFacilitator, $trSpeakerCode = null) {
 
         if(!empty($tpFacilitator)) {
@@ -552,6 +586,7 @@ class Training_application_model extends MY_Model
         }
     }
 
+    // SELECT TRAINING SPEAKER
     public function checkTrainingSpeaker($refID, $spID) {
         $this->db->select("TS_TRAINING_REFID, TS_SPEAKER_ID, TS_TYPE, TS_CONTACT");
         $this->db->from("TRAINING_SPEAKER");
@@ -562,6 +597,7 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
+    // SELECT TRAINING FACILITATOR
     public function checkTrainingFacilitator($refID, $fiID) {
         $this->db->select("*");
         $this->db->from("TRAINING_FACILITATOR");
@@ -572,6 +608,7 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
+    // SELECT TRAINING NEED ANALYSIS GROUP
     public function getTargetGroupList($groupCode = null) {
 
         if(!empty($groupCode)) {
@@ -616,6 +653,7 @@ class Training_application_model extends MY_Model
         }
     }
 
+    // SELECT TRAINING TARGET GROUP BASED ON REFID & GROUP CODE
     public function getTargetGroupDetail($refid, $gpCode) {
         $this->db->select("*");
         $this->db->from("TRAINING_TARGET_GROUP");
@@ -626,6 +664,7 @@ class Training_application_model extends MY_Model
         return $q->row();
     }
 
+    // SELECT TRAINING TARGET GROUP BASED ON REFID
     public function delTargetGroupVerify($gpCode) {
         $this->db->select("1");
         $this->db->from("TRAINING_GROUP_SERVICE");
@@ -635,6 +674,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // GET SERVICE SCHEME BASED ON GROUP CODE
     public function getListEgPosition($groupCode) {
         $this->db->select("TGS_GRPSERV_CODE, TGS_SEQ, TGS_SERVICE_CODE, SS_SERVICE_DESC");
         $this->db->from("TRAINING_GROUP_SERVICE");
@@ -645,6 +685,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // GET TRAINING MODULE COMPONENT
     public function getCompList() {
         $this->db->select("TMC_COMPONENT_CODE, TMC_COMPONENT_CODE ||' - '|| TMC_COMPONENT_DESC TMC_CODE_DESC");
         $this->db->from("TRAINING_MODULE_COMPONENT");
@@ -654,6 +695,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // GET CPD CATEGORY LIST
     public function getCpdCategoryList() {
         $this->db->select("CC_CATEGORY_CODE, CC_CATEGORY_CODE ||' - '|| CC_CATEGORY_DESC AS CC_CODE_DESC");
         $this->db->from("CPD_CATEGORY");
@@ -662,7 +704,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
-    // verify delete training speaker
+    // VERIFY DELETE TRAINING SPEAKER
     public function delVerifyTrSP($refid) {
         $this->db->select("1");
         $this->db->from("TRAINING_SPEAKER T");
@@ -672,7 +714,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
-    // verify delete training facilitator
+    // VERIFY DELETE TRAINING FACILITATOR
     public function delVerifyTrFi($refid) {
         $this->db->select("1");
         $this->db->from("TRAINING_FACILITATOR T");
@@ -682,7 +724,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
-    // verify delete training target group
+    // VERIFY DELETE TRAINING TARGET GROUP
     public function delVerifyTrGrp($refid) {
         $this->db->select("1");
         $this->db->from("TRAINING_TARGET_GROUP T");
@@ -692,7 +734,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
-    // verify delete training module setup
+    // VERIFY DELETE TRAINING MODULE SETUP
     public function delVerifyModSet($refid) {
         $this->db->select("1");
         $this->db->from("TRAINING_HEAD_DETL T");
@@ -702,7 +744,7 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
-    // verify delete training cpd setup
+    // VERIFY DELETE TRAINING CPD SETUP
     public function delVerifyCpdSet($refid) {
         $this->db->select("1");
         $this->db->from("CPD_HEAD C");
@@ -716,6 +758,7 @@ class Training_application_model extends MY_Model
         ADD PROCESS
     _______________________*/
 
+    // INSERT TRAINING HEAD
     public function insertTrainingHead($form, $refid)
     {
         $umg = $this->staff_id;
@@ -810,6 +853,7 @@ class Training_application_model extends MY_Model
         return $this->db->insert("TRAINING_HEAD", $data);
     }
 
+    // INSERT TRAINING TARGET GROUP
     public function insertTrainingTargetGroup($refid, $gpCode)
     {
         $insertDate = 'SYSDATE';
@@ -827,6 +871,7 @@ class Training_application_model extends MY_Model
         return $this->db->insert("TRAINING_TARGET_GROUP", $data);
     }
 
+    // INSERT TRAINING GROUP SERVICE
     public function insertTrainingGroupService($gpCode, $tgsSeq, $tgsSvcCode)
     {
         $data = array(
@@ -838,6 +883,7 @@ class Training_application_model extends MY_Model
         return $this->db->insert("TRAINING_GROUP_SERVICE", $data);
     }
 
+    // INSERT CPD HEAD FROM INSERT TRAINING INFO
     public function insertCPDHead($refid, $competency)
     {
         $data = array(
@@ -849,6 +895,7 @@ class Training_application_model extends MY_Model
         return $this->db->insert("CPD_HEAD", $data);
     }
 
+    // INSERT TRAINING HEAD DETAIL FROM INSERT TRAINING INFO
     public function insertTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD)
     {
         $data = array(
@@ -861,7 +908,8 @@ class Training_application_model extends MY_Model
 
         return $this->db->insert("TRAINING_HEAD_DETL", $data);
     }
-
+    
+    // INSERT TRAINING SPEAKER
     public function insertTrainingSpeaker($form, $refid)
     {
         $data = array(
@@ -874,6 +922,7 @@ class Training_application_model extends MY_Model
         return $this->db->insert("TRAINING_SPEAKER", $data);
     }
 
+    // INSERT TRAINING FACILITATOR
     public function insertTrainingFacilitator($form, $refid)
     {
         $data = array(
@@ -885,6 +934,7 @@ class Training_application_model extends MY_Model
         return $this->db->insert("TRAINING_FACILITATOR", $data);
     }
 
+    // INSERT TRAINING TARGET GROUP
     public function insertTrainingTG($form, $refid)
     {
         $umg = $this->staff_id;
@@ -902,6 +952,7 @@ class Training_application_model extends MY_Model
         return $this->db->insert("TRAINING_TARGET_GROUP", $data);
     }
 
+    // INSERT TRAINING HEAD DETAIL
     public function insertModuleSetup($form, $refid)
     {
         $data = array(
@@ -914,6 +965,7 @@ class Training_application_model extends MY_Model
         return $this->db->insert("TRAINING_HEAD_DETL", $data);
     }
 
+    // INSERT TRAINING HEAD
     public function insertCpdSetup($form, $refid)
     {
         $data = array(
@@ -931,7 +983,8 @@ class Training_application_model extends MY_Model
     /*_____________________
         UPDATE PROCESS
     _______________________*/
-
+    
+    // UPDATE TRAINING HEAD
     public function updateTrainingHead($form, $refid)
     {
         $umg = $this->staff_id;
@@ -1027,6 +1080,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("TRAINING_HEAD", $data);
     }
 
+    // UPDATE CPD HEAD FROM TRAINING INFO FORM
     public function updateCPDHead($refid, $competency)
     {
         $data = array(
@@ -1040,6 +1094,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("CPD_HEAD", $data);
     }
 
+    // UPDATE TRAINING HEAD DETAIL
     public function updateTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD)
     {
         $data = array(
@@ -1055,6 +1110,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("TRAINING_HEAD_DETL", $data);
     }
 
+    // UPDATE TRAINING SPEAKER
     public function updateTrainingSpeaker($form, $refid, $spID)
     {
         $data = array(
@@ -1067,6 +1123,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("TRAINING_SPEAKER", $data);
     }
 
+    // UPDATE TRAINING HEAD DETAIL 1
     public function updateMs1($form, $refid)
     {
         $data = array(
@@ -1078,6 +1135,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("TRAINING_HEAD_DETL", $data);
     }
 
+    // UPDATE TRAINING HEAD DETAIL 2
     public function updateMs2($form, $refid)
     {
         $data = array(
@@ -1089,6 +1147,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("TRAINING_HEAD_DETL", $data);
     }
 
+    // UPDATE TRAINING HEAD DETAIL 3
     public function updateMs3($form, $refid)
     {
         $data = array(
@@ -1100,6 +1159,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("TRAINING_HEAD_DETL", $data);
     }
 
+    // UPDATE CPD HEAD 1
     public function updateCpd1($form, $refid)
     {
         $data = array(
@@ -1111,6 +1171,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("CPD_HEAD", $data);
     }
 
+    // UPDATE CPD HEAD 2
     public function updateCpd2($form, $refid)
     {
         $data = array(
@@ -1122,6 +1183,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("CPD_HEAD", $data);
     }
 
+    // UPDATE CPD HEAD 3
     public function updateCpd3($form, $refid)
     {
         $data = array(
@@ -1133,6 +1195,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("CPD_HEAD", $data);
     }
 
+    // UPDATE CPD HEAD 4
     public function updateCpd4($form, $refid)
     {
         $data = array(
@@ -1144,6 +1207,7 @@ class Training_application_model extends MY_Model
         return $this->db->update("CPD_HEAD", $data);
     }
 
+    // UPDATE CPD HEAD 5
     public function updateCpd5($form, $refid)
     {
         $data = array(
@@ -1159,42 +1223,304 @@ class Training_application_model extends MY_Model
         DELETE PROCESS
     _______________________*/
 
+    // DELETE TRAINING HEAD
     public function delTrainingInfo($refid) {
         $this->db->where('TH_REF_ID', $refid);
         return $this->db->delete('TRAINING_HEAD');
     }
 
+    // DELETE TRAINING SPEAKER
     public function delTrainingSpeaker($refid, $spID) {
         $this->db->where('TS_TRAINING_REFID', $refid);
         $this->db->where('TS_SPEAKER_ID', $spID);
         return $this->db->delete('TRAINING_SPEAKER');
     }
 
+    // DELETE TRAINING FACILITATOR
     public function delTrainingFacilitator($refid, $fiID) {
         $this->db->where('TF_TRAINING_REFID', $refid);
         $this->db->where('TF_FACILITATOR_ID', $fiID);
         return $this->db->delete('TRAINING_FACILITATOR');
     }
 
+    // DELETE TRAINING TARGET GROUP
     public function delTargetGroup($refid, $gpCode) {
         $this->db->where('TTG_TRAINING_REFID', $refid);
         $this->db->where('TTG_GROUP_CODE', $gpCode);
         return $this->db->delete('TRAINING_TARGET_GROUP');
     }
 
+    // DELETE TRAINING HEAD DETAIL
     public function delModuleSetup($refid) {
         $this->db->where('THD_REF_ID', $refid);
         return $this->db->delete('TRAINING_HEAD_DETL');
     }
 
+    // DELETE CPD HEAD
     public function delCpdSetup($refid) {
         $this->db->where('CH_TRAINING_REFID', $refid);
         return $this->db->delete('CPD_HEAD');
     }
 
+    // DELETE TRAINING GROUP SERVICE
     public function delTrainingGpService($gpCode, $tgsSeq) {
         $this->db->where('TGS_GRPSERV_CODE', $gpCode);
         $this->db->where('TGS_SEQ', $tgsSeq);
         return $this->db->delete('TRAINING_GROUP_SERVICE');
+    }
+
+
+
+    /*===========================================================
+       TRAINING APPLICATION [APPROVE TRAINING APPLICATIONS]
+    =============================================================*/
+
+    /*_____________________
+        GET BASIC INFO
+    _______________________*/
+
+    // GET CURRENT DEFAULT USER DEPARTMENT - STAFF MAIN
+    public function getCurUserDept($staffID = null) {
+
+        $curUsername = $this->username;
+
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, SM_EMAIL_ADDR");
+        $this->db->from("STAFF_MAIN");
+
+
+
+        if(empty($staffID)) {
+            $this->db->where("SM_APPS_USERNAME", $curUsername);
+        } else {
+            $this->db->where("SM_STAFF_ID", $staffID);
+        }
+        
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET CURRENT DEFAULT YEAR
+    public function getCurYear() {
+        $this->db->select("TO_CHAR(SYSDATE, 'YYYY') AS CUR_YEAR");
+        $this->db->from("DUAL");
+        
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET TRAINING HEAD BASED ON FILTER
+    public function getTrainingList($curUsrDept, $defMonth, $curYear)
+    {
+        $this->db->select('*');
+        $this->db->from('TRAINING_HEAD');
+        $this->db->where("TH_DEPT_CODE = '$curUsrDept' AND NVL(TH_STATUS,'ENTRY') = 'APPROVE'");
+        $this->db->where("((NVL(TO_CHAR(TH_DATE_FROM,'MM/YYYY'),'') = '$defMonth'||'/'||'$curYear'))");
+        $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
+        $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE");
+
+        $q = $this->db->get();
+        return $q->result();
+            
+            $this->db->where("TH_REF_ID", $refid);
+            $this->db->where("NVL(TH_STATUS,'ENTRY') = 'APPROVE'");
+            $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
+
+            $q = $this->db->get();
+            return $q->row();
+    }
+
+    // GET TRAINING TITLE
+    public function getTrDetl($refid)
+    {
+        $this->db->select("TH_REF_ID, 
+                            TH_TRAINING_TITLE,
+                            TO_CHAR(TH_DATE_FROM, 'DD-MM-YYYY') AS TH_DATEFR,
+                            TO_CHAR(TH_DATE_TO, 'DD-MM-YYYY') AS TH_DATETO, 
+                            TO_CHAR(TH_APPLY_CLOSING_DATE, 'DD-MM-YYYY') AS TH_APP_CLOSING_DATE, 
+                            TO_CHAR(TH_TIME_FROM, 'HH:MI AM') AS TIME_FR, 
+                            TO_CHAR(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
+                            TO_CHAR(TH_CONFIRM_DATE_FROM, 'DD-MM-YYYY') AS TH_CON_DATE_FROM,
+                            TO_CHAR(TH_CONFIRM_DATE_TO, 'DD-MM-YYYY') AS TH_CON_DATE_TO");
+        $this->db->from('TRAINING_HEAD');
+        $this->db->where("TH_REF_ID", $refid);
+        $this->db->where("TH_STATUS= 'APPROVE'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET DEPARTMENT LIST
+    public function getDeptList() {
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_DESC, DM_DEPT_CODE ||' - '|| DM_DEPT_DESC AS DEPT_CODE_DESC");
+        $this->db->from('DEPARTMENT_MAIN');
+		$this->db->where('NVL(DM_STATUS,\'INACTIVE\')', 'ACTIVE');
+		$this->db->where('DM_LEVEL <= 2');
+        $this->db->order_by('DM_DEPT_CODE');
+        $q = $this->db->get();
+		        
+        return $q->result();
+    }
+
+    // GET YEAR DROPDOWN
+    public function getYearList() {		
+        $this->db->select("TO_CHAR(CM_DATE, 'YYYY') AS CM_YEAR");
+        $this->db->from("CALENDAR_MAIN");
+		$this->db->where("TO_CHAR(CM_DATE, 'YYYY') >= TO_CHAR(SYSDATE, 'YYYY') - 10");
+        $this->db->group_by("TO_CHAR(CM_DATE, 'YYYY')");
+        $this->db->order_by("TO_CHAR(CM_DATE, 'YYYY') DESC");
+        $q = $this->db->get();
+		        
+        return $q->result();
+    } 
+
+    // GET MONTH DROPDOWN
+    public function getMonthList() {		
+        $this->db->select("TO_CHAR(CM_DATE, 'MM') AS CM_MM, TO_CHAR(CM_DATE, 'MONTH') AS CM_MONTH");
+        $this->db->from("CALENDAR_MAIN");
+        $this->db->group_by("TO_CHAR(CM_DATE,'MM'), TO_CHAR(CM_DATE, 'MONTH')");
+        $this->db->order_by("TO_CHAR(CM_DATE, 'MM')");
+        $q = $this->db->get();
+		        
+        return $q->result();
+    } 
+
+    // GET STAFF LIST BASED FROM TRAINING
+    public function getStaffTrainingApplication($refid, $staffID = null)
+    {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, 
+                           SJS_STATUS_DESC, STH_STATUS, SM_EMAIL_ADDR, 
+                           TO_CHAR(STH_APPLY_DATE) AS STHAPPDATE,
+                           STH_DEPT_TRAINING_BENEFIT");
+        $this->db->from('STAFF_TRAINING_HEAD');
+        $this->db->join("STAFF_MAIN", "STH_STAFF_ID = SM_STAFF_ID");
+        $this->db->join("STAFF_SERVICE", "STH_STAFF_ID = SS_STAFF_ID");
+        $this->db->join("STAFF_JOB_STATUS", "SS_JOB_STATUS = SJS_STATUS_CODE");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_STATUS = 'RECOMMEND'");
+
+        if(!empty($staffID)) {
+            $this->db->where("SM_STAFF_ID", $staffID);
+
+            $q = $this->db->get();
+            return $q->row();
+        } else {
+            $this->db->order_by("SM_STAFF_NAME");
+
+            $q = $this->db->get();
+            return $q->result();
+        }   
+    }
+
+    // GET EVALUATOR INFO
+    public function getEvaluatorInfo($refid, $staffID)
+    {
+        $query = "SELECT SM_STAFF_ID||' - '||SM_STAFF_NAME||' ('||SM_EMAIL_ADDR||')' AS STAFF
+        FROM STAFF_TRAINING_HEAD, STAFF_MAIN
+        WHERE STH_TRAINING_REFID = '$refid'
+        AND STH_STATUS = 'RECOMMEND'
+        AND NVL(STH_VERIFY_BY,STH_RECOMMEND_BY) = SM_STAFF_ID
+        AND STH_STAFF_ID = '$staffID'
+        UNION
+        SELECT SM_STAFF_ID||' - '||SM_STAFF_NAME||' ('||SM_EMAIL_ADDR||')' AS STAFF
+        FROM LEAVE_STAFF_HIERARCHY,STAFF_MAIN,STAFF_TRAINING_HEAD
+        WHERE LEAVE_STAFF_HIERARCHY.LSH_STAFF_ID = STH_STAFF_ID
+        AND STH_TRAINING_REFID = '$refid'
+        AND STH_STATUS = 'RECOMMEND'
+        AND STH_VERIFY_BY IS NULL 
+        AND STH_RECOMMEND_BY IS NULL
+        AND NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY,LSH_APPROVE_BY) = SM_STAFF_ID
+        AND STH_STAFF_ID = '$staffID'";
+
+        $q = $this->db->query($query);
+        return $q->row();
+    }
+
+    // GET EVALUATOR ID
+    public function getEvaluatorID($refid, $staffID)
+    {
+        $query = "SELECT NVL(STH_VERIFY_BY, NVL(STH_RECOMMEND_BY, NVL(LSH_RECOMMEND_BY, LSH_APPROVE_BY))) AS EVAID
+        FROM STAFF_TRAINING_HEAD,LEAVE_STAFF_HIERARCHY,TRAINING_HEAD_DETL
+        WHERE STH_STAFF_ID = '$staffID'
+        AND STH_TRAINING_REFID = '$refid'
+        AND NVL(THD_EVALUATION,'N') = 'Y' 
+        AND THD_REF_ID = STH_TRAINING_REFID
+        AND LSH_STAFF_ID = STH_STAFF_ID";
+
+        $q = $this->db->query($query);
+        return $q->row();
+    }
+
+    // GET STAFF EMAIL DISTINCT
+    public function getStaffMainDis($refid, $staffID)
+    {
+        $query = "SELECT DISTINCT SM_EMAIL_ADDR, NVL(STH_VERIFY_BY,STH_RECOMMEND_BY) STAFF, SM_STAFF_NAME
+        FROM STAFF_TRAINING_HEAD, STAFF_MAIN
+        WHERE STH_TRAINING_REFID = '$refid'
+        AND STH_STATUS = 'RECOMMEND'
+        AND NVL(STH_VERIFY_BY, STH_RECOMMEND_BY) = SM_STAFF_ID
+        AND STH_STAFF_ID = '$staffID'
+        UNION
+        SELECT DISTINCT SM_EMAIL_ADDR, NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY, LSH_APPROVE_BY) STAFF, SM_STAFF_NAME
+        FROM LEAVE_STAFF_HIERARCHY, STAFF_MAIN, STAFF_TRAINING_HEAD
+        WHERE LEAVE_STAFF_HIERARCHY.LSH_STAFF_ID = STH_STAFF_ID
+        AND STH_TRAINING_REFID = '$refid'
+        AND STH_STATUS = 'RECOMMEND'
+        AND STH_VERIFY_BY IS NULL 
+        AND STH_RECOMMEND_BY IS NULL
+        AND NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY, LSH_APPROVE_BY) = SM_STAFF_ID
+        AND STH_STAFF_ID = '$staffID'";
+
+        $q = $this->db->query($query);
+        return $q->row();
+    }
+
+    // GET TRAINING COORDINATOR
+    public function getTrCoor($refid)
+    {
+        $query = "SELECT TM_TITLE_DESC||' '||SM_STAFF_NAME AS STAFF_NAME, THD_COORDINATOR_TELNO
+        FROM TRAINING_HEAD, TRAINING_HEAD_DETL, STAFF_MAIN, TITLE_MAIN
+        WHERE TH_REF_ID = '$refid'
+        AND TH_STATUS = 'APPROVE'
+        AND TH_REF_ID = THD_REF_ID
+        AND THD_COORDINATOR = SM_STAFF_ID
+        AND SM_STAS_TITLE = TM_TITLE_CODE(+)";
+
+        $q = $this->db->query($query);
+        return $q->row();
+    }
+
+    // VERIFY TRAINING
+    public function verifyTraining($refid, $staffID)
+    {
+        $this->db->select("*");
+        $this->db->from('STAFF_TRAINING_DETL');
+        $this->db->where("STD_TRAINING_REFID", $refid);
+        $this->db->where("STD_STAFF_ID = 'APPROVE'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    /*_____________________
+        UPDATE PROCESS
+    _______________________*/
+
+    // UPDATE STAFF TRAINING HEAD - APPROVE APPLICANT
+    public function approveStf($refid, $staffID, $eveluatorID)
+    {
+        $curUsr = $this->staff_id;
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "STH_STATUS" => 'APPROVE',
+            "STH_APPROVE_BY" => $curUsr,
+            "STH_EVALUATOR_ID" => $eveluatorID,
+        );
+
+        $this->db->set("STH_APPROVE_DATE", $curDate, false);
+
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
     }
 }

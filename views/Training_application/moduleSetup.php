@@ -1,23 +1,25 @@
 <p>
-<?php
-if (empty($moduleSetup)) {
-	echo '
-		<div class="text-right">
-			<button type="button" class="btn btn-primary btn-sm add_ms_btn" value='.$refid.'><i class="fa fa-plus"></i> Add Module</button>
-		</div>
-	';
-} else {
-	echo '
-		<div class="text-right">
-			<button type="button" class="btn btn-danger btn-sm delete_ms_btn" value='.$refid.'><i class="fa fa-trash"></i> Delete Module</button>
-		</div>
-	';
-}
-?>
+<div id="msBTN">
+	<?php
+	if (empty($moduleSetup)) {
+		echo '
+			<div class="text-right">
+				<button type="button" class="btn btn-primary btn-sm add_ms_btn" value='.$refid.'><i class="fa fa-plus"></i> Add Module</button>
+			</div>
+		';
+	} else {
+		echo '
+			<div class="text-right">
+				<button type="button" class="btn btn-danger btn-sm delete_ms_btn" value='.$refid.' id="del_ms_btn"><i class="fa fa-trash"></i> Delete Module</button>
+			</div>
+		';
+	}
+	?>
 	<div class="text-right">
 		<button type="button" class="btn btn-primary btn-sm add_ms_btn" id="insMs" value="<?php echo $refid ?>" style="display: none;"><i class="fa fa-plus"></i> Add Module</button>
 		<button type="button" class="btn btn-danger btn-sm delete_ms_btn" id="remMs" value="<?php echo $refid ?>" style="display: none;"><i class="fa fa-trash"></i> Delete Module</button>
 	</div>
+</div>
 <br>
 <div class="well">
 	<div class="row">
@@ -50,6 +52,9 @@ if (empty($moduleSetup)) {
 					</td>
 				</tr>
 				';
+			}
+			if (empty($moduleSetup)) {
+				echo '<tr id="trNrecord"><td colspan="8" class="text-center">No record found.</td></tr>';
 			}
 		?>
 		</tbody>

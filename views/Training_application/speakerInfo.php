@@ -54,6 +54,9 @@
 				';
 			}
 		} 
+		if(empty($speakerInfoExternal) && empty($speakerInfoStaff)){
+			echo '<tr id="trNrecord"><td colspan="8" class="text-center">No record found.</td></tr>';
+		} 
 	?>
 	</tbody>
 	</table>	

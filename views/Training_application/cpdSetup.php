@@ -9,6 +9,7 @@
 	</div> 
 </div>
 <p>
+<div id="cpdBTN">
 <?php 
 	if (empty($cpdSetup)) {
 		echo '
@@ -29,6 +30,7 @@
 		<button type="button" class="btn btn-primary btn-sm add_cpd_btn" id="insCPD" value="<?php echo $refid ?>" style="display: none;"><i class="fa fa-plus"></i> Add CPD</button>
 		<button type="button" class="btn btn-danger btn-sm delete_cpd_btn" id="remCPD" value="<?php echo $refid ?>" style="display: none;"><i class="fa fa-trash"></i> Delete CPD</button>
 	</div>
+</div>
 <br>
 <div class="well">
 	<div class="row">
@@ -77,6 +79,9 @@
 					</td>
 				</tr>
 				';
+			}
+			if (empty($cpdSetup)) {
+				echo '<tr id="trNrecord"><td colspan="8" class="text-center">No record found.</td></tr>';
 			}
 		?>
 		</tbody>

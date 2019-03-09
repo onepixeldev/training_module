@@ -59,6 +59,9 @@
 					';
 				}
 			}
+			if (empty($targetGroup)) {
+				echo '<tr id="trNrecord"><td colspan="12" class="text-center">No record found.</td></tr>';
+			}
 		?>
 		</tbody>
 		</table>	

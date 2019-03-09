@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Training Setup') ?>
+<?php echo $this->lib->title('Training Application') ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">
@@ -118,7 +118,7 @@
 <!-- end ADD / EDIT / DELETE -->
 
 <script>
-	var dt_row = '';		// assign new object for DataTable
+	var dt_row = '';	// assign new object for DataTable
 	var dt_row2 = '';
 	
 	$(document).ready(function(){
@@ -126,7 +126,7 @@
 		<?php
         $currtab = $this->session->tabID;
     
-            if (!empty($currtab)) {
+		if (!empty($currtab)) {
 			if ($currtab == 's2'){
 				echo "$('.nav-tabs li:eq(1) a').tab('show');";
 			} elseif ($currtab == 's3'){
@@ -139,8 +139,6 @@
 			}
 		}
         ?>
-
-
 	});
 
 	$(".nav-tabs a").click(function(){
@@ -190,6 +188,9 @@
 				$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').hide()
 				$('.nav-tabs li:eq(1) a').tab('show');
 				$('#add_edit_tr_info').html(res);
+				$('#group_module_setup').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select training from Training Info</th></tr></thead></table></p>')
+				$('#cpd_setup').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select training from Training Info</th></tr></thead></table></p>')
+
 			}
 		});
 	});
@@ -255,11 +256,6 @@
 		$('#myModalis .modal-content').empty();
 		$('#myModalis').modal('show');
 		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-
-
-		// $('#myModalis').empty();
-		// $('#myModalis').modal('show');
-		// $('#myModalis').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
 		$.ajax({
 			type: 'POST',
@@ -268,6 +264,7 @@
 			//dataType: 'json',
 			success: function(res) {
 				$('#myModalis .modal-content').html(res);
+				$('#strTraining').val('');
 				dt_row = $('#tbl_list_str_tr').DataTable({
 					"ordering":false,
 					"lengthMenu": [[5, 10], [5, 10]]
@@ -606,7 +603,6 @@
 			dataType: 'JSON',
 			success: function(res) {
 				if(res.sts==1){
-					//dt_appl_row.row( thisBtn.parents('tr') ).remove().draw();
 					$('#myModalis').hide()
 					$.alert({
 						title: 'Alert!',
@@ -618,10 +614,6 @@
 					$('#myModalis .modal-content').empty();
 					$('#myModalis').modal('show');
 					$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-
-					// $('#myModalis').empty();
-					// $('#myModalis').modal('show');
-					// $('#myModalis').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 				
 					$.ajax({
 						type: 'POST',
@@ -630,6 +622,7 @@
 						//dataType: 'json',
 						success: function(res) {
 							$('#myModalis .modal-content').html(res);
+							$('#strTraining').val('');
 							dt_row = $('#tbl_list_str_tr').DataTable({
 								"ordering":false,
 								"lengthMenu": [[5, 10], [5, 10]]
@@ -796,6 +789,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
+						$('#tbl_list_si tbody #trNrecord').remove();
 						$('#tbl_list_si tbody').append(res.sp_row);
 					}, 1500);
 				} else {
@@ -976,7 +970,7 @@
 		});
 	});
 
-	// SAVE TRAINING SPEAKER
+	// SAVE TRAINING FACILITATOR
 	$('#myModalis2').on('click', '.ins_fi_info', function () {
 		var data = $('#formTrainingFacilitator').serialize();
 		msg.wait('#alertInsTrFi');
@@ -997,6 +991,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
+						$('#tbl_list_fi tbody #trNrecord').remove();
 						$('#tbl_list_fi tbody').append(res.fi_row);
 					}, 1500);
 				} else {
@@ -1098,6 +1093,7 @@
 					setTimeout(function () {
 						$('#myModalis').modal('hide');
 						$('.btn').removeAttr('disabled');
+						$('#tbl_list_tg tbody #trNrecord').remove();
 						$('#tbl_list_tg tbody').append(res.tg_row);
 					}, 1500);
 				} else {
@@ -1301,6 +1297,7 @@
 						$('#group_module_setup .add_ms_btn').hide();
 						$('#group_module_setup #remMs').show();
 						$('.btn').removeAttr('disabled');
+						$('#tbl_list_ms tbody #trNrecord').remove();
 						$('#tbl_list_ms tbody').append(res.msRow);
 					}, 1500);
 				} else {
@@ -1572,6 +1569,7 @@
 						$('#cpd_setup .add_cpd_btn').hide();
 						$('#cpd_setup #remCPD').show();
 						$('.btn').removeAttr('disabled');
+						$('#tbl_list_cs tbody #trNrecord').remove();
 						$('#tbl_list_cs tbody').append(res.cpdRow);
 					}, 1500);
 				} else {

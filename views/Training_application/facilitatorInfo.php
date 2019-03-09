@@ -47,9 +47,9 @@
 				';
 			}
 		} 
-		/*if (empty($facilitatorInfoExternal) && empty($facilitatorInfoStaff)) {
-			echo '<tr><td colspan="8" class="text-center">No record found.</td></tr>';
-		}*/
+		if (empty($facilitatorInfoExternal) && empty($facilitatorInfoStaff)) {
+			echo '<tr id="trNrecord"><td colspan="8" class="text-center">No record found.</td></tr>';
+		}
 	?>
 	</tbody>
 	</table>
