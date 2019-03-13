@@ -1,4 +1,4 @@
-<form id="SendMemo" class="form-horizontal" method="post">
+<form id="sendMemo" class="form-horizontal" method="post">
     <div class="modal-header btn-danger">
         <h4 class="modal-title txt-color-white" id="myModalLabel">Send Email</h4>
     </div>
@@ -11,7 +11,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">From</label>
             <div class="col-md-9">
-                <input name="form[from]" placeholder="From" class="form-control" type="text" readonly>
+                <input name="form[from]" placeholder="From" class="form-control" value="<?php echo $memo_from?>" type="text" readonly>
             </div>
         </div>
 
@@ -60,7 +60,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Title</label>
             <div class="col-md-9">
-                <input name="form[title]" placeholder="Title" class="form-control" type="text" value="<?php echo $msg_title?>">
+                <input name="form[title]" placeholder="Title" class="form-control" type="text" value="<?php echo $msg_title?>" id="trTitle">
             </div>
         </div>
 

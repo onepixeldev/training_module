@@ -78,7 +78,7 @@
                                     <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Training List</a>
                                 </li>
                                 <li class="">
-                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Staff Training Applications</a>
+                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Assign Training To Staff</a>
                                 </li>
 								<li class="">
                                     <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Training Detail</a>
@@ -101,7 +101,7 @@
                                 </div>
 
                                 <div class="tab-pane fade" id="s2">
-									<div id="staff_training_application">
+									<div id="assign_training">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
@@ -272,16 +272,16 @@
 
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('getStaffTrainingApplication')?>',
+			url: '<?php echo $this->lib->class_url('getAssignStaff')?>',
 			data: {'refid' : trRefID, 'tName' : trainingN},
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
-				$('#staff_training_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+				$('#assign_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 			},
 			success: function(res) {
-				$('#staff_training_application').html(res);
+				$('#assign_training').html(res);
 				
-				tr_row = $('#tbl_list_sta').DataTable({
+				tr_row = $('#tbl_list_sass').DataTable({
 					"ordering":false,
 				});
 
@@ -380,128 +380,194 @@
 		});
 	});	
 
-	// APPLICANT DETAIl BTN
-	$('#staff_training_application').on('click', '.sta_detl_btn', function() {
+	// ASSIGN NEW STAFF
+	$('#assign_training').on('click', '.assign_stf_btn', function() {
 		var thisBtn = $(this);
 		var refid = thisBtn.val();
-		var td = thisBtn.parent().siblings();
-		var staffID = td.eq(0).html().trim();
 		
-		//alert(staffID+' '+refid);
+		//alert(refid);
 
-		$('#myModalis2 #mContent2').empty();
-		$('#myModalis2').modal('show');
-		$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('detailSTA')?>',
-			data: {'refid' : refid, 'staffID' : staffID},
+			url: '<?php echo $this->lib->class_url('assignStaff')?>',
+			data: {'refid' : refid},
 			success: function(res) {
-				$('#myModalis2 .modal-content').html(res);
+				$('#myModalis .modal-content').html(res);
 			}
 		});
 	});
 
-	// APPROVE & SEND MEMO BTN
-	$('#staff_training_application').on('click', '.sta_appsm_btn', function() {
-		var thisBtn = $(this);
-		var refid = thisBtn.val();
-		var td = thisBtn.parent().siblings();
-		var staffID = td.eq(0).html().trim();
-		var staffN = td.eq(1).html().trim();
-		var remark = thisBtn.parents('tr').find('[name="remark"]').val();
-		
-		//alert(remark+' '+refid);
+	// FILTER STAFF DROPDOWN
+	$('#myModalis').on('change', '#deptList',function() {
+		var refid = $('#myModalis #refid').val();
+		var deptCode = $('#deptList').val();
+		//alert(refid);
 
-		$.confirm({
-		    title: 'Approve Applicant',
-		    content: 'Press <b>YES</b> to continue <br> Applicant: <b>'+staffID+' - '+staffN+'</b>',
-			type: 'blue',
-		    buttons: {
-		        yes: function () {
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('sendEmailApplicant')?>',
-						data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-						dataType: 'JSON',
-						success: function(res) {
-							if (res.sts==1) {
-								$.alert({
-									title: 'Success!',
-									content: res.msg,
-									type: 'green',
-								});
-	
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('approveStf')?>',
-									data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-									dataType: 'JSON',
-									success: function(res) {
-										if (res.sts==1) {
-											thisBtn.parents('tr').fadeOut().delay(1000).remove();
-											$.alert({
-												title: 'Success!',
-												content: res.msg,
-												type: 'green',
-											});
-										} else {
-											$.alert({
-												title: 'Alert!',
-												content: res.msg,
-												type: 'red',
-											});
-										}
-									}
-								});
-							} else {
-								$.alert({
-									title: 'Alert!',
-									content: res.msg,
-									type: 'red',
-								});
-							}
-						}
-					});			
-		        },
-		        cancel: function () {
-		            $.alert('Training Application (approval & send memo) has been cancelled!');
-		        }
-		    }
+		$('#myModalis #faspinner').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('getStaffList')?>',
+			data: {'deptCode' : deptCode, 'refid' : refid},
+			dataType: 'JSON',
+			success: function(res) {
+				$('#myModalis #faspinner').html('');
+				var resList = '<option value="" selected > ---Please select--- </option>';
+				
+				if (res.sts == 1) {
+					for (var i in res.staffList) {
+						resList += '<option value="'+res.staffList[i]['SM_STAFF_ID']+'">'+res.staffList[i]['STAFF_ID_NAME']+'</option>';
+					}
+				}
+
+				$("#myModalis #stfList").html(resList);
+			}
 		});
 	});
 
-	// REJECT TRAINING
-	$('#staff_training_application').on('click', '.sta_reject_btn', function() {
-		var thisBtn = $(this);
-		var refid = thisBtn.val();
-		var td = thisBtn.parent().siblings();
-		var staffID = td.eq(0).html().trim();
-		var staffN = td.eq(1).html().trim();
-		var remark = thisBtn.parents('tr').find('[name="remark"]').val();
+	// SAVE ASSIGNED STAFF
+	$('#myModalis').on('click', '.asgn_nstf', function () {
+		var data = $('#assignNwStaff').serialize();
+		msg.wait('#alertAssignNwStaff');
+		//msg.wait('#alertFooter');
+		//alert(data);
 		
-		//alert(remark+' '+refid);
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveAssignedStaff')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertAssignNwStaff');
+				//msg.show(res.msg, res.alert, '#alertFooter');
 
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis').modal('hide');
+						$('.btn').removeAttr('disabled');
+						$('#tbl_list_sass tbody').append(res.stf_assign_row);
+					}, 1500);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				//$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
+			}
+		});	
+	});
+
+	// DROPDOWN LIST STATUS
+	$('#myModalis').on('change', '#trStatus',function() {
+		var trStatus = $('#trStatus').val();
+		//alert(trStatus);
+		
+		if(trStatus == 'APPROVE' || trStatus == 'REJECT' || trStatus == 'CANCEL') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Cannot change status to '+trStatus,
+				type: 'red',
+			});
+			$('#trStatus').val('');
+		}
+	});
+
+	// EDIT ASSIGNED STAFF
+	$('#assign_training').on('click', '.sta_edit_btn',function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = thisBtn.val();
+		var staffId = td.eq(0).html().trim();
+		var staffN = td.eq(1).html().trim();
+		//alert(refid+' '+staffId);
+		
+		srow = $(this).parents('tr');
+		//alert(msComp);
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editAssignedStaff')?>',
+			data: {'refid' : refid, 'staffId' : staffId},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE UPDATE ASSIGNED STAFF
+	$('#myModalis').on('click', '.upd_asgn_stf', function () {
+		var data = $('#updAssignNwStaff').serialize();
+		msg.wait('#alertUpdAssignNwStaff');
+		//msg.wait('#alertFooter');
+		//alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveUpdAssignedStaff')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertUpdAssignNwStaff');
+				//msg.show(res.msg, res.alert, '#alertFooter');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis').modal('hide');
+						$('.btn').removeAttr('disabled');
+						srow.find('td:eq(3)').html(res.upd_stf_row.TPR_DESC);
+						srow.find('td:eq(4)').html(res.upd_stf_row.STH_STATUS);
+						srow.find('td:eq(5)').html(res.upd_stf_row.STH_REMARK);
+					}, 1500);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				//$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
+			}
+		});	
+	});
+
+	// DELETE ASSIGNED STAFF
+	$('#assign_training').on('click', '.sta_del_btn',function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = thisBtn.val();
+		var staffId = td.eq(0).html().trim();
+		var staffN = td.eq(1).html().trim();
+		//alert(refid+' '+staffId);
+		
 		$.confirm({
-		    title: 'Reject Applicant',
-		    content: 'Press <b>YES</b> to continue <br> Applicant: <b>'+staffID+' - '+staffN+'</b>',
+		    title: 'Delete Assigned Staff',
+		    content: 'Are you sure to delete this record? <br> <b>'+staffId+' - '+staffN+'</b>',
 			type: 'red',
 		    buttons: {
 		        yes: function () {
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo $this->lib->class_url('rejectStf')?>',
-						data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
+						url: '<?php echo $this->lib->class_url('deleteAssignedStaff')?>',
+						data: {'refid' : refid, 'staffId' : staffId},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
-								thisBtn.parents('tr').fadeOut().delay(1000).remove();
 								$.alert({
 									title: 'Success!',
 									content: res.msg,
 									type: 'green',
 								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
 							} else {
 								$.alert({
 									title: 'Alert!',
@@ -513,9 +579,150 @@
 					});			
 		        },
 		        cancel: function () {
-		            $.alert('Training Application (reject) cancelled!');
+		            $.alert('Canceled Delete Record!');
 		        }
 		    }
 		});
 	});
+
+	// // APPLICANT DETAIl BTN
+	// $('#staff_training_application').on('click', '.sta_detl_btn', function() {
+	// 	var thisBtn = $(this);
+	// 	var refid = thisBtn.val();
+	// 	var td = thisBtn.parent().siblings();
+	// 	var staffID = td.eq(0).html().trim();
+		
+	// 	//alert(staffID+' '+refid);
+
+	// 	$('#myModalis2 #mContent2').empty();
+	// 	$('#myModalis2').modal('show');
+	// 	$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+	// 	$.ajax({
+	// 		type: 'POST',
+	// 		url: '<?php echo $this->lib->class_url('detailSTA')?>',
+	// 		data: {'refid' : refid, 'staffID' : staffID},
+	// 		success: function(res) {
+	// 			$('#myModalis2 .modal-content').html(res);
+	// 		}
+	// 	});
+	// });
+
+	// // APPROVE & SEND MEMO BTN
+	// $('#staff_training_application').on('click', '.sta_appsm_btn', function() {
+	// 	var thisBtn = $(this);
+	// 	var refid = thisBtn.val();
+	// 	var td = thisBtn.parent().siblings();
+	// 	var staffID = td.eq(0).html().trim();
+	// 	var staffN = td.eq(1).html().trim();
+	// 	var remark = thisBtn.parents('tr').find('[name="remark"]').val();
+		
+	// 	//alert(remark+' '+refid);
+
+	// 	$.confirm({
+	// 	    title: 'Approve Applicant',
+	// 	    content: 'Press <b>YES</b> to continue <br> Applicant: <b>'+staffID+' - '+staffN+'</b>',
+	// 		type: 'blue',
+	// 	    buttons: {
+	// 	        yes: function () {
+	// 				$.ajax({
+	// 					type: 'POST',
+	// 					url: '<?php echo $this->lib->class_url('sendEmailApplicant')?>',
+	// 					data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
+	// 					dataType: 'JSON',
+	// 					success: function(res) {
+	// 						if (res.sts==1) {
+	// 							$.alert({
+	// 								title: 'Success!',
+	// 								content: res.msg,
+	// 								type: 'green',
+	// 							});
+	
+	// 							$.ajax({
+	// 								type: 'POST',
+	// 								url: '<?php echo $this->lib->class_url('approveStf')?>',
+	// 								data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
+	// 								dataType: 'JSON',
+	// 								success: function(res) {
+	// 									if (res.sts==1) {
+	// 										thisBtn.parents('tr').fadeOut().delay(1000).remove();
+	// 										$.alert({
+	// 											title: 'Success!',
+	// 											content: res.msg,
+	// 											type: 'green',
+	// 										});
+	// 									} else {
+	// 										$.alert({
+	// 											title: 'Alert!',
+	// 											content: res.msg,
+	// 											type: 'red',
+	// 										});
+	// 									}
+	// 								}
+	// 							});
+	// 						} else {
+	// 							$.alert({
+	// 								title: 'Alert!',
+	// 								content: res.msg,
+	// 								type: 'red',
+	// 							});
+	// 						}
+	// 					}
+	// 				});			
+	// 	        },
+	// 	        cancel: function () {
+	// 	            $.alert('Training Application (approval & send memo) has been cancelled!');
+	// 	        }
+	// 	    }
+	// 	});
+	// });
+
+	// // REJECT TRAINING APPLICATION
+	// $('#staff_training_application').on('click', '.sta_reject_btn', function() {
+	// 	var thisBtn = $(this);
+	// 	var refid = thisBtn.val();
+	// 	var td = thisBtn.parent().siblings();
+	// 	var staffID = td.eq(0).html().trim();
+	// 	var staffN = td.eq(1).html().trim();
+	// 	var remark = thisBtn.parents('tr').find('[name="remark"]').val();
+		
+	// 	//alert(remark+' '+refid);
+
+	// 	$.confirm({
+	// 	    title: 'Reject Applicant',
+	// 	    content: 'Press <b>YES</b> to continue <br> Applicant: <b>'+staffID+' - '+staffN+'</b>',
+	// 		type: 'red',
+	// 	    buttons: {
+	// 	        yes: function () {
+	// 				$.ajax({
+	// 					type: 'POST',
+	// 					url: '<?php echo $this->lib->class_url('rejectStf')?>',
+	// 					data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
+	// 					dataType: 'JSON',
+	// 					success: function(res) {
+	// 						if (res.sts==1) {
+	// 							thisBtn.parents('tr').fadeOut().delay(1000).remove();
+	// 							$.alert({
+	// 								title: 'Success!',
+	// 								content: res.msg,
+	// 								type: 'green',
+	// 							});
+	// 						} else {
+	// 							$.alert({
+	// 								title: 'Alert!',
+	// 								content: res.msg,
+	// 								type: 'red',
+	// 							});
+	// 						}
+	// 					}
+	// 				});			
+	// 	        },
+	// 	        cancel: function () {
+	// 	            $.alert('Training Application (reject) cancelled!');
+	// 	        }
+	// 	    }
+	// 	});
+	// });
+
+	
 </script>

@@ -1,5 +1,5 @@
 <div class="">
-	<div class="modal-header btn-info">
+	<div class="modal-header btn-success">
         <h4 class="modal-title" id="myModalLabel"><b>Applicant Details</b></h4>
     </div>
     <div class="form-group">
@@ -19,7 +19,7 @@
                 </tr>
                 <tr>
                     <td class="text-left col-md-4"><b>Evaluator Info</b></td>
-                    <td class="text-left"><?php echo $eva_tr_info->STAFF?></td>
+                    <td class="text-left"><?php echo $eva_info?></td>
                 </tr>
                 <tr>
                     <td class="text-left col-md-4"><b>Department</b></td>

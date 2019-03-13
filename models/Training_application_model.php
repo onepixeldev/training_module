@@ -1329,18 +1329,17 @@ class Training_application_model extends MY_Model
             return $q->row();
     }
 
-    // GET TRAINING TITLE
+    // GET TRAINING DETAIL
     public function getTrDetl($refid)
     {
         $this->db->select("TH_REF_ID, 
                             TH_TRAINING_TITLE,
-                            TO_CHAR(TH_DATE_FROM, 'DD-MM-YYYY') AS TH_DATEFR,
-                            TO_CHAR(TH_DATE_TO, 'DD-MM-YYYY') AS TH_DATETO, 
-                            TO_CHAR(TH_APPLY_CLOSING_DATE, 'DD-MM-YYYY') AS TH_APP_CLOSING_DATE, 
+                            TH_TRAINING_VENUE,
+                            TO_CHAR(TH_DATE_FROM, 'DD/MM/YYYY') AS TH_DATEFR,
+                            TO_CHAR(TH_DATE_TO, 'DD/MM/YYYY') AS TH_DATETO,  
                             TO_CHAR(TH_TIME_FROM, 'HH:MI AM') AS TIME_FR, 
                             TO_CHAR(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
-                            TO_CHAR(TH_CONFIRM_DATE_FROM, 'DD-MM-YYYY') AS TH_CON_DATE_FROM,
-                            TO_CHAR(TH_CONFIRM_DATE_TO, 'DD-MM-YYYY') AS TH_CON_DATE_TO");
+                            TO_CHAR(TH_CONFIRM_DATE_TO, 'DD/MM/YYYY') AS TH_CON_DATE_TO");
         $this->db->from('TRAINING_HEAD');
         $this->db->where("TH_REF_ID", $refid);
         $this->db->where("TH_STATUS= 'APPROVE'");
@@ -1495,10 +1494,30 @@ class Training_application_model extends MY_Model
         $this->db->select("*");
         $this->db->from('STAFF_TRAINING_DETL');
         $this->db->where("STD_TRAINING_REFID", $refid);
-        $this->db->where("STD_STAFF_ID = 'APPROVE'");
+        $this->db->where("STD_STAFF_ID", $staffID);
 
         $q = $this->db->get();
         return $q->row();
+    }
+
+    /*_____________________
+        INSERT PROCESS
+    _______________________*/
+
+    // INSERT SENT EMAIL STATUS
+    public function insertEmailSts($refid, $staffID)
+    {
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "STD_TRAINING_REFID" => $refid,
+            "STD_STAFF_ID" => $staffID,
+            "STD_SENDMEMO" => 'Y'
+        );
+
+        $this->db->set("STD_SENDMEMO_DATE", $curDate, false);
+
+        return $this->db->insert("STAFF_TRAINING_DETL", $data);
     }
 
     /*_____________________
@@ -1506,21 +1525,216 @@ class Training_application_model extends MY_Model
     _______________________*/
 
     // UPDATE STAFF TRAINING HEAD - APPROVE APPLICANT
-    public function approveStf($refid, $staffID, $eveluatorID)
+    public function apprOrReApp($refid, $staffID, $eveluatorID, $remark, $sts)
     {
+        if($sts == 1) {
+            $sthSts = 'APPROVE';
+        } elseif($sts == 0) {
+            $sthSts = 'REJECT';
+        } 
+
         $curUsr = $this->staff_id;
         $curDate = 'SYSDATE';
 
         $data = array(
-            "STH_STATUS" => 'APPROVE',
+            "STH_STATUS" => $sthSts,
             "STH_APPROVE_BY" => $curUsr,
             "STH_EVALUATOR_ID" => $eveluatorID,
+            "STH_REMARK" => $remark
         );
 
         $this->db->set("STH_APPROVE_DATE", $curDate, false);
 
         $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_STAFF_ID", $staffID);
 
         return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    // UPDATE SENT EMAIL STATUS
+    public function updateEmailSts($refid, $staffID)
+    {
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "STD_SENDMEMO" => 'Y'
+        );
+
+        $this->db->set("STD_SENDMEMO_DATE", $curDate, false);
+
+        $this->db->where("STD_TRAINING_REFID", $refid);
+        $this->db->where("STD_STAFF_ID", $staffID);
+
+        return $this->db->update("STAFF_TRAINING_DETL", $data);
+    }
+
+
+    /*_____________________
+        SEND EMAIL
+    _______________________*/
+
+    public function sendEmail($memo_from, $staff_app_email, $email_cc, $msg_title, $msg_content) {
+		if (empty($memo_from)) {
+			$memo_from = 'bsm.latihan@upsi.edu.my';
+		}
+		if (empty($email_cc)) {
+			$email_cc = null;
+		}
+		
+		// execute create_memo procedure
+		$sql = 'begin utl_mail.send(
+					sender=>?,
+					recipients=>?,
+					cc=>?,
+					subject=>?,
+					message=>?,
+					mime_type=>\'text/html\'		
+				); end;';
+        $q = $this->db->query($sql, array($memo_from, $staff_app_email, $email_cc, $msg_title, $msg_content));
+
+		if ($q === FALSE) {
+			// return 0 if fail to execute create_memo
+			return 0;
+		}
+		
+		return 1;
+    }
+
+
+    /*===========================================================
+       ASSIGN TRAINING TO STAFF
+    =============================================================*/
+
+    // GET ALL STAFF FROM TRAINING
+    public function getAssignStaff($refid, $staffId = null)
+    {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, STH_PARTICIPANT_ROLE, 
+                            TPR_DESC, STH_STATUS, STH_STAFF_TRAINING_BENEFIT, 
+                            STH_DEPT_TRAINING_BENEFIT, STH_REMARK, SM_STAFF_ID||' - '||SM_STAFF_NAME AS SM_ID_NAME");
+        $this->db->from('STAFF_TRAINING_HEAD');
+        $this->db->join("STAFF_MAIN", "STH_STAFF_ID = SM_STAFF_ID");
+        $this->db->join("TRAINING_PARTICIPANT_ROLE", "TPR_CODE = STH_PARTICIPANT_ROLE", "LEFT");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        if(empty($staffId)) {
+            $this->db->order_by("STH_STAFF_ID, UPPER(GET_STAFF_DEPT(STH_STAFF_ID)), STH_STATUS, UPPER(GET_STAFF_NAME(STH_STAFF_ID))");
+
+            $q = $this->db->get();
+            return $q->result();
+        } 
+        elseif(!empty($staffId)) {
+            $this->db->where("STH_STAFF_ID", $staffId);
+
+            $q = $this->db->get();
+            return $q->row();
+        }
+    } 
+
+    // FILTER STAFF DROPDOWN LIST
+    public function getStaffList($refid, $deptCode)
+    {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID||' - '||SM_STAFF_NAME AS STAFF_ID_NAME");
+        $this->db->from('STAFF_MAIN, STAFF_SERVICE, STAFF_STATUS');
+        $this->db->where("SS_STAFF_ID = SM_STAFF_ID");
+        $this->db->where("SM_STAFF_STATUS = SS_STATUS_CODE");
+        $this->db->where("SS_JOB_STATUS IN ('01','03','08','09','10','02','11')");
+        $this->db->where("SS_STATUS_STS = 'ACTIVE'");
+        $this->db->where("SM_DEPT_CODE", $deptCode);
+        $this->db->where("SM_STAFF_ID NOT IN
+        (SELECT STH_STAFF_ID FROM STAFF_TRAINING_HEAD WHERE STH_TRAINING_REFID = '$refid')");
+        $this->db->order_by("SM_STAFF_NAME");
+
+        $q = $this->db->get();
+        return $q->result();
+    } 
+
+    // GET PARTICIPANT ROLE
+    public function getRoleList()
+    {
+        $this->db->select("*");
+        $this->db->from('TRAINING_PARTICIPANT_ROLE');
+        $this->db->order_by("TPR_CODE");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // GET PARTICIPANT STATUS
+    public function getPstatusList()
+    {
+        $this->db->select("*");
+        $this->db->from('TRAINING_PARTICIPANT_STATUS');
+        $this->db->order_by("TPS_CODE");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // CHECK STAFF IN TRAINING HEAD
+    public function checkStaffTr($refid, $staffId)
+    {
+        $this->db->select("*");
+        $this->db->from('STAFF_TRAINING_HEAD');
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_STAFF_ID", $staffId);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+    
+    /*_____________________
+        INSERT PROCESS
+    _______________________*/
+
+    // INSERT ASSIGNED STAFF
+    public function saveAssignedStaff($form, $refid)
+    {
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "STH_STAFF_ID" => $form['staff_id'],
+            "STH_TRAINING_REFID" => $refid,
+            "STH_PARTICIPANT_ROLE" => $form['role'],
+            "STH_STAFF_TRAINING_BENEFIT" => $form['training_benefit_staff'],
+            "STH_DEPT_TRAINING_BENEFIT" => $form['training_benefit_department'],
+            "STH_STATUS" => $form['status'],
+            "STH_REMARK" => $form['remark'],
+        );
+
+        $this->db->set("STH_APPLY_DATE", $curDate, false);
+
+        return $this->db->insert("STAFF_TRAINING_HEAD", $data);
+    }
+
+    /*_____________________
+        UPDATE PROCESS
+    _______________________*/
+
+    // SAVE UPDATE ASSIGNED STAFF
+    public function saveUpdAssigned($form, $refid, $staffid)
+    {
+        $data = array(
+            "STH_PARTICIPANT_ROLE" => $form['role'],
+            "STH_STAFF_TRAINING_BENEFIT" => $form['training_benefit_staff'],
+            "STH_DEPT_TRAINING_BENEFIT" => $form['training_benefit_department'],
+            "STH_STATUS" => $form['status'],
+            "STH_REMARK" => $form['remark'],
+        );
+
+        $this->db->where('STH_TRAINING_REFID', $refid);
+        $this->db->where('STH_STAFF_ID', $staffid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    /*_____________________
+        DELETE PROCESS
+    _______________________*/
+
+    // DELETE ASSIGNED STAFF
+    public function deleteAssignedStaff($refid, $staffId) {
+        $this->db->where('STH_TRAINING_REFID', $refid);
+        $this->db->where('STH_STAFF_ID', $staffId);
+
+        return $this->db->delete('STAFF_TRAINING_HEAD');
     }
 }
