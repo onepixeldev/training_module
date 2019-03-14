@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Training Application') ?>
+<?php echo $this->lib->title('Query Training') ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">
@@ -27,7 +27,7 @@
                         </div>
                         <!-- end widget edit box -->
                         <div class="widget-body">
-                            
+
 							<div class="row">
 								<div class="col-sm-3">
 									<div class="form-group text-right">
@@ -37,6 +37,24 @@
 								<div class="col-sm-6">
 									<div class="form-group text-left">
 										<?php echo form_dropdown('sDept', $dept_list, $curUsrDept, 'class="form-control listFilter" id="sDept"'); ?>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="text-left">   
+										&nbsp;
+									</div>
+								</div>
+							</div>
+                            
+							<div class="row">
+								<div class="col-sm-3">
+									<div class="form-group text-right">
+										<label><b>Internal/External</b></label>
+									</div>
+								</div>
+								<div class="col-sm-2">
+									<div class="form-group text-left">
+										<?php echo form_dropdown('intExt', $int_ext_list, $def_int_ext, 'class="form-control listFilter" id="intExt"'); ?>
 									</div>
 								</div>
 								<div class="col-sm-3">
@@ -71,6 +89,19 @@
 									</div>
 								</div>
 							</div>
+
+                            <div class="row">
+								<div class="col-sm-3">
+									<div class="form-group text-right">
+										<label><b>Status</b></label>
+									</div>
+								</div>
+								<div class="col-sm-2">
+									<div class="form-group text-left">
+										<?php echo form_dropdown('tSts', $tr_sts_list, $def_tr_sts, 'class="form-control listFilter" id="tSts"'); ?>
+									</div>
+								</div>
+							</div>
                             
 
                             <ul id="myTab1" class="nav nav-tabs bordered">
@@ -78,16 +109,16 @@
                                     <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Training List</a>
                                 </li>
                                 <li class="">
-                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Assign Training To Staff</a>
+                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Training Info</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Training Detail</a>
+                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Training Cost</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Training Target Group & Module Detail</a>
+                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Target Group & Module Detail</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">Training CPD Detail</a>
+                                    <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">CPD Detail</a>
                                 </li>
                             </ul>
 							<!-- myTabContent1 -->
@@ -101,7 +132,7 @@
                                 </div>
 
                                 <div class="tab-pane fade" id="s2">
-									<div id="assign_training">
+									<div id="training_list_detl">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
@@ -115,7 +146,7 @@
                                 </div> 
 
 								<div class="tab-pane fade" id="s3">
-									<div id="training_list_detl">
+									<div id="training_list_det2">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
@@ -129,7 +160,7 @@
                                 </div>
 
 								<div class="tab-pane fade" id="s4">
-									<div id="training_list_detl2">
+									<div id="training_list_detl3">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
@@ -143,7 +174,7 @@
                                 </div>
 
 								<div class="tab-pane fade" id="s5">
-									<div id="training_list_detl3">
+									<div id="training_list_detl4">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
@@ -240,10 +271,12 @@
 
 	// TRAINING LIST FILTER
 	$('.listFilter').change(function() {
+		var intExt = $('#intExt').val();
 		var sDept = $('#sDept').val();
 		var sMonth = $('#sMonth').val();
 		var sYear = $('#sYear').val();
-		//alert(''+sDept+',' +sMonth+',' +sYear+'');
+		var tSts = $('#tSts').val();
+		alert(''+intExt+',' +sDept+',' +sMonth+''+sYear+',' +tSts+'');
 		
 		$('.nav-tabs li:eq(0) a').tab('show');
 		$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -251,10 +284,10 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-			data: {'sDept' : sDept, 'sMonth' : sMonth, 'sYear' : sYear},
+			data: {'intExt' : intExt, 'sDept' : sDept, 'sMonth' : sMonth, 'sYear' : sYear, 'tSts' : tSts},
 			success: function(res) {
 				$('#training_list').html(res);
-				dt_appl_row = $('#tbl_tr_list').DataTable({
+				tr_row = $('#tbl_tr_list').DataTable({
 					"ordering":false
 				});
 			}
@@ -379,211 +412,4 @@
 			}
 		});
 	});	
-
-	// ASSIGN NEW STAFF
-	$('#assign_training').on('click', '.assign_stf_btn', function() {
-		var thisBtn = $(this);
-		var refid = thisBtn.val();
-		
-		//alert(refid);
-
-		$('#myModalis .modal-content').empty();
-		$('#myModalis').modal('show');
-		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('assignStaff')?>',
-			data: {'refid' : refid},
-			success: function(res) {
-				$('#myModalis .modal-content').html(res);
-			}
-		});
-	});
-
-	// FILTER STAFF DROPDOWN
-	$('#myModalis').on('change', '#deptList',function() {
-		var refid = $('#myModalis #refid').val();
-		var deptCode = $('#deptList').val();
-		//alert(refid);
-
-		$('#myModalis #faspinner').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('getStaffList')?>',
-			data: {'deptCode' : deptCode, 'refid' : refid},
-			dataType: 'JSON',
-			success: function(res) {
-				$('#myModalis #faspinner').html('');
-				var resList = '<option value="" selected > ---Please select--- </option>';
-				
-				if (res.sts == 1) {
-					for (var i in res.staffList) {
-						resList += '<option value="'+res.staffList[i]['SM_STAFF_ID']+'">'+res.staffList[i]['STAFF_ID_NAME']+'</option>';
-					}
-				}
-
-				$("#myModalis #stfList").html(resList);
-			}
-		});
-	});
-
-	// SAVE ASSIGNED STAFF
-	$('#myModalis').on('click', '.asgn_nstf', function () {
-		var data = $('#assignNwStaff').serialize();
-		msg.wait('#alertAssignNwStaff');
-		//msg.wait('#alertFooter');
-		//alert(data);
-		
-		$('.btn').attr('disabled', 'disabled');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveAssignedStaff')?>',
-			data: data,
-			dataType: 'JSON',
-			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertAssignNwStaff');
-				//msg.show(res.msg, res.alert, '#alertFooter');
-
-				if (res.sts == 1) {
-					setTimeout(function () {
-						$('#myModalis').modal('hide');
-						$('.btn').removeAttr('disabled');
-						$('#tbl_list_sass tbody').append(res.stf_assign_row);
-					}, 1500);
-				} else {
-					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				//$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
-			}
-		});	
-	});
-
-	// DROPDOWN LIST STATUS
-	$('#myModalis').on('change', '#trStatus',function() {
-		var trStatus = $('#trStatus').val();
-		//alert(trStatus);
-		
-		if(trStatus == 'APPROVE' || trStatus == 'REJECT' || trStatus == 'CANCEL') {
-			$.alert({
-				title: 'Alert!',
-				content: 'Cannot change status to '+trStatus,
-				type: 'red',
-			});
-			$('#trStatus').val('');
-		}
-	});
-
-	// EDIT ASSIGNED STAFF
-	$('#assign_training').on('click', '.sta_edit_btn',function() {
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var refid = thisBtn.val();
-		var staffId = td.eq(0).html().trim();
-		var staffN = td.eq(1).html().trim();
-		//alert(refid+' '+staffId);
-		
-		srow = $(this).parents('tr');
-		//alert(msComp);
-
-		$('#myModalis .modal-content').empty();
-		$('#myModalis').modal('show');
-		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editAssignedStaff')?>',
-			data: {'refid' : refid, 'staffId' : staffId},
-			success: function(res) {
-				$('#myModalis .modal-content').html(res);
-			}
-		});
-	});
-
-	// SAVE UPDATE ASSIGNED STAFF
-	$('#myModalis').on('click', '.upd_asgn_stf', function () {
-		var data = $('#updAssignNwStaff').serialize();
-		msg.wait('#alertUpdAssignNwStaff');
-		//msg.wait('#alertFooter');
-		//alert(data);
-		
-		$('.btn').attr('disabled', 'disabled');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdAssignedStaff')?>',
-			data: data,
-			dataType: 'JSON',
-			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertUpdAssignNwStaff');
-				//msg.show(res.msg, res.alert, '#alertFooter');
-
-				if (res.sts == 1) {
-					setTimeout(function () {
-						$('#myModalis').modal('hide');
-						$('.btn').removeAttr('disabled');
-						srow.find('td:eq(3)').html(res.upd_stf_row.TPR_DESC);
-						srow.find('td:eq(4)').html(res.upd_stf_row.STH_STATUS);
-						srow.find('td:eq(5)').html(res.upd_stf_row.STH_REMARK);
-					}, 1500);
-				} else {
-					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				//$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
-			}
-		});	
-	});
-
-	// DELETE ASSIGNED STAFF
-	$('#assign_training').on('click', '.sta_del_btn',function() {
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var refid = thisBtn.val();
-		var staffId = td.eq(0).html().trim();
-		var staffN = td.eq(1).html().trim();
-		//alert(refid+' '+staffId);
-		
-		$.confirm({
-		    title: 'Delete Assigned Staff',
-		    content: 'Are you sure to delete this record? <br> <b>'+staffId+' - '+staffN+'</b>',
-			type: 'red',
-		    buttons: {
-		        yes: function () {
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('deleteAssignedStaff')?>',
-						data: {'refid' : refid, 'staffId' : staffId},
-						dataType: 'JSON',
-						success: function(res) {
-							if (res.sts==1) {
-								$.alert({
-									title: 'Success!',
-									content: res.msg,
-									type: 'green',
-								});
-								thisBtn.parents('tr').fadeOut().delay(1000).remove();
-							} else {
-								$.alert({
-									title: 'Alert!',
-									content: res.msg,
-									type: 'red',
-								});
-							}
-						}
-					});			
-		        },
-		        cancel: function () {
-		            $.alert('Canceled Delete Record!');
-		        }
-		    }
-		});
-	});
-
-	
 </script>

@@ -25,11 +25,13 @@ class Training_application extends MY_Controller
         $this->redirect($this->class_uri('ATF001'));
     }
 
+    // TRAINING SETUP
     public function ATF001()
     {   
         $this->render();
     }
 
+    // APPROVE TRAINING APPLICATION
     public function ATF002($selDept = null, $selMonth = null, $selYear = null)
     { 
         // default value filter
@@ -65,6 +67,7 @@ class Training_application extends MY_Controller
         $this->render($data);
     }
 
+    // ASSIGN TRAINING
     public function ATF004($selDept = null, $selMonth = null, $selYear = null)
     { 
         // default value filter
@@ -96,6 +99,46 @@ class Training_application extends MY_Controller
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
         $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // QUERY TRAINING
+    public function ATF008($selIntExt = null, $selDept = null, $selMonth = null, $selYear = null, $selSts = null)
+    { 
+        // default value filter
+        $data['def_int_ext'] = '';
+        $data['def_tr_sts'] = '';
+        if(empty($selDept)) {
+            $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+            $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        } 
+        if(empty($selMonth)) {
+            $data['defMonth'] = '';
+        }  
+        if(empty($selYear)) {
+            $data['cur_year'] = $this->mdl->getCurYear();
+            $data['curYear'] = $data['cur_year']->CUR_YEAR;
+        } 
+        if(!empty($selDept)) {
+            $curUsrDept = $selDept; 
+        } 
+        if(!empty($selMonth)) {
+            $defMonth = $selMonth;
+        }  
+        if(!empty($selYear)) {
+            $curYear = $selYear;
+        } 
+
+        $data['int_ext_list'] = array(''=>'--- Please Select ---', 'INTERNAL'=>'INTERNAL', 'EXTERNAL'=>'EXTERNAL', 'EXTERNAL_AGENCY'=>'EXTERNAL AGENCY');
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' --- Please select --- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' --- Please select --- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' --- Please select --- ');
+        //get training status list
+        $data['tr_sts_list'] = $this->dropdown($this->mdl->getTrainingStsList(), 'TH_STATUS', 'TH_STATUS', ' --- Please select --- ');
 
         $this->render($data);
     }
@@ -2021,28 +2064,73 @@ class Training_application extends MY_Controller
     public function getTrainingList()
     {   
         // selected filter value
+        $selIntExt = $this->input->post('intExt', true);
         $selDept = $this->input->post('sDept', true);
         $selMonth = $this->input->post('sMonth', true);
         $selYear = $this->input->post('sYear', true);
+        $selSts = $this->input->post('tSts', true);
 
         // default filter value
-        if(empty($selDept) || empty($selMonth) || empty($selYear)) {
+        //|| empty($selDept) || empty($selMonth) || empty($selYear) || empty($selSts)
+        if (empty($selIntExt)) {
+            // default internal/external
+            $defIntExt = '';
+        } else {
+            $defIntExt = $selIntExt;
+            // $curUsrDept = $selDept; 
+            // $defMonth = $selMonth;
+            // $curYear = $selYear;
+            // $defTrSts = $selSts;
+        }
+
+        if (empty($selDept)) {
+            // current user dept
             $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
             $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+        } else {
+            // $defIntExt = $selIntExt;
+            $curUsrDept = $selDept; 
+            // $defMonth = $selMonth;
+            // $curYear = $selYear;
+            // $defTrSts = $selSts;
+        }
 
+        if (empty($selMonth)) {
+            // default month
             $defMonth = '';
+        }   else {
+            // $defIntExt = $selIntExt;
+            // $curUsrDept = $selDept; 
+            $defMonth = $selMonth;
+            // $curYear = $selYear;
+            // $defTrSts = $selSts;
+        }
 
+        if (empty($selYear)) {
+            // current year
             $data['cur_year'] = $this->mdl->getCurYear();
             $curYear = $data['cur_year']->CUR_YEAR;
-        } 
-        elseif(!empty($selDept) || !empty($selMonth) || !empty($selYear)) {
-            $curUsrDept = $selDept; 
-            $defMonth = $selMonth;
+        } else {
+            // $defIntExt = $selIntExt;
+            // $curUsrDept = $selDept; 
+            // $defMonth = $selMonth;
             $curYear = $selYear;
+            // $defTrSts = $selSts;
+        }
+
+        if (empty($selSts)) {
+            // default training status
+            $defTrSts = '';
+        } else {
+            // $defIntExt = $selIntExt;
+            // $curUsrDept = $selDept; 
+            // $defMonth = $selMonth;
+            // $curYear = $selYear;
+            $defTrSts = $selSts;
         }
 
         // get available records
-        $data['tr_list'] = $this->mdl->getTrainingList($curUsrDept, $defMonth, $curYear);
+        $data['tr_list'] = $this->mdl->getTrainingList($defIntExt, $curUsrDept, $defMonth, $curYear, $defTrSts);
 
         $this->render($data);
     }
@@ -2523,4 +2611,40 @@ class Training_application extends MY_Controller
         }
         echo json_encode($json);
     }
+
+
+    /*===========================================================
+       TRAINING APPLICATION [APPROVE TRAINING APPLICATIONS]
+    =============================================================*/
+
+    // TRAINING QUERY LIST
+    // public function getTrainingQueryList()
+    // {   
+    //     // selected filter value
+    //     $selIntExt = $this->input->post('intExt', true);
+    //     $selMonth = $this->input->post('sMonth', true);
+    //     $selYear = $this->input->post('sYear', true);
+    //     $selSts = $this->input->post('sYear', true);
+
+    //     // default filter value
+    //     if(empty($selIntExt) || empty($selMonth) || empty($selYear) || empty($selSts)) {
+    //         $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+    //         $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+
+    //         $defMonth = '';
+
+    //         $data['cur_year'] = $this->mdl->getCurYear();
+    //         $curYear = $data['cur_year']->CUR_YEAR;
+    //     } 
+    //     elseif(!empty($selDept) || !empty($selMonth) || !empty($selYear)) {
+    //         $curUsrDept = $selDept; 
+    //         $defMonth = $selMonth;
+    //         $curYear = $selYear;
+    //     }
+
+    //     // get available records
+    //     $data['tr_list'] = $this->mdl->getTrainingList($curUsrDept, $defMonth, $curYear);
+
+    //     $this->render($data);
+    // }
 }

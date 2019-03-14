@@ -1309,24 +1309,38 @@ class Training_application_model extends MY_Model
     }
 
     // GET TRAINING HEAD BASED ON FILTER
-    public function getTrainingList($curUsrDept, $defMonth, $curYear)
+    public function getTrainingList($defIntExt = null, $curUsrDept = null, $defMonth = null, $curYear = null, $defTrSts = null)
     {
         $this->db->select('*');
         $this->db->from('TRAINING_HEAD');
-        $this->db->where("TH_DEPT_CODE = '$curUsrDept' AND NVL(TH_STATUS,'ENTRY') = 'APPROVE'");
-        $this->db->where("((NVL(TO_CHAR(TH_DATE_FROM,'MM/YYYY'),'') = '$defMonth'||'/'||'$curYear'))");
-        $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
+        if(!empty($curUsrDept)) {
+            $this->db->where("TH_DEPT_CODE = '$curUsrDept'");
+        }
+
+        if(!empty($defMonth) && !empty($curYear)) {
+            $this->db->where("((NVL(TO_CHAR(TH_DATE_FROM,'MM/YYYY'),'') = '$defMonth'||'/'||'$curYear'))");
+        } elseif(!empty($defMonth)) {
+            $this->db->where("((NVL(TO_CHAR(TH_DATE_FROM,'MM'),'') = '$defMonth'))");
+        } elseif(!empty($curYear)) {
+            $this->db->where("((NVL(TO_CHAR(TH_DATE_FROM,'YYYY'),'') = '$curYear'))");
+        }
+        
+        if(!empty($defIntExt)) {
+            $this->db->where("TH_INTERNAL_EXTERNAL", $defIntExt);
+        } /*else {
+            $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
+        }*/
+
+        if(!empty($defTrSts)) {
+            $this->db->where("TH_STATUS", $defTrSts);
+        } else {
+            $this->db->where("NVL(TH_STATUS,'ENTRY') = 'APPROVE'");
+        } 
+        
         $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE");
 
         $q = $this->db->get();
         return $q->result();
-            
-            $this->db->where("TH_REF_ID", $refid);
-            $this->db->where("NVL(TH_STATUS,'ENTRY') = 'APPROVE'");
-            $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
-
-            $q = $this->db->get();
-            return $q->row();
     }
 
     // GET TRAINING DETAIL
@@ -1364,7 +1378,7 @@ class Training_application_model extends MY_Model
     public function getYearList() {		
         $this->db->select("TO_CHAR(CM_DATE, 'YYYY') AS CM_YEAR");
         $this->db->from("CALENDAR_MAIN");
-		$this->db->where("TO_CHAR(CM_DATE, 'YYYY') >= TO_CHAR(SYSDATE, 'YYYY') - 10");
+		$this->db->where("TO_CHAR(CM_DATE, 'YYYY') >= TO_CHAR(SYSDATE, 'YYYY') - 15");
         $this->db->group_by("TO_CHAR(CM_DATE, 'YYYY')");
         $this->db->order_by("TO_CHAR(CM_DATE, 'YYYY') DESC");
         $q = $this->db->get();
@@ -1736,5 +1750,21 @@ class Training_application_model extends MY_Model
         $this->db->where('STH_STAFF_ID', $staffId);
 
         return $this->db->delete('STAFF_TRAINING_HEAD');
+    }
+
+
+    /*===========================================================
+       TRAINING QURIES - ATF008
+    =============================================================*/
+
+    // GET PARTICIPANT ROLE
+    public function getTrainingStsList()
+    {
+        $this->db->select("TH_STATUS");
+        $this->db->from('TRAINING_HEAD');
+        $this->db->group_by("TH_STATUS");
+
+        $q = $this->db->get();
+        return $q->result();
     }
 }
