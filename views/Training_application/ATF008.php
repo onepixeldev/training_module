@@ -222,6 +222,7 @@
 
 <script>
 	var tr_row = '';
+	var intExt = '0';
 	//var dt_row2 = '';
 	
 	$(document).ready(function(){
@@ -254,7 +255,7 @@
 	$.ajax({
 		type: 'POST',
 		url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-		data: '',
+		data: {'intExt' : intExt},
 		beforeSend: function() {
 			$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		},
@@ -276,7 +277,7 @@
 		var sMonth = $('#sMonth').val();
 		var sYear = $('#sYear').val();
 		var tSts = $('#tSts').val();
-		alert(''+intExt+',' +sDept+',' +sMonth+''+sYear+',' +tSts+'');
+		//alert(''+intExt+',' +sDept+',' +sMonth+''+sYear+',' +tSts+'');
 		
 		$('.nav-tabs li:eq(0) a').tab('show');
 		$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -300,113 +301,117 @@
 		var td = thisBtn.parent().siblings();
 		var trRefID = td.eq(0).html().trim();
 		var trainingN = td.eq(2).html().trim();
-		var scCode = 'ATF002';
+		//var scCode = '1';
 		//alert(refid);
+
+		// $.ajax({
+		// 	type: 'POST',
+		// 	url: '<?php echo $this->lib->class_url('getAssignStaff')?>',
+		// 	data: {'refid' : trRefID, 'tName' : trainingN},
+		// 	beforeSend: function() {
+		// 		$('.nav-tabs li:eq(1) a').tab('show');
+		// 		$('#assign_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		// 	},
+		// 	success: function(res) {
+		// 		$('#assign_training').html(res);
+				
+		// 		tr_row = $('#tbl_list_sass').DataTable({
+		// 			"ordering":false,
+		// 		});
+
+				
+		// 	}
+		// });
 
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('getAssignStaff')?>',
-			data: {'refid' : trRefID, 'tName' : trainingN},
+			url: '<?php echo $this->lib->class_url('editTraining')?>',
+			//data: {'refID' : trRefID, 'scCode' : scCode},
+			data: {'refID' : trRefID},
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
-				$('#assign_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+				$('#training_list_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 			},
 			success: function(res) {
-				$('#assign_training').html(res);
-				
-				tr_row = $('#tbl_list_sass').DataTable({
-					"ordering":false,
+				$('#training_list_detl').html(res);
+
+				$('.modal-header').hide();
+				$('#alert').hide();
+				$('.field_inpt').prop("disabled", true);
+				$('.save_upd_tr_info').hide();
+				$('#search_str_tr_ver').hide();
+		
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('speakerInfo')?>',
+					data: {'tsRefID' : trRefID},
+					beforeSend: function() {
+						$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#speakerInfo').html(res);
+						$('.add_tr_sp').hide();
+					}
 				});
 
 				$.ajax({
 					type: 'POST',
-					url: '<?php echo $this->lib->class_url('editTraining')?>',
-					data: {'refID' : trRefID, 'scCode' : scCode},
+					url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
+					data: {'tsRefID' : trRefID},
 					beforeSend: function() {
-						$('#training_list_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 					},
 					success: function(res) {
-						$('#training_list_detl').html(res);
+						$('#facilitatorInfo').html(res);
+						$('.add_tr_fi').hide();
+					}
+				});
+			
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('targetGroup')?>',
+					data: {'trRefID' : trRefID, 'tName' : trainingN},
+					beforeSend: function() {
+						$('#training_list_detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#training_list_detl3').html(res);
+						$('.add_tg').hide();
+						$('.del_tg_btn').hide();
 
-						$('.modal-header').hide();
-						$('#alert').hide();
-						$('.field_inpt').prop("disabled", true);
-						$('.save_upd_tr_info').hide();
-						$('#search_str_tr_ver').hide();
-				
 						$.ajax({
 							type: 'POST',
-							url: '<?php echo $this->lib->class_url('speakerInfo')?>',
+							url: '<?php echo $this->lib->class_url('moduleSetup')?>',
 							data: {'tsRefID' : trRefID},
 							beforeSend: function() {
-								$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+								$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 							},
 							success: function(res) {
-								$('#speakerInfo').html(res);
-								$('.add_tr_sp').hide();
+								$('#module_setup').html(res);
+								$('#msBTN').hide();
+								$('.edit_ms1_btn').hide();
+								$('.edit_ms2_btn').hide();
+								$('.edit_ms3_btn').hide();
 							}
 						});
+					}
+				});
 
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
-							data: {'tsRefID' : trRefID},
-							beforeSend: function() {
-								$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#facilitatorInfo').html(res);
-								$('.add_tr_fi').hide();
-							}
-						});
-					
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('targetGroup')?>',
-							data: {'trRefID' : trRefID, 'tName' : trainingN},
-							beforeSend: function() {
-								$('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#training_list_detl2').html(res);
-								$('.add_tg').hide();
-								$('.del_tg_btn').hide();
-
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('moduleSetup')?>',
-									data: {'tsRefID' : trRefID},
-									beforeSend: function() {
-										$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#module_setup').html(res);
-										$('#msBTN').hide();
-										$('.edit_ms1_btn').hide();
-										$('.edit_ms2_btn').hide();
-										$('.edit_ms3_btn').hide();
-									}
-								});
-							}
-						});
-
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('cpdSetup')?>',
-							data: {'tsRefID' : trRefID, 'tName' : trainingN},
-							beforeSend: function() {
-								$('#training_list_detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#training_list_detl3').html(res);
-								$('#cpdBTN').hide();
-								$('.edit_cpd1_btn').hide();
-								$('.edit_cpd2_btn').hide();
-								$('.edit_cpd3_btn').hide();
-								$('.edit_cpd4_btn').hide();
-								$('.edit_cpd5_btn').hide();
-							}
-						});
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('cpdSetup')?>',
+					data: {'tsRefID' : trRefID, 'tName' : trainingN},
+					beforeSend: function() {
+						$('#training_list_detl4').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#training_list_detl4').html(res);
+						$('#cpdBTN').hide();
+						$('.edit_cpd1_btn').hide();
+						$('.edit_cpd2_btn').hide();
+						$('.edit_cpd3_btn').hide();
+						$('.edit_cpd4_btn').hide();
+						$('.edit_cpd5_btn').hide();
 					}
 				});
 			}

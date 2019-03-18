@@ -191,6 +191,7 @@
 
 <script>
 	var tr_row = '';
+	var intExt = '1';
 	//var dt_row2 = '';
 	
 	$(document).ready(function(){
@@ -223,7 +224,7 @@
 	$.ajax({
 		type: 'POST',
 		url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-		data: '',
+		data: {'intExt' : intExt},
 		beforeSend: function() {
 			$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		},
@@ -240,10 +241,11 @@
 
 	// TRAINING LIST FILTER
 	$('.listFilter').change(function() {
+		var intExt = '1';
 		var sDept = $('#sDept').val();
 		var sMonth = $('#sMonth').val();
 		var sYear = $('#sYear').val();
-		//alert(''+sDept+',' +sMonth+',' +sYear+'');
+		//alert(''+sDept+',' +sMonth+',' +sYear+','+indf+'');
 		
 		$('.nav-tabs li:eq(0) a').tab('show');
 		$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -251,7 +253,7 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-			data: {'sDept' : sDept, 'sMonth' : sMonth, 'sYear' : sYear},
+			data: {'intExt' : intExt, 'sDept' : sDept, 'sMonth' : sMonth, 'sYear' : sYear},
 			success: function(res) {
 				$('#training_list').html(res);
 				dt_appl_row = $('#tbl_tr_list').DataTable({
@@ -267,7 +269,7 @@
 		var td = thisBtn.parent().siblings();
 		var trRefID = td.eq(0).html().trim();
 		var trainingN = td.eq(2).html().trim();
-		var scCode = 'ATF002';
+		//var scCode = 'ATF002';
 		//alert(refid);
 
 		$.ajax({
@@ -288,7 +290,7 @@
 				$.ajax({
 					type: 'POST',
 					url: '<?php echo $this->lib->class_url('editTraining')?>',
-					data: {'refID' : trRefID, 'scCode' : scCode},
+					data: {'refID' : trRefID},
 					beforeSend: function() {
 						$('#training_list_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 					},

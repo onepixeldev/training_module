@@ -40,7 +40,7 @@ class Training_application_model extends MY_Model
     }
 
     // TRAINING HEAD BASED ON REFID
-    public function getTrainingInfoDetail($refID, $scCode = null)
+    public function getTrainingInfoDetail($refID)
     {
         $umg = $this->username;
 
@@ -94,11 +94,11 @@ class Training_application_model extends MY_Model
         TH_FIELD");
         $this->db->from('TRAINING_HEAD');
         
-        if(empty($scCode)) {
-            $this->db->where("TH_STATUS = 'ENTRY'");
-            $this->db->where("TH_DEPT_CODE = (SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE UPPER(SM_APPS_USERNAME) = UPPER('$umg'))");
-            $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
-        }
+        // if(empty($scCode)) {
+        //     $this->db->where("TH_STATUS = 'ENTRY'");
+        //     $this->db->where("TH_DEPT_CODE = (SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE UPPER(SM_APPS_USERNAME) = UPPER('$umg'))");
+        //     $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
+        // }
     
         $this->db->where("TH_REF_ID", $refID);
         $q = $this->db->get();
@@ -1325,15 +1325,15 @@ class Training_application_model extends MY_Model
             $this->db->where("((NVL(TO_CHAR(TH_DATE_FROM,'YYYY'),'') = '$curYear'))");
         }
         
-        if(!empty($defIntExt)) {
+        if($defIntExt == 'INTERNAL' || $defIntExt == 'EXTERNAL' || $defIntExt == 'EXTERNAL_AGENCY' ) {
             $this->db->where("TH_INTERNAL_EXTERNAL", $defIntExt);
-        } /*else {
+        } elseif($defIntExt == '1') {
             $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
-        }*/
+        }
 
         if(!empty($defTrSts)) {
             $this->db->where("TH_STATUS", $defTrSts);
-        } else {
+        } elseif(empty($defTrSts)) {
             $this->db->where("NVL(TH_STATUS,'ENTRY') = 'APPROVE'");
         } 
         

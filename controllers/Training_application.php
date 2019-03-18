@@ -1097,11 +1097,11 @@ class Training_application extends MY_Controller
         $organizerCode = $this->input->post('orgCode',true);
 
         // ATF002
-        $scCode = $this->input->post('scCode',true);
+        //$scCode = $this->input->post('scCode',true);
         
         if(!empty($refID)) {
 
-            $data['trInfo'] = $this->mdl->getTrainingInfoDetail($refID, $scCode);
+            $data['trInfo'] = $this->mdl->getTrainingInfoDetail($refID);
             if(!empty($data['trInfo']->TH_ORGANIZER_NAME)) {
                 $data['trOrg'] = $this->mdl->getOrganizerName($data['trInfo']->TH_ORGANIZER_NAME);
                 if(!empty($data['trOrg'])) {
@@ -1110,6 +1110,13 @@ class Training_application extends MY_Controller
                     $data['OrgCity'] = $data['trOrg']->TOH_CITY;
                     $data['OrgState'] = $data['trOrg']->SM_STATE_DESC;
                     $data['OrgCountry'] = $data['trOrg']->CM_COUNTRY_DESC;
+                }
+                else {
+                    $data['OrgAdd'] = '';
+                    $data['OrgPost'] = '';
+                    $data['OrgCity'] = '';
+                    $data['OrgState'] = '';
+                    $data['OrgCountry'] = '';     
                 } 
             } else {
                 $data['OrgAdd'] = '';
@@ -2072,11 +2079,12 @@ class Training_application extends MY_Controller
 
         // default filter value
         //|| empty($selDept) || empty($selMonth) || empty($selYear) || empty($selSts)
-        if (empty($selIntExt)) {
+        if (!empty($selIntExt)) {
             // default internal/external
-            $defIntExt = '';
-        } else {
+            //$defIntExt = '';
             $defIntExt = $selIntExt;
+        } else {
+            $defIntExt = '';
             // $curUsrDept = $selDept; 
             // $defMonth = $selMonth;
             // $curYear = $selYear;
@@ -2614,7 +2622,7 @@ class Training_application extends MY_Controller
 
 
     /*===========================================================
-       TRAINING APPLICATION [APPROVE TRAINING APPLICATIONS]
+       TRAINING QUERY
     =============================================================*/
 
     // TRAINING QUERY LIST
