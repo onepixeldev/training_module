@@ -1757,12 +1757,24 @@ class Training_application_model extends MY_Model
        TRAINING QURIES - ATF008
     =============================================================*/
 
-    // GET PARTICIPANT ROLE
+    // GET TRAINING STATUS LIST
     public function getTrainingStsList()
     {
         $this->db->select("TH_STATUS");
         $this->db->from('TRAINING_HEAD');
         $this->db->group_by("TH_STATUS");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // GET TRAINING COST
+    public function getTrainingCost($tsRefID)
+    {
+        $this->db->select("TC_COST_CODE, TCT_DESC, TC_AMOUNT, TC_REMARK ");
+        $this->db->from("TRAINING_COST, TRAINING_COST_TYPE");
+        $this->db->where("TC_COST_CODE = TCT_CODE");
+        $this->db->where("TC_TRAINING_REFID", $tsRefID);
 
         $q = $this->db->get();
         return $q->result();

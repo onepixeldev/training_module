@@ -8,7 +8,7 @@
 				<th class="text-center col-md-1">No</th>
 				<th class="text-center">Service Code</th>
 				<th class="text-left">Description</th>
-				<th class="text-center col-md-1">Action</th>
+				<th class="text-center col-md-1" id="postAction">Action</th>
 			</tr>
 		</thead>
 
@@ -21,7 +21,7 @@
 							<td class="text-center col-md-1">' . $lep->TGS_SEQ . '</td>
 							<td class="text-center col-md-2">' . $lep->TGS_SERVICE_CODE . '</td>
 							<td class="text-left">' . $lep->SS_SERVICE_DESC . '</td>
-							<td class="text-center col-md-1">
+							<td class="text-center col-md-1" id="postAction">
                                 <button type="button" class="btn btn-danger btn-xs del_eg_btn"><i class="fa fa-trash"></i> Delete</button>
 							</td>
 						</tr>

@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>Approve Training Applications</h2>				
+            <h2>Approve Training Setup</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -37,24 +37,6 @@
 								<div class="col-sm-6">
 									<div class="form-group text-left">
 										<?php echo form_dropdown('sDept', $dept_list, $curUsrDept, 'class="form-control listFilter" id="sDept"'); ?>
-									</div>
-								</div>
-								<div class="col-sm-3">
-									<div class="text-left">   
-										&nbsp;
-									</div>
-								</div>
-							</div>
-                            
-							<div class="row">
-								<div class="col-sm-3">
-									<div class="form-group text-right">
-										<label><b>Internal/External</b></label>
-									</div>
-								</div>
-								<div class="col-sm-2">
-									<div class="form-group text-left">
-										<?php echo form_dropdown('intExt', $int_ext_list, $def_int_ext, 'class="form-control listFilter" id="intExt"'); ?>
 									</div>
 								</div>
 								<div class="col-sm-3">
@@ -112,13 +94,10 @@
                                     <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Training Info</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Training Cost</a>
+                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Target Group & Module Detail</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Target Group & Module Detail</a>
-                                </li>
-								<li class="">
-                                    <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">CPD Detail</a>
+                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">CPD Detail</a>
                                 </li>
                             </ul>
 							<!-- myTabContent1 -->
@@ -171,21 +150,7 @@
 											</table>
 										</p>	
 									</div>
-                                </div>
-
-								<div class="tab-pane fade" id="s5">
-									<div id="training_list_detl4">
-										<p>
-											<table class="table table-bordered table-hover">
-												<thead>
-												<tr>
-													<th class="text-center">Please select training from Training List</th>
-												</tr>
-												</thead>
-											</table>
-										</p>	
-									</div>
-                                </div>  
+                                </div> 
 
                             </div>
                             <!-- end myTabContent1 -->
@@ -222,7 +187,8 @@
 
 <script>
 	var tr_row = '';
-	var intExt = '0';
+    var intExt = '1';
+    var tSts = 'ENTRY';
 	//var dt_row2 = '';
 	
 	$(document).ready(function(){
@@ -237,8 +203,6 @@
 				echo "$('.nav-tabs li:eq(2) a').tab('show');";
 			} elseif ($currtab == 's4'){
 				echo "$('.nav-tabs li:eq(3) a').tab('show');";
-			} elseif ($currtab == 's5'){
-				echo "$('.nav-tabs li:eq(4) a').tab('show');";
 			} 
             else {
                 echo "$('.nav-tabs li:eq(0) a').tab('show');";
@@ -255,7 +219,7 @@
 	$.ajax({
 		type: 'POST',
 		url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-		data: {'intExt' : intExt},
+		data: {'intExt' : intExt, 'tSts' : tSts},
 		beforeSend: function() {
 			$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		},
@@ -272,12 +236,12 @@
 
 	// TRAINING LIST FILTER
 	$('.listFilter').change(function() {
-		var intExt = $('#intExt').val();
+		//var intExt = $('#intExt').val();
 		var sDept = $('#sDept').val();
 		var sMonth = $('#sMonth').val();
 		var sYear = $('#sYear').val();
 		var tSts = $('#tSts').val();
-		//alert(''+intExt+',' +sDept+',' +sMonth+''+sYear+',' +tSts+'');
+		//alert(''+sDept+',' +sMonth+''+sYear+',' +tSts+'');
 		
 		$('.nav-tabs li:eq(0) a').tab('show');
 		$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -285,7 +249,7 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-			data: {'intExt' : intExt, 'sDept' : sDept, 'sMonth' : sMonth, 'sYear' : sYear, 'tSts' : tSts},
+			data: {'sDept' : sDept, 'sMonth' : sMonth, 'sYear' : sYear, 'tSts' : tSts},
 			success: function(res) {
 				$('#training_list').html(res);
 				tr_row = $('#tbl_tr_list').DataTable({
@@ -331,7 +295,8 @@
 					},
 					success: function(res) {
 						$('#speakerInfo').html(res);
-						$('.add_tr_sp').hide();
+                        $('.add_tr_sp').hide();
+                        $('#speakerInfo #spAct').hide();
 					}
 				});
 
@@ -344,45 +309,44 @@
 					},
 					success: function(res) {
 						$('#facilitatorInfo').html(res);
-						$('.add_tr_fi').hide();
+                        $('.add_tr_fi').hide();
+                        $('#facilitatorInfo #fiAct').hide();
 					}
 				});
 
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('verExternalAgency')?>',
-					data: {'trRefID' : trRefID},
-					dataType: 'JSON',
-					success: function(res) {
-						if(res.sts == 1) {
-							$.ajax({
-								type: 'POST',
-								url: '<?php echo $this->lib->class_url('trainingCost')?>',
-								data: {'trRefID' : trRefID, 'tName' : trainingN},
-								beforeSend: function() {
-									$('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-								},
-								success: function(res) {
-									$('#training_list_detl2').html(res);
-								}
-							});
-						} else {
-							$('#training_list_detl2').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Training Cost only available for External Agency Training</th></tr></thead></table></p>');
-						};
-					}
-				});
-
-				
+				// $.ajax({
+				// 	type: 'POST',
+				// 	url: '<?php echo $this->lib->class_url('verExternalAgency')?>',
+				// 	data: {'trRefID' : trRefID},
+				// 	dataType: 'JSON',
+				// 	success: function(res) {
+				// 		if(res.sts == 1) {
+				// 			$.ajax({
+				// 				type: 'POST',
+				// 				url: '<?php echo $this->lib->class_url('trainingCost')?>',
+				// 				data: {'trRefID' : trRefID, 'tName' : trainingN},
+				// 				beforeSend: function() {
+				// 					$('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+				// 				},
+				// 				success: function(res) {
+				// 					$('#training_list_detl2').html(res);
+				// 				}
+				// 			});
+				// 		} else {
+				// 			$('#training_list_detl2').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Training Cost only available for External Agency Training</th></tr></thead></table></p>');
+				// 		};
+				// 	}
+				// });
 			
 				$.ajax({
 					type: 'POST',
 					url: '<?php echo $this->lib->class_url('targetGroup')?>',
 					data: {'trRefID' : trRefID, 'tName' : trainingN},
 					beforeSend: function() {
-						$('#training_list_detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						$('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 					},
 					success: function(res) {
-						$('#training_list_detl3').html(res);
+						$('#training_list_detl2').html(res);
 						$('.add_tg').hide();
 						$('.del_tg_btn').hide();
 
@@ -409,10 +373,10 @@
 					url: '<?php echo $this->lib->class_url('cpdSetup')?>',
 					data: {'tsRefID' : trRefID, 'tName' : trainingN},
 					beforeSend: function() {
-						$('#training_list_detl4').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						$('#training_list_detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 					},
 					success: function(res) {
-						$('#training_list_detl4').html(res);
+						$('#training_list_detl3').html(res);
 						$('#cpdBTN').hide();
 						$('.edit_cpd1_btn').hide();
 						$('.edit_cpd2_btn').hide();
@@ -425,27 +389,27 @@
 		});
 	});	
 
-	// LIST OF ELIGIBLE POSITION //
-	$('#training_list_detl3').on('click', '.pos_tg_btn', function() {
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		//var refid = thisBtn.val();
-		var gpCode = td.eq(0).html().trim();
-		//alert(gpCode);
+	// // LIST OF ELIGIBLE POSITION //
+	// $('#training_list_detl3').on('click', '.pos_tg_btn', function() {
+	// 	var thisBtn = $(this);
+	// 	var td = thisBtn.parent().siblings();
+	// 	//var refid = thisBtn.val();
+	// 	var gpCode = td.eq(0).html().trim();
+	// 	//alert(gpCode);
 
-		$('#myModalis .modal-content').empty();
-		$('#myModalis').modal('show');
-		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	// 	$('#myModalis .modal-content').empty();
+	// 	$('#myModalis').modal('show');
+	// 	$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('listEgPosition')?>',
-			data: {'gpCode' : gpCode},
-			success: function(res) {
-				$('#myModalis .modal-content').html(res);	
-				$('#postAction').hide();
-				$('#tbl_list_eg_pos tbody #postAction').hide();
-			}
-		});
-	});
+	// 	$.ajax({
+	// 		type: 'POST',
+	// 		url: '<?php echo $this->lib->class_url('listEgPosition')?>',
+	// 		data: {'gpCode' : gpCode},
+	// 		success: function(res) {
+	// 			$('#myModalis .modal-content').html(res);	
+	// 			$('#postAction').hide();
+	// 			$('#tbl_list_eg_pos tbody #postAction').hide();
+	// 		}
+	// 	});
+	// });
 </script>

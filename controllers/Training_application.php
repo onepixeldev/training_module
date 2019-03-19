@@ -32,29 +32,17 @@ class Training_application extends MY_Controller
     }
 
     // APPROVE TRAINING APPLICATION
-    public function ATF002($selDept = null, $selMonth = null, $selYear = null)
+    public function ATF002()
     { 
         // default value filter
-        if(empty($selDept)) {
-            $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
-            $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
-        } 
-        if(empty($selMonth)) {
-            $data['defMonth'] = '';
-        }  
-        if(empty($selYear)) {
-            $data['cur_year'] = $this->mdl->getCurYear();
-            $data['curYear'] = $data['cur_year']->CUR_YEAR;
-        } 
-        if(!empty($selDept)) {
-            $curUsrDept = $selDept; 
-        } 
-        if(!empty($selMonth)) {
-            $defMonth = $selMonth;
-        }  
-        if(!empty($selYear)) {
-            $curYear = $selYear;
-        } 
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
 
         // get department dd list
@@ -68,29 +56,17 @@ class Training_application extends MY_Controller
     }
 
     // ASSIGN TRAINING
-    public function ATF004($selDept = null, $selMonth = null, $selYear = null)
+    public function ATF004()
     { 
         // default value filter
-        if(empty($selDept)) {
-            $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
-            $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
-        } 
-        if(empty($selMonth)) {
-            $data['defMonth'] = '';
-        }  
-        if(empty($selYear)) {
-            $data['cur_year'] = $this->mdl->getCurYear();
-            $data['curYear'] = $data['cur_year']->CUR_YEAR;
-        } 
-        if(!empty($selDept)) {
-            $curUsrDept = $selDept; 
-        } 
-        if(!empty($selMonth)) {
-            $defMonth = $selMonth;
-        }  
-        if(!empty($selYear)) {
-            $curYear = $selYear;
-        } 
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
 
         // get department dd list
@@ -103,32 +79,50 @@ class Training_application extends MY_Controller
         $this->render($data);
     }
 
-    // QUERY TRAINING
-    public function ATF008($selIntExt = null, $selDept = null, $selMonth = null, $selYear = null, $selSts = null)
+    // APPROVE TRAINING SETUP
+    public function ATF027()
     { 
         // default value filter
+        // default training status
+        $data['def_tr_sts'] = 'ENTRY';
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        $data['tr_sts_list'] = array(''=>' ---Please select--- ', 'ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+
+        $this->render($data);
+    }
+
+    // QUERY TRAINING
+    public function ATF008()
+    { 
+        // default value filter
+        // default internal/external
         $data['def_int_ext'] = '';
+        // default training status
         $data['def_tr_sts'] = '';
-        if(empty($selDept)) {
-            $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
-            $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
-        } 
-        if(empty($selMonth)) {
-            $data['defMonth'] = '';
-        }  
-        if(empty($selYear)) {
-            $data['cur_year'] = $this->mdl->getCurYear();
-            $data['curYear'] = $data['cur_year']->CUR_YEAR;
-        } 
-        if(!empty($selDept)) {
-            $curUsrDept = $selDept; 
-        } 
-        if(!empty($selMonth)) {
-            $defMonth = $selMonth;
-        }  
-        if(!empty($selYear)) {
-            $curYear = $selYear;
-        } 
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
         $data['int_ext_list'] = array(''=>'--- Please Select ---', 'INTERNAL'=>'INTERNAL', 'EXTERNAL'=>'EXTERNAL', 'EXTERNAL_AGENCY'=>'EXTERNAL AGENCY');
         // get department dd list
@@ -2625,34 +2619,39 @@ class Training_application extends MY_Controller
        TRAINING QUERY
     =============================================================*/
 
-    // TRAINING QUERY LIST
-    // public function getTrainingQueryList()
-    // {   
-    //     // selected filter value
-    //     $selIntExt = $this->input->post('intExt', true);
-    //     $selMonth = $this->input->post('sMonth', true);
-    //     $selYear = $this->input->post('sYear', true);
-    //     $selSts = $this->input->post('sYear', true);
+    // TRAINING COST
+    public function trainingCost() {
+        $tsRefID = $this->input->post('trRefID', true);
+        $tName = $this->input->post('tName', true);
 
-    //     // default filter value
-    //     if(empty($selIntExt) || empty($selMonth) || empty($selYear) || empty($selSts)) {
-    //         $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
-    //         $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // get available records
+        if(!empty($tsRefID)){
+            $data['refid'] = $tsRefID;
+            $data['tname'] = $tName;
+            $data['trCost'] = $this->mdl->getTrainingCost($tsRefID);
+        }
 
-    //         $defMonth = '';
+        $this->render($data);
+    }
 
-    //         $data['cur_year'] = $this->mdl->getCurYear();
-    //         $curYear = $data['cur_year']->CUR_YEAR;
-    //     } 
-    //     elseif(!empty($selDept) || !empty($selMonth) || !empty($selYear)) {
-    //         $curUsrDept = $selDept; 
-    //         $defMonth = $selMonth;
-    //         $curYear = $selYear;
-    //     }
-
-    //     // get available records
-    //     $data['tr_list'] = $this->mdl->getTrainingList($curUsrDept, $defMonth, $curYear);
-
-    //     $this->render($data);
-    // }
+    // VERIFY EXTERNAL AGENCY TRAINING
+    public function verExternalAgency() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('trRefID', true);
+        
+        if (!empty($refid)) {
+            $verify = $this->mdl->getTrainingInfoDetail($refid);
+        
+            if ($verify->TH_INTERNAL_EXTERNAL == 'EXTERNAL_AGENCY') {
+                $json = array('sts' => 1, 'msg' => 'EXTERNAL_AGENCY', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Not EXTERNAL_AGENCY', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+    
 }

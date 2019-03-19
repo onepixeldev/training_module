@@ -1155,9 +1155,6 @@
 			data: {'gpCode' : gpCode},
 			success: function(res) {
 				$('#myModalis .modal-content').html(res);
-				dt_row = $('#tbl_list_str_tr').DataTable({
-					"ordering":false,
-				});		
 			}
 		});
 	});

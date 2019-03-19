@@ -13,7 +13,7 @@
 		<th class="text-left">Speaker Name</th>
 		<th class="text-left">Department/Organization</th>
 		<th class="text-center">Contact/Phone No</th>
-		<th class="text-center">Action</th>
+		<th class="text-center" id="spAct">Action</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -28,7 +28,7 @@
 					<td class="text-left">' . $sie->ES_SPEAKER_NAME . '</td>
 					<td class="text-left">' . $sie->ES_DEPT . '</td>
 					<td class="text-center">' . $sie->TS_CONTACT . '</td>
-					<td class="text-center col-md-2">
+					<td class="text-center col-md-2" id="spAct">
 						<button type="button" class="btn btn-success btn-xs edit_sp_btn"><i class="fa fa-edit"></i> Edit</button>
 						<button type="button" class="btn btn-danger btn-xs del_sp_btn"><i class="fa fa-trash"></i> Delete</button>
 					</td>
@@ -46,7 +46,7 @@
 					<td class="text-left">' . $sis->SM_STAFF_NAME . '</td>
 					<td class="text-left">' . $sis->SM_DEPT_CODE . '</td>
 					<td class="text-center">' . $sis->TS_CONTACT . '</td>
-					<td class="text-center col-md-2">
+					<td class="text-center col-md-2" id="spAct">
 						<button type="button" class="btn btn-success btn-xs edit_sp_btn"><i class="fa fa-edit"></i> Edit</button>
 						<button type="button" class="btn btn-danger btn-xs del_sp_btn"><i class="fa fa-trash"></i> Delete</button>
 					</td>

@@ -12,7 +12,7 @@
 		<th class="text-center">Type</th>
 		<th class="text-center">Facilitator ID</th>
 		<th class="text-left">Facilitator Name</th>
-		<th class="text-center">Action</th>
+		<th class="text-center" id="fiAct">Action</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -25,7 +25,7 @@
 					<td class="text-center col-md-1">' . $fie->TF_TYPE . '</td>
 					<td class="text-center col-md-2">' . $fie->TF_FACILITATOR_ID . '</td>
 					<td class="text-left">' . $fie->EF_FACILITATOR_NAME . '</td>
-					<td class="text-center col-md-1">
+					<td class="text-center col-md-1" id="fiAct">
 						<button type="button" class="btn btn-danger btn-xs del_fi_btn"><i class="fa fa-trash"></i> Delete</button>
 					</td>
 				</tr>
@@ -40,7 +40,7 @@
 					<td class="text-center col-md-1">' . $fis->TF_TYPE . '</td>
 					<td class="text-center col-md-2">' . $fis->TF_FACILITATOR_ID . '</td>
 					<td class="text-left">' . $fis->SM_STAFF_NAME . '</td>
-					<td class="text-center col-md-1">
+					<td class="text-center col-md-1" id="fiAct">
 						<button type="button" class="btn btn-danger btn-xs del_fi_btn"><i class="fa fa-trash"></i> Delete</button>
 					</td>
 				</tr>
