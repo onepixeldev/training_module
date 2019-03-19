@@ -271,7 +271,6 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('editTraining')?>',
-			//data: {'refID' : trRefID, 'scCode' : scCode},
 			data: {'refID' : trRefID},
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
@@ -313,30 +312,6 @@
                         $('#facilitatorInfo #fiAct').hide();
 					}
 				});
-
-				// $.ajax({
-				// 	type: 'POST',
-				// 	url: '<?php echo $this->lib->class_url('verExternalAgency')?>',
-				// 	data: {'trRefID' : trRefID},
-				// 	dataType: 'JSON',
-				// 	success: function(res) {
-				// 		if(res.sts == 1) {
-				// 			$.ajax({
-				// 				type: 'POST',
-				// 				url: '<?php echo $this->lib->class_url('trainingCost')?>',
-				// 				data: {'trRefID' : trRefID, 'tName' : trainingN},
-				// 				beforeSend: function() {
-				// 					$('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-				// 				},
-				// 				success: function(res) {
-				// 					$('#training_list_detl2').html(res);
-				// 				}
-				// 			});
-				// 		} else {
-				// 			$('#training_list_detl2').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Training Cost only available for External Agency Training</th></tr></thead></table></p>');
-				// 		};
-				// 	}
-				// });
 			
 				$.ajax({
 					type: 'POST',
