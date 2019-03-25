@@ -34,6 +34,9 @@ class Training_application extends MY_Controller
     // APPROVE TRAINING APPLICATION
     public function ATF002()
     { 
+
+        $selDept = $this->input->post('sDept', true);
+
         // default value filter
         // default dept
         $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
@@ -102,7 +105,7 @@ class Training_application extends MY_Controller
         //get month dd list
         $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
         //get training status list
-        $data['tr_sts_list'] = array(''=>' ---Please select--- ', 'ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+        $data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
 
         $this->render($data);
     }
@@ -133,6 +136,72 @@ class Training_application extends MY_Controller
         $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' --- Please select --- ');
         //get training status list
         $data['tr_sts_list'] = $this->dropdown($this->mdl->getTrainingStsList(), 'TH_STATUS', 'TH_STATUS', ' --- Please select --- ');
+
+        $this->render($data);
+    }
+
+    // EDIT APPROVED TRAINING SETUP
+    public function ATF044()
+    {   
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+
+        $this->render($data);
+    }
+
+    // CONFIRMATION ATTEND TRAINING
+    public function ATF148()
+    {   
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+
+        $this->render($data);
+    }
+
+    // QUERY STAFF TRAINING
+    public function ATF041()
+    { 
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' --- Please select --- ');
 
         $this->render($data);
     }
@@ -1090,11 +1159,16 @@ class Training_application extends MY_Controller
         $countCode = $this->input->post('countryCode',true);
         $organizerCode = $this->input->post('orgCode',true);
 
-        // ATF002
-        //$scCode = $this->input->post('scCode',true);
+        // ATF044
+        $scCode = $this->input->post('scCode',true);
+        if(!empty($scCode)) {
+            $data['defSecCode'] = $scCode;
+        } else {
+            $data['defSecCode'] = '';
+        }
         
         if(!empty($refID)) {
-
+            
             $data['trInfo'] = $this->mdl->getTrainingInfoDetail($refID);
             if(!empty($data['trInfo']->TH_ORGANIZER_NAME)) {
                 $data['trOrg'] = $this->mdl->getOrganizerName($data['trInfo']->TH_ORGANIZER_NAME);
@@ -1177,6 +1251,9 @@ class Training_application extends MY_Controller
 
         // get parameter values
         $form = $this->input->post('form', true);
+        
+        //
+        //$defSecCode = $form['sc_code'];
 
         // training refid
         $refid = $form['training_refid'];
@@ -1192,6 +1269,10 @@ class Training_application extends MY_Controller
 
         // form / input validation
         $rule = array(
+            // sc code
+            'sc_code' => 'max_length[10]',
+
+
             // training info
             'type' => 'required|max_length[100]', 
             'category' => 'required|max_length[200]',
@@ -2071,6 +2152,11 @@ class Training_application extends MY_Controller
         $selYear = $this->input->post('sYear', true);
         $selSts = $this->input->post('tSts', true);
 
+        // verify filter
+        $disDept = $this->input->post('disDept', true);
+        $disYear = $this->input->post('disYear', true);
+        $disTsts = $this->input->post('disTsts', true);
+
         // default filter value
         //|| empty($selDept) || empty($selMonth) || empty($selYear) || empty($selSts)
         if (!empty($selIntExt)) {
@@ -2087,8 +2173,13 @@ class Training_application extends MY_Controller
 
         if (empty($selDept)) {
             // current user dept
-            $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
-            $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+            // $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+            // $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+            $curUsrDept = '';
+            if($disDept == '1') {
+                $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+                $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+            }
         } else {
             // $defIntExt = $selIntExt;
             $curUsrDept = $selDept; 
@@ -2110,8 +2201,14 @@ class Training_application extends MY_Controller
 
         if (empty($selYear)) {
             // current year
-            $data['cur_year'] = $this->mdl->getCurYear();
-            $curYear = $data['cur_year']->CUR_YEAR;
+            // $data['cur_year'] = $this->mdl->getCurYear();
+            // $curYear = $data['cur_year']->CUR_YEAR;
+            $curYear = '';
+            if($disYear == '1') {
+                $data['cur_year'] = $this->mdl->getCurYear();
+                $curYear = $data['cur_year']->CUR_YEAR;
+            }
+            
         } else {
             // $defIntExt = $selIntExt;
             // $curUsrDept = $selDept; 
@@ -2123,6 +2220,9 @@ class Training_application extends MY_Controller
         if (empty($selSts)) {
             // default training status
             $defTrSts = '';
+            if($disTsts == '1') {
+                $defTrSts = '1';
+            }
         } else {
             // $defIntExt = $selIntExt;
             // $curUsrDept = $selDept; 
@@ -2653,5 +2753,221 @@ class Training_application extends MY_Controller
         }
         echo json_encode($json);
     }
+
+    /*===========================================================
+       APPROVE TRAINING SETUP - ATF027
+    =============================================================*/
+
+    // APPROVE TRAINING
+    public function approveTrainingSetup() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        
+        if (!empty($refid)) {
+            $checkTrainingSts = $this->mdl->getTrainingInfoDetail($refid);
+
+            if($checkTrainingSts->TH_STATUS == 'APPROVE') {
+                $json = array('sts' => 0, 'msg' => 'Training already approved.', 'alert' => 'danger');
+            } else {
+                $approve = $this->mdl->approveTrainingSetup($refid);
+                //$approve = 1;
+            
+                if ($approve > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Training Approval Completed', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Training Approval Aborted', 'alert' => 'danger');
+                }
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // POSTPONE TRAINING
+    public function postponeTrainingSetup() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        
+        if (!empty($refid)) {
+            $checkTrainingSts = $this->mdl->getTrainingInfoDetail($refid);
+
+            if($checkTrainingSts->TH_STATUS == 'POSTPONE') {
+                $json = array('sts' => 0, 'msg' => 'Training already postponed.', 'alert' => 'danger');
+            } else {
+                $postpone = $this->mdl->postponeTrainingSetup($refid);
+                //$postpone = 1;
+            
+                if ($postpone > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Training Postponement Completed', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Training Postponement Aborted', 'alert' => 'danger');
+                }
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // REJECT TRAINING
+    public function rejectTrainingSetup() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $trName = $this->input->post('trName', true);
+        
+        if (!empty($refid)) {
+            $checkTrainingSts = $this->mdl->getTrainingInfoDetail($refid);
+
+            if($checkTrainingSts->TH_STATUS == 'REJECT') {
+                $json = array('sts' => 0, 'msg' => 'Training already rejected.', 'alert' => 'danger');
+            } else {
+                // check if applicant exist in training
+                $checkSthRecords = $this->mdl->getStaffTrainingRecords($refid);
+                if($checkSthRecords->CC == 0) {
+                    $reject = $this->mdl->rejectTrainingSetup($refid);
+                    //$reject = 1;
+                
+                    if ($reject > 0) {
+                        $json = array('sts' => 1, 'msg' => 'Training Rejection Completed', 'alert' => 'success');
+                    } else {
+                        $json = array('sts' => 0, 'msg' => 'Training Rejection Aborted', 'alert' => 'danger');
+                    }
+                } else {
+                    $rejectStaffTraining = $this->mdl->rejectStaffTraining($refid);
+                    if($rejectStaffTraining > 0) {
+                        $reject = $this->mdl->rejectTrainingSetup($refid);
+                        $json = array('sts' => 1, 'msg' => 'Training Rejection Completed', 'alert' => 'success');
+                    } else {
+                        $json = array('sts' => 0, 'msg' => 'Training Rejection Aborted', 'alert' => 'danger');
+                    }
+                    // $json = array('sts' => 0, 'msg' => 'Cannot reject Training ID <b>'.$refid.' - ' .$trName.'</b> <br>There are staff applying/approved/assigned for this training', 'alert' => 'danger');
+                }
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // AMEND TRAINING
+    public function amendTrainingSetup() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $trName = $this->input->post('trName', true);
+        
+        if (!empty($refid)) {
+            $checkTrainingSts = $this->mdl->getTrainingInfoDetail($refid);
+
+            if($checkTrainingSts->TH_STATUS == 'ENTRY') {
+                $json = array('sts' => 0, 'msg' => 'Training already amended.', 'alert' => 'danger');
+            } else {
+                // check if applicant exist in training
+                $checkSthRecords = $this->mdl->getStaffTrainingRecords($refid);
+                if($checkSthRecords->CC == 0) {
+                    $amend = $this->mdl->amendTrainingSetup($refid);
+                    //$amend = 1;
+                
+                    if ($amend > 0) {
+                        $json = array('sts' => 1, 'msg' => 'Training Amendment Completed', 'alert' => 'success');
+                    } else {
+                        $json = array('sts' => 0, 'msg' => 'Training Amendment Aborted', 'alert' => 'danger');
+                    }
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Cannot amend Training ID <b>'.$refid.' - ' .$trName.'</b> <br>There are staff applying/approved/assigned for this training', 'alert' => 'danger');
+                }
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
     
+    /*===========================================================
+       EDIT APPROVE TRAINING SETUP - ATF044
+    =============================================================*/
+
+    public function fileAttParam() {
+        $refid = $this->input->post('refid', true);
+        //$tName = $this->input->post('tName', true);
+
+        if(!empty($refid)) {
+            $this->session->set_userdata('refid', $refid);
+            //$this->session->set_userdata('tName', $tName);
+            $json = array('sts' => 1, 'msg' => 'Param assigned.', 'alert' => 'success');
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Training ID not found!', 'alert' => 'danger');
+        }
+        
+        echo json_encode($json);
+    }
+
+    public function fileAttachment() {
+        $refid = $this->session->userdata('refid');
+        //$tName = $this->session->userdata('tName');
+        $curUser = $this->staff_id;
+
+        if(!empty($refid) && !empty($curUser)) {
+            $selUrl = $this->mdl->getEcommUrl();
+            if(!empty($selUrl)) {
+                $ecomm_url = $selUrl->HP_PARM_DESC;
+            } else {
+                $ecomm_url = '';
+            }
+
+            echo header('Location: '.$ecomm_url.'trainingAttachment.jsp?admsID='.$curUser.'&apRID='.$refid.'&apTy=APPL');
+            exit;
+        } 
+    }
+
+    /*===========================================================
+       QUERY STAFF TRAINING - ATF041
+    =============================================================*/
+
+    // STAFF LIST
+    public function getStaffTrainingList()
+    {   
+        // selected filter value
+        $selDept = $this->input->post('sDept', true);
+
+        $disDept = $this->input->post('disDept', true);
+
+        // default filter value
+        if (empty($selDept)) {
+            // current user dept
+            // $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+            // $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+            $curUsrDept = '';
+            if($disDept == '1') {
+                $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+                $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+            }
+        } else {
+            // $defIntExt = $selIntExt;
+            $curUsrDept = $selDept; 
+            // $defMonth = $selMonth;
+            // $curYear = $selYear;
+            // $defTrSts = $selSts;
+        }
+
+        // get available records
+        $data['stf_tr_list'] = $this->mdl->getStaffTrainingList($curUsrDept);
+
+        $this->render($data);
+    }
+
+    // STAFF TRAINING LIST
+    public function trainingList()
+    {   
+        $stfID = $this->input->post('stfID', true);
+
+        // get available records
+        $data['tr_list'] = $this->mdl->trainingList($stfID);
+
+        $this->render($data);
+    }
 }

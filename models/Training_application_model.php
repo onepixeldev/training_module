@@ -991,6 +991,15 @@ class Training_application_model extends MY_Model
         $staff_dept_code = "(SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE SM_STAFF_ID = '$umg')";
         $enter_date = 'SYSDATE';
 
+        $defScCode = $form['sc_code'];
+        $sts = '';
+
+        if($defScCode == 'ATF044') {
+            $sts = 'APPROVE';
+        } else {
+            $sts = 'ENTRY';
+        }
+
         //$refID = $refid;
 
         $data = array(
@@ -1023,7 +1032,7 @@ class Training_application_model extends MY_Model
             "TH_PRINT_CERTIFICATE" => $form['print_certificate'],
 
             "TH_ENTER_BY" => $umg,
-            "TH_STATUS" => 'ENTRY'
+            "TH_STATUS" => $sts
         );
 
         //$this->db->set("TH_REF_ID", $refID, false);
@@ -1331,7 +1340,7 @@ class Training_application_model extends MY_Model
             $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
         }
 
-        if(!empty($defTrSts)) {
+        if($defTrSts == 'POSTPONE' || $defTrSts == 'REJECT' || $defTrSts == 'APPROVE' || $defTrSts == 'ENTRY') {
             $this->db->where("TH_STATUS", $defTrSts);
         } elseif(empty($defTrSts)) {
             $this->db->where("NVL(TH_STATUS,'ENTRY') = 'APPROVE'");
@@ -1771,10 +1780,161 @@ class Training_application_model extends MY_Model
     // GET TRAINING COST
     public function getTrainingCost($tsRefID)
     {
-        $this->db->select("TC_COST_CODE, TCT_DESC, TC_AMOUNT, TC_REMARK ");
+        $this->db->select("TC_COST_CODE, TCT_DESC, TC_AMOUNT, TC_REMARK");
         $this->db->from("TRAINING_COST, TRAINING_COST_TYPE");
         $this->db->where("TC_COST_CODE = TCT_CODE");
         $this->db->where("TC_TRAINING_REFID", $tsRefID);
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    /*===========================================================
+       APPROVE TRAINING SETUP - ATF027
+    =============================================================*/
+
+    // STAFF TRAINING RECORDS
+    public function getStaffTrainingRecords($refid)
+    {
+        $this->db->select("COUNT(1) AS CC");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // APPROVE TRAINING
+    public function approveTrainingSetup($refid)
+    {
+        $currentUsr = $this->staff_id;
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "TH_STATUS" => 'APPROVE',
+            "TH_APPROVE_BY" => $currentUsr
+        );
+
+        $this->db->set("TH_APPROVE_DATE", $curDate, false);
+
+        $this->db->where("TH_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD", $data);
+    } 
+    
+    // APPROVE TRAINING
+    public function postponeTrainingSetup($refid)
+    {
+        $currentUsr = $this->staff_id;
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "TH_STATUS" => 'POSTPONE',
+            "TH_APPROVE_BY" => $currentUsr
+        );
+
+        $this->db->set("TH_APPROVE_DATE", $curDate, false);
+
+        $this->db->where("TH_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD", $data);
+    }  
+    
+    // REJECT TRAINING
+    public function rejectTrainingSetup($refid)
+    {
+        $currentUsr = $this->staff_id;
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "TH_STATUS" => 'REJECT',
+            "TH_APPROVE_BY" => $currentUsr
+        );
+
+        $this->db->set("TH_APPROVE_DATE", $curDate, false);
+
+        $this->db->where("TH_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD", $data);
+    }
+
+    public function rejectStaffTraining($refid)
+    {
+        // $currentUsr = $this->staff_id;
+        // $curDate = 'SYSDATE';
+
+        $data = array(
+            "STH_STATUS" => 'REJECT'
+        );
+
+        //$this->db->set("TH_APPROVE_DATE", $curDate, false);
+
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    // AMEND TRAINING
+    public function amendTrainingSetup($refid)
+    {
+        $currentUsr = $this->staff_id;
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "TH_STATUS" => 'ENTRY',
+            "TH_APPROVE_BY" => $currentUsr
+        );
+
+        $this->db->set("TH_APPROVE_DATE", $curDate, false);
+
+        $this->db->where("TH_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD", $data);
+    }
+
+    /*===========================================================
+       EDIT APPROVE TRAINING SETUP - ATF044
+    =============================================================*/
+
+    // GET URL
+    public function getEcommUrl()
+    {
+        $this->db->select("HP_PARM_DESC");
+        $this->db->from("HRADMIN_PARMS");
+        $this->db->where("HP_PARM_CODE = 'ECOMMUNITY_STAFF_URL'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    /*===========================================================
+       QUERY STAFF TRAINING - ATF041
+    =============================================================*/
+
+    // GET STAFF LIST
+    public function getStaffTrainingList($curUsrDept = null)
+    {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, DM_DEPT_DESC, SS_SERVICE_DESC");
+        $this->db->from("STAFF_MAIN");
+        $this->db->join("SERVICE_SCHEME", "SS_SERVICE_CODE = SM_JOB_CODE", "LEFT");
+        $this->db->join("DEPARTMENT_MAIN", "DM_DEPT_CODE = SM_DEPT_CODE", "LEFT");
+        if(!empty($curUsrDept)) {
+            $this->db->where("SM_DEPT_CODE = '$curUsrDept'");
+        }
+        $this->db->where("SM_STAFF_STATUS IN (SELECT SS_STATUS_CODE FROM STAFF_STATUS WHERE SS_STATUS_STS='ACTIVE')");
+        $this->db->where("SM_STAFF_TYPE <> 'SYSTEM'");
+        $this->db->order_by("SM_STAFF_NAME");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // GET STAFF LIST
+    public function trainingList($stfID)
+    {
+        $this->db->select("*");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->where("STH_STAFF_ID", $stfID);
 
         $q = $this->db->get();
         return $q->result();

@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>Query Training</h2>				
+            <h2>Confirmation Attend Training</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -45,24 +45,6 @@
 									</div>
 								</div>
 							</div>
-                            
-							<div class="row">
-								<div class="col-sm-3">
-									<div class="form-group text-right">
-										<label><b>Internal/External</b></label>
-									</div>
-								</div>
-								<div class="col-sm-2">
-									<div class="form-group text-left">
-										<?php echo form_dropdown('intExt', $int_ext_list, $def_int_ext, 'class="form-control listFilter" id="intExt"'); ?>
-									</div>
-								</div>
-								<div class="col-sm-3">
-									<div class="text-left">   
-										&nbsp;
-									</div>
-								</div>
-							</div>
 
 							<div class="row">
 								<div class="col-sm-3">
@@ -72,7 +54,7 @@
 								</div>
 								<div class="col-sm-2">
 									<div class="form-group text-left">
-										<?php echo form_dropdown('sMonth', $month_list, '', 'class="form-control listFilter" id="sMonth"'); ?>
+										<?php echo form_dropdown('sMonth', $month_list, $defMonth, 'class="form-control listFilter" id="sMonth"'); ?>
 									</div>
 								</div>
 							</div>
@@ -89,19 +71,6 @@
 									</div>
 								</div>
 							</div>
-
-                            <div class="row">
-								<div class="col-sm-3">
-									<div class="form-group text-right">
-										<label><b>Status</b></label>
-									</div>
-								</div>
-								<div class="col-sm-2">
-									<div class="form-group text-left">
-										<?php echo form_dropdown('tSts', $tr_sts_list, $def_tr_sts, 'class="form-control listFilter" id="tSts"'); ?>
-									</div>
-								</div>
-							</div>
                             
 
                             <ul id="myTab1" class="nav nav-tabs bordered">
@@ -109,10 +78,10 @@
                                     <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Training List</a>
                                 </li>
                                 <li class="">
-                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Training Info</a>
+                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Staff Training Applications</a>
                                 </li>
-								<li class="">
-                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Training Cost</a>
+                                <li class="">
+                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Training Info</a>
                                 </li>
 								<li class="">
                                     <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Target Group & Module Detail</a>
@@ -132,7 +101,7 @@
                                 </div>
 
                                 <div class="tab-pane fade" id="s2">
-									<div id="training_list_detl">
+									<div id="staff_training_application">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
@@ -143,10 +112,10 @@
 											</table>
 										</p>	
 									</div>
-                                </div> 
+                                </div>
 
-								<div class="tab-pane fade" id="s3">
-									<div id="training_list_detl2">
+                                <div class="tab-pane fade" id="s3">
+									<div id="training_list_detl">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
@@ -160,7 +129,7 @@
                                 </div>
 
 								<div class="tab-pane fade" id="s4">
-									<div id="training_list_detl3">
+									<div id="training_list_detl2">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
@@ -174,7 +143,7 @@
                                 </div>
 
 								<div class="tab-pane fade" id="s5">
-									<div id="training_list_detl4">
+									<div id="training_list_detl3">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
@@ -185,7 +154,7 @@
 											</table>
 										</p>	
 									</div>
-                                </div>  
+                                </div> 
 
                             </div>
                             <!-- end myTabContent1 -->
@@ -222,11 +191,10 @@
 
 <script>
 	var tr_row = '';
-	var intExt = '0';
-
+    
+	var intExt = '1';
 	var disDept = '1';
 	var disYear = '1';
-	var disTsts = '1';
 	//var dt_row2 = '';
 	
 	$(document).ready(function(){
@@ -243,7 +211,7 @@
 				echo "$('.nav-tabs li:eq(3) a').tab('show');";
 			} elseif ($currtab == 's5'){
 				echo "$('.nav-tabs li:eq(4) a').tab('show');";
-			} 
+			}
             else {
                 echo "$('.nav-tabs li:eq(0) a').tab('show');";
             }
@@ -259,31 +227,31 @@
 	$.ajax({
 		type: 'POST',
 		url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-		data: {'intExt' : intExt, 'disDept' : disDept, 'disYear' : disYear, 'disTsts' : disTsts},
+		data: {'intExt' : intExt, 'disDept' : disDept, 'disYear' : disYear},
 		beforeSend: function() {
 			$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		},
 		success: function(res) {
             $('#training_list').html(res);
 			tr_row = $('#tbl_tr_list').DataTable({
-				"ordering":false,
-				drawCallback: function(){
-					$(function() {
-						$('#tbl_tr_list').each(function() {
-						var Cell = $(this).find('td:eq(5)');
-						//debugger;
-							if (Cell.text() !== 'error') {
-								//$(this).find('btn').hide();
-								$('#tbl_tr_list tbody .approve_training_btn').hide();
-								$('#tbl_tr_list tbody .postpone_training_btn').hide();
-								$('#tbl_tr_list tbody .reject_training_btn').hide();
-								$('#tbl_tr_list tbody .amend_training_btn').hide();
-							}
-						});
-					});
-				}
-			});
-			$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-1">Action</th>');
+                "ordering":false,
+                drawCallback: function(){
+                    $(function() {
+                        $('#tbl_tr_list').each(function() {
+                        var Cell = $(this).find('td:eq(5)');
+                        //debugger;
+                            if (Cell.text() !== 'error') {
+                                //$(this).find('btn').hide();
+                                $('#tbl_tr_list tbody .approve_training_btn').replaceWith('<button type="button" class="btn btn-primary btn-xs cpd_pts_btn"><i class="fa fa-upload"></i> CPD Point</button>');
+                                    $('#tbl_tr_list tbody .postpone_training_btn').replaceWith('<button type="button" class="btn btn-warning btn-xs svc_book_btn"><i class="fa fa-upload"></i> Service Book</button>');
+                                $('#tbl_tr_list tbody .reject_training_btn').hide();
+                                $('#tbl_tr_list tbody .amend_training_btn').hide();
+                            }
+                        });
+                    });
+                }
+            });
+			$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-4">Action</th>');
 		},
 		complete: function(){
 			$('#loader').hide();
@@ -292,12 +260,11 @@
 
 	// TRAINING LIST FILTER
 	$('.listFilter').change(function() {
-		var intExt = $('#intExt').val();
+		var intExt = '1';
 		var sDept = $('#sDept').val();
 		var sMonth = $('#sMonth').val();
 		var sYear = $('#sYear').val();
-		var tSts = $('#tSts').val();
-		//alert(''+intExt+',' +sDept+',' +sMonth+''+sYear+',' +tSts+'');
+		//alert(''+sDept+',' +sMonth+''+sYear+'');
 		
 		$('.nav-tabs li:eq(0) a').tab('show');
 		$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -305,164 +272,155 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-			data: {'intExt' : intExt, 'sDept' : sDept, 'sMonth' : sMonth, 'sYear' : sYear, 'tSts' : tSts, 'disTsts' : disTsts},
+			data: {'intExt' : intExt, 'sDept' : sDept, 'sMonth' : sMonth, 'sYear' : sYear},
 			success: function(res) {
 				$('#training_list').html(res);
 				tr_row = $('#tbl_tr_list').DataTable({
-					"ordering":false,
-					drawCallback: function(){
-						$(function() {
-							$('#tbl_tr_list').each(function() {
-							var Cell = $(this).find('td:eq(5)');
-							//debugger;
-								if (Cell.text() !== 'error') {
-									//$(this).find('btn').hide();
-									$('#tbl_tr_list tbody .approve_training_btn').hide();
-									$('#tbl_tr_list tbody .postpone_training_btn').hide();
-									$('#tbl_tr_list tbody .reject_training_btn').hide();
-									$('#tbl_tr_list tbody .amend_training_btn').hide();
-								}
-							});
-						});
-					}
+                    "ordering":false,
+                    drawCallback: function(){
+                        $(function() {
+                            $('#tbl_tr_list').each(function() {
+                            var Cell = $(this).find('td:eq(5)');
+                            //debugger;
+                                if (Cell.text() !== 'error') {
+                                    //$(this).find('btn').hide();
+                                    $('#tbl_tr_list tbody .approve_training_btn').replaceWith('<button type="button" class="btn btn-primary btn-xs cpd_pts_btn"><i class="fa fa-calculator"></i> CPD Point</button>');
+                                    $('#tbl_tr_list tbody .postpone_training_btn').replaceWith('<button type="button" class="btn btn-warning btn-xs svc_book_btn"><i class="fa fa-upload"></i> Service Book</button>');
+                                    $('#tbl_tr_list tbody .reject_training_btn').hide();
+                                    $('#tbl_tr_list tbody .amend_training_btn').hide();
+                                }
+                            });
+                        });
+                    }
 				});
-				$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-1">Action</th>');
+                $('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-4">Action</th>');
 			}
 		});
-	});
-
-	// SELECT TRAINING BTN
+    });
+    
+    // SELECT TRAINING BTN
 	$('#training_list').on('click','.select_training_btn', function(){
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
 		var trRefID = td.eq(0).html().trim();
 		var trainingN = td.eq(2).html().trim();
-		//var scCode = '1';
+		//var scCode = 'ATF002';
 		//alert(refid);
 
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editTraining')?>',
-			//data: {'refID' : trRefID, 'scCode' : scCode},
-			data: {'refID' : trRefID},
+			url: '<?php echo $this->lib->class_url('getStaffTrainingApplication')?>',
+			data: {'refid' : trRefID, 'tName' : trainingN},
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
-				$('#training_list_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+				$('#staff_training_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 			},
 			success: function(res) {
-				$('#training_list_detl').html(res);
-
-				$('.modal-header').hide();
-				$('#alert').hide();
-				$('.field_inpt').prop("disabled", true);
-				$('.save_upd_tr_info').hide();
-				$('#search_str_tr_ver').hide();
-		
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('speakerInfo')?>',
-					data: {'tsRefID' : trRefID},
-					beforeSend: function() {
-						$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-					},
-					success: function(res) {
-						$('#speakerInfo').html(res);
-						$('.add_tr_sp').hide();
-					}
-				});
-
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
-					data: {'tsRefID' : trRefID},
-					beforeSend: function() {
-						$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-					},
-					success: function(res) {
-						$('#facilitatorInfo').html(res);
-						$('.add_tr_fi').hide();
-					}
-				});
-
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('verExternalAgency')?>',
-					data: {'trRefID' : trRefID},
-					dataType: 'JSON',
-					success: function(res) {
-						if(res.sts == 1) {
-							$.ajax({
-								type: 'POST',
-								url: '<?php echo $this->lib->class_url('trainingCost')?>',
-								data: {'trRefID' : trRefID, 'tName' : trainingN},
-								beforeSend: function() {
-									$('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-								},
-								success: function(res) {
-									$('#training_list_detl2').html(res);
-								}
-							});
-						} else {
-							$('#training_list_detl2').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Training Cost only available for External Agency Training</th></tr></thead></table></p>');
-						};
-					}
-				});
-
+				$('#staff_training_application').html(res);
 				
-			
+				tr_row = $('#tbl_list_sta').DataTable({
+					"ordering":false,
+				});
+
 				$.ajax({
 					type: 'POST',
-					url: '<?php echo $this->lib->class_url('targetGroup')?>',
-					data: {'trRefID' : trRefID, 'tName' : trainingN},
+					url: '<?php echo $this->lib->class_url('editTraining')?>',
+					data: {'refID' : trRefID},
 					beforeSend: function() {
-						$('#training_list_detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						$('#training_list_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 					},
 					success: function(res) {
-						$('#training_list_detl3').html(res);
-						$('.add_tg').hide();
-						$('.del_tg_btn').hide();
+						$('#training_list_detl').html(res);
+
+						$('.modal-header').hide();
+						$('#alert').hide();
+						$('.field_inpt').prop("disabled", true);
+						$('.save_upd_tr_info').hide();
+						$('#search_str_tr_ver').hide();
+				
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('speakerInfo')?>',
+							data: {'tsRefID' : trRefID},
+							beforeSend: function() {
+								$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#speakerInfo').html(res);
+								$('.add_tr_sp').hide();
+								$('#speakerInfo #spAct').hide();
+							}
+						});
 
 						$.ajax({
 							type: 'POST',
-							url: '<?php echo $this->lib->class_url('moduleSetup')?>',
+							url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
 							data: {'tsRefID' : trRefID},
 							beforeSend: function() {
-								$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+								$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 							},
 							success: function(res) {
-								$('#module_setup').html(res);
-								$('#msBTN').hide();
-								$('.edit_ms1_btn').hide();
-								$('.edit_ms2_btn').hide();
-								$('.edit_ms3_btn').hide();
+								$('#facilitatorInfo').html(res);
+								$('.add_tr_fi').hide();
+								$('#facilitatorInfo #fiAct').hide();
+							}
+						});
+					
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('targetGroup')?>',
+							data: {'trRefID' : trRefID, 'tName' : trainingN},
+							beforeSend: function() {
+								$('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#training_list_detl2').html(res);
+								$('.add_tg').hide();
+								$('.del_tg_btn').hide();
+
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('moduleSetup')?>',
+									data: {'tsRefID' : trRefID},
+									beforeSend: function() {
+										$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										$('#module_setup').html(res);
+										$('#msBTN').hide();
+										$('.edit_ms1_btn').hide();
+										$('.edit_ms2_btn').hide();
+										$('.edit_ms3_btn').hide();
+									}
+								});
+							}
+						});
+
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('cpdSetup')?>',
+							data: {'tsRefID' : trRefID, 'tName' : trainingN},
+							beforeSend: function() {
+								$('#training_list_detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#training_list_detl3').html(res);
+								$('#cpdBTN').hide();
+								$('.edit_cpd1_btn').hide();
+								$('.edit_cpd2_btn').hide();
+								$('.edit_cpd3_btn').hide();
+								$('.edit_cpd4_btn').hide();
+								$('.edit_cpd5_btn').hide();
 							}
 						});
 					}
 				});
-
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('cpdSetup')?>',
-					data: {'tsRefID' : trRefID, 'tName' : trainingN},
-					beforeSend: function() {
-						$('#training_list_detl4').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-					},
-					success: function(res) {
-						$('#training_list_detl4').html(res);
-						$('#cpdBTN').hide();
-						$('.edit_cpd1_btn').hide();
-						$('.edit_cpd2_btn').hide();
-						$('.edit_cpd3_btn').hide();
-						$('.edit_cpd4_btn').hide();
-						$('.edit_cpd5_btn').hide();
-					}
-				});
 			}
 		});
-	});	
-
-	// LIST OF ELIGIBLE POSITION //
-	$('#training_list_detl3').on('click', '.pos_tg_btn', function() {
+    });	
+    
+    // LIST OF ELIGIBLE POSITION //
+	$('#training_list_detl2').on('click', '.pos_tg_btn', function() {
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
 		//var refid = thisBtn.val();
@@ -484,4 +442,5 @@
 			}
 		});
 	});
+    
 </script>

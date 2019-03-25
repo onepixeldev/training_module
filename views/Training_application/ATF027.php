@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Query Training') ?>
+<?php echo $this->lib->title('Training Application') ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">
@@ -189,6 +189,8 @@
 	var tr_row = '';
     var intExt = '1';
     var tSts = 'ENTRY';
+	var disYear = '1';
+	var disDept = '1';
 	//var dt_row2 = '';
 	
 	$(document).ready(function(){
@@ -219,7 +221,7 @@
 	$.ajax({
 		type: 'POST',
 		url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-		data: {'intExt' : intExt, 'tSts' : tSts},
+		data: {'intExt' : intExt, 'tSts' : tSts, 'disYear' : disYear, 'disDept' : disDept},
 		beforeSend: function() {
 			$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		},
@@ -228,6 +230,7 @@
 			tr_row = $('#tbl_tr_list').DataTable({
 				"ordering":false,
 			});
+			$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-5">Action</th>');
 		},
 		complete: function(){
 			$('#loader').hide();
@@ -255,6 +258,8 @@
 				tr_row = $('#tbl_tr_list').DataTable({
 					"ordering":false
 				});
+
+				$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-5">Action</th>');
 			}
 		});
 	});
@@ -364,27 +369,203 @@
 		});
 	});	
 
-	// // LIST OF ELIGIBLE POSITION //
-	// $('#training_list_detl3').on('click', '.pos_tg_btn', function() {
-	// 	var thisBtn = $(this);
-	// 	var td = thisBtn.parent().siblings();
-	// 	//var refid = thisBtn.val();
-	// 	var gpCode = td.eq(0).html().trim();
-	// 	//alert(gpCode);
+	// LIST OF ELIGIBLE POSITION 
+	$('#training_list_detl2').on('click', '.pos_tg_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		//var refid = thisBtn.val();
+		var gpCode = td.eq(0).html().trim();
+		//alert(gpCode);
 
-	// 	$('#myModalis .modal-content').empty();
-	// 	$('#myModalis').modal('show');
-	// 	$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
-	// 	$.ajax({
-	// 		type: 'POST',
-	// 		url: '<?php echo $this->lib->class_url('listEgPosition')?>',
-	// 		data: {'gpCode' : gpCode},
-	// 		success: function(res) {
-	// 			$('#myModalis .modal-content').html(res);	
-	// 			$('#postAction').hide();
-	// 			$('#tbl_list_eg_pos tbody #postAction').hide();
-	// 		}
-	// 	});
-	// });
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('listEgPosition')?>',
+			data: {'gpCode' : gpCode},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);	
+				$('#postAction').hide();
+				$('#tbl_list_eg_pos tbody #postAction').hide();
+			}
+		});
+	});
+
+	// APPROVE TRAINING
+	$('#training_list').on('click','.approve_training_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var trName = td.eq(2).html().trim();
+		//alert(refid);
+		
+		$.confirm({
+		    title: 'Approve Training',
+		    content: 'Press OK to confirm approval <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
+			type: 'blue',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('approveTrainingSetup')?>',
+						data: {'refid' : refid},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Approval!');
+		        }
+		    }
+		});
+	});
+
+	// POSTPONE TRAINING
+	$('#training_list').on('click','.postpone_training_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var trName = td.eq(2).html().trim();
+		//alert(refid);
+		
+		$.confirm({
+		    title: 'Postpone Training',
+		    content: 'Press OK to proceed <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
+			type: 'green',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('postponeTrainingSetup')?>',
+						data: {'refid' : refid},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Postponement!');
+		        }
+		    }
+		});
+	});
+
+	// REJECT TRAINING
+	$('#training_list').on('click','.reject_training_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var trName = td.eq(2).html().trim();
+		//alert(refid);
+		
+		$.confirm({
+		    title: 'Reject Training',
+		    content: 'Press OK to confirm rejection <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('rejectTrainingSetup')?>',
+						data: {'refid' : refid, 'trName' : trName},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Rejection!');
+		        }
+		    }
+		});
+	});
+
+	// AMMEND TRAINING
+	$('#training_list').on('click','.amend_training_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var trName = td.eq(2).html().trim();
+		//alert(refid);
+		
+		$.confirm({
+		    title: 'Amend Training',
+		    content: 'Press OK to confirm amend <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
+			type: 'orange',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('amendTrainingSetup')?>',
+						data: {'refid' : refid, 'trName' : trName},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Amendment!');
+		        }
+		    }
+		});
+	});
 </script>

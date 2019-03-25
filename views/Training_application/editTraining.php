@@ -10,6 +10,7 @@
             <b>Training Info</b>
         </div>
         <br>
+        <input name="form[sc_code]" type="hidden" class="form-control" value="<?php echo $defSecCode?>" readonly>
         <div class="form-group">
             <label class="col-md-2 control-label"><b>Ref ID</b></label>
             <div class="col-md-2">
@@ -151,11 +152,11 @@
 
         <div class="form-group">
             <label class="col-md-2 control-label">Offer?</label>
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <?php echo form_dropdown('form[offer]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_OFFER, 'class="selectpicker form-control field_inpt width-50"')?>
             </div>
 
-            <label class="col-md-2 control-label">Participants</label>
+            <label class="col-md-4 control-label">Participants</label>
             <div class="col-md-4">
                 <input name="form[participants]" placeholder="Maximum number of participant" class="form-control field_inpt" type="text" value="<?php echo $trInfo->TH_MAX_PARTICIPANT?>">
             </div>

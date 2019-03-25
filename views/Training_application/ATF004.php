@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>Approve Training Applications</h2>				
+            <h2>Assign Training</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -192,6 +192,9 @@
 <script>
 	var tr_row = '';
 	var intExt = '1';
+
+	var disDept = '1';
+	var disYear = '1';
 	//var dt_row2 = '';
 	
 	$(document).ready(function(){
@@ -224,7 +227,7 @@
 	$.ajax({
 		type: 'POST',
 		url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-		data: {'intExt' : intExt},
+		data: {'intExt' : intExt, 'disDept' : disDept, 'disYear' : disYear},
 		beforeSend: function() {
 			$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		},
@@ -232,7 +235,23 @@
             $('#training_list').html(res);
 			tr_row = $('#tbl_tr_list').DataTable({
 				"ordering":false,
+				drawCallback: function(){
+                    $(function() {
+                        $('#tbl_tr_list').each(function() {
+                        var Cell = $(this).find('td:eq(5)');
+                        //debugger;
+                            if (Cell.text() !== 'error') {
+                                //$(this).find('btn').hide();
+                                $('#tbl_tr_list tbody .approve_training_btn').hide();
+                                $('#tbl_tr_list tbody .postpone_training_btn').hide();
+                                $('#tbl_tr_list tbody .reject_training_btn').hide();
+                                $('#tbl_tr_list tbody .amend_training_btn').hide();
+                            }
+                        });
+                    });
+                }
 			});
+			$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-1">Action</th>');
 		},
 		complete: function(){
 			$('#loader').hide();
@@ -257,8 +276,24 @@
 			success: function(res) {
 				$('#training_list').html(res);
 				tr_row = $('#tbl_tr_list').DataTable({
-					"ordering":false
+					"ordering":false,
+					drawCallback: function(){
+						$(function() {
+							$('#tbl_tr_list').each(function() {
+							var Cell = $(this).find('td:eq(5)');
+							//debugger;
+								if (Cell.text() !== 'error') {
+									//$(this).find('btn').hide();
+									$('#tbl_tr_list tbody .approve_training_btn').hide();
+									$('#tbl_tr_list tbody .postpone_training_btn').hide();
+									$('#tbl_tr_list tbody .reject_training_btn').hide();
+									$('#tbl_tr_list tbody .amend_training_btn').hide();
+								}
+							});
+						});
+					}
 				});
+				$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-1">Action</th>');
 			}
 		});
 	});
