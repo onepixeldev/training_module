@@ -55,7 +55,16 @@
                                     <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Training List (Staff)</a>
                                 </li>
                                 <li class="">
-                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Application Details</a>
+                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Training Info</a>
+                                </li>
+								<li class="">
+                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Training Cost</a>
+                                </li>
+								<li class="">
+                                    <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">Target Group & Module Detail</a>
+                                </li>
+								<li class="">
+                                    <a style="color:#000 !important" href="#s6" data-toggle="tab" aria-expanded="false">CPD Detail</a>
                                 </li>
                             </ul>
 							<!-- myTabContent1 -->
@@ -83,18 +92,60 @@
                                 </div>
 
                                 <div class="tab-pane fade" id="s3">
-									<div id="staff_app_detl">
+									<div id="training_list_detl">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please select staff from Staff List</th>
+													<th class="text-center">Please select training from Training List (Staff)</th>
+												</tr>
+												</thead>
+											</table>
+										</p>	
+									</div>
+                                </div> 
+
+								<div class="tab-pane fade" id="s4">
+									<div id="training_list_detl2">
+										<p>
+											<table class="table table-bordered table-hover">
+												<thead>
+												<tr>
+													<th class="text-center">Please select training from Training List (Staff)</th>
 												</tr>
 												</thead>
 											</table>
 										</p>	
 									</div>
                                 </div>
+
+								<div class="tab-pane fade" id="s5">
+									<div id="training_list_detl3">
+										<p>
+											<table class="table table-bordered table-hover">
+												<thead>
+												<tr>
+													<th class="text-center">Please select training from Training List (Staff)</th>
+												</tr>
+												</thead>
+											</table>
+										</p>	
+									</div>
+                                </div>
+
+								<div class="tab-pane fade" id="s6">
+									<div id="training_list_detl4">
+										<p>
+											<table class="table table-bordered table-hover">
+												<thead>
+												<tr>
+													<th class="text-center">Please select training from Training List (Staff)</th>
+												</tr>
+												</thead>
+											</table>
+										</p>	
+									</div>
+                                </div> 
 
                             </div>
                             <!-- end myTabContent1 -->
@@ -144,7 +195,13 @@
                 echo "$('.nav-tabs li:eq(1) a').tab('show');";
             } elseif ($currtab == 's3'){
 				echo "$('.nav-tabs li:eq(2) a').tab('show');";
-			}  
+			} elseif ($currtab == 's4'){
+				echo "$('.nav-tabs li:eq(3) a').tab('show');";
+			} elseif ($currtab == 's5'){
+				echo "$('.nav-tabs li:eq(4) a').tab('show');";
+			} elseif ($currtab == 's6'){
+				echo "$('.nav-tabs li:eq(5) a').tab('show');";
+			}
             else {
                 echo "$('.nav-tabs li:eq(0) a').tab('show');";
             }
@@ -175,7 +232,7 @@
 		},
     });
 
-	// STAFF TRAINING LIST FILTER
+	// STAFF LIST FILTER
 	$('.listFilter').change(function() {
 		var sDept = $('#sDept').val();
 		
@@ -195,50 +252,207 @@
 		});
 	});
 
-	// SELECT TRAINING BTN
+	// SELECT STAFF BTN
 	$('#staff_training_list').on('click','.select_staff_btn', function(){
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
 		var stfID = td.eq(0).html().trim();
 		var stfName = td.eq(1).html().trim();
 		//var scCode = '1';
-		alert(''+stfID+' '+stfName+'');
+		//alert(''+stfID+' '+stfName+'');
 
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('trainingList')?>',
+			url: '<?php echo $this->lib->class_url('trainingListStaff')?>',
 			data: {'stfID' : stfID},
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
-				$('#training_list_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+				$('#training_list_staff').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 			},
 			success: function(res) {
-			
+				$('#training_list_staff').html(res);
+				tr_row = $('#tr_list_stf').DataTable({
+					"ordering":false,
+				});
 			}
 		});
 	});	
 
-	// // LIST OF ELIGIBLE POSITION //
-	// $('#training_list_detl3').on('click', '.pos_tg_btn', function() {
-	// 	var thisBtn = $(this);
-	// 	var td = thisBtn.parent().siblings();
-	// 	//var refid = thisBtn.val();
-	// 	var gpCode = td.eq(0).html().trim();
-	// 	//alert(gpCode);
+	// SELECT TRAINING BTN
+	$('#training_list_staff').on('click','.tr_detl_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var trRefID = td.eq(0).html().trim();
+		var trainingN = td.eq(1).html().trim();
+		//var scCode = '1';
+		//alert(trRefID);
 
-	// 	$('#myModalis .modal-content').empty();
-	// 	$('#myModalis').modal('show');
-	// 	$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editTraining')?>',
+			//data: {'refID' : trRefID, 'scCode' : scCode},
+			data: {'refID' : trRefID},
+			beforeSend: function() {
+				$('.nav-tabs li:eq(2) a').tab('show');
+				$('#training_list_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			},
+			success: function(res) {
+				$('#training_list_detl').html(res);
+
+				$('.modal-header').hide();
+				$('#alert').hide();
+				$('.field_inpt').prop("disabled", true);
+				$('.save_upd_tr_info').hide();
+				$('#search_str_tr_ver').hide();
+		
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('speakerInfo')?>',
+					data: {'tsRefID' : trRefID},
+					beforeSend: function() {
+						$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#speakerInfo').html(res);
+						$('.add_tr_sp').hide();
+						$('#speakerInfo #spAct').hide();
+					}
+				});
+
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
+					data: {'tsRefID' : trRefID},
+					beforeSend: function() {
+						$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#facilitatorInfo').html(res);
+						$('.add_tr_fi').hide();
+						$('#facilitatorInfo #fiAct').hide();
+					}
+				});
+
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('verExternalAgency')?>',
+					data: {'trRefID' : trRefID},
+					dataType: 'JSON',
+					success: function(res) {
+						if(res.sts == 1) {
+							$.ajax({
+								type: 'POST',
+								url: '<?php echo $this->lib->class_url('trainingCost')?>',
+								data: {'trRefID' : trRefID, 'tName' : trainingN},
+								beforeSend: function() {
+									$('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+								},
+								success: function(res) {
+									$('#training_list_detl2').html(res);
+								}
+							});
+						} else {
+							$('#training_list_detl2').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Training Cost only available for External Agency Training</th></tr></thead></table></p>');
+						};
+					}
+				});
+
+				
+			
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('targetGroup')?>',
+					data: {'trRefID' : trRefID, 'tName' : trainingN},
+					beforeSend: function() {
+						$('#training_list_detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#training_list_detl3').html(res);
+						$('.add_tg').hide();
+						$('.del_tg_btn').hide();
+
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('moduleSetup')?>',
+							data: {'tsRefID' : trRefID},
+							beforeSend: function() {
+								$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#module_setup').html(res);
+								$('#msBTN').hide();
+								$('.edit_ms1_btn').hide();
+								$('.edit_ms2_btn').hide();
+								$('.edit_ms3_btn').hide();
+							}
+						});
+					}
+				});
+
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('cpdSetup')?>',
+					data: {'tsRefID' : trRefID, 'tName' : trainingN},
+					beforeSend: function() {
+						$('#training_list_detl4').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#training_list_detl4').html(res);
+						$('#cpdBTN').hide();
+						$('.edit_cpd1_btn').hide();
+						$('.edit_cpd2_btn').hide();
+						$('.edit_cpd3_btn').hide();
+						$('.edit_cpd4_btn').hide();
+						$('.edit_cpd5_btn').hide();
+					}
+				});
+			}
+		});
+	});
+
+	// LIST OF ELIGIBLE POSITION //
+	$('#training_list_detl3').on('click', '.pos_tg_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		//var refid = thisBtn.val();
+		var gpCode = td.eq(0).html().trim();
+		//alert(gpCode);
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
-	// 	$.ajax({
-	// 		type: 'POST',
-	// 		url: '<?php echo $this->lib->class_url('listEgPosition')?>',
-	// 		data: {'gpCode' : gpCode},
-	// 		success: function(res) {
-	// 			$('#myModalis .modal-content').html(res);	
-	// 			$('#postAction').hide();
-	// 			$('#tbl_list_eg_pos tbody #postAction').hide();
-	// 		}
-	// 	});
-	// });
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('listEgPosition')?>',
+			data: {'gpCode' : gpCode},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);	
+				$('#postAction').hide();
+				$('#tbl_list_eg_pos tbody #postAction').hide();
+			}
+		});
+	});
+
+	// STAFF TRAINING APPLICATION DETAILS 
+	$('#training_list_staff').on('click', '.stf_tr_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var tName = td.eq(1).html().trim();
+		// alert(refid+' '+tName);
+
+		// $('#myModalis2 #mContent2').empty();
+		// $('#myModalis2').modal('show');
+		// $('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		// $.ajax({
+		// 	type: 'POST',
+		// 	url: '<?php echo $this->lib->class_url('addCPDSetup')?>',
+		// 	data: {'refid' : refid},
+		// 	success: function(res) {
+		// 		$('#myModalis2 .modal-content').html(res);
+		// 	}
+		// });
+	});
 </script>

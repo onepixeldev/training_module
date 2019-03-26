@@ -1930,11 +1930,19 @@ class Training_application_model extends MY_Model
     }
 
     // GET STAFF LIST
-    public function trainingList($stfID)
+    public function trainingListStaff($stfID)
     {
-        $this->db->select("*");
-        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->select("STH_TRAINING_REFID, TH_TRAINING_TITLE, TPS_DESC, TPR_DESC, STH_STATUS, STH_REMARK,
+                            CASE
+                            WHEN STH_COMPLETE = 'Y' THEN 'YES'
+                            ELSE 'NO'
+                            END AS STHCOMPLETE");
+        $this->db->from("STAFF_TRAINING_HEAD STH");
+        $this->db->join("TRAINING_HEAD TH", "STH.STH_TRAINING_REFID = TH.TH_REF_ID", "LEFT");
+        $this->db->join("TRAINING_PARTICIPANT_STATUS TPS", "STH.STH_PARTICIPANT_STATUS = TPS.TPS_CODE", "LEFT");
+        $this->db->join("TRAINING_PARTICIPANT_ROLE TPR", "STH.STH_PARTICIPANT_ROLE = TPR.TPR_CODE", "LEFT");
         $this->db->where("STH_STAFF_ID", $stfID);
+        $this->db->order_by("STH_TRAINING_REFID");
 
         $q = $this->db->get();
         return $q->result();

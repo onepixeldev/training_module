@@ -368,6 +368,7 @@
 					success: function(res) {
 						$('#speakerInfo').html(res);
 						$('.add_tr_sp').hide();
+						$('#speakerInfo #spAct').hide();
 					}
 				});
 
@@ -381,6 +382,7 @@
 					success: function(res) {
 						$('#facilitatorInfo').html(res);
 						$('.add_tr_fi').hide();
+						$('#facilitatorInfo #fiAct').hide();
 					}
 				});
 

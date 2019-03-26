@@ -2961,13 +2961,17 @@ class Training_application extends MY_Controller
     }
 
     // STAFF TRAINING LIST
-    public function trainingList()
+    public function trainingListStaff()
     {   
         $stfID = $this->input->post('stfID', true);
 
         // get available records
-        $data['tr_list'] = $this->mdl->trainingList($stfID);
-
+        if(!empty($stfID)) {
+            $data['tr_list'] = $this->mdl->trainingListStaff($stfID);
+        } else {
+            $data['tr_list'] = '';
+        }
+        
         $this->render($data);
     }
 }
