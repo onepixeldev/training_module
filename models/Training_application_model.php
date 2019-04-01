@@ -1912,7 +1912,7 @@ class Training_application_model extends MY_Model
     =============================================================*/
 
     // GET STAFF LIST
-    public function getStaffTrainingList($curUsrDept = null)
+    public function getStaffTrainingList($curUsrDept = null, $stfID = null)
     {
         $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, DM_DEPT_DESC, SS_SERVICE_DESC");
         $this->db->from("STAFF_MAIN");
@@ -1920,6 +1920,9 @@ class Training_application_model extends MY_Model
         $this->db->join("DEPARTMENT_MAIN", "DM_DEPT_CODE = SM_DEPT_CODE", "LEFT");
         if(!empty($curUsrDept)) {
             $this->db->where("SM_DEPT_CODE = '$curUsrDept'");
+        }
+        if(!empty($stfID)) {
+            $this->db->where("SM_STAFF_ID = '$stfID'");
         }
         $this->db->where("SM_STAFF_STATUS IN (SELECT SS_STATUS_CODE FROM STAFF_STATUS WHERE SS_STATUS_STS='ACTIVE')");
         $this->db->where("SM_STAFF_TYPE <> 'SYSTEM'");
@@ -1946,5 +1949,285 @@ class Training_application_model extends MY_Model
 
         $q = $this->db->get();
         return $q->result();
+    }
+
+    // GET STAFF LIST
+    public function applicationDetail($refid, $stfID)
+    {
+        $this->db->select("STH_TRAINING_REFID ||' - '|| TH_TRAINING_TITLE TRAINING_ID, TO_CHAR(STH_APPLY_DATE, 'DD/MM/YYYY') AS APPL_DATE, 
+                            CASE
+                            WHEN STD_TRAINING_CALENDAR = 'Y' THEN 'YES'
+                            ELSE 'NO'
+                            END AS TRAINING_CALENDAR,
+                            CASE
+                            WHEN STD_WORK_RELATED = 'Y' THEN 'YES'
+                            ELSE 'NO'
+                            END AS WORK_RELATED, 
+                            STH_STAFF_TRAINING_BENEFIT, STH_VERIFY_BY ||' - '|| SM1.SM_STAFF_NAME AS VER_BY,
+                            TO_CHAR(STH_VERIFY_DATE, 'DD/MM/YYYY') AS VER_DATE, STH_DEPT_TRAINING_BENEFIT, STH_RECOMMEND_BY ||' - '|| SM2.SM_STAFF_NAME AS REC_BY, 
+                            TO_CHAR(STH_RECOMMEND_DATE, 'DD/MM/YYYY') AS REC_DATE, STH_RECOMMENDER_REASON, STH_REMARK, STH_APPROVE_BY ||' - '|| SM3.SM_STAFF_NAME AS APPR_BY,
+                            TO_CHAR(STH_APPROVE_DATE, 'DD/MM/YYYY') AS APPR_DATE, TO_CHAR(STD_MPE_DATE, 'DD/MM/YYYY') AS MPE_DATE, 
+                            STH_APPROVE_REASON, STD_CANCEL_BY ||' - '|| SM4.SM_STAFF_NAME AS CANC_BY, TO_CHAR(STD_CANCEL_DATE, 'DD/MM/YYYY') AS CANC_DATE, 
+                            STD_CANCEL_REASON");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->join("TRAINING_HEAD", "STH_TRAINING_REFID = TH_REF_ID", "LEFT");
+        $this->db->join("STAFF_TRAINING_DETL", "STH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID", "LEFT");
+        $this->db->join("STAFF_MAIN SM1", "SM1.SM_STAFF_ID = STH_VERIFY_BY", "LEFT");
+        $this->db->join("STAFF_MAIN SM2", "SM2.SM_STAFF_ID = STH_RECOMMEND_BY", "LEFT");
+        $this->db->join("STAFF_MAIN SM3", "SM3.SM_STAFF_ID = STH_APPROVE_BY", "LEFT");
+        $this->db->join("STAFF_MAIN SM4", "SM4.SM_STAFF_ID = STD_CANCEL_BY", "LEFT");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_STAFF_ID", $stfID);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    /*===========================================================
+       Confirmation Attend Training - ATF148
+    =============================================================*/
+
+    // GET STAFF LIST
+    public function getStaffTrainingApplicationConf($refid, $stfID = null)
+    {
+        $this->db->select("STH_TRAINING_REFID, SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, 
+                            TPR_DESC, TO_CHAR(STH_APPLY_DATE, 'DD/MM/YYYY') AS STHAPPDATE,
+                            CASE
+                            WHEN STD_ATTEND = 'A' THEN 'Yes (Auto)'
+                            WHEN STD_ATTEND = 'Y' THEN 'Yes'
+                            WHEN STD_ATTEND = 'N' THEN 'No'
+                            END AS STD_ATTEND, 
+                            CASE
+                            WHEN STD_SENDMEMO = 'Y' THEN 'Yes'
+                            WHEN STD_SENDMEMO = 'Y' THEN 'No'
+                            END AS STD_SENDMEMO,
+                            CASE
+                            WHEN STH_HOD_EVALUATION = 'Y' THEN 'Yes'
+                            WHEN STH_HOD_EVALUATION = 'N' THEN 'No'
+                            END AS STH_HOD_EVALUATION,
+                            CASE
+                            WHEN STD_TRANSPORTATION = 'OWN_SHARING' THEN 'Owned  / Shared Transport'
+                            WHEN STD_TRANSPORTATION = 'UPSI' THEN 'UPSI'
+                            END AS STD_TRANSPORTATION, 
+                            TO_CHAR(STD_ATTEND_DATE, 'DD/MM/YYYY') 
+                            STD_ATTEND_DATE, STD_ATTEND_REMARK, STD_ATTEND AS STD_ATTEND2,
+                            STD_TRANSPORTATION AS STD_TRANSPORTATION2");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->join("STAFF_MAIN", "STH_STAFF_ID = SM_STAFF_ID", "LEFT");
+        $this->db->join("STAFF_SERVICE", "STH_STAFF_ID = SS_STAFF_ID", "LEFT");
+        $this->db->join("TRAINING_PARTICIPANT_ROLE", "STH_PARTICIPANT_ROLE = TPR_CODE", "LEFT");
+        $this->db->join("STAFF_TRAINING_DETL", "STH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID", "LEFT");
+
+        if(!empty($stfID)) {
+            $this->db->where("STH_STAFF_ID", $stfID);
+            $this->db->where("STH_TRAINING_REFID", $refid);
+            $this->db->where("STH_STATUS = 'APPROVE'"); 
+
+            $q = $this->db->get();
+            return $q->row();
+        } else {
+            $this->db->where("STH_TRAINING_REFID", $refid);
+            $this->db->where("STH_STATUS = 'APPROVE'");
+            $this->db->order_by("STH_STAFF_ID");
+
+            $q = $this->db->get();
+            return $q->result();
+        }
+    }
+
+    // CHECK TRAINING EXTERNAL
+    public function getTrainingExternal($refid)
+    {
+        $this->db->select("TH_INTERNAL_EXTERNAL, TH_TRAINING_CODE");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_REF_ID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // AUTO ATTEND CONFIRMATION UPDATE
+    public function autoAttendConfirmation($refid, $staffID, $transport)
+    {
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "STD_ATTEND" => 'A',
+            "STD_TRANSPORTATION" => $transport
+        );
+
+        $this->db->set("STD_ATTEND_DATE", $curDate, false);
+
+        $this->db->where("STD_TRAINING_REFID", $refid);
+        $this->db->where("STD_STAFF_ID", $staffID);
+
+        return $this->db->update("STAFF_TRAINING_DETL", $data);
+    }
+
+    // AUTO ATTEND CONFIRMATION INSERT
+    public function autoAttendConfirmationIns($refid, $staffID, $transport)
+    {
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "STD_TRAINING_REFID" => $refid,
+            "STD_STAFF_ID" => $staffID,
+            "STD_ATTEND" => 'A',
+            "STD_TRANSPORTATION" => $transport
+        );
+
+        $this->db->set("STD_ATTEND_DATE", $curDate, false);
+
+        return $this->db->insert("STAFF_TRAINING_DETL", $data);
+    }
+
+    // COUNT TRAINING REQUIREMENT
+    public function getTrainingRequirement($trCode, $staffID)
+    {
+        $query = "SELECT COUNT(1) AS R_COUNT
+        FROM TRAINING_REQUIREMENT_MAIN,TRAINING_REQUIREMENT_DETL
+        WHERE TRM_CODE = TRD_ID
+        AND TRM_SETUP_CODE IN (SELECT TRS_CODE
+        FROM TRAINING_REQUIREMENT_SETUP 
+        WHERE TRS_REMARK IS NOT NULL
+        AND TRS_DATE_TO IS NULL)
+        AND TRM_STAFF_ID = '$staffID'
+        AND TRD_TRAINING_REFID = '$trCode'
+        AND TRD_STATUS <> 'APPROVE'";
+
+        $q = $this->db->query($query);
+        return $q->row();
+    }
+
+    // UPDATE TRAINING REQUIREMENT DETAIL
+    public function updTrainingRequirementDetl($trCode, $staffID)
+    {
+        $currStaff = $this->staff_id;
+
+        $query = "UPDATE TRAINING_REQUIREMENT_DETL
+        SET TRD_STATUS = 'APPROVE',
+        TRD_UPDATE_BY = '$currStaff',
+        TRD_UPDATE_DATE = SYSDATE
+        WHERE EXISTS  
+        (SELECT TRM_CODE 
+        FROM TRAINING_REQUIREMENT_MAIN
+        WHERE TRM_CODE = TRD_ID
+        AND TRM_STAFF_ID = '$staffID'
+        and TRM_SETUP_CODE in 
+            (SELECT TRS_CODE
+            FROM TRAINING_REQUIREMENT_SETUP 
+            WHERE TRS_REMARK is not null
+            and TRS_DATE_TO is null)
+            ) 
+        AND TRD_TRAINING_REFID = '$trCode'
+        and TRD_STATUS <> 'APPROVE'";
+
+        $q = $this->db->query($query);
+        $afftectedRows =  $this->db->affected_rows();
+
+        if ($afftectedRows > 0) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+
+        // if ($q === FALSE) {
+		// 	// return 0 if fail to execute create_memo
+		// 	return 0;
+		// } 
+        // return 1;
+    }
+
+    // CHECK TRAINING EXTERNAL
+    public function getRemarkList()
+    {
+        $this->db->select("*");
+        $this->db->from("TRAINING_REMARK_SETUP");
+        $this->db->where("TRS_MODULE = 'APPLICATION'");
+        $this->db->order_by("TRS_SEQ");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // SAVE UPDATE APPLICANT DETAILS
+    public function saveUpdateApplicantDetails($form, $refid, $stfID)
+    {
+        $data = array(
+            "STD_ATTEND" => $form['attendance_confirmation'],
+            "STD_TRANSPORTATION" => $form['transportation'],
+            "STD_ATTEND_REMARK" => $form['absent_remark']
+        );
+
+        if(!empty($form['confirm_date'])){
+            $confirm_date = "TO_DATE('".$form['confirm_date']."', 'DD/MM/YYYY')";
+            $this->db->set("STD_ATTEND_DATE", $confirm_date, false);
+        }
+
+        $this->db->where("STD_TRAINING_REFID", $refid);
+        $this->db->where("STD_STAFF_ID", $stfID);
+
+        return $this->db->update("STAFF_TRAINING_DETL", $data);
+    }
+
+    public function getCountAttendSum($refid, $att)
+    {
+
+        $this->db->select("COUNT(1) COUNT_ATTEND");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->join("STAFF_TRAINING_DETL", "STH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID","LEFT");
+        $this->db->where("STD_TRAINING_REFID", $refid);
+        $this->db->where("STH_STATUS = 'APPROVE'");
+        if($att == 0) {
+            $this->db->where("(STD_ATTEND = 'Y' OR STD_ATTEND = 'A')");
+        }
+
+        if($att == 1) {
+            $this->db->where("STD_ATTEND = 'N'");
+        }
+
+        if($att == 2) {
+            $this->db->where("STD_ATTEND IS NULL");
+        }
+
+        $q = $this->db->get();
+        return $q->row();
+
+
+        // if($att == 0) {
+        //     $this->db->select("COUNT(1) COUNT_ATTEND");
+        //     $this->db->from("STAFF_TRAINING_HEAD");
+        //     $this->db->join("STAFF_TRAINING_DETL", "TH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID","LEFT");
+        //     $this->db->where("STD_TRAINING_REFID", $refid);
+        //     $this->db->where("STH_STATUS = 'APPROVE'");
+        //     $this->db->where("(STD_ATTEND = 'Y' OR STD_ATTEND = 'A')");
+
+        //     $q = $this->db->get();
+        //     return $q->row();
+        // } 
+
+        // if($att == 1) {
+        //     $this->db->select("COUNT(1) COUNT_ABSENT");
+        //     $this->db->from("STAFF_TRAINING_HEAD");
+        //     $this->db->join("STAFF_TRAINING_DETL", "TH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID","LEFT");
+        //     $this->db->where("STD_TRAINING_REFID", $refid);
+        //     $this->db->where("STH_STATUS = 'APPROVE'");
+        //     $this->db->where("STD_ATTEND = 'N'");
+
+        //     $q = $this->db->get();
+        //     return $q->row();
+        // }
+
+        // if($att == 2) {
+        //     $this->db->select("COUNT(1) COUNT_ATTEND");
+        //     $this->db->from("STAFF_TRAINING_HEAD");
+        //     $this->db->join("STAFF_TRAINING_DETL", "TH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID","LEFT");
+        //     $this->db->where("STD_TRAINING_REFID", $refid);
+        //     $this->db->where("STH_STATUS = 'APPROVE'");
+        //     $this->db->where("STD_ATTEND IS NULL");
+
+        //     $q = $this->db->get();
+        //     return $q->row();
+        // }
     }
 }

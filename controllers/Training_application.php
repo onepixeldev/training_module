@@ -2678,7 +2678,7 @@ class Training_application extends MY_Controller
             if($update > 0) {
                 $upd_stf_row = $this->mdl->getAssignStaff($refid, $staffid);
 
-                $json = array('sts' => 1, 'msg' => $refid.''.$staffid, 'alert' => 'success', 'upd_stf_row' => $upd_stf_row);
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'upd_stf_row' => $upd_stf_row);
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
             }
@@ -2933,29 +2933,31 @@ class Training_application extends MY_Controller
     {   
         // selected filter value
         $selDept = $this->input->post('sDept', true);
+        $selStfId = $this->input->post('stfID', true);
 
         $disDept = $this->input->post('disDept', true);
 
+
+
         // default filter value
         if (empty($selDept)) {
-            // current user dept
-            // $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
-            // $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
             $curUsrDept = '';
             if($disDept == '1') {
                 $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
                 $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
             }
         } else {
-            // $defIntExt = $selIntExt;
             $curUsrDept = $selDept; 
-            // $defMonth = $selMonth;
-            // $curYear = $selYear;
-            // $defTrSts = $selSts;
+        }
+
+        if (empty($selStfId)) {
+            $stfID = '';
+        } else {
+            $stfID = $selStfId; 
         }
 
         // get available records
-        $data['stf_tr_list'] = $this->mdl->getStaffTrainingList($curUsrDept);
+        $data['stf_tr_list'] = $this->mdl->getStaffTrainingList($curUsrDept, $stfID);
 
         $this->render($data);
     }
@@ -2964,14 +2966,424 @@ class Training_application extends MY_Controller
     public function trainingListStaff()
     {   
         $stfID = $this->input->post('stfID', true);
+        $stfName = $this->input->post('stfName', true);
 
         // get available records
         if(!empty($stfID)) {
+            $data['stfID'] = $stfID;
+            $data['stfName'] = $stfName;
             $data['tr_list'] = $this->mdl->trainingListStaff($stfID);
         } else {
             $data['tr_list'] = '';
         }
         
         $this->render($data);
+    }
+
+    // STAFF APPLICATION DETAILS
+    public function applicationDetail()
+    {   
+        $refid = $this->input->post('refid', true);
+        $stfID = $this->input->post('stfID', true);
+
+        // get available records
+        if(!empty($refid) && !empty($stfID)) {
+            $data['refid'] = $refid;
+            $data['stfID'] = $stfID;
+            $data['app_detl'] = $this->mdl->applicationDetail($refid, $stfID);
+        } else {
+            $data['app_detl'] = '';
+        }
+        
+        $this->render($data);
+    }
+
+     /*===========================================================
+       Confirmation Attend Training - ATF148
+    =============================================================*/
+
+    // APPLICANT LIST
+    public function getStaffTrainingApplicationConf()
+    {   
+        $refid = $this->input->post('refid', true);
+        $tName = $this->input->post('tName', true);
+
+        //$data2 = array();
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $data['tname'] = $tName;
+            $data['c_attend'] = $this->mdl->getCountAttendSum($refid, $att = 0);
+            $data['c_absent'] = $this->mdl->getCountAttendSum($refid, $att = 1);
+            $data['c_unconf'] = $this->mdl->getCountAttendSum($refid, $att = 2);
+            $data['total_approve'] = $this->mdl->getCountAttendSum($refid, $att = 3);
+            $data['summary'] = nl2br('Total Offer Approved: <b>'.$data['total_approve']->COUNT_ATTEND."</b>\r\n"."\r\n".
+                               'Total Attend: <b>'.$data['c_attend']->COUNT_ATTEND."</b>\r\n".
+                               'Total Absent: <b>'.$data['c_absent']->COUNT_ATTEND."</b>\r\n".
+                               'Total Unconfirmed: <b>'.$data['c_unconf']->COUNT_ATTEND.'</b>');
+
+
+            $data['staff_tr_list_con'] = $this->mdl->getStaffTrainingApplicationConf($refid);
+        } 
+
+        $this->renderAjax($data);
+    }
+
+    // VERIFY ATTEND CONFIRMATION
+    public function verifyAttendConfirmation() {
+        $this->isAjax();
+        
+		$stfName = $this->input->post('stfName', true);
+        $stfID = $this->input->post('stfID', true);
+        $refid = $this->input->post('refid', true);
+        
+        if (!empty($refid) && !empty($stfID)) {
+            $checkStfTrDetl = $this->mdl->verifyTraining($refid, $stfID);
+
+            if(!empty($checkStfTrDetl)) {
+                if($checkStfTrDetl->STD_ATTEND == 'A' || $checkStfTrDetl->STD_ATTEND == 'Y') {
+                    $json = array('sts' => 1, 'msg' => 'Applicant attendance <b>already confirmed</b>. <br>Staff ID: <b>'.$stfID.' - '.$stfName.'</b>', 'alert' => 'danger');
+                } elseif($checkStfTrDetl->STD_ATTEND == 'N') {
+                    $json = array('sts' => 1, 'msg' => 'Applicant attendance cannot be confirmed. <br>Staff ID: <b>'.$stfID.' - '.$stfName.'</b>', 'alert' => 'danger');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Applicant attendance need confirmation.', 'alert' => 'danger');
+                }
+                
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Applicant attendance need confirmation.', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // AUTO ATTEND CONFIRMATION
+    public function autoAttendConfirmation() {
+        $this->isAjax();
+        
+		$stfName = $this->input->post('stfName', true);
+        $stfID = $this->input->post('stfID', true);
+        $refid = $this->input->post('refid', true);
+        
+        if (!empty($refid) && !empty($stfID)) {
+            $checkStfTrDetl = $this->mdl->verifyTraining($refid, $stfID);
+
+            if(!empty($checkStfTrDetl)) {
+                // UPDATE
+                $transport = '';
+                $trCode = '';
+                $attend_field = '';
+                $checkTrExternal = $this->mdl->getTrainingExternal($refid);
+                if(!empty($checkTrExternal)) {
+                    $trCode = $checkTrExternal->TH_TRAINING_CODE;
+                    if($checkTrExternal->TH_INTERNAL_EXTERNAL == 'EXTERNAL') {
+                        $transport = 'UPSI';
+                    } 
+                }
+
+                $autoConfirm = $this->mdl->autoAttendConfirmation($refid, $stfID, $transport);
+                if($autoConfirm > 0) {
+                    $attend_field = $this->mdl->verifyTraining($refid, $stfID);
+                    if($attend_field->STD_ATTEND == 'A') {
+                        $attend_field = 'Yes (Auto)';
+                    } else {
+                        $attend_field = '';
+                    }
+                    $autoConfMsg = 'Attendance <font color="green"><b>successfully confirmed</b></font>. <br>Staff ID: <b>'.$stfID.' - '.$stfName.'</b>';
+                } else {
+                    $autoConfMsg = 'Fail to confirm attendance.';
+                }
+
+                $countRequirement = $this->mdl->getTrainingRequirement($trCode, $stfID);
+                if($countRequirement->R_COUNT > 0) {
+                    $updateTrRequirement = $this->mdl->updTrainingRequirementDetl($trCode, $stfID);
+                    if($updateTrRequirement == TRUE){
+                        $updMsg = 'Training Requirement successfully updated.';
+                    } else {
+                        $updMsg = 'Fail to update Training Requirement.';
+                    }
+                    
+                } else {
+                    $updMsg = '';
+                }
+                $json = array('sts' => 1, 'msg' => ''.$autoConfMsg.'<br>'.$updMsg.'', 'alert' => 'green', 'attend_field' => $attend_field);
+            } else {
+                // INSERT
+                $transport = '';
+                $trCode = '';
+                $checkTrExternal = $this->mdl->getTrainingExternal($refid);
+                if(!empty($checkTrExternal)) {
+                    $trCode = $checkTrExternal->TH_TRAINING_CODE;
+                    if($checkTrExternal->TH_INTERNAL_EXTERNAL == 'EXTERNAL') {
+                        $transport = 'UPSI';
+                    } 
+                }
+
+                $autoConfirmIns = $this->mdl->autoAttendConfirmationIns($refid, $stfID, $transport);
+                if($autoConfirmIns > 0) {
+                    $attend_field = $this->mdl->verifyTraining($refid, $stfID);
+                    if($attend_field->STD_ATTEND == 'A') {
+                        $attend_field = 'Yes (Auto)';
+                    } else {
+                        $attend_field = '';
+                    }
+                    $autoConfMsg = 'Attendance <font color="green"><b>successfully confirmed</b></font>. <br>Staff ID: <b>'.$stfID.' - '.$stfName.'</b>';
+                } else {
+                    $autoConfMsg = 'Fail to confirm attendance.';
+                }
+
+                $countRequirement = $this->mdl->getTrainingRequirement($trCode, $stfID);
+                if($countRequirement->R_COUNT > 0) {
+                    $updateTrRequirement = $this->mdl->updTrainingRequirementDetl($trCode, $stfID);
+                    if($updateTrRequirement == TRUE){
+                        $updMsg = 'Training Requirement successfully updated.';
+                    } else {
+                        $updMsg = 'Fail to update Training Requirement.';
+                    }
+                    
+                } else {
+                    $updMsg = '';
+                }
+                $json = array('sts' => 1, 'msg' => ''.$autoConfMsg.'<br>'.$updMsg.'', 'alert' => 'green', 'attend_field' => $attend_field);
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // APPLICANT OTHER DETAILS 
+    public function applicantOtherDetl()
+    {   
+        $refid = $this->input->post('refid', true);
+        $stfID = $this->input->post('stfID', true);
+        $tName = $this->input->post('stfName', true);
+
+        //$data2 = array();
+
+        if(!empty($refid) && !empty($stfID) && !empty($tName)) {
+            $data['refid'] = $refid;
+            $data['stfID'] = $stfID;
+            $data['tname'] = $tName;
+            $data['app_ot_detl'] = $this->mdl->getStaffTrainingApplicationConf($refid, $stfID);
+        } 
+
+        $this->renderAjax($data);
+    }
+
+    // EDIT APPLICANT DETAILS 
+    public function editApplicantDetails()
+    {   
+        $refid = $this->input->post('refid', true);
+        $stfID = $this->input->post('stfID', true);
+        $stName = $this->input->post('stfName', true);
+
+        //$data2 = array();
+
+        if(!empty($refid) && !empty($stfID) && !empty($stName)) {
+            $data['refid'] = $refid;
+            $data['stfID'] = $stfID;
+            $data['stName'] = $stName;
+            $data['abs_rmk'] = $this->dropdown($this->mdl->getRemarkList(), 'TRS_REMARK', 'TRS_REMARK', ' ---Please select--- ');
+            $data['app_ot_detl'] = $this->mdl->getStaffTrainingApplicationConf($refid, $stfID);
+        } 
+
+        $this->renderAjax($data);
+    }
+
+    // SAVE UPDATE APPLICANT DETAILS
+    public function saveUpdateApplicantDetails() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // TRAINING REF ID
+        $refid = $form['refid'];
+
+        // STAFF ID
+        $stfID = $form['staff_id'];
+
+        // form / input validation
+        $rule = array(
+            'attendance_confirmation' => 'max_length[1]',
+            'transportation' => 'max_length[12]',
+            'confirm_date' => 'max_length[11]',
+            'absent_remark' => 'max_length[200]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1 && !empty($refid) && !empty($stfID)) {
+            $update = $this->mdl->saveUpdateApplicantDetails($form, $refid, $stfID);
+
+            if($update > 0) {
+                $attend_field = $this->mdl->verifyTraining($refid, $stfID);
+                if($attend_field->STD_ATTEND == 'A') {
+                    $attend_field = 'Yes (Auto)';
+                } elseif($attend_field->STD_ATTEND == 'Y') {
+                    $attend_field = 'Yes';
+                } elseif($attend_field->STD_ATTEND == 'N') {
+                    $attend_field = 'No';
+                } else {
+                    $attend_field = '';
+                }
+
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'attend_field' => $attend_field);
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // RESEND EMAIL APPLICANT
+    public function resendEmailApplicant()
+    {
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $stfID = $this->input->post('stfID', true);
+        $stName = $this->input->post('stfName', true);
+        $memo_from = 'bsm.latihan@upsi.edu.my';
+
+        if(!empty($refid) && !empty($staffID)) {
+
+            // GET TRAINING DETAIL
+            $tr_detl = $this->mdl->getTrDetl($refid);
+            if(!empty($tr_detl)) {
+                // TRAINING TITLE
+                $tr_title = $tr_detl->TH_TRAINING_TITLE;
+                // TRAINING VENUE
+                $tr_venue = $tr_detl->TH_TRAINING_VENUE;
+                // TRAINING DATE FROM
+                $tr_date_from = $tr_detl->TH_DATEFR;
+                // TRAINING DATE TO
+                $tr_date_to = $tr_detl->TH_DATETO;
+                // TRAINING TIME FROM
+                $tr_time_from = $tr_detl->TIME_FR;
+                // TRAINING TIME TO
+                $tr_time_to = $tr_detl->TIME_T;
+                // TRAINING CONFIRM DATE
+                $tr_confirm_date = $tr_detl->TH_CON_DATE_TO;
+            } else {
+                $trTitle = '';
+                $tr_date_from = '';
+                $tr_date_to = '';
+                $tr_time_from = '';
+                $tr_time_to = '';
+                $tr_confirm_date = '';
+            }
+
+            // GET STAFF EMAIL
+            $staff_app = $this->mdl->getCurUserDept($staffID);
+            if(!empty($staff_app)){
+                $staff_app_email = $staff_app->SM_EMAIL_ADDR;
+                $staff_app_id = $staff_app->SM_STAFF_ID;
+                $staff_app_name = $staff_app->SM_STAFF_NAME;
+            } else {
+                $staff_app_email = '';
+            }
+
+            // GET EVALUATOR STAFF EMAIL DISTINCT
+            $staff_eva = $this->mdl->getStaffMainDis($refid, $staffID);
+            if(!empty($staff_eva)) {
+                $eva_email = $staff_eva->SM_EMAIL_ADDR;
+                $eva_id = $staff_eva->STAFF;
+                $eva_name = $staff_eva->SM_STAFF_NAME;
+            } else {
+                $eva_email = '';
+                $eva_id = '';
+                $eva_name = '';
+            }
+
+            // GET TRAINING COORDINATOR
+            $tr_coor = $this->mdl->getTrCoor($refid);
+            if(!empty($tr_coor)) {
+                $coor_name = $tr_coor->STAFF_NAME;
+                $coor_tel_no = $tr_coor->THD_COORDINATOR_TELNO;
+            } else {
+                $coor_name = '';
+                $coor_tel_no = '';
+            }
+
+            // EMAIL CC
+            if(!empty($eva_email)) {
+                $email_cc = ''.$eva_email. ', ' .$memo_from;
+            } else {
+                $email_cc = $memo_from;
+            }
+
+            // MEMO TITLE AND CONTENT
+            $msg_title = 'MEMO TAWARAN KURSUS : ' .$tr_title.'';
+            $msg_content = 'Adalah dimaklumkan tuan/puan telah ditawarkan untuk mengikuti kursus seperti butiran berikut : '.
+                                    '<br><br>'.
+                                    'Kursus : '.$tr_title.
+                                    '<br>'.
+                                    'Tarikh : '.$tr_date_from.' hingga '.$tr_date_to.
+                                    '<br>'.
+                                    'Masa : '.$tr_time_from.' hingga '.$tr_time_to.
+                                    '<br>'.
+                                    'Tempat : '.$tr_venue.
+                                    '<br><br>'.
+                                    '2. Sehubungan itu, tuan/puan diminta hadir sepenuh masa ke kursus tersebut.  Kehadiran adalah diwajibkan. '.
+                                    'Tuan/puan dimohon untuk membuat pengesahan kehadiran di <b>MyUPSI Portal > Human Resource > Training </b>selewat-lewatnya pada <b>'.$tr_confirm_date.'</b>'.
+                                    '<br><br>'.
+                                    '3. Sekiranya tuan/puan tidak membuat pengesahan ini sehingga tarikh yang dinyatakan, tuan/puan dianggap bersetuju menghadiri '.
+                                    'kursus tersebut.  Sebarang ketidakhadiran tanpa makluman akan dikenakan denda (RM50.00 sehari untuk kursus dalaman / '.
+                                    'RM200 sehari untuk kursus luar) seperti yang telah diputuskan oleh Mesyuarat Lembaga Pengarah Universiti kali ke-90, Bil 6/2013 bertarikh 11 Disember 2013.'.
+                                    '<br><br>'.
+                                    '4. Sebarang pertanyaan berkenaan perkara di atas, sila berhubung dengan urusetia kursus '.$coor_name.' di talian '.$coor_tel_no.'<br><br>'.
+                                    'Sekian, terima kasih.';
+
+           
+            if(!empty($staff_app_email)) {
+                $sendEmailSts = $this->mdl->sendEmail($memo_from, $staff_app_email, $email_cc, $msg_title, $msg_content);
+
+                if($sendEmailSts > 0) {
+                    $checkEmailSts = $this->mdl->verifyTraining($refid, $staffID);
+    
+                    if(!empty($checkEmailSts)) {
+                        $updEmailSts = $this->mdl->updateEmailSts($refid, $staffID);
+                    } else {
+                        $insEmailSts = $this->mdl->insertEmailSts($refid, $staffID);
+                    }
+    
+                    $sentMsg = 'Memo successfully sent';
+                    $json = array('sts' => 1, 'msg' => $sentMsg, 'alert' => 'success');
+                } else {
+                    $sentMsg = 'Fail to send memo';
+                    $json = array('sts' => 0, 'msg' => $sentMsg, 'alert' => 'danger');
+                }
+            } else {
+                $sentMsg = nl2br('Fail to send memo to <b>'.$staff_app_id.' - '.$staff_app_name."\n".'</b>Applicant email address not found!'."\n".'Cannot approve applicant Training Application!');
+                $json = array('sts' => 0, 'msg' => $sentMsg, 'alert' => 'danger');
+            }   
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator!', 'alert' => 'danger');
+        }
+
+        echo json_encode($json);
+    }
+
+    // PRINT OFFER MEMO
+    public function printOfferMemo()
+    {   
+        $refid = $this->input->post('refid', true);
+        $stfID = $this->input->post('stfID', true);
+        $stName = $this->input->post('stfName', true);
+
+        // get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        // get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        $this->renderAjax($data);
     }
 }

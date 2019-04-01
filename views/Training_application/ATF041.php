@@ -29,6 +29,17 @@
                         <div class="widget-body">
 
 							<div class="row">
+								<div class="form-group">
+									<div class="col-sm-3">
+										<div class="form-group text-right">
+											<label><b>Staff ID</b></label>
+										</div>
+									</div>
+									<div class="col-md-2">
+										<input name="name[staff_id]" placeholder="Staff ID" class="form-control" type="text" id="staff_id">
+									</div>
+									<button type="button" class="btn btn-primary search_staff_btn"><i class="fa fa-search"></i> Search</button>
+								</div>
 								<div class="col-sm-3">
 									<div class="form-group text-right">
 										<label><b>Department</b></label>
@@ -252,6 +263,27 @@
 		});
 	});
 
+	// SEARCH STAFF FILTER
+	$('.search_staff_btn').click(function() {
+		var stfID = $('#staff_id').val();
+		//alert(stfID);
+		
+		$('.nav-tabs li:eq(0) a').tab('show');
+		$('#staff_training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('getStaffTrainingList')?>',
+			data: {'stfID' : stfID},
+			success: function(res) {
+				$('#staff_training_list').html(res);
+				tr_row = $('#stf_tr_list').DataTable({
+					"ordering":false,
+				});
+			}
+		});
+	});
+
 	// SELECT STAFF BTN
 	$('#staff_training_list').on('click','.select_staff_btn', function(){
 		var thisBtn = $(this);
@@ -264,7 +296,7 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('trainingListStaff')?>',
-			data: {'stfID' : stfID},
+			data: {'stfID' : stfID, 'stfName' : stfName},
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
 				$('#training_list_staff').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
@@ -356,8 +388,6 @@
 						};
 					}
 				});
-
-				
 			
 				$.ajax({
 					type: 'POST',
@@ -434,25 +464,26 @@
 		});
 	});
 
-	// STAFF TRAINING APPLICATION DETAILS 
+	// APPLICATION DETAILS 
 	$('#training_list_staff').on('click', '.stf_tr_btn', function() {
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
 		var refid = td.eq(0).html().trim();
-		var tName = td.eq(1).html().trim();
-		// alert(refid+' '+tName);
+		var stfID = thisBtn.val();
+		//var tName = td.eq(1).html().trim();
+		//alert(refid+' '+stfID);
 
-		// $('#myModalis2 #mContent2').empty();
-		// $('#myModalis2').modal('show');
-		// $('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
-		// $.ajax({
-		// 	type: 'POST',
-		// 	url: '<?php echo $this->lib->class_url('addCPDSetup')?>',
-		// 	data: {'refid' : refid},
-		// 	success: function(res) {
-		// 		$('#myModalis2 .modal-content').html(res);
-		// 	}
-		// });
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('applicationDetail')?>',
+			data: {'refid' : refid, 'stfID' : stfID},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+			}
+		});
 	});
 </script>

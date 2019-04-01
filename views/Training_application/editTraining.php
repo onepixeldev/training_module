@@ -139,7 +139,7 @@
 
             <label class="col-md-2 control-label">Internal/External? <b><font color="red">* </font></b></label>
             <div class="col-md-4">
-                <?php echo form_dropdown('form[internal_external]', array(''=>'---Please Select---','INTERNAL'=>'INTERNAL','EXTERNAL'=>'EXTERNAL'), $trInfo->TH_INTERNAL_EXTERNAL, 'class="selectpicker form-control field_inpt width-50"')?>
+                <?php echo form_dropdown('form[internal_external]', array(''=>'---Please Select---','INTERNAL'=>'INTERNAL','EXTERNAL'=>'EXTERNAL', 'EXTERNAL_AGENCY'=>'EXTERNAL AGENCY'), $trInfo->TH_INTERNAL_EXTERNAL, 'class="selectpicker form-control field_inpt width-50"')?>
             </div>
         </div>
 
