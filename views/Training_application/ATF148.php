@@ -95,6 +95,9 @@
 								<li class="">
                                     <a style="color:#000 !important" href="#s7" data-toggle="tab" aria-expanded="false">CPD Detail</a>
                                 </li>
+								<li class="">
+                                    <a style="color:#000 !important" href="#s8" data-toggle="tab" aria-expanded="false">Update CPD Info</a>
+                                </li>
                             </ul>
 							<!-- myTabContent1 -->
                             <div id="myTabContent1" class="tab-content padding-10">
@@ -190,6 +193,20 @@
 									</div>
                                 </div> 
 
+								<div class="tab-pane fade" id="s8">
+									<div id="update_cpd_info">
+										<p>
+											<table class="table table-bordered table-hover">
+												<thead>
+												<tr>
+													<th class="text-center">Please select CPD Point from Training List</th>
+												</tr>
+												</thead>
+											</table>
+										</p>	
+									</div>
+                                </div> 
+
                             </div>
                             <!-- end myTabContent1 -->
                         </div>
@@ -245,13 +262,13 @@
 				echo "$('.nav-tabs li:eq(3) a').tab('show');";
 			} elseif ($currtab == 's5'){
 				echo "$('.nav-tabs li:eq(4) a').tab('show');";
-			} elseif ($currtab == 's5'){
-				echo "$('.nav-tabs li:eq(5) a').tab('show');";
 			} elseif ($currtab == 's6'){
-				echo "$('.nav-tabs li:eq(6) a').tab('show');";
+				echo "$('.nav-tabs li:eq(5) a').tab('show');";
 			} elseif ($currtab == 's7'){
+				echo "$('.nav-tabs li:eq(6) a').tab('show');";
+			} elseif ($currtab == 's8'){
 				echo "$('.nav-tabs li:eq(7) a').tab('show');";
-			}
+			} 
             else {
                 echo "$('.nav-tabs li:eq(0) a').tab('show');";
             }
@@ -691,73 +708,155 @@
 	// AUTO CONFIRMATION
 	$('#staff_training_application').on('click','.auto_conf_btn', function(){
 		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");;
-		var stfID = td.find(".sid").text();
-		var stfName =  td.find(".sname").text();
-		var refid =  $('.tr_refid').html();
+		var td = thisBtn.closest("tr");
+		//var stfID = td.find(".sid").text();
+		//var stfName =  td.find(".sname").text();
+		//var attConf = td.find(".attend").text();
+		var refid =  $('.auto_conf_btn').val();
+		var staffIDArr = []; 
+		var selectedID = 0;
+		var EmptyText = 0;
 		// alert(stfID);
 		// alert(stfName);
-		// alert(refid);
+		//alert(refid);
 
 		$.confirm({
 		    title: 'Auto Confirm Attendance',
-		    content: 'Press YES to confirm <br><br> Staff ID: <b>'+stfID+' - '+stfName+'</b>',
+		    content: 'Press YES to confirm',
 			type: 'blue',
 		    buttons: {
 		        yes: function () {
+					$('.checkitem:checked').each(function() {
+						// check the checked property 
+						var currentID = $(this).val();
+						stfID = $(this).closest("tr").find(".sid").text();
+						attConf = $(this).closest("tr").find(".attend").text();
+						++selectedID;
+						
+						if (attConf != '') {
+							EmptyText = 3;
+						} 
+						//alert(stfID);
+						staffIDArr.push(stfID);
+					});
+					//alert(staffIDArr);
+
+					if (selectedID == 0) {
+						$.alert({
+							title: 'Alert!',
+							content: 'You must select at least one record to continue.',
+							type: 'red'
+						});
+						return;
+					}
+
+					if (EmptyText == 3) {
+						$.alert({
+							title: 'Alert!',
+							content: 'Please select record with <font color="blue">BLUE</font> color only',
+							type: 'red'
+						});
+						return;
+					}
+
 					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('verifyAttendConfirmation')?>',
-						data: {'stfName' : stfName, 'stfID' : stfID, 'refid' : refid},
-						dataType: 'JSON',
-						beforeSend: function() {
-							$('.btn').attr('disabled', 'disabled');
-							$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-						},
-						success: function(res) {
-							if (res.sts==1) {
-								$.alert({
-									title: 'Alert!',
-									content: res.msg,
-									type: 'orange',
-								});
-								
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('autoAttendConfirmation')?>',
+							data: {'stfID' : staffIDArr, 'refid' : refid},
+							dataType: 'JSON',
+							beforeSend: function() {
+								$('.btn').attr('disabled', 'disabled');
+								$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								if (res.sts==1) {
+									$.alert({
+										title: 'Success!',
+										content: res.msg,
+										type: res.alert,
+									});
+
+									$('.checkitem:checked').each(function() {
+										// check the checked property 
+										var currentID = $(this).val();
+										stfID = $(this).closest("tr").find(".sid").text();
+										$(this).closest("tr").find(".attend").html(res.attend_field);
+
+										// fix this & replace with refresh
+										$(this).closest("tr").find(".sid").html(res.staff_id);
+									});
+									//td.find(".attend").html(res.attend_field);
+									//td.find(".sid").html(res.staff_id);
+									$("#summary").html(res.summary);
+								} else {
+									$.alert({
+										title: 'Alert!',
+										content: res.msg,
+										type: 'red',
+									});
+								}
+							},
+							complete: function(){
 								$('.btn').removeAttr('disabled');
 								$('#loader').hide();
-							} else {
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('autoAttendConfirmation')?>',
-									data: {'stfName' : stfName, 'stfID' : stfID, 'refid' : refid},
-									dataType: 'JSON',
-									beforeSend: function() {
-										$('.btn').attr('disabled', 'disabled');
-										$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										if (res.sts==1) {
-											$.alert({
-												title: 'Success!',
-												content: res.msg,
-												type: res.alert,
-											});
-											td.find(".attend").text(res.attend_field);
-										} else {
-											$.alert({
-												title: 'Alert!',
-												content: res.msg,
-												type: 'red',
-											});
-										}
-									},
-									complete: function(){
-										$('.btn').removeAttr('disabled');
-										$('#loader').hide();
-									},
-								});
-							}
-						}
-					});			
+							},
+						});
+
+					// $.ajax({
+					// 	type: 'POST',
+					// 	url: '<?php echo $this->lib->class_url('verifyAttendConfirmation')?>',
+					// 	data: {'stfName' : stfName, 'stfID' : stfID, 'refid' : refid},
+					// 	dataType: 'JSON',
+					// 	beforeSend: function() {
+					// 		$('.btn').attr('disabled', 'disabled');
+					// 		$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					// 	},
+					// 	success: function(res) {
+					// 		if (res.sts==1) {
+					// 			$.alert({
+					// 				title: 'Alert!',
+					// 				content: res.msg,
+					// 				type: 'orange',
+					// 			});
+								
+					// 			$('.btn').removeAttr('disabled');
+					// 			$('#loader').hide();
+					// 		} else {
+					// 			$.ajax({
+					// 				type: 'POST',
+					// 				url: '<?php echo $this->lib->class_url('autoAttendConfirmation')?>',
+					// 				data: {'stfName' : stfName, 'stfID' : stfID, 'refid' : refid},
+					// 				dataType: 'JSON',
+					// 				beforeSend: function() {
+					// 					$('.btn').attr('disabled', 'disabled');
+					// 					$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					// 				},
+					// 				success: function(res) {
+					// 					if (res.sts==1) {
+					// 						$.alert({
+					// 							title: 'Success!',
+					// 							content: res.msg,
+					// 							type: res.alert,
+					// 						});
+					// 						td.find(".attend").html(res.attend_field);
+					// 						td.find(".sid").html(res.staff_id);
+					// 						$("#summary").html(res.summary);
+					// 					} else {
+					// 						$.alert({
+					// 							title: 'Alert!',
+					// 							content: res.msg,
+					// 							type: 'red',
+					// 						});
+					// 					}
+					// 				},
+					// 				complete: function(){
+					// 					$('.btn').removeAttr('disabled');
+					// 					$('#loader').hide();
+					// 				},
+					// 			});
+					// 		}
+					// 	}
+					// });			
 		        },
 		        cancel: function () {
 		            $.alert('Canceled Auto Confirm Attendance!');
@@ -832,7 +931,9 @@
 				if (res.sts == 1) {
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
-						srow.find(".attend").text(res.attend_field);
+						srow.find(".attend").html(res.attend_field);
+						srow.find(".sid").html(res.staff_id);
+						$("#summary").html(res.summary);
 					}, 1500);
 					$('.btn').removeAttr('disabled');
 				} else {
@@ -893,7 +994,7 @@
 		});
 	});
 
-	// PRINT OFFER MEMO
+	// PRINT OFFER MEMO MODAL
 	$('#staff_training_application').on('click', '.print_offer_mem_btn', function() {
 		var thisBtn = $(this);
 		var td = thisBtn.closest("tr");
@@ -904,17 +1005,124 @@
 
 		srow = $(this).closest("tr");
 
-		$('#myModalis2 .modal-content').empty();
-		$('#myModalis2').modal('show');
-		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('printOfferMemo')?>',
 			data: {'refid' : refid, 'stfID' : stfID, 'stfName' : stfName},
 			success: function(res) {
-				$('#myModalis2 .modal-content').html(res);
+				$('#myModalis .modal-content').html(res);
 			}
 		});
 	});
+
+	// CHANGE MONTH OR YEAR
+	$('#myModalis').on('change', '.monYerFilter', function () { 
+		var month =  $('#monthFil').val();
+		var year =  $('#yearFil').val();
+		//alert(month+year);
+
+		$('#loaderMdl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		$('#courseTitle').html('');
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('ddTrainingList')?>',
+			data: {'month' : month, 'year' : year},
+			dataType: 'JSON',
+			success: function(res) {
+				$('#loaderMdl').html('');
+				
+				var resList = '<option value="" selected > ---Please select--- </option>';
+				
+                if (res.sts == 1) {
+                    for (var i in res.ddTrList) {
+						resList += '<option value="'+res.ddTrList[i]['TH_REF_ID']+'">'+res.ddTrList[i]['TH_TRAINING_TITLE']+'</option>';
+                    }
+                } 
+				
+				$("#courseTitle").html(resList);				
+			}
+		});
+    });
+
+	// CHANGE TRAINING
+	$('#myModalis').on('change', '#courseTitle', function () { 
+		var refid =  $('#courseTitle').val();
+		//alert(refid);
+		
+		$('#courseRefID').val(refid);
+		$('#loaderMdl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		$('#sendDate').html('');
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('getSendDate')?>',
+			data: {'refid' : refid},
+			dataType: 'JSON',
+			success: function(res) {
+				$('#loaderMdl2').html('');
+				
+				var resList = '<option value="" selected > ---Please select--- </option>';
+				
+                if (res.sts == 1) {
+                    for (var i in res.sendDateList) {
+						resList += '<option value="'+res.sendDateList[i]['SEND_DATE']+'">'+res.sendDateList[i]['SEND_DATE']+'</option>';
+                    }
+                } 
+				
+				$("#sendDate").html(resList);				
+			}
+		});
+    });
+
+	// PRINT OFFER MEMO
+	$('#myModalis').on('click', '.print_mem_btn', function () { 
+		var refid =  $('#courseTitle').val();
+		var sendDate =  $('#sendDate').val();
+		var refNo =  $('#refNo').val();
+		//alert(refid+' '+sendDate+' '+refNo);
+		if(refid == '') {
+			msg.warning('Please select Course Title', '#printOfferMemoAlert');
+			return;
+		}
+		if(sendDate == '') {
+			msg.warning('Please select Date of sending email', '#printOfferMemoAlert');
+			return;
+		}
+		if(refNo == '') {
+			msg.warning('Please fill in Referrence No.', '#printOfferMemoAlert');
+			return;
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setOfferMemoParam')?>',
+			data: {'refid' : refid, 'sendDate' : sendDate, 'refNo' : refNo},
+			dataType: 'JSON',
+			beforeSend: function() {
+				msg.wait('#printOfferMemoAlert');
+				$('.btn').attr('disabled', 'disabled');
+			},
+			success: function(res) {
+				if(res.sts == 1) {
+					var repURL = '<?php echo $this->lib->class_url('printOfferReport') ?>';
+					var mywin = window.open( repURL , 'report');
+					msg.success('Offer Memo printed', '#printOfferMemoAlert');
+					$('.btn').removeAttr('disabled');
+				} else {
+					msg.danger('Fail to print Offer Memo', '#printOfferMemoAlert');
+					$('.btn').removeAttr('disabled');
+				}
+								
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#printOfferMemoAlert');
+			}
+		});
+    });
 </script>

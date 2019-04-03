@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>Approve Training Application</h2>				
+            <h2>Update CPD Info</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -27,73 +27,28 @@
                         </div>
                         <!-- end widget edit box -->
                         <div class="widget-body">
-                            
-							<div class="row">
-								<div class="col-sm-3">
-									<div class="form-group text-right">
-										<label><b>Department</b></label>
-									</div>
-								</div>
-								<div class="col-sm-6">
-									<div class="form-group text-left">
-										<?php echo form_dropdown('sDept', $dept_list, $curUsrDept, 'class="form-control listFilter" id="sDept"'); ?>
-									</div>
-								</div>
-								<div class="col-sm-3">
-									<div class="text-left">   
-										&nbsp;
-									</div>
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="col-sm-3">
-									<div class="form-group text-right">
-										<label><b>Month</b></label>
-									</div>
-								</div>
-								<div class="col-sm-2">
-									<div class="form-group text-left">
-										<?php echo form_dropdown('sMonth', $month_list, '', 'class="form-control listFilter" id="sMonth"'); ?>
-									</div>
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="col-sm-3">
-									<div class="form-group text-right">
-										<label><b>Year</b></label>
-									</div>
-								</div>
-								<div class="col-sm-2">
-									<div class="form-group text-left">
-										<?php echo form_dropdown('sYear', $year_list, $curYear, 'class="form-control listFilter" id="sYear"'); ?>
-									</div>
-								</div>
-							</div>
-                            
 
                             <ul id="myTab1" class="nav nav-tabs bordered">
                                 <li class="active">
-                                    <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Training List</a>
+                                    <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Training</a>
                                 </li>
                                 <li class="">
-                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Staff Training Applications</a>
+                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">LIst of Staff</a>
                                 </li>
-								<li class="">
-                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Training List (History)</a>
-                                </li>
-								<li class="">
+                                <li class="">
                                     <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Training Info</a>
                                 </li>
 								<li class="">
                                     <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">Training Cost</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s6" data-toggle="tab" aria-expanded="false">Training Target Group & Module Detail</a>
+                                    <a style="color:#000 !important" href="#s6" data-toggle="tab" aria-expanded="false">Target Group & Module Detail</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s7" data-toggle="tab" aria-expanded="false">Training CPD Detail</a>
+                                    <a style="color:#000 !important" href="#s7" data-toggle="tab" aria-expanded="false">CPD Detail</a>
+                                </li>
+								<li class="">
+                                    <a style="color:#000 !important" href="#s8" data-toggle="tab" aria-expanded="false">Update CPD Info</a>
                                 </li>
                             </ul>
 							<!-- myTabContent1 -->
@@ -118,7 +73,7 @@
 											</table>
 										</p>	
 									</div>
-                                </div> 
+                                </div>
 
 								<div class="tab-pane fade" id="s3">
 									<div id="training_list_staff">
@@ -126,15 +81,15 @@
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please select staff History from Staff Training Applications</th>
+													<th class="text-center">Please select staff History from Staff Tranining Application</th>
 												</tr>
 												</thead>
 											</table>
 										</p>	
 									</div>
-                                </div> 
+                                </div>
 
-								<div class="tab-pane fade" id="s4">
+                                <div class="tab-pane fade" id="s4">
 									<div id="training_list_detl">
 										<p>
 											<table class="table table-bordered table-hover">
@@ -188,7 +143,21 @@
 											</table>
 										</p>	
 									</div>
-                                </div>  
+                                </div> 
+
+								<div class="tab-pane fade" id="s8">
+									<div id="update_cpd_info">
+										<p>
+											<table class="table table-bordered table-hover">
+												<thead>
+												<tr>
+													<th class="text-center">Please select CPD Point from Training List</th>
+												</tr>
+												</thead>
+											</table>
+										</p>	
+									</div>
+                                </div> 
 
                             </div>
                             <!-- end myTabContent1 -->
@@ -225,7 +194,7 @@
 
 <script>
 	var tr_row = '';
-
+    
 	var intExt = '1';
 	var disDept = '1';
 	var disYear = '1';
@@ -249,7 +218,9 @@
 				echo "$('.nav-tabs li:eq(5) a').tab('show');";
 			} elseif ($currtab == 's7'){
 				echo "$('.nav-tabs li:eq(6) a').tab('show');";
-			}
+			} elseif ($currtab == 's8'){
+				echo "$('.nav-tabs li:eq(7) a').tab('show');";
+			} 
             else {
                 echo "$('.nav-tabs li:eq(0) a').tab('show');";
             }
@@ -272,24 +243,24 @@
 		success: function(res) {
             $('#training_list').html(res);
 			tr_row = $('#tbl_tr_list').DataTable({
-				"ordering":false,
-				drawCallback: function(){
+                "ordering":false,
+                drawCallback: function(){
                     $(function() {
                         $('#tbl_tr_list').each(function() {
                         var Cell = $(this).find('td:eq(5)');
                         //debugger;
                             if (Cell.text() !== 'error') {
                                 //$(this).find('btn').hide();
-                                $('#tbl_tr_list tbody .approve_training_btn').hide();
-                                $('#tbl_tr_list tbody .postpone_training_btn').hide();
+                                $('#tbl_tr_list tbody .approve_training_btn').replaceWith('<button type="button" class="btn btn-primary btn-xs cpd_pts_btn"><i class="fa fa-upload"></i> CPD Point</button>');
+                                    $('#tbl_tr_list tbody .postpone_training_btn').replaceWith('<button type="button" class="btn btn-warning btn-xs svc_book_btn"><i class="fa fa-upload"></i> Service Book</button>');
                                 $('#tbl_tr_list tbody .reject_training_btn').hide();
                                 $('#tbl_tr_list tbody .amend_training_btn').hide();
                             }
                         });
                     });
                 }
-			});
-			$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-1">Action</th>');
+            });
+			$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-4">Action</th>');
 		},
 		complete: function(){
 			$('#loader').hide();
@@ -302,7 +273,7 @@
 		var sDept = $('#sDept').val();
 		var sMonth = $('#sMonth').val();
 		var sYear = $('#sYear').val();
-		//alert(''+sDept+',' +sMonth+',' +sYear+','+indf+'');
+		//alert(''+sDept+',' +sMonth+''+sYear+'');
 		
 		$('.nav-tabs li:eq(0) a').tab('show');
 		$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -314,29 +285,29 @@
 			success: function(res) {
 				$('#training_list').html(res);
 				tr_row = $('#tbl_tr_list').DataTable({
-					"ordering":false,
-					drawCallback: function(){
-						$(function() {
-							$('#tbl_tr_list').each(function() {
-							var Cell = $(this).find('td:eq(5)');
-							//debugger;
-								if (Cell.text() !== 'error') {
-									//$(this).find('btn').hide();
-									$('#tbl_tr_list tbody .approve_training_btn').hide();
-									$('#tbl_tr_list tbody .postpone_training_btn').hide();
-									$('#tbl_tr_list tbody .reject_training_btn').hide();
-									$('#tbl_tr_list tbody .amend_training_btn').hide();
-								}
-							});
-						});
-					}
+                    "ordering":false,
+                    drawCallback: function(){
+                        $(function() {
+                            $('#tbl_tr_list').each(function() {
+                            var Cell = $(this).find('td:eq(5)');
+                            //debugger;
+                                if (Cell.text() !== 'error') {
+                                    //$(this).find('btn').hide();
+                                    $('#tbl_tr_list tbody .approve_training_btn').replaceWith('<button type="button" class="btn btn-primary btn-xs cpd_pts_btn"><i class="fa fa-calculator"></i> CPD Point</button>');
+                                    $('#tbl_tr_list tbody .postpone_training_btn').replaceWith('<button type="button" class="btn btn-warning btn-xs svc_book_btn"><i class="fa fa-upload"></i> Service Book</button>');
+                                    $('#tbl_tr_list tbody .reject_training_btn').hide();
+                                    $('#tbl_tr_list tbody .amend_training_btn').hide();
+                                }
+                            });
+                        });
+                    }
 				});
-				$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-1">Action</th>');
+                $('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-4">Action</th>');
 			}
 		});
-	});
-
-	// SELECT TRAINING BTN
+    });
+    
+    // SELECT TRAINING BTN
 	$('#training_list').on('click','.select_training_btn', function(){
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
@@ -347,7 +318,7 @@
 
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('getStaffTrainingApplication')?>',
+			url: '<?php echo $this->lib->class_url('getStaffTrainingApplicationConf')?>',
 			data: {'refid' : trRefID, 'tName' : trainingN},
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
@@ -480,32 +451,9 @@
 				});
 			}
 		});
-	});	
-
-	// APPLICANT DETAIl BTN
-	$('#staff_training_application').on('click', '.sta_detl_btn', function() {
-		var thisBtn = $(this);
-		var refid = thisBtn.val();
-		var td = thisBtn.parent().siblings();
-		var staffID = td.eq(0).html().trim();
-		
-		//alert(staffID+' '+refid);
-
-		$('#myModalis2 #mContent2').empty();
-		$('#myModalis2').modal('show');
-		$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('detailSTA')?>',
-			data: {'refid' : refid, 'staffID' : staffID},
-			success: function(res) {
-				$('#myModalis2 .modal-content').html(res);
-			}
-		});
-	});
-
-	// LIST OF ELIGIBLE POSITION //
+    });	
+    
+    // LIST OF ELIGIBLE POSITION //
 	$('#training_list_detl3').on('click', '.pos_tg_btn', function() {
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
@@ -528,253 +476,16 @@
 			}
 		});
 	});
-
-	// APPROVE & SEND MEMO BTN
-	$('#staff_training_application').on('click', '.sta_appsm_btn', function() {
-		var thisBtn = $(this);
-		var refid = thisBtn.val();
-		var td = thisBtn.parent().siblings();
-		var staffID = td.eq(0).html().trim();
-		var staffN = td.eq(1).html().trim();
-		var remark = thisBtn.parents('tr').find('[name="remark"]').val();
-		
-		//alert(remark+' '+refid);
-
-		$.confirm({
-		    title: 'Approve Applicant',
-		    content: 'Press <b>YES</b> to continue <br> Applicant: <b>'+staffID+' - '+staffN+'</b>',
-			type: 'blue',
-		    buttons: {
-		        yes: function () {
-					// checking checking send email (if th_date_from is !null && > sysdate)
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('verifyTrainingDate')?>',
-						data: {'refid' : refid},
-						dataType: 'JSON',
-						success: function(res) {
-							if (res.sts==1) {
-								// if th_date_from is !null && > sysdate
-								// $.ajax({
-								// 	type: 'POST',
-								// 	url: '<?php echo $this->lib->class_url('approveStf')?>',
-								// 	data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-								// 	dataType: 'JSON',
-								// 	success: function(res) {
-								// 		if (res.sts==1) {
-								// 			thisBtn.parents('tr').fadeOut().delay(1000).remove();
-								// 			$.alert({
-								// 				title: 'Success!',
-								// 				content: res.msg,
-								// 				type: 'green',
-								// 			});
-								// 		} else {
-								// 			$.alert({
-								// 				title: 'Alert!',
-								// 				content: res.msg,
-								// 				type: 'red',
-								// 			});
-								// 		}
-								// 	}
-								// });
-									
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('sendEmailApplicant')?>',
-									data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-									dataType: 'JSON',
-									success: function(res) {
-										if (res.sts==1) {
-											$.alert({
-												title: 'Success!',
-												content: res.msg,
-												type: 'green',
-											});
-				
-											$.ajax({
-												type: 'POST',
-												url: '<?php echo $this->lib->class_url('approveStf')?>',
-												data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-												dataType: 'JSON',
-												success: function(res) {
-													if (res.sts==1) {
-														thisBtn.parents('tr').fadeOut().delay(1000).remove();
-														$.alert({
-															title: 'Success!',
-															content: res.msg,
-															type: 'green',
-														});
-													} else {
-														$.alert({
-															title: 'Alert!',
-															content: res.msg,
-															type: 'red',
-														});
-													}
-												}
-											});
-										} else {
-											$.alert({
-												title: 'Alert!',
-												content: res.msg,
-												type: 'red',
-											});
-										}
-									}
-								});
-
-
-								// $.alert({
-								// 	title: 'Success!',
-								// 	content: res.msg,
-								// 	type: 'green',
-								// });
-							} else {
-								// $.ajax({
-								// 	type: 'POST',
-								// 	url: '<?php echo $this->lib->class_url('sendEmailApplicant')?>',
-								// 	data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-								// 	dataType: 'JSON',
-								// 	success: function(res) {
-								// 		if (res.sts==1) {
-								// 			$.alert({
-								// 				title: 'Success!',
-								// 				content: res.msg,
-								// 				type: 'green',
-								// 			});
-				
-								// 			$.ajax({
-								// 				type: 'POST',
-								// 				url: '<?php echo $this->lib->class_url('approveStf')?>',
-								// 				data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-								// 				dataType: 'JSON',
-								// 				success: function(res) {
-								// 					if (res.sts==1) {
-								// 						thisBtn.parents('tr').fadeOut().delay(1000).remove();
-								// 						$.alert({
-								// 							title: 'Success!',
-								// 							content: res.msg,
-								// 							type: 'green',
-								// 						});
-								// 					} else {
-								// 						$.alert({
-								// 							title: 'Alert!',
-								// 							content: res.msg,
-								// 							type: 'red',
-								// 						});
-								// 					}
-								// 				}
-								// 			});
-								// 		} else {
-								// 			$.alert({
-								// 				title: 'Alert!',
-								// 				content: res.msg,
-								// 				type: 'red',
-								// 			});
-								// 		}
-								// 	}
-								// });
-
-
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('approveStf')?>',
-									data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-									dataType: 'JSON',
-									success: function(res) {
-										if (res.sts==1) {
-											thisBtn.parents('tr').fadeOut().delay(1000).remove();
-											$.alert({
-												title: 'Success!',
-												content: res.msg,
-												type: 'green',
-											});
-										} else {
-											$.alert({
-												title: 'Alert!',
-												content: res.msg,
-												type: 'red',
-											});
-										}
-									}
-								});
-
-
-
-								// $.alert({
-								// 	title: 'Alert!',
-								// 	content: res.msg,
-								// 	type: 'red',
-								// });
-							}
-						}
-					});	
-
-
-										
-		        },
-		        cancel: function () {
-		            $.alert('Training Application (approval & send memo) has been cancelled!');
-		        }
-		    }
-		});
-	});
-
-	// REJECT TRAINING
-	$('#staff_training_application').on('click', '.sta_reject_btn', function() {
-		var thisBtn = $(this);
-		var refid = thisBtn.val();
-		var td = thisBtn.parent().siblings();
-		var staffID = td.eq(0).html().trim();
-		var staffN = td.eq(1).html().trim();
-		var remark = thisBtn.parents('tr').find('[name="remark"]').val();
-		
-		//alert(remark+' '+refid);
-
-		$.confirm({
-		    title: 'Reject Applicant',
-		    content: 'Press <b>YES</b> to continue <br> Applicant: <b>'+staffID+' - '+staffN+'</b>',
-			type: 'red',
-		    buttons: {
-		        yes: function () {
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('rejectStf')?>',
-						data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-						dataType: 'JSON',
-						success: function(res) {
-							if (res.sts==1) {
-								thisBtn.parents('tr').fadeOut().delay(1000).remove();
-								$.alert({
-									title: 'Success!',
-									content: res.msg,
-									type: 'green',
-								});
-							} else {
-								$.alert({
-									title: 'Alert!',
-									content: res.msg,
-									type: 'red',
-								});
-							}
-						}
-					});			
-		        },
-		        cancel: function () {
-		            $.alert('Training Application (reject) cancelled!');
-		        }
-		    }
-		});
-	});
+    
 
 	// TRAINING LIST - HISTORY
 	$('#staff_training_application').on('click','.sta_history_btn', function(){
 		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var stfID = td.eq(0).html().trim();
-		var stfName = td.eq(1).html().trim();
-		//var scCode = '1';
-		//alert(''+stfID+' '+stfName+'');
+		var td = thisBtn.closest("tr");;
+		var stfID = td.find(".sid").text();
+		var stfName =  td.find(".sname").text();
+		// alert(stfID);
+		// alert(stfName);
 
 		$.ajax({
 			type: 'POST',
@@ -791,7 +502,30 @@
 				});
 			}
 		});
-	});	
+	});
+
+	// APPLICATION DETAILS 
+	$('#training_list_staff').on('click', '.stf_tr_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var stfID = thisBtn.val();
+		//var tName = td.eq(1).html().trim();
+		//alert(refid+' '+stfID);
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('applicationDetail')?>',
+			data: {'refid' : refid, 'stfID' : stfID},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+			}
+		});
+	});
 
 	// SELECT TRAINING BTN - STAFF
 	$('#training_list_staff').on('click','.tr_detl_btn', function(){
@@ -923,14 +657,225 @@
 		});
 	});
 
-	// APPLICATION DETAILS 
-	$('#training_list_staff').on('click', '.stf_tr_btn', function() {
+	// AUTO CONFIRMATION
+	$('#staff_training_application').on('click','.auto_conf_btn', function(){
 		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var refid = td.eq(0).html().trim();
-		var stfID = thisBtn.val();
-		//var tName = td.eq(1).html().trim();
-		//alert(refid+' '+stfID);
+		var td = thisBtn.closest("tr");;
+		var stfID = td.find(".sid").text();
+		var stfName =  td.find(".sname").text();
+		var refid =  $('.tr_refid').html();
+		// alert(stfID);
+		// alert(stfName);
+		// alert(refid);
+
+		$.confirm({
+		    title: 'Auto Confirm Attendance',
+		    content: 'Press YES to confirm <br><br> Staff ID: <b>'+stfID+' - '+stfName+'</b>',
+			type: 'blue',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('verifyAttendConfirmation')?>',
+						data: {'stfName' : stfName, 'stfID' : stfID, 'refid' : refid},
+						dataType: 'JSON',
+						beforeSend: function() {
+							$('.btn').attr('disabled', 'disabled');
+							$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						},
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'orange',
+								});
+								
+								$('.btn').removeAttr('disabled');
+								$('#loader').hide();
+							} else {
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('autoAttendConfirmation')?>',
+									data: {'stfName' : stfName, 'stfID' : stfID, 'refid' : refid},
+									dataType: 'JSON',
+									beforeSend: function() {
+										$('.btn').attr('disabled', 'disabled');
+										$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										if (res.sts==1) {
+											$.alert({
+												title: 'Success!',
+												content: res.msg,
+												type: res.alert,
+											});
+											td.find(".attend").html(res.attend_field);
+											td.find(".sid").html(res.staff_id);
+											$("#summary").html(res.summary);
+										} else {
+											$.alert({
+												title: 'Alert!',
+												content: res.msg,
+												type: 'red',
+											});
+										}
+									},
+									complete: function(){
+										$('.btn').removeAttr('disabled');
+										$('#loader').hide();
+									},
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Auto Confirm Attendance!');
+		        }
+		    }
+		});
+	});
+
+	// APPLICANT OTHER DETAILS 
+	$('#staff_training_application').on('click', '.detl_conf_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");;
+		var stfID = td.find(".sid").text();
+		var stfName =  td.find(".sname").text();
+		var refid =  $('.tr_refid').html();
+		//alert(stfID+stfName+refid);
+
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('applicantOtherDetl')?>',
+			data: {'refid' : refid, 'stfID' : stfID, 'stfName' : stfName},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// EDIT APPLICANT DETAILS 
+	$('#staff_training_application').on('click', '.edit_app_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var stfID = td.find(".sid").text();
+		var stfName =  td.find(".sname").text();
+		var refid =  $('.tr_refid').html();
+		//alert(stfID+stfName+refid);
+
+		srow = $(this).closest("tr");
+
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editApplicantDetails')?>',
+			data: {'refid' : refid, 'stfID' : stfID, 'stfName' : stfName},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE UPDATE APPLICANT DETAILS
+	$('#myModalis2').on('click', '.upd_app_oth_detl', function (e) { 
+		e.preventDefault();
+        var data = $('#formUpdAppOthDetl').serialize();
+		msg.wait('#alertAppOthDetl');
+		// alert(data);
+		$('.btn').attr('disabled', 'disabled');
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveUpdateApplicantDetails')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertAppOthDetl');
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						srow.find(".attend").html(res.attend_field);
+						srow.find(".sid").html(res.staff_id);
+						$("#summary").html(res.summary);
+					}, 1500);
+					$('.btn').removeAttr('disabled');
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alertAppOthDetl');
+			}
+		});	
+    });
+
+	// RESEND EMAIL 
+	$('#staff_training_application').on('click', '.resend_email_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var stfID = td.find(".sid").text();
+		var stfName =  td.find(".sname").text();
+		var refid =  $('.tr_refid').html();
+		
+		// alert('test');
+		$.confirm({
+		    title: 'Resend Email',
+		    content: 'Press YES to confirm <br><br> Staff ID: <b>'+stfID+' - '+stfName+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('resendEmailApplicant')?>',
+						data: {'stfName' : stfName, 'stfID' : stfID, 'refid' : refid},
+						dataType: 'JSON',
+						beforeSend: function() {
+							$('.btn').attr('disabled', 'disabled');
+							$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						},
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'orange',
+								});
+								
+								$('.btn').removeAttr('disabled');
+								$('#loader').hide();
+							} else {
+								
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Resend email has been cancelled!');
+		        }
+		    }
+		});
+	});
+
+	// PRINT OFFER MEMO MODAL
+	$('#staff_training_application').on('click', '.print_offer_mem_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var stfID = td.find(".sid").text();
+		var stfName =  td.find(".sname").text();
+		var refid =  $('.tr_refid').html();
+		//alert(stfID+stfName+refid);
+
+		srow = $(this).closest("tr");
 
 		$('#myModalis .modal-content').empty();
 		$('#myModalis').modal('show');
@@ -938,11 +883,114 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('applicationDetail')?>',
-			data: {'refid' : refid, 'stfID' : stfID},
+			url: '<?php echo $this->lib->class_url('printOfferMemo')?>',
+			data: {'refid' : refid, 'stfID' : stfID, 'stfName' : stfName},
 			success: function(res) {
 				$('#myModalis .modal-content').html(res);
 			}
 		});
 	});
+
+	// CHANGE MONTH OR YEAR
+	$('#myModalis').on('change', '.monYerFilter', function () { 
+		var month =  $('#monthFil').val();
+		var year =  $('#yearFil').val();
+		//alert(month+year);
+
+		$('#loaderMdl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		$('#courseTitle').html('');
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('ddTrainingList')?>',
+			data: {'month' : month, 'year' : year},
+			dataType: 'JSON',
+			success: function(res) {
+				$('#loaderMdl').html('');
+				
+				var resList = '<option value="" selected > ---Please select--- </option>';
+				
+                if (res.sts == 1) {
+                    for (var i in res.ddTrList) {
+						resList += '<option value="'+res.ddTrList[i]['TH_REF_ID']+'">'+res.ddTrList[i]['TH_TRAINING_TITLE']+'</option>';
+                    }
+                } 
+				
+				$("#courseTitle").html(resList);				
+			}
+		});
+    });
+
+	// CHANGE TRAINING
+	$('#myModalis').on('change', '#courseTitle', function () { 
+		var refid =  $('#courseTitle').val();
+		//alert(refid);
+		
+		$('#courseRefID').val(refid);
+		$('#loaderMdl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		$('#sendDate').html('');
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('getSendDate')?>',
+			data: {'refid' : refid},
+			dataType: 'JSON',
+			success: function(res) {
+				$('#loaderMdl2').html('');
+				
+				var resList = '<option value="" selected > ---Please select--- </option>';
+				
+                if (res.sts == 1) {
+                    for (var i in res.sendDateList) {
+						resList += '<option value="'+res.sendDateList[i]['SEND_DATE']+'">'+res.sendDateList[i]['SEND_DATE']+'</option>';
+                    }
+                } 
+				
+				$("#sendDate").html(resList);				
+			}
+		});
+    });
+
+	// PRINT OFFER MEMO
+	$('#myModalis').on('click', '.print_mem_btn', function () { 
+		var refid =  $('#courseTitle').val();
+		var sendDate =  $('#sendDate').val();
+		var refNo =  $('#refNo').val();
+		//alert(refid+' '+sendDate+' '+refNo);
+		if(refid == '') {
+			msg.warning('Please select Course Title', '#printOfferMemoAlert');
+			return;
+		}
+		if(sendDate == '') {
+			msg.warning('Please select Date of sending email', '#printOfferMemoAlert');
+			return;
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setOfferMemoParam')?>',
+			data: {'refid' : refid, 'sendDate' : sendDate, 'refNo' : refNo},
+			dataType: 'JSON',
+			beforeSend: function() {
+				msg.wait('#printOfferMemoAlert');
+				$('.btn').attr('disabled', 'disabled');
+			},
+			success: function(res) {
+				if(res.sts == 1) {
+					var repURL = '<?php echo $this->lib->class_url('printOfferReport') ?>';
+					var mywin = window.open( repURL , 'report');
+					msg.success('Offer Memo printed', '#printOfferMemoAlert');
+					$('.btn').removeAttr('disabled');
+				} else {
+					msg.danger('Fail to print Offer Memo', '#printOfferMemoAlert');
+					$('.btn').removeAttr('disabled');
+				}
+								
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#printOfferMemoAlert');
+			}
+		});
+    });
 </script>

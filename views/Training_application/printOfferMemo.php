@@ -3,14 +3,15 @@
         <h4 class="modal-title txt-color-white" id="myModalLabel">Print Offer Memo</h4>
     </div>
     <div class="modal-body">
-        <div id="printOfferMemo">
+        <div id="printOfferMemoAlert">
+            <b>Note : </b> ( <b><font color="red">*</font></b> ) <b><font color="red">compulsory fields</font></b><br>&nbsp; <span id="note"></span>
         </div>
 
         <div class="form-group">
             <label class="col-md-3 control-label">Month</label>
             <div class="col-md-4">
                 <?php
-                    echo form_dropdown('form[month]', $month_list, '', 'class="selectpicker form-control width-50"')
+                    echo form_dropdown('form[month]', $month_list, '', 'class="selectpicker form-control width-50 monYerFilter" id="monthFil"')
                 ?>
             </div>
         </div>
@@ -19,22 +20,38 @@
             <label class="col-md-3 control-label">Year</label>
             <div class="col-md-4">
                 <?php
-                    echo form_dropdown('form[month]', $year_list, '', 'class="selectpicker form-control width-50"')
+                    echo form_dropdown('form[year]', $year_list, '', 'class="selectpicker form-control width-50 monYerFilter" id="yearFil"')
                 ?>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="col-md-3 control-label">Course Title</label>
-            <div class="col-md-8">
-                <input name="form[staff_name]" class="form-control" type="text" value="" readonly>
+            <div id="loaderMdl"></div>
+            <label class="col-md-3 control-label">Course Title <b><font color="red">*</font></b> </label>
+            <div class="col-md-2">
+                <input name="form[refid]" class="form-control" type="text" value="" id="courseRefID" readonly>
+            </div>
+            <div class="col-md-7">
+                <?php
+                    echo form_dropdown('form[course_title]', array(''=>'--- Please select month or year ---'), '', 'class="selectpicker form-control width-50" id="courseTitle"')
+                ?>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="col-md-3 control-label">Date of Submitted Email</label>
-            <div class="col-md-8">
-                <input name="form[staff_name]" class="form-control" type="text" value="" readonly>
+            <div id="loaderMdl2"></div>
+            <label class="col-md-3 control-label">Date of sending email <b><font color="red">*</font></b> </label>
+            <div class="col-md-4">
+                <?php
+                    echo form_dropdown('form[date_of_sending_email]', array(''=>'--- Please select Course Title ---'), '', 'class="selectpicker form-control width-50" id="sendDate"')
+                ?>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-3 control-label">Referrence No. <b><font color="red">*</font></b></label>
+            <div class="col-md-4">
+                <input name="form[refeffence_no]" class="form-control" type="text" value="<?php echo $ref_no?>" id="refNo">
             </div>
         </div>
 

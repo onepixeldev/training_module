@@ -61,11 +61,11 @@ class Training_application_model extends MY_Model
         TH_ORGANIZER_STATE, 
         TH_ORGANIZER_COUNTRY, 
         TH_SPONSOR, 
-        TO_CHAR(TH_DATE_FROM, 'DD-MM-YYYY') AS TH_DATEFR,
-        TO_CHAR(TH_DATE_TO, 'DD-MM-YYYY') AS TH_DATETO, 
+        TO_CHAR_VAL(TH_DATE_FROM, 'DD-MM-YYYY') AS TH_DATEFR,
+        TO_CHAR_VAL(TH_DATE_TO, 'DD-MM-YYYY') AS TH_DATETO, 
         TH_TOTAL_HOURS, 
         TH_TRAINING_FEE, 
-        TO_CHAR(TH_APPLY_CLOSING_DATE, 'DD-MM-YYYY') AS TH_APP_CLOSING_DATE, 
+        TO_CHAR_VAL(TH_APPLY_CLOSING_DATE, 'DD-MM-YYYY') AS TH_APP_CLOSING_DATE, 
         TH_CURRENT_PARTICIPANT, 
         TH_MAX_PARTICIPANT,
         TH_OPEN, 
@@ -80,17 +80,17 @@ class Training_application_model extends MY_Model
         TH_EVALUATION_COMPULSORY, 
         TH_SERVICE_GROUP, 
         TH_CATEGORY, 
-        TO_CHAR(TH_EVALUATION_DATE_FROM, 'DD-MM-YYYY') AS TH_EVA_DATE_FROM,
-        TO_CHAR(TH_EVALUATION_DATE_TO, 'DD-MM-YYYY') AS TH_EVA_DATE_TO, 
+        TO_CHAR_VAL(TH_EVALUATION_DATE_FROM, 'DD-MM-YYYY') AS TH_EVA_DATE_FROM,
+        TO_CHAR_VAL(TH_EVALUATION_DATE_TO, 'DD-MM-YYYY') AS TH_EVA_DATE_TO, 
         TH_TRAINING_HISTORY, 
         TH_COMPETENCY_CODE, 
         TH_TRAINING_CODE, 
         TH_OFFER, 
         TH_GENERATE_CPD,
-        TO_CHAR(TH_TIME_FROM, 'HH:MI AM') AS TIME_FR, 
-        TO_CHAR(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
-        TO_CHAR(TH_CONFIRM_DATE_FROM, 'DD-MM-YYYY') AS TH_CON_DATE_FROM,
-        TO_CHAR(TH_CONFIRM_DATE_TO, 'DD-MM-YYYY') AS TH_CON_DATE_TO, 
+        TO_CHAR_VAL(TH_TIME_FROM, 'HH:MI AM') AS TIME_FR, 
+        TO_CHAR_VAL(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
+        TO_CHAR_VAL(TH_CONFIRM_DATE_FROM, 'DD-MM-YYYY') AS TH_CON_DATE_FROM,
+        TO_CHAR_VAL(TH_CONFIRM_DATE_TO, 'DD-MM-YYYY') AS TH_CON_DATE_TO, 
         TH_FIELD");
         $this->db->from('TRAINING_HEAD');
         
@@ -472,7 +472,7 @@ class Training_application_model extends MY_Model
         // $this->db->select("MAX(TO_NUMBER(REGEXP_REPLACE(TH_REF_ID,'\D',''))) + 1 AS TESTREFID");
         // $this->db->from('TRAINING_HEAD');
 
-        $this->db->select("to_char(sysdate,'yyyy')||'-'||ltrim(to_char(training_head_seq.nextval,'000000')) AS REF_ID");
+        $this->db->select("TO_CHAR_VAL(sysdate,'yyyy')||'-'||ltrim(TO_CHAR_VAL(training_head_seq.nextval,'000000')) AS REF_ID");
         $this->db->from("DUAL");
         $q = $this->db->get();
         
@@ -806,47 +806,47 @@ class Training_application_model extends MY_Model
         $this->db->set("TH_ENTER_DATE", $enter_date, false);
 
         if(!empty($form['date_from'])){
-            $date_from = "TO_DATE('".$form['date_from']."', 'DD/MM/YYYY')";
+            $date_from = "TO_DATE_VAL('".$form['date_from']."', 'DD/MM/YYYY')";
             $this->db->set("TH_DATE_FROM", $date_from, false);
 
             if(!empty($form['time_from'])){
-                $time_from = "TO_DATE('".$form['date_from']." ".$form['time_from']."', 'DD/MM/YYYY HH12:MI PM')";
+                $time_from = "TO_DATE_VAL('".$form['date_from']." ".$form['time_from']."', 'DD/MM/YYYY HH12:MI PM')";
                 $this->db->set("TH_TIME_FROM", $time_from, false);
             }
 
             if(!empty($form['time_to'])){
-                $time_to = "TO_DATE('".$form['date_from']." ".$form['time_to']."', 'DD/MM/YYYY HH12:MI PM')";
+                $time_to = "TO_DATE_VAL('".$form['date_from']." ".$form['time_to']."', 'DD/MM/YYYY HH12:MI PM')";
                 $this->db->set("TH_TIME_TO", $time_to, false);
             }
         }
 
         if(!empty($form['date_to'])){
-            $date_to = "TO_DATE('".$form['date_to']."', 'DD/MM/YYYY')";
+            $date_to = "TO_DATE_VAL('".$form['date_to']."', 'DD/MM/YYYY')";
             $this->db->set("TH_DATE_TO", $date_to, false);
         }
 
         if(!empty($form['closing_date'])){
-            $closing_date = "TO_DATE('".$form['closing_date']."', 'DD/MM/YYYY')";
+            $closing_date = "TO_DATE_VAL('".$form['closing_date']."', 'DD/MM/YYYY')";
             $this->db->set("TH_APPLY_CLOSING_DATE", $closing_date, false);
         }
 
         if(!empty($form['evaluation_period_from'])){
-            $evaluation_period_from = "TO_DATE('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
+            $evaluation_period_from = "TO_DATE_VAL('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
             $this->db->set("TH_EVALUATION_DATE_FROM", $evaluation_period_from, false);
         }
 
         if(!empty($form['evaluation_period_to'])){
-            $evaluation_period_to = "TO_DATE('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
+            $evaluation_period_to = "TO_DATE_VAL('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
             $this->db->set("TH_EVALUATION_DATE_TO", $evaluation_period_to, false);
         }
 
         if(!empty($form['confirmation_due_date_from'])){
-            $confirmation_due_date_from = "TO_DATE('".$form['confirmation_due_date_from']."', 'DD/MM/YYYY')";
+            $confirmation_due_date_from = "TO_DATE_VAL('".$form['confirmation_due_date_from']."', 'DD/MM/YYYY')";
             $this->db->set("TH_CONFIRM_DATE_FROM", $confirmation_due_date_from, false);
         }
 
         if(!empty($form['confirmation_due_date_to'])){
-            $confirmation_due_date_to = "TO_DATE('".$form['confirmation_due_date_to']."', 'DD/MM/YYYY')";
+            $confirmation_due_date_to = "TO_DATE_VAL('".$form['confirmation_due_date_to']."', 'DD/MM/YYYY')";
             $this->db->set("TH_CONFIRM_DATE_TO", $confirmation_due_date_to, false);
         }
 
@@ -1040,47 +1040,47 @@ class Training_application_model extends MY_Model
         $this->db->set("TH_ENTER_DATE", $enter_date, false);
 
         if(!empty($form['date_from'])){
-            $date_from = "TO_DATE('".$form['date_from']."', 'DD/MM/YYYY')";
+            $date_from = "TO_DATE_VAL('".$form['date_from']."', 'DD/MM/YYYY')";
             $this->db->set("TH_DATE_FROM", $date_from, false);
 
             if(!empty($form['time_from'])){
-                $time_from = "TO_DATE('".$form['date_from']." ".$form['time_from']."', 'DD/MM/YYYY HH12:MI PM')";
+                $time_from = "TO_DATE_VAL('".$form['date_from']." ".$form['time_from']."', 'DD/MM/YYYY HH12:MI PM')";
                 $this->db->set("TH_TIME_FROM", $time_from, false);
             }
 
             if(!empty($form['time_to'])){
-                $time_to = "TO_DATE('".$form['date_from']." ".$form['time_to']."', 'DD/MM/YYYY HH12:MI PM')";
+                $time_to = "TO_DATE_VAL('".$form['date_from']." ".$form['time_to']."', 'DD/MM/YYYY HH12:MI PM')";
                 $this->db->set("TH_TIME_TO", $time_to, false);
             }
         }
 
         if(!empty($form['date_to'])){
-            $date_to = "TO_DATE('".$form['date_to']."', 'DD/MM/YYYY')";
+            $date_to = "TO_DATE_VAL('".$form['date_to']."', 'DD/MM/YYYY')";
             $this->db->set("TH_DATE_TO", $date_to, false);
         }
 
         if(!empty($form['closing_date'])){
-            $closing_date = "TO_DATE('".$form['closing_date']."', 'DD/MM/YYYY')";
+            $closing_date = "TO_DATE_VAL('".$form['closing_date']."', 'DD/MM/YYYY')";
             $this->db->set("TH_APPLY_CLOSING_DATE", $closing_date, false);
         }
 
         if(!empty($form['evaluation_period_from'])){
-            $evaluation_period_from = "TO_DATE('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
+            $evaluation_period_from = "TO_DATE_VAL('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
             $this->db->set("TH_EVALUATION_DATE_FROM", $evaluation_period_from, false);
         }
 
         if(!empty($form['evaluation_period_to'])){
-            $evaluation_period_to = "TO_DATE('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
+            $evaluation_period_to = "TO_DATE_VAL('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
             $this->db->set("TH_EVALUATION_DATE_TO", $evaluation_period_to, false);
         }
 
         if(!empty($form['confirmation_due_date_from'])){
-            $confirmation_due_date_from = "TO_DATE('".$form['confirmation_due_date_from']."', 'DD/MM/YYYY')";
+            $confirmation_due_date_from = "TO_DATE_VAL('".$form['confirmation_due_date_from']."', 'DD/MM/YYYY')";
             $this->db->set("TH_CONFIRM_DATE_FROM", $confirmation_due_date_from, false);
         }
 
         if(!empty($form['confirmation_due_date_to'])){
-            $confirmation_due_date_to = "TO_DATE('".$form['confirmation_due_date_to']."', 'DD/MM/YYYY')";
+            $confirmation_due_date_to = "TO_DATE_VAL('".$form['confirmation_due_date_to']."', 'DD/MM/YYYY')";
             $this->db->set("TH_CONFIRM_DATE_TO", $confirmation_due_date_to, false);
         }
 
@@ -1310,10 +1310,22 @@ class Training_application_model extends MY_Model
 
     // GET CURRENT DEFAULT YEAR
     public function getCurYear() {
-        $this->db->select("TO_CHAR(SYSDATE, 'YYYY') AS CUR_YEAR");
+        $this->db->select("TO_CHAR_VAL(SYSDATE, 'YYYY') AS CUR_YEAR");
+        
         $this->db->from("DUAL");
         
         $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET TRAINING DATE FROM
+    public function getTrainingDateFrom($refID)
+    {
+        $this->db->select("TO_CHAR_VAL(SYSDATE, 'YYYYMMDD') AS CUR_DATE, TO_CHAR_VAL(TH_DATE_FROM, 'YYYYMMDD') AS TH_DATE_FROM");
+        $this->db->from('TRAINING_HEAD');
+        $this->db->where("TH_REF_ID", $refID);
+        $q = $this->db->get();
+        
         return $q->row();
     }
 
@@ -1327,11 +1339,11 @@ class Training_application_model extends MY_Model
         }
 
         if(!empty($defMonth) && !empty($curYear)) {
-            $this->db->where("((NVL(TO_CHAR(TH_DATE_FROM,'MM/YYYY'),'') = '$defMonth'||'/'||'$curYear'))");
+            $this->db->where("((NVL(TO_CHAR_VAL(TH_DATE_FROM,'MM/YYYY'),'') = '$defMonth'||'/'||'$curYear'))");
         } elseif(!empty($defMonth)) {
-            $this->db->where("((NVL(TO_CHAR(TH_DATE_FROM,'MM'),'') = '$defMonth'))");
+            $this->db->where("((NVL(TO_CHAR_VAL(TH_DATE_FROM,'MM'),'') = '$defMonth'))");
         } elseif(!empty($curYear)) {
-            $this->db->where("((NVL(TO_CHAR(TH_DATE_FROM,'YYYY'),'') = '$curYear'))");
+            $this->db->where("((NVL(TO_CHAR_VAL(TH_DATE_FROM,'YYYY'),'') = '$curYear'))");
         }
         
         if($defIntExt == 'INTERNAL' || $defIntExt == 'EXTERNAL' || $defIntExt == 'EXTERNAL_AGENCY' ) {
@@ -1358,11 +1370,11 @@ class Training_application_model extends MY_Model
         $this->db->select("TH_REF_ID, 
                             TH_TRAINING_TITLE,
                             TH_TRAINING_VENUE,
-                            TO_CHAR(TH_DATE_FROM, 'DD/MM/YYYY') AS TH_DATEFR,
-                            TO_CHAR(TH_DATE_TO, 'DD/MM/YYYY') AS TH_DATETO,  
-                            TO_CHAR(TH_TIME_FROM, 'HH:MI AM') AS TIME_FR, 
-                            TO_CHAR(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
-                            TO_CHAR(TH_CONFIRM_DATE_TO, 'DD/MM/YYYY') AS TH_CON_DATE_TO");
+                            TO_CHAR_VAL(TH_DATE_FROM, 'DD/MM/YYYY') AS TH_DATEFR,
+                            TO_CHAR_VAL(TH_DATE_TO, 'DD/MM/YYYY') AS TH_DATETO,  
+                            TO_CHAR_VAL(TH_TIME_FROM, 'HH:MI AM') AS TIME_FR, 
+                            TO_CHAR_VAL(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
+                            TO_CHAR_VAL(TH_CONFIRM_DATE_TO, 'DD/MM/YYYY') AS TH_CON_DATE_TO");
         $this->db->from('TRAINING_HEAD');
         $this->db->where("TH_REF_ID", $refid);
         $this->db->where("TH_STATUS= 'APPROVE'");
@@ -1385,11 +1397,11 @@ class Training_application_model extends MY_Model
 
     // GET YEAR DROPDOWN
     public function getYearList() {		
-        $this->db->select("TO_CHAR(CM_DATE, 'YYYY') AS CM_YEAR");
+        $this->db->select("TO_CHAR_VAL(CM_DATE, 'YYYY') AS CM_YEAR");
         $this->db->from("CALENDAR_MAIN");
-		$this->db->where("TO_CHAR(CM_DATE, 'YYYY') >= TO_CHAR(SYSDATE, 'YYYY') - 15");
-        $this->db->group_by("TO_CHAR(CM_DATE, 'YYYY')");
-        $this->db->order_by("TO_CHAR(CM_DATE, 'YYYY') DESC");
+		$this->db->where("TO_CHAR_VAL(CM_DATE, 'YYYY') >= TO_CHAR_VAL(SYSDATE, 'YYYY') - 15");
+        $this->db->group_by("TO_CHAR_VAL(CM_DATE, 'YYYY')");
+        $this->db->order_by("TO_CHAR_VAL(CM_DATE, 'YYYY') DESC");
         $q = $this->db->get();
 		        
         return $q->result();
@@ -1397,10 +1409,10 @@ class Training_application_model extends MY_Model
 
     // GET MONTH DROPDOWN
     public function getMonthList() {		
-        $this->db->select("TO_CHAR(CM_DATE, 'MM') AS CM_MM, TO_CHAR(CM_DATE, 'MONTH') AS CM_MONTH");
+        $this->db->select("TO_CHAR_VAL(CM_DATE, 'MM') AS CM_MM, TO_CHAR_VAL(CM_DATE, 'MONTH') AS CM_MONTH");
         $this->db->from("CALENDAR_MAIN");
-        $this->db->group_by("TO_CHAR(CM_DATE,'MM'), TO_CHAR(CM_DATE, 'MONTH')");
-        $this->db->order_by("TO_CHAR(CM_DATE, 'MM')");
+        $this->db->group_by("TO_CHAR_VAL(CM_DATE,'MM'), TO_CHAR_VAL(CM_DATE, 'MONTH')");
+        $this->db->order_by("TO_CHAR_VAL(CM_DATE, 'MM')");
         $q = $this->db->get();
 		        
         return $q->result();
@@ -1411,7 +1423,7 @@ class Training_application_model extends MY_Model
     {
         $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, 
                            SJS_STATUS_DESC, STH_STATUS, SM_EMAIL_ADDR, 
-                           TO_CHAR(STH_APPLY_DATE) AS STHAPPDATE,
+                           TO_CHAR_VAL(STH_APPLY_DATE, 'DD/MM/YYYY') AS STHAPPDATE,
                            STH_DEPT_TRAINING_BENEFIT");
         $this->db->from('STAFF_TRAINING_HEAD');
         $this->db->join("STAFF_MAIN", "STH_STAFF_ID = SM_STAFF_ID");
@@ -1473,24 +1485,44 @@ class Training_application_model extends MY_Model
     }
 
     // GET STAFF EMAIL DISTINCT
-    public function getStaffMainDis($refid, $staffID)
+    public function getStaffMainDis($refid, $staffID, $resend = null)
     {
-        $query = "SELECT DISTINCT SM_EMAIL_ADDR, NVL(STH_VERIFY_BY,STH_RECOMMEND_BY) STAFF, SM_STAFF_NAME
-        FROM STAFF_TRAINING_HEAD, STAFF_MAIN
-        WHERE STH_TRAINING_REFID = '$refid'
-        AND STH_STATUS = 'RECOMMEND'
-        AND NVL(STH_VERIFY_BY, STH_RECOMMEND_BY) = SM_STAFF_ID
-        AND STH_STAFF_ID = '$staffID'
-        UNION
-        SELECT DISTINCT SM_EMAIL_ADDR, NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY, LSH_APPROVE_BY) STAFF, SM_STAFF_NAME
-        FROM LEAVE_STAFF_HIERARCHY, STAFF_MAIN, STAFF_TRAINING_HEAD
-        WHERE LEAVE_STAFF_HIERARCHY.LSH_STAFF_ID = STH_STAFF_ID
-        AND STH_TRAINING_REFID = '$refid'
-        AND STH_STATUS = 'RECOMMEND'
-        AND STH_VERIFY_BY IS NULL 
-        AND STH_RECOMMEND_BY IS NULL
-        AND NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY, LSH_APPROVE_BY) = SM_STAFF_ID
-        AND STH_STAFF_ID = '$staffID'";
+        if($resend == 1) {
+            $query = "SELECT DISTINCT SM_EMAIL_ADDR, NVL(STH_VERIFY_BY,STH_RECOMMEND_BY) STAFF, SM_STAFF_NAME
+            FROM STAFF_TRAINING_HEAD, STAFF_MAIN
+            WHERE STH_TRAINING_REFID = '$refid'
+            AND STH_STATUS = 'APPROVE'
+            AND NVL(STH_VERIFY_BY, STH_RECOMMEND_BY) = SM_STAFF_ID
+            AND STH_STAFF_ID = '$staffID'
+            UNION
+            SELECT DISTINCT SM_EMAIL_ADDR, NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY, LSH_APPROVE_BY) STAFF, SM_STAFF_NAME
+            FROM LEAVE_STAFF_HIERARCHY, STAFF_MAIN, STAFF_TRAINING_HEAD
+            WHERE LEAVE_STAFF_HIERARCHY.LSH_STAFF_ID = STH_STAFF_ID
+            AND STH_TRAINING_REFID = '$refid'
+            AND STH_STATUS = 'APPROVE'
+            AND STH_VERIFY_BY IS NULL 
+            AND STH_RECOMMEND_BY IS NULL
+            AND NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY, LSH_APPROVE_BY) = SM_STAFF_ID
+            AND STH_STAFF_ID = '$staffID'";
+        } else {
+            $query = "SELECT DISTINCT SM_EMAIL_ADDR, NVL(STH_VERIFY_BY,STH_RECOMMEND_BY) STAFF, SM_STAFF_NAME
+            FROM STAFF_TRAINING_HEAD, STAFF_MAIN
+            WHERE STH_TRAINING_REFID = '$refid'
+            AND STH_STATUS = 'RECOMMEND'
+            AND NVL(STH_VERIFY_BY, STH_RECOMMEND_BY) = SM_STAFF_ID
+            AND STH_STAFF_ID = '$staffID'
+            UNION
+            SELECT DISTINCT SM_EMAIL_ADDR, NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY, LSH_APPROVE_BY) STAFF, SM_STAFF_NAME
+            FROM LEAVE_STAFF_HIERARCHY, STAFF_MAIN, STAFF_TRAINING_HEAD
+            WHERE LEAVE_STAFF_HIERARCHY.LSH_STAFF_ID = STH_STAFF_ID
+            AND STH_TRAINING_REFID = '$refid'
+            AND STH_STATUS = 'RECOMMEND'
+            AND STH_VERIFY_BY IS NULL 
+            AND STH_RECOMMEND_BY IS NULL
+            AND NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY, LSH_APPROVE_BY) = SM_STAFF_ID
+            AND STH_STAFF_ID = '$staffID'";
+        }
+        
 
         $q = $this->db->query($query);
         return $q->row();
@@ -1922,7 +1954,7 @@ class Training_application_model extends MY_Model
             $this->db->where("SM_DEPT_CODE = '$curUsrDept'");
         }
         if(!empty($stfID)) {
-            $this->db->where("SM_STAFF_ID = '$stfID'");
+            $this->db->where("UPPER(SM_STAFF_ID) = UPPER('$stfID') OR UPPER(SM_STAFF_NAME) LIKE UPPER('%$stfID%')");
         }
         $this->db->where("SM_STAFF_STATUS IN (SELECT SS_STATUS_CODE FROM STAFF_STATUS WHERE SS_STATUS_STS='ACTIVE')");
         $this->db->where("SM_STAFF_TYPE <> 'SYSTEM'");
@@ -1954,7 +1986,7 @@ class Training_application_model extends MY_Model
     // GET STAFF LIST
     public function applicationDetail($refid, $stfID)
     {
-        $this->db->select("STH_TRAINING_REFID ||' - '|| TH_TRAINING_TITLE TRAINING_ID, TO_CHAR(STH_APPLY_DATE, 'DD/MM/YYYY') AS APPL_DATE, 
+        $this->db->select("STH_TRAINING_REFID ||' - '|| TH_TRAINING_TITLE TRAINING_ID, TO_CHAR_VAL(STH_APPLY_DATE, 'DD/MM/YYYY') AS APPL_DATE, 
                             CASE
                             WHEN STD_TRAINING_CALENDAR = 'Y' THEN 'YES'
                             ELSE 'NO'
@@ -1964,10 +1996,10 @@ class Training_application_model extends MY_Model
                             ELSE 'NO'
                             END AS WORK_RELATED, 
                             STH_STAFF_TRAINING_BENEFIT, STH_VERIFY_BY ||' - '|| SM1.SM_STAFF_NAME AS VER_BY,
-                            TO_CHAR(STH_VERIFY_DATE, 'DD/MM/YYYY') AS VER_DATE, STH_DEPT_TRAINING_BENEFIT, STH_RECOMMEND_BY ||' - '|| SM2.SM_STAFF_NAME AS REC_BY, 
-                            TO_CHAR(STH_RECOMMEND_DATE, 'DD/MM/YYYY') AS REC_DATE, STH_RECOMMENDER_REASON, STH_REMARK, STH_APPROVE_BY ||' - '|| SM3.SM_STAFF_NAME AS APPR_BY,
-                            TO_CHAR(STH_APPROVE_DATE, 'DD/MM/YYYY') AS APPR_DATE, TO_CHAR(STD_MPE_DATE, 'DD/MM/YYYY') AS MPE_DATE, 
-                            STH_APPROVE_REASON, STD_CANCEL_BY ||' - '|| SM4.SM_STAFF_NAME AS CANC_BY, TO_CHAR(STD_CANCEL_DATE, 'DD/MM/YYYY') AS CANC_DATE, 
+                            TO_CHAR_VAL(STH_VERIFY_DATE, 'DD/MM/YYYY') AS VER_DATE, STH_DEPT_TRAINING_BENEFIT, STH_RECOMMEND_BY ||' - '|| SM2.SM_STAFF_NAME AS REC_BY, 
+                            TO_CHAR_VAL(STH_RECOMMEND_DATE, 'DD/MM/YYYY') AS REC_DATE, STH_RECOMMENDER_REASON, STH_REMARK, STH_APPROVE_BY ||' - '|| SM3.SM_STAFF_NAME AS APPR_BY,
+                            TO_CHAR_VAL(STH_APPROVE_DATE, 'DD/MM/YYYY') AS APPR_DATE, TO_CHAR_VAL(STD_MPE_DATE, 'DD/MM/YYYY') AS MPE_DATE, 
+                            STH_APPROVE_REASON, STD_CANCEL_BY ||' - '|| SM4.SM_STAFF_NAME AS CANC_BY, TO_CHAR_VAL(STD_CANCEL_DATE, 'DD/MM/YYYY') AS CANC_DATE, 
                             STD_CANCEL_REASON");
         $this->db->from("STAFF_TRAINING_HEAD");
         $this->db->join("TRAINING_HEAD", "STH_TRAINING_REFID = TH_REF_ID", "LEFT");
@@ -1991,7 +2023,7 @@ class Training_application_model extends MY_Model
     public function getStaffTrainingApplicationConf($refid, $stfID = null)
     {
         $this->db->select("STH_TRAINING_REFID, SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, 
-                            TPR_DESC, TO_CHAR(STH_APPLY_DATE, 'DD/MM/YYYY') AS STHAPPDATE,
+                            TPR_DESC, TO_CHAR_VAL(STH_APPLY_DATE, 'DD/MM/YYYY') AS STHAPPDATE,
                             CASE
                             WHEN STD_ATTEND = 'A' THEN 'Yes (Auto)'
                             WHEN STD_ATTEND = 'Y' THEN 'Yes'
@@ -2009,7 +2041,7 @@ class Training_application_model extends MY_Model
                             WHEN STD_TRANSPORTATION = 'OWN_SHARING' THEN 'Owned  / Shared Transport'
                             WHEN STD_TRANSPORTATION = 'UPSI' THEN 'UPSI'
                             END AS STD_TRANSPORTATION, 
-                            TO_CHAR(STD_ATTEND_DATE, 'DD/MM/YYYY') 
+                            TO_CHAR_VAL(STD_ATTEND_DATE, 'DD/MM/YYYY') 
                             STD_ATTEND_DATE, STD_ATTEND_REMARK, STD_ATTEND AS STD_ATTEND2,
                             STD_TRANSPORTATION AS STD_TRANSPORTATION2");
         $this->db->from("STAFF_TRAINING_HEAD");
@@ -2113,14 +2145,14 @@ class Training_application_model extends MY_Model
         FROM TRAINING_REQUIREMENT_MAIN
         WHERE TRM_CODE = TRD_ID
         AND TRM_STAFF_ID = '$staffID'
-        and TRM_SETUP_CODE in 
+        AND TRM_SETUP_CODE IN 
             (SELECT TRS_CODE
             FROM TRAINING_REQUIREMENT_SETUP 
-            WHERE TRS_REMARK is not null
-            and TRS_DATE_TO is null)
+            WHERE TRS_REMARK IS NOT NULL
+            AND TRS_DATE_TO IS NULL)
             ) 
         AND TRD_TRAINING_REFID = '$trCode'
-        and TRD_STATUS <> 'APPROVE'";
+        AND TRD_STATUS <> 'APPROVE'";
 
         $q = $this->db->query($query);
         $afftectedRows =  $this->db->affected_rows();
@@ -2138,7 +2170,7 @@ class Training_application_model extends MY_Model
         // return 1;
     }
 
-    // CHECK TRAINING EXTERNAL
+    // GET REMARK LIST
     public function getRemarkList()
     {
         $this->db->select("*");
@@ -2160,7 +2192,7 @@ class Training_application_model extends MY_Model
         );
 
         if(!empty($form['confirm_date'])){
-            $confirm_date = "TO_DATE('".$form['confirm_date']."', 'DD/MM/YYYY')";
+            $confirm_date = "TO_DATE_VAL('".$form['confirm_date']."', 'DD/MM/YYYY')";
             $this->db->set("STD_ATTEND_DATE", $confirm_date, false);
         }
 
@@ -2170,64 +2202,43 @@ class Training_application_model extends MY_Model
         return $this->db->update("STAFF_TRAINING_DETL", $data);
     }
 
+    // APPLICANT ATTENDANCE SUMMARY
     public function getCountAttendSum($refid, $att)
     {
 
         $this->db->select("COUNT(1) COUNT_ATTEND");
         $this->db->from("STAFF_TRAINING_HEAD");
-        $this->db->join("STAFF_TRAINING_DETL", "STH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID","LEFT");
-        $this->db->where("STD_TRAINING_REFID", $refid);
-        $this->db->where("STH_STATUS = 'APPROVE'");
+        if($att == 0 || $att == 1 || $att == 2) {
+            $this->db->join("STAFF_TRAINING_DETL", "STH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID", "LEFT");
+        } 
         if($att == 0) {
-            $this->db->where("(STD_ATTEND = 'Y' OR STD_ATTEND = 'A')");
+            $this->db->where("STD_ATTEND IN ('Y','A')");
         }
-
         if($att == 1) {
             $this->db->where("STD_ATTEND = 'N'");
         }
-
         if($att == 2) {
+            //$this->db->join("STAFF_TRAINING_DETL", "STH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID");
             $this->db->where("STD_ATTEND IS NULL");
         }
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_PARTICIPANT_ROLE = 'D'");
+        $this->db->where("STH_STATUS = 'APPROVE'");
+        
 
         $q = $this->db->get();
         return $q->row();
+    }
 
-
-        // if($att == 0) {
-        //     $this->db->select("COUNT(1) COUNT_ATTEND");
-        //     $this->db->from("STAFF_TRAINING_HEAD");
-        //     $this->db->join("STAFF_TRAINING_DETL", "TH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID","LEFT");
-        //     $this->db->where("STD_TRAINING_REFID", $refid);
-        //     $this->db->where("STH_STATUS = 'APPROVE'");
-        //     $this->db->where("(STD_ATTEND = 'Y' OR STD_ATTEND = 'A')");
-
-        //     $q = $this->db->get();
-        //     return $q->row();
-        // } 
-
-        // if($att == 1) {
-        //     $this->db->select("COUNT(1) COUNT_ABSENT");
-        //     $this->db->from("STAFF_TRAINING_HEAD");
-        //     $this->db->join("STAFF_TRAINING_DETL", "TH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID","LEFT");
-        //     $this->db->where("STD_TRAINING_REFID", $refid);
-        //     $this->db->where("STH_STATUS = 'APPROVE'");
-        //     $this->db->where("STD_ATTEND = 'N'");
-
-        //     $q = $this->db->get();
-        //     return $q->row();
-        // }
-
-        // if($att == 2) {
-        //     $this->db->select("COUNT(1) COUNT_ATTEND");
-        //     $this->db->from("STAFF_TRAINING_HEAD");
-        //     $this->db->join("STAFF_TRAINING_DETL", "TH_TRAINING_REFID = STD_TRAINING_REFID AND STH_STAFF_ID = STD_STAFF_ID","LEFT");
-        //     $this->db->where("STD_TRAINING_REFID", $refid);
-        //     $this->db->where("STH_STATUS = 'APPROVE'");
-        //     $this->db->where("STD_ATTEND IS NULL");
-
-        //     $q = $this->db->get();
-        //     return $q->row();
-        // }
+    // GET SEND DATE LIST
+    public function getSendDate($refid)
+    {
+        $this->db->select("DISTINCT TO_CHAR_VAL(STD_SENDMEMO_DATE,'DD/MM/YYYY') SEND_DATE");
+        $this->db->from("STAFF_TRAINING_DETL");
+        $this->db->where("STD_TRAINING_REFID", $refid);
+        $this->db->where("STD_SENDMEMO_DATE IS NOT NULL");
+       
+        $q = $this->db->get();
+        return $q->result();
     }
 }

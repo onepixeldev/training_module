@@ -32,11 +32,11 @@
 								<div class="form-group">
 									<div class="col-sm-3">
 										<div class="form-group text-right">
-											<label><b>Staff ID</b></label>
+											<label><b>Staff ID/Name</b></label>
 										</div>
 									</div>
 									<div class="col-md-2">
-										<input name="name[staff_id]" placeholder="Staff ID" class="form-control" type="text" id="staff_id">
+										<input name="name[staff_id]" placeholder="Staff ID/Name" class="form-control" type="text" id="staff_id">
 									</div>
 									<button type="button" class="btn btn-primary search_staff_btn"><i class="fa fa-search"></i> Search</button>
 								</div>
@@ -47,7 +47,7 @@
 								</div>
 								<div class="col-sm-6">
 									<div class="form-group text-left">
-										<?php echo form_dropdown('sDept', $dept_list, $curUsrDept, 'class="form-control listFilter" id="sDept"'); ?>
+										<?php echo form_dropdown('sDept', $dept_list, '', 'class="form-control listFilter" id="sDept"'); ?>
 									</div>
 								</div>
 								<div class="col-sm-3">
@@ -84,6 +84,15 @@
                                 <div class="tab-pane fade active in" id="s1">
 									<div id="staff_training_list">
                                         <div class="text-center" id="loader">
+											<p>
+												<table class="table table-bordered table-hover">
+													<thead>
+													<tr>
+														<th class="text-center">Please enter Staff ID or select Department</th>
+													</tr>
+													</thead>
+												</table>
+											</p>
 										</div>
 									</div>
                                 </div>
@@ -225,27 +234,38 @@
     });
 
     // POPULATE STAFF TRAINING LIST
-	$.ajax({
-		type: 'POST',
-		url: '<?php echo $this->lib->class_url('getStaffTrainingList')?>',
-		data: {'disDept' : disDept},
-		beforeSend: function() {
-			$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-		},
-		success: function(res) {
-            $('#staff_training_list').html(res);
-			tr_row = $('#stf_tr_list').DataTable({
-				"ordering":false,
-			});
-		},
-		complete: function(){
-			$('#loader').hide();
-		},
-    });
+	// $.ajax({
+	// 	type: 'POST',
+	// 	url: '< ?php echo $this->lib->class_url('getStaffTrainingList')?>',
+	// 	data: {'disDept' : disDept},
+	// 	beforeSend: function() {
+	// 		$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+	// 	},
+	// 	success: function(res) {
+    //         $('#staff_training_list').html(res);
+	// 		tr_row = $('#stf_tr_list').DataTable({
+	// 			"ordering":false,
+	// 		});
+	// 	},
+	// 	complete: function(){
+	// 		$('#loader').hide();
+	// 	},
+    // });
 
 	// STAFF LIST FILTER
 	$('.listFilter').change(function() {
 		var sDept = $('#sDept').val();
+		var stfID = $('#staff_id').val();
+
+		if (sDept == '' && stfID =='') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter Staff ID or select Department',
+				type: 'red',
+			});
+
+			return;
+		}
 		
 		$('.nav-tabs li:eq(0) a').tab('show');
 		$('#staff_training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -265,7 +285,18 @@
 
 	// SEARCH STAFF FILTER
 	$('.search_staff_btn').click(function() {
+		var sDept = $('#sDept').val();
 		var stfID = $('#staff_id').val();
+
+		if (sDept == '' && stfID =='') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter Staff ID or select Department',
+				type: 'red',
+			});
+
+			return;
+		}
 		//alert(stfID);
 		
 		$('.nav-tabs li:eq(0) a').tab('show');
