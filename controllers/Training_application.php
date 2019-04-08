@@ -220,18 +220,114 @@ class Training_application extends MY_Controller
         $this->render();
     }
 
-    // QUERY STAFF TRAINING
-    public function ATF118()
-    { 
+    // STAFF TRAINING EVALUATION
+    public function ATF104()
+    {   
         // default value filter
         // default dept
-        //$data['cur_usr_dept'] = $this->mdl->getCurUserDept();
-        //$data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
 
         // get department dd list
-        //$data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' --- Please select --- ');
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
 
-        $this->render();
+        $this->render($data);
+    }
+
+    // STAFF EVALUATOR SEND MEMO
+    public function ATF121()
+    {   
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+
+        $this->render($data);
+    }
+
+    // REPORT FOR TRAINING EVALUATION
+    public function ATF166()
+    {   
+        // clear filter for report
+        $this->session->set_userdata('repCode2','');
+        $this->session->set_userdata('year_i2','');
+        $this->session->set_userdata('department2','');
+        $this->session->set_userdata('staffID2','');
+        $this->session->set_userdata('corTitle22','');
+        $this->session->set_userdata('courseDate2','');
+        $this->session->set_userdata('sMonth2','');
+        $this->session->set_userdata('sYear2','');
+        $this->session->set_userdata('corTitle2','');
+
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        // get staff dd list
+        $data['staff_list'] = $this->dropdown($this->mdl->getStaffListDD(), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get month dd list
+        $data['course_list_btm'] = $this->dropdown($this->mdl->getCourseListEff(), 'TH_REF_ID', 'COURSE_ID_NAME', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // TRAINING SECRETARIAT REPORT - MANUAL ENTRY
+    public function ATF147()
+    {   
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+
+        $this->render($data);
     }
 
     // View Page Filter
@@ -2154,7 +2250,7 @@ class Training_application extends MY_Controller
 
 
     /*===========================================================
-       TRAINING APPLICATION [APPROVE TRAINING APPLICATIONS]
+       TRAINING APPLICATION [APPROVE TRAINING APPLICATIONS] - ATF002
     =============================================================*/
 
     /*_____________________
@@ -2175,6 +2271,8 @@ class Training_application extends MY_Controller
         $disDept = $this->input->post('disDept', true);
         $disYear = $this->input->post('disYear', true);
         $disTsts = $this->input->post('disTsts', true);
+        $evaluation = $this->input->post('evaluation', true);
+        $screRpt = $this->input->post('screRpt', true);
 
         // default filter value
         //|| empty($selDept) || empty($selMonth) || empty($selYear) || empty($selSts)
@@ -2251,7 +2349,7 @@ class Training_application extends MY_Controller
         }
 
         // get available records
-        $data['tr_list'] = $this->mdl->getTrainingList($defIntExt, $curUsrDept, $defMonth, $curYear, $defTrSts);
+        $data['tr_list'] = $this->mdl->getTrainingList($defIntExt, $curUsrDept, $defMonth, $curYear, $defTrSts, $evaluation, $screRpt);
 
         $this->render($data);
     }
@@ -2307,9 +2405,15 @@ class Training_application extends MY_Controller
             //$curDate = $this->mdl->getCurYear($verTr = 1);
             if(!empty($verDate)) {
                 if(!empty($verDate->TH_DATE_FROM) && $verDate->TH_DATE_FROM > $verDate->CUR_DATE) {
-                    $json = array('sts' => 1, 'msg' => 'TH_DATE_FROM > SYSDATE ' .$verDate->TH_DATE_FROM. '>' .$verDate->CUR_DATE.'', 'alert' => 'success');
-                } else {
-                    $json = array('sts' => 0, 'msg' => 'TH_DATE_FROM < SYSDATE ' .$verDate->TH_DATE_FROM. '<' .$verDate->CUR_DATE.'', 'alert' => 'danger');
+                    // SYSDATE DID NOT PAST COURSE DATE
+                    // SEND EMAIL & APPROVE 
+
+                    $json = array('sts' => 1, 'msg' => 'TH_DATE_FROM >  SYSDATE <br><br>SYSDATE DID NOT PAST COURSE DATE<br><br>SEND EMAIL & APPROVE<br><br>' .$verDate->TH_DATE_FROM. ' >= ' .$verDate->CUR_DATE.'', 'alert' => 'success');
+                } 
+                if(!empty($verDate->TH_DATE_FROM) && $verDate->TH_DATE_FROM <= $verDate->CUR_DATE) {
+                    // SYSDATE PAST COURSE DATE
+                    // APPROVE ONLY
+                    $json = array('sts' => 0, 'msg' => 'TH_DATE_FROM <= SYSDATE <br><br> SYSDATE PAST COURSE DATE<br><br>APPROVE ONLY<br><br>' .$verDate->TH_DATE_FROM. ' < ' .$verDate->CUR_DATE.'', 'alert' => 'danger');
                 }
                 //$json = array('sts' => 1, 'msg' => '> TH_DATE_FROM', 'alert' => 'success');
             } else {
@@ -2332,28 +2436,42 @@ class Training_application extends MY_Controller
         $this->isAjax();
 
         $refid = $this->input->post('refid', true);
-        $staffID = $this->input->post('staffID', true);
-        $remark = $this->input->post('remark', true);
+        $staffID = $this->input->post('staffIDArr', true);
+        $remark = $this->input->post('remarkArr', true);
+        $success = 0;
+        $successApp = 0;
         $sts = 1;
 
-        if (!empty($refid) && !empty($staffID)) {   
-            $data['eva_id'] = $this->mdl->getEvaluatorID($refid, $staffID);
+        if (!empty($refid) && !empty($staffID)) { 
+            foreach($staffID as $key => $sid) {
+                $rem = $remark[$key];
 
-            if(!empty($data['eva_id'])) {
-                $eveluatorID = $data['eva_id']->EVAID;
-            } else {
-                $eveluatorID = '';
+                $success++;
+                $data['eva_id'] = $this->mdl->getEvaluatorID($refid, $sid);
+
+                if(!empty($data['eva_id'])) {
+                    $eveluatorID = $data['eva_id']->EVAID;
+                } else {
+                    $eveluatorID = '';
+                }
+
+                $approveOrReject = $this->mdl->apprOrReApp($refid, $sid, $eveluatorID, $rem, $sts);
+                //$approveOrReject = '1';
+
+                if($approveOrReject > 0) {
+                    $successApp++;
+    
+                    //$json = array('sts' => 1, 'msg' => 'Training Application has been approved', 'alert' => 'success');
+                } else {
+                    $successApp = 0;
+                    //$json = array('sts' => 0, 'msg' => 'Fail to approve Training Application', 'alert' => 'danger');
+                }
             }
 
-            $approve = $this->mdl->apprOrReApp($refid, $staffID, $eveluatorID, $remark, $sts);
-            //$approve = '1';
-
-            if($approve > 0) {
-                //$cpd5_row = $this->mdl->getCpdSetup($refid);
-
-                $json = array('sts' => 1, 'msg' => 'Training Application has been approved', 'alert' => 'success');
+            if($success = $successApp) {
+                $json = array('sts' => 1, 'msg' => 'Training Application has been approved', 'alert' => 'green');
             } else {
-                $json = array('sts' => 0, 'msg' => 'Fail to approve Training Application', 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => 'Fail to approve Training Application', 'alert' => 'red');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
@@ -2371,25 +2489,40 @@ class Training_application extends MY_Controller
         $staffID = $this->input->post('staffID', true);
         $remark = $this->input->post('remark', true);
         $sts = 0;
+        $success = 0;
+        $successRej = 0;
 
-        if (!empty($refid) && !empty($staffID)) {   
-            $data['eva_id'] = $this->mdl->getEvaluatorID($refid, $staffID);
+        if (!empty($refid) && !empty($staffID)) {
+            foreach ($staffID as $key => $sid) {
+                $success++;
+                $rem = $remark[$key];
 
-            if(!empty($data['eva_id'])) {
-                $eveluatorID = $data['eva_id']->EVAID;
-            } else {
-                $eveluatorID = '';
+                $data['eva_id'] = $this->mdl->getEvaluatorID($refid, $sid);
+
+                if (!empty($data['eva_id'])) {
+                    $eveluatorID = $data['eva_id']->EVAID;
+                } else {
+                    $eveluatorID = '';
+                }
+
+                $reject = $this->mdl->apprOrReApp($refid, $sid, $eveluatorID, $rem, $sts);
+                //$approve = '1';
+
+                if ($reject > 0) {
+                    $successRej++;
+                    //$cpd5_row = $this->mdl->getCpdSetup($refid);
+
+                    //$json = array('sts' => 1, 'msg' => 'Training Application has been rejected', 'alert' => 'success');
+                } else {
+                    $successRej = 0;
+                    //$json = array('sts' => 0, 'msg' => 'Fail to reject Training Application', 'alert' => 'danger');
+                }
             }
 
-            $reject = $this->mdl->apprOrReApp($refid, $staffID, $eveluatorID, $remark, $sts);
-            //$approve = '1';
-
-            if($reject > 0) {
-                //$cpd5_row = $this->mdl->getCpdSetup($refid);
-
-                $json = array('sts' => 1, 'msg' => 'Training Application has been rejected', 'alert' => 'success');
+            if($success = $successRej) {
+                $json = array('sts' => 1, 'msg' => 'Selected applicant has been rejected', 'alert' => 'green');
             } else {
-                $json = array('sts' => 0, 'msg' => 'Fail to reject Training Application', 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => 'Fail to reject selected applicant', 'alert' => 'red');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
@@ -2408,121 +2541,144 @@ class Training_application extends MY_Controller
         $this->isAjax();
 
         $refid = $this->input->post('refid', true);
-        $staffID = $this->input->post('staffID', true);
+        $staffID = $this->input->post('stfID', true);
         $memo_from = 'bsm.latihan@upsi.edu.my';
+        //$memo_from_cc = ',bsm.latihan@upsi.edu.my';
+
+        $staffNameArr = array();
+        $staffEmailArr = array();
+        $staffIDCCArr = array();
+        $staffNameCCArr = array();
+        $staffEmailCCArr = array();
+
+        // GET TRAINING DETAIL
+        $tr_detl = $this->mdl->getTrDetl($refid);
+        if (!empty($tr_detl)) {
+            // TRAINING TITLE
+            $tr_title = $tr_detl->TH_TRAINING_TITLE;
+            // TRAINING VENUE
+            $tr_venue = $tr_detl->TH_TRAINING_VENUE;
+            // TRAINING DATE FROM
+            $tr_date_from = $tr_detl->TH_DATEFR;
+            // TRAINING DATE TO
+            $tr_date_to = $tr_detl->TH_DATETO;
+            // TRAINING TIME FROM
+            $tr_time_from = $tr_detl->TIME_FR;
+            // TRAINING TIME TO
+            $tr_time_to = $tr_detl->TIME_T;
+            // TRAINING CONFIRM DATE
+            $tr_confirm_date = $tr_detl->TH_CON_DATE_TO;
+        } else {
+            $trTitle = '';
+            $tr_date_from = '';
+            $tr_date_to = '';
+            $tr_time_from = '';
+            $tr_time_to = '';
+            $tr_confirm_date = '';
+        }
+
+        // GET TRAINING COORDINATOR
+        $tr_coor = $this->mdl->getTrCoor($refid);
+        if (!empty($tr_coor)) {
+            $coor_name = $tr_coor->STAFF_NAME;
+            $coor_tel_no = $tr_coor->THD_COORDINATOR_TELNO;
+        } else {
+            $coor_name = '';
+            $coor_tel_no = '';
+        }
+
+        // MEMO TITLE AND CONTENT
+        $msg_title = 'MEMO TAWARAN KURSUS : ' .$tr_title.'';
+        $msg_content = 'Adalah dimaklumkan tuan/puan telah ditawarkan untuk mengikuti kursus seperti butiran berikut : '.
+                                '<br><br>'.
+                                'Kursus : '.$tr_title.
+                                '<br>'.
+                                'Tarikh : '.$tr_date_from.' hingga '.$tr_date_to.
+                                '<br>'.
+                                'Masa : '.$tr_time_from.' hingga '.$tr_time_to.
+                                '<br>'.
+                                'Tempat : '.$tr_venue.
+                                '<br><br>'.
+                                '2. Sehubungan itu, tuan/puan diminta hadir sepenuh masa ke kursus tersebut.  Kehadiran adalah diwajibkan. '.
+                                'Tuan/puan dimohon untuk membuat pengesahan kehadiran di <b>MyUPSI Portal > Human Resource > Training </b>selewat-lewatnya pada <b>'.$tr_confirm_date.'</b>'.
+                                '<br><br>'.
+                                '3. Sekiranya tuan/puan tidak membuat pengesahan ini sehingga tarikh yang dinyatakan, tuan/puan dianggap bersetuju menghadiri '.
+                                'kursus tersebut.  Sebarang ketidakhadiran tanpa makluman akan dikenakan denda (RM50.00 sehari untuk kursus dalaman / '.
+                                'RM200 sehari untuk kursus luar) seperti yang telah diputuskan oleh Mesyuarat Lembaga Pengarah Universiti kali ke-90, Bil 6/2013 bertarikh 11 Disember 2013.'.
+                                '<br><br>'.
+                                '4. Sebarang pertanyaan berkenaan perkara di atas, sila berhubung dengan urusetia kursus '.$coor_name.' di talian '.$coor_tel_no.'<br><br>'.
+                                'Sekian, terima kasih.';
 
         if(!empty($refid) && !empty($staffID)) {
-
-            // GET TRAINING DETAIL
-            $tr_detl = $this->mdl->getTrDetl($refid);
-            if(!empty($tr_detl)) {
-                // TRAINING TITLE
-                $tr_title = $tr_detl->TH_TRAINING_TITLE;
-                // TRAINING VENUE
-                $tr_venue = $tr_detl->TH_TRAINING_VENUE;
-                // TRAINING DATE FROM
-                $tr_date_from = $tr_detl->TH_DATEFR;
-                // TRAINING DATE TO
-                $tr_date_to = $tr_detl->TH_DATETO;
-                // TRAINING TIME FROM
-                $tr_time_from = $tr_detl->TIME_FR;
-                // TRAINING TIME TO
-                $tr_time_to = $tr_detl->TIME_T;
-                // TRAINING CONFIRM DATE
-                $tr_confirm_date = $tr_detl->TH_CON_DATE_TO;
-            } else {
-                $trTitle = '';
-                $tr_date_from = '';
-                $tr_date_to = '';
-                $tr_time_from = '';
-                $tr_time_to = '';
-                $tr_confirm_date = '';
-            }
-
-            // GET STAFF EMAIL
-            $staff_app = $this->mdl->getCurUserDept($staffID);
-            if(!empty($staff_app)){
-                $staff_app_email = $staff_app->SM_EMAIL_ADDR;
-                $staff_app_id = $staff_app->SM_STAFF_ID;
-                $staff_app_name = $staff_app->SM_STAFF_NAME;
-            } else {
-                $staff_app_email = '';
-            }
-
-            // GET EVALUATOR STAFF EMAIL DISTINCT
-            $staff_eva = $this->mdl->getStaffMainDis($refid, $staffID);
-            if(!empty($staff_eva)) {
-                $eva_email = $staff_eva->SM_EMAIL_ADDR;
-                $eva_id = $staff_eva->STAFF;
-                $eva_name = $staff_eva->SM_STAFF_NAME;
-            } else {
-                $eva_email = '';
-                $eva_id = '';
-                $eva_name = '';
-            }
-
-            // GET TRAINING COORDINATOR
-            $tr_coor = $this->mdl->getTrCoor($refid);
-            if(!empty($tr_coor)) {
-                $coor_name = $tr_coor->STAFF_NAME;
-                $coor_tel_no = $tr_coor->THD_COORDINATOR_TELNO;
-            } else {
-                $coor_name = '';
-                $coor_tel_no = '';
-            }
-
-            // EMAIL CC
-            if(!empty($eva_email)) {
-                $email_cc = ''.$eva_email. ', ' .$memo_from;
-            } else {
-                $email_cc = $memo_from;
-            }
-
-            // MEMO TITLE AND CONTENT
-            $msg_title = 'MEMO TAWARAN KURSUS : ' .$tr_title.'';
-            $msg_content = 'Adalah dimaklumkan tuan/puan telah ditawarkan untuk mengikuti kursus seperti butiran berikut : '.
-                                    '<br><br>'.
-                                    'Kursus : '.$tr_title.
-                                    '<br>'.
-                                    'Tarikh : '.$tr_date_from.' hingga '.$tr_date_to.
-                                    '<br>'.
-                                    'Masa : '.$tr_time_from.' hingga '.$tr_time_to.
-                                    '<br>'.
-                                    'Tempat : '.$tr_venue.
-                                    '<br><br>'.
-                                    '2. Sehubungan itu, tuan/puan diminta hadir sepenuh masa ke kursus tersebut.  Kehadiran adalah diwajibkan. '.
-                                    'Tuan/puan dimohon untuk membuat pengesahan kehadiran di <b>MyUPSI Portal > Human Resource > Training </b>selewat-lewatnya pada <b>'.$tr_confirm_date.'</b>'.
-                                    '<br><br>'.
-                                    '3. Sekiranya tuan/puan tidak membuat pengesahan ini sehingga tarikh yang dinyatakan, tuan/puan dianggap bersetuju menghadiri '.
-                                    'kursus tersebut.  Sebarang ketidakhadiran tanpa makluman akan dikenakan denda (RM50.00 sehari untuk kursus dalaman / '.
-                                    'RM200 sehari untuk kursus luar) seperti yang telah diputuskan oleh Mesyuarat Lembaga Pengarah Universiti kali ke-90, Bil 6/2013 bertarikh 11 Disember 2013.'.
-                                    '<br><br>'.
-                                    '4. Sebarang pertanyaan berkenaan perkara di atas, sila berhubung dengan urusetia kursus '.$coor_name.' di talian '.$coor_tel_no.'<br><br>'.
-                                    'Sekian, terima kasih.';
-
-           
-            if(!empty($staff_app_email)) {
-                $sendEmailSts = $this->mdl->sendEmail($memo_from, $staff_app_email, $email_cc, $msg_title, $msg_content);
-
-                if($sendEmailSts > 0) {
-                    $checkEmailSts = $this->mdl->verifyTraining($refid, $staffID);
-    
-                    if(!empty($checkEmailSts)) {
-                        $updEmailSts = $this->mdl->updateEmailSts($refid, $staffID);
-                    } else {
-                        $insEmailSts = $this->mdl->insertEmailSts($refid, $staffID);
-                    }
-    
-                    $sentMsg = 'Memo successfully sent';
-                    $json = array('sts' => 1, 'msg' => $sentMsg, 'alert' => 'success');
+            foreach ($staffID as $key => $fid) {
+                // GET STAFF EMAIL
+                $staff_app = $this->mdl->getCurUserDept($fid);
+                if (!empty($staff_app)) {
+                    $staff_app_email = $staff_app->SM_EMAIL_ADDR;
+                    $staff_app_id = $staff_app->SM_STAFF_ID;
+                    $staff_app_name = $staff_app->SM_STAFF_NAME;
                 } else {
-                    $sentMsg = 'Fail to send memo';
-                    $json = array('sts' => 0, 'msg' => $sentMsg, 'alert' => 'danger');
+                    $staff_app_email = '';
                 }
-            } else {
-                $sentMsg = nl2br('Fail to send memo to <b>'.$staff_app_id.' - '.$staff_app_name."\n".'</b>Applicant email address not found!'."\n".'Cannot approve applicant Training Application!');
-                $json = array('sts' => 0, 'msg' => $sentMsg, 'alert' => 'danger');
-            }   
+
+                $staffNameArr [] = $staff_app_name;
+                $staffEmailArr [] = $staff_app_email;
+
+                // GET EVALUATOR STAFF EMAIL DISTINCT
+                $staff_eva = $this->mdl->getStaffMainDis($refid, $fid);
+                if (!empty($staff_eva)) {
+                    $eva_email = $staff_eva->SM_EMAIL_ADDR;
+                    $eva_id = $staff_eva->STAFF;
+                    $eva_name = $staff_eva->SM_STAFF_NAME;
+                } else {
+                    $eva_email = '';
+                    $eva_id = '';
+                    $eva_name = '';
+                }
+
+                // EMAIL CC
+                if (!empty($eva_email)) {
+                    $email_cc = ''.$eva_email. ', ' .$memo_from;
+                } else {
+                    $email_cc = $memo_from;
+                }
+
+                $staffIDCCArr [] = $eva_id;
+                $staffNameCCArr [] = $eva_name;
+                $staffEmailCCArr [] = $eva_email;
+            
+                // if (!empty($staff_app_email)) {
+                //     $sendEmailSts = $this->mdl->sendEmail($memo_from, $staff_app_email, $email_cc, $msg_title, $msg_content);
+
+                //     if ($sendEmailSts > 0) {
+                //         $checkEmailSts = $this->mdl->verifyTraining($refid, $fid);
+        
+                //         if (!empty($checkEmailSts)) {
+                //             $updEmailSts = $this->mdl->updateEmailSts($refid, $fid);
+                //         } else {
+                //             $insEmailSts = $this->mdl->insertEmailSts($refid, $fid);
+                //         }
+
+                //         $successEmail++;
+        
+                //         // $sentMsg = 'Memo successfully sent';
+                //         // $json = array('sts' => 1, 'msg' => $sentMsg, 'alert' => 'success');
+                //     } else {
+                //         $successEmail = 0;
+                //         // $sentMsg = 'Fail to send memo';
+                //         // $json = array('sts' => 0, 'msg' => $sentMsg, 'alert' => 'danger');
+                //     }
+                // } else {
+                //     $sentMsg = nl2br('Fail to send memo to <b>'.$staff_app_id.' - '.$staff_app_name."\n".'</b>Applicant email address not found!'."\n".'Cannot approve applicant Training Application!');
+                //     $json = array('sts' => 0, 'msg' => $sentMsg, 'alert' => 'danger');
+                // }
+            }
+
+            $filterStaffIDCCArr = array_values(array_filter($staffIDCCArr));
+            $filterStaffNameCCArr = array_values(array_filter($staffNameCCArr));
+            $filterStaffEmailCCArr = array_values(array_filter($staffEmailCCArr));
+
+            $json = array('sts' => 1, 'msg' => 'All staff details', 'alert' => 'red', 'from' => $memo_from, 'staffNameArr' => $staffNameArr, 'staffEmailArr' => $staffEmailArr, 'staffIDCCArr' => $filterStaffIDCCArr, 'staffNameCCArr' => $filterStaffNameCCArr, 'staffEmailCCArr' => $filterStaffEmailCCArr, 'msg_title' => $msg_title, 'msg_content' => $msg_content);
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator!', 'alert' => 'danger');
         }
@@ -3075,54 +3231,25 @@ class Training_application extends MY_Controller
         $this->renderAjax($data);
     }
 
-    // VERIFY ATTEND CONFIRMATION
-    public function verifyAttendConfirmation() {
-        $this->isAjax();
-        
-		$stfName = $this->input->post('stfName', true);
-        $stfID = $this->input->post('stfID', true);
-        $refid = $this->input->post('refid', true);
-        
-        if (!empty($refid) && !empty($stfID)) {
-            $checkStfTrDetl = $this->mdl->verifyTraining($refid, $stfID);
-
-            if(!empty($checkStfTrDetl)) {
-                if($checkStfTrDetl->STD_ATTEND == 'A' || $checkStfTrDetl->STD_ATTEND == 'Y') {
-                    $json = array('sts' => 1, 'msg' => 'Applicant attendance <b>already confirmed</b>. <br>Staff ID: <b>'.$stfID.' - '.$stfName.'</b>', 'alert' => 'danger');
-                } elseif($checkStfTrDetl->STD_ATTEND == 'N') {
-                    $json = array('sts' => 1, 'msg' => 'Applicant attendance cannot be confirmed. <br>Staff ID: <b>'.$stfID.' - '.$stfName.'</b>', 'alert' => 'danger');
-                } else {
-                    $json = array('sts' => 0, 'msg' => 'Applicant attendance need confirmation.', 'alert' => 'danger');
-                }
-                
-            } else {
-                $json = array('sts' => 0, 'msg' => 'Applicant attendance need confirmation.', 'alert' => 'danger');
-            }
-        } else {
-            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
-        }
-        echo json_encode($json);
-    }
-
     // AUTO ATTEND CONFIRMATION
     public function autoAttendConfirmation() {
         $this->isAjax();
         
-		$stfName = $this->input->post('stfName', true);
         $stfID = $this->input->post('stfID', true);
         $refid = $this->input->post('refid', true);
+        $confirm = 0;
+        $successConfirm = 0;
         
         if (!empty($refid) && !empty($stfID)) {
             foreach ($stfID as $key => $fid) {
+                $confirm++;
                 // CHECK IF STAFF RECORD ALREADY EXIST
                 $checkStfTrDetl = $this->mdl->verifyTraining($refid, $fid);
+                $transport = '';
+                $trCode = '';
 
                 if (!empty($checkStfTrDetl) && empty($checkStfTrDetl->STD_ATTEND)) {
                     // IF EXIST THEN UPDATE RECORD
-                    $transport = '';
-                    $trCode = '';
-                    $attend_field = '';
-
                     // GET TRANSPORT
                     $checkTrExternal = $this->mdl->getTrainingExternal($refid);
                     if (!empty($checkTrExternal)) {
@@ -3135,46 +3262,14 @@ class Training_application extends MY_Controller
                     // UPDATE ATTENDANCE CONFIRMATION
                     $autoConfirm = $this->mdl->autoAttendConfirmation($refid, $fid, $transport);
                     if ($autoConfirm > 0) {
-                        $attend_field = $this->mdl->verifyTraining($refid, $fid);
-                        if ($attend_field->STD_ATTEND == 'A') {
-                            $attend_field = '<font color="green">Yes (Auto)</font>';
-                            $staff_id = '<font color="green">'.$fid.'</font>';
-                            $c_attend = $this->mdl->getCountAttendSum($refid, $att = 0);
-                            $c_absent = $this->mdl->getCountAttendSum($refid, $att = 1);
-                            $c_unconf = $this->mdl->getCountAttendSum($refid, $att = 2);
-                            $total_approve = $this->mdl->getCountAttendSum($refid, $att = 3);
-                            $summary = nl2br('Total Offer Approved: <b>'.$total_approve->COUNT_ATTEND."</b>\r\n"."\r\n".
-                                            '<font color="green">Total Attend: <b>'.$c_attend->COUNT_ATTEND."</font></b>\r\n".
-                                            '<font color="red">Total Absent: <b>'.$c_absent->COUNT_ATTEND."</font></b>\r\n".
-                                            '<font color="blue">Total Unconfirmed: <b>'.$c_unconf->COUNT_ATTEND.'</font></b>');
-                        } else {
-                            $attend_field = '';
-                            $summary = '';
-                        }
-                        $autoConfMsg = 'Attendance <font color="green"><b>successfully confirmed</b></font>';
+                        $successConfirm++;
                     } else {
-                        $autoConfMsg = 'Fail to confirm attendance.';
+                        $successConfirm = 0;
                     }
-
-                    // UPDATE TRAINING REQUIREMENT
-                    $countRequirement = $this->mdl->getTrainingRequirement($trCode, $fid);
-                    if ($countRequirement->R_COUNT > 0) {
-                        $updateTrRequirement = $this->mdl->updTrainingRequirementDetl($trCode, $fid);
-                        if ($updateTrRequirement == true) {
-                            $updMsg = 'Training Requirement successfully updated.';
-                        } else {
-                            $updMsg = 'Fail to update Training Requirement.';
-                        }
-                    } else {
-                        $updMsg = '';
-                    }
-                    $json = array('sts' => 1, 'msg' => ''.$autoConfMsg.'<br>'.$updMsg.'', 'alert' => 'green', 'attend_field' => $attend_field, 'summary' => $summary, 'staff_id' => $staff_id);
                 } 
                 
                 if (empty($checkStfTrDetl)) {
                     // INSERT
-                    $transport = '';
-                    $trCode = '';
                     $checkTrExternal = $this->mdl->getTrainingExternal($refid);
                     if (!empty($checkTrExternal)) {
                         $trCode = $checkTrExternal->TH_TRAINING_CODE;
@@ -3183,33 +3278,34 @@ class Training_application extends MY_Controller
                         }
                     }
 
-                    $autoConfirmIns = $this->mdl->autoAttendConfirmationIns($refid, $stfID, $transport);
+                    $autoConfirmIns = $this->mdl->autoAttendConfirmationIns($refid, $fid, $transport);
                     if ($autoConfirmIns > 0) {
-                        $attend_field = $this->mdl->verifyTraining($refid, $stfID);
-                        if ($attend_field->STD_ATTEND == 'A') {
-                            $attend_field = 'Yes (Auto)';
-                        } else {
-                            $attend_field = '';
-                        }
-                        $autoConfMsg = 'Attendance <font color="green"><b>successfully confirmed</b></font>. <br>Staff ID: <b>'.$stfID.' - '.$stfName.'</b>';
+                        $successConfirm++;
                     } else {
-                        $autoConfMsg = 'Fail to confirm attendance.';
+                        $successConfirm = 0;
                     }
+                }
 
-                    $countRequirement = $this->mdl->getTrainingRequirement($trCode, $stfID);
-                    if ($countRequirement->R_COUNT > 0) {
-                        $updateTrRequirement = $this->mdl->updTrainingRequirementDetl($trCode, $stfID);
-                        if ($updateTrRequirement == true) {
-                            $updMsg = 'Training Requirement successfully updated.';
-                        } else {
-                            $updMsg = 'Fail to update Training Requirement.';
-                        }
+                // UPDATE TRAINING REQUIREMENT
+                $countRequirement = $this->mdl->getTrainingRequirement($trCode, $fid);
+                if ($countRequirement->R_COUNT > 0) {
+                    $updateTrRequirement = $this->mdl->updTrainingRequirementDetl($trCode, $fid);
+                    if ($updateTrRequirement == true) {
+                        $updMsg = 'Training Requirement successfully updated.';
                     } else {
-                        $updMsg = '';
+                        $updMsg = 'Fail to update Training Requirement.';
                     }
-                    $json = array('sts' => 1, 'msg' => ''.$autoConfMsg.'<br>'.$updMsg.'', 'alert' => 'green', 'attend_field' => $attend_field);
+                } else {
+                    $updMsg = '';
                 }
             }
+
+            if($confirm == $successConfirm) {
+                $json = array('sts' => 1, 'msg' => 'Attendance <font color="green"><b>successfully confirmed</b></font><br>'.$updMsg.'', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to confirm attendance.<br>'.$updMsg.'', 'alert' => 'red');
+            }
+
         } else {
             $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
         }
@@ -3320,131 +3416,191 @@ class Training_application extends MY_Controller
         echo json_encode($json);
     }
 
+    // EMAIL FORM MODAL
+    public function emailForm() {
+        $this->renderAjax();
+    }
+
     // RESEND EMAIL APPLICANT
-    public function resendEmailApplicant()
+    public function resendEmailApplicantDetl()
     {
         $this->isAjax();
 
-        $refid = $this->input->post('refid', true);
         $staffID = $this->input->post('stfID', true);
-        $stName = $this->input->post('stfName', true);
+        $refid = $this->input->post('refid', true);
+        // $stName = $this->input->post('stfName', true);
         $memo_from = 'bsm.latihan@upsi.edu.my';
 
-        if(!empty($refid) && !empty($staffID)) {
+        $staffNameArr = array();
+        $staffEmailArr = array();
+        $staffIDCCArr = array();
+        $staffNameCCArr = array();
+        $staffEmailCCArr = array();
 
-            // GET TRAINING DETAIL
-            $tr_detl = $this->mdl->getTrDetl($refid);
-            if(!empty($tr_detl)) {
-                // TRAINING TITLE
-                $tr_title = $tr_detl->TH_TRAINING_TITLE;
-                // TRAINING VENUE
-                $tr_venue = $tr_detl->TH_TRAINING_VENUE;
-                // TRAINING DATE FROM
-                $tr_date_from = $tr_detl->TH_DATEFR;
-                // TRAINING DATE TO
-                $tr_date_to = $tr_detl->TH_DATETO;
-                // TRAINING TIME FROM
-                $tr_time_from = $tr_detl->TIME_FR;
-                // TRAINING TIME TO
-                $tr_time_to = $tr_detl->TIME_T;
-                // TRAINING CONFIRM DATE
-                $tr_confirm_date = $tr_detl->TH_CON_DATE_TO;
-            } else {
-                $trTitle = '';
-                $tr_date_from = '';
-                $tr_date_to = '';
-                $tr_time_from = '';
-                $tr_time_to = '';
-                $tr_confirm_date = '';
-            }
-
-            // GET STAFF EMAIL
-            $staff_app = $this->mdl->getCurUserDept($staffID);
-            if(!empty($staff_app)){
-                $staff_app_email = $staff_app->SM_EMAIL_ADDR;
-                $staff_app_id = $staff_app->SM_STAFF_ID;
-                $staff_app_name = $staff_app->SM_STAFF_NAME;
-            } else {
-                $staff_app_email = '';
-            }
-
-            // GET EVALUATOR STAFF EMAIL DISTINCT
-            $staff_eva = $this->mdl->getStaffMainDis($refid, $staffID, $resend = 1);
-            if(!empty($staff_eva)) {
-                $eva_email = $staff_eva->SM_EMAIL_ADDR;
-                $eva_id = $staff_eva->STAFF;
-                $eva_name = $staff_eva->SM_STAFF_NAME;
-            } else {
-                $eva_email = '';
-                $eva_id = '';
-                $eva_name = '';
-            }
-
-            // GET TRAINING COORDINATOR
-            $tr_coor = $this->mdl->getTrCoor($refid);
-            if(!empty($tr_coor)) {
-                $coor_name = $tr_coor->STAFF_NAME;
-                $coor_tel_no = $tr_coor->THD_COORDINATOR_TELNO;
-            } else {
-                $coor_name = '';
-                $coor_tel_no = '';
-            }
-
-            // EMAIL CC
-            if(!empty($eva_email)) {
-                //$email_cc = ''.$eva_email. ', ' .$memo_from;
-                $email_cc = $eva_email;
-            } else {
-                $email_cc = '';
-            }
-
-            // MEMO TITLE AND CONTENT
-            $msg_title = 'Pindaan Kursus : ' .$tr_title.'';
-            $msg_content = 'Adalah dimaklumkan pelaksanaan kursus ' .$tr_title.' adalah dipinda berdasarkan maklumat berikut :'.
-                                    '<br><br>'.
-                                    'Tarikh : '.$tr_date_from.' hingga '.$tr_date_to.
-                                    '<br>'.
-                                    'Masa : '.$tr_time_from.' hingga '.$tr_time_to.
-                                    '<br>'.
-                                    'Tempat : '.$tr_venue.
-                                    '<br><br>'.
-                                    '2. Namun demikian, sebarang maklumbalas ketidakhadiran pada tarikh baru yang dinyatakan, mohon emelkan kepada '.
-                                    'Unit Latihan, BSM secara rasmi bagi mengelakkan tuan/puan dikenakan sebarang denda. '.
-                                    '<br><br>'.
-                                    '3. Sekiranya tuan/puan tidak membuat sebarang maklumbalas, tuan/puan dianggap <b>bersetuju menghadiri kursus tersebut.</b> '.
-                                    'Sebarang ketidakhadiran tanpa makluman akan dikenakan denda (RM50.00 sehari untuk kursus dalaman / RM200 sehari untuk '.
-                                    'kursus luar) seperti yang telah diputuskan oleh Mesyuarat Lembaga Pengarah Universiti kali ke-90, Bil 6/2013 bertarikh 11 Disember 2013.'.
-                                    '<br><br>'.
-                                    '4. Sebarang pertanyaan berkenaan perkara di atas, sila berhubung dengan urusetia kursus '.$coor_name.' di talian '.$coor_tel_no.'<br><br>'.
-                                    'Sekian, terima kasih.';
-
-           
-            if(!empty($staff_app_email)) {
-                $sendEmailSts = $this->mdl->sendEmail($memo_from, $staff_app_email, $email_cc, $msg_title, $msg_content);
-
-                if($sendEmailSts > 0) {
-                    $checkEmailSts = $this->mdl->verifyTraining($refid, $staffID);
-    
-                    /*if(!empty($checkEmailSts)) {
-                        $updEmailSts = $this->mdl->updateEmailSts($refid, $staffID);
-                    } else {
-                        $insEmailSts = $this->mdl->insertEmailSts($refid, $staffID);
-                    }*/
-    
-                    $sentMsg = 'Memo successfully sent';
-                    $json = array('sts' => 1, 'msg' => $sentMsg, 'alert' => 'success');
-                } else {
-                    $sentMsg = 'Fail to send memo';
-                    $json = array('sts' => 0, 'msg' => $sentMsg, 'alert' => 'danger');
-                }
-            } else {
-                $sentMsg = nl2br('Fail to send memo to <b>'.$staff_app_id.' - '.$staff_app_name."\n".'</b>Applicant email address not found!');
-                $json = array('sts' => 0, 'msg' => $sentMsg, 'alert' => 'danger');
-            }   
+        // GET TRAINING DETAIL
+        $tr_detl = $this->mdl->getTrDetl($refid);
+        if(!empty($tr_detl)) {
+            // TRAINING TITLE
+            $tr_title = $tr_detl->TH_TRAINING_TITLE;
+            // TRAINING VENUE
+            $tr_venue = $tr_detl->TH_TRAINING_VENUE;
+            // TRAINING DATE FROM
+            $tr_date_from = $tr_detl->TH_DATEFR;
+            // TRAINING DATE TO
+            $tr_date_to = $tr_detl->TH_DATETO;
+            // TRAINING TIME FROM
+            $tr_time_from = $tr_detl->TIME_FR;
+            // TRAINING TIME TO
+            $tr_time_to = $tr_detl->TIME_T;
+            // TRAINING CONFIRM DATE
+            $tr_confirm_date = $tr_detl->TH_CON_DATE_TO;
         } else {
-            $json = array('sts' => 0, 'msg' => 'Please contact administrator!', 'alert' => 'danger');
+            $trTitle = '';
+            $tr_date_from = '';
+            $tr_date_to = '';
+            $tr_time_from = '';
+            $tr_time_to = '';
+            $tr_confirm_date = '';
         }
 
+        // GET TRAINING COORDINATOR
+        $tr_coor = $this->mdl->getTrCoor($refid);
+        if(!empty($tr_coor)) {
+            $coor_name = $tr_coor->STAFF_NAME;
+            $coor_tel_no = $tr_coor->THD_COORDINATOR_TELNO;
+        } else {
+            $coor_name = '';
+            $coor_tel_no = '';
+        }
+
+        // MEMO TITLE AND CONTENT
+        $msg_title = 'Pindaan Kursus : ' .$tr_title.'';
+        $msg_content = 'Adalah dimaklumkan pelaksanaan kursus ' .$tr_title.' adalah dipinda berdasarkan maklumat berikut :'.
+                                '<br><br>'.
+                                'Tarikh : '.$tr_date_from.' hingga '.$tr_date_to.
+                                '<br>'.
+                                'Masa : '.$tr_time_from.' hingga '.$tr_time_to.
+                                '<br>'.
+                                'Tempat : '.$tr_venue.
+                                '<br><br>'.
+                                '2. Namun demikian, sebarang maklumbalas ketidakhadiran pada tarikh baru yang dinyatakan, mohon emelkan kepada '.
+                                'Unit Latihan, BSM secara rasmi bagi mengelakkan tuan/puan dikenakan sebarang denda. '.
+                                '<br><br>'.
+                                '3. Sekiranya tuan/puan tidak membuat sebarang maklumbalas, tuan/puan dianggap <b>bersetuju menghadiri kursus tersebut.</b> '.
+                                'Sebarang ketidakhadiran tanpa makluman akan dikenakan denda (RM50.00 sehari untuk kursus dalaman / RM200 sehari untuk '.
+                                'kursus luar) seperti yang telah diputuskan oleh Mesyuarat Lembaga Pengarah Universiti kali ke-90, Bil 6/2013 bertarikh 11 Disember 2013.'.
+                                '<br><br>'.
+                                '4. Sebarang pertanyaan berkenaan perkara di atas, sila berhubung dengan urusetia kursus '.$coor_name.' di talian '.$coor_tel_no.'<br><br>'.
+                                'Sekian, terima kasih.';
+
+        if(!empty($refid) && !empty($staffID)) {
+            foreach ($staffID as $key => $fid) {
+                // GET STAFF EMAIL
+                $staff_app = $this->mdl->getCurUserDept($fid);
+                if(!empty($staff_app)){
+                    $staff_app_email = $staff_app->SM_EMAIL_ADDR;
+                    $staff_app_id = $staff_app->SM_STAFF_ID;
+                    $staff_app_name = $staff_app->SM_STAFF_NAME;
+                } else {
+                    $staff_app_email = '';
+                }
+
+                $staffNameArr [] = $staff_app_name;
+                $staffEmailArr [] = $staff_app_email;
+
+                // GET EVALUATOR STAFF EMAIL DISTINCT
+                $staff_eva = $this->mdl->getStaffMainDis($refid, $fid, $resend = 1);
+                if(!empty($staff_eva)) {
+                    // foreach($staffIDCCArr as $i => $idCC) {
+                    //     if($staff_eva->STAFF == $staffIDCCArr[$i]) {
+                    //         $eva_email = '';
+                    //         $eva_id = '';
+                    //         $eva_name = '';
+                    //     } else {
+                    //         $eva_id = $staff_eva->STAFF;
+                    //         $eva_name = $staff_eva->SM_STAFF_NAME;
+                    //         $eva_email = $staff_eva->SM_EMAIL_ADDR;
+                    //     }
+                    // }
+
+                    $eva_id = $staff_eva->STAFF;
+                    $eva_name = $staff_eva->SM_STAFF_NAME;
+                    $eva_email = $staff_eva->SM_EMAIL_ADDR;
+                    
+                } else {
+                    $eva_email = '';
+                    $eva_id = '';
+                    $eva_name = '';
+                }
+
+                $staffIDCCArr [] = $eva_id;
+                $staffNameCCArr [] = $eva_name;
+                $staffEmailCCArr [] = $eva_email;
+            }
+
+            $filterStaffIDCCArr = array_values(array_filter($staffIDCCArr));
+            $filterStaffNameCCArr = array_values(array_filter($staffNameCCArr));
+            $filterStaffEmailCCArr = array_values(array_filter($staffEmailCCArr));
+            //var_dump($filterStaffEmailCCArr);
+
+            $json = array('sts' => 1, 'msg' => 'All staff details', 'alert' => 'red', 'from' => $memo_from, 'staffNameArr' => $staffNameArr, 'staffEmailArr' => $staffEmailArr, 'staffIDCCArr' => $filterStaffIDCCArr, 'staffNameCCArr' => $filterStaffNameCCArr, 'staffEmailCCArr' => $filterStaffEmailCCArr, 'msg_title' => $msg_title, 'msg_content' => $msg_content);
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator!', 'alert' => 'red');
+        }
+
+        echo json_encode($json);
+    }
+
+    // RESEND EMAIL
+    public function resendEmail() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+        $sentMsg = '';
+
+        // staff email
+        $memo_from = $form['from'];
+
+        // staff email
+        $emailForm = $form['email_to'];
+        $staff_app_email = explode(",", $emailForm);
+
+        // cc email
+        $emailCCForm = $form['email_cc'];
+        $email_cc = explode(",", $emailCCForm);
+
+        // email title
+        $msg_title = $form['title'];
+
+        // email content 
+        $msg_content = $form['content'];
+
+        $success = 0;
+        $successResend = 0;
+        
+        //var_dump($email_cc);
+
+        foreach($staff_app_email as $key => $sae) {
+            $success++;
+
+            //$rem = $remark[$key];
+            $email_cc2 = $email_cc[$key];
+            $sendEmailSts = $this->mdl->sendEmail($memo_from, $sae, $email_cc2, $msg_title, $msg_content);
+
+            if($sendEmailSts > 0) {
+                $successResend++;
+            } else {
+                $successResend = 0;
+            }
+        }
+
+        if($success == $successResend) {
+            $json = array('sts' => 1, 'msg' => 'Email sent', 'alert' => 'green');
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Fail to send email', 'alert' => 'red');
+        }
+         
         echo json_encode($json);
     }
 
@@ -3528,6 +3684,8 @@ class Training_application extends MY_Controller
 
     // SET PARAM PRINT OFFER MEMO
     public function setOfferMemoParam() {
+        $this->isAjax();
+
     	// get current value 
     	$refid = $this->input->post('refid');
         $sendDate = $this->input->post('sendDate');
@@ -3556,5 +3714,1008 @@ class Training_application extends MY_Controller
         $param = array('PARAMFORM' => 'NO', 'TRAINING_REFID' => $refid, 'TARIKH_SEND' => $sendDate, 'RUJUKAN' => $refNo);
 
         $this->lib->report($formCode, $param);
+    }
+
+    // VERIFY TRAINING SERVICE BOOK
+    public function verifySvcBook(){
+        $this->isAjax();
+ 
+    	$refid = $this->input->post('refid');
+        
+        if(!empty($refid)) {
+            $getThDate = $this->mdl->getTrainingDateFrom($refid);
+            $verSvcBook = $this->mdl->verifySvcBook($refid);
+
+            if($getThDate->TH_DATE_TO_FULL > $getThDate->CUR_DATE) {
+                $json = array('sts' => 0, 'msg' => 'Course is not completed', 'alert' => 'red');
+            } elseif($verSvcBook->TT_SERVICE_BOOK == 'N' || empty($verSvcBook->TT_SERVICE_BOOK)) {
+                $json = array('sts' => 0, 'msg' => 'Course is not included in service book', 'alert' => 'red');
+            } elseif($getThDate->TH_DATE_TO_YEAR < '2013') {
+                $json = array('sts' => 0, 'msg' => 'Only courses from 2013 and above can be included in the service book.', 'alert' => 'red');
+            } else {
+                $json = array('sts' => 1, 'msg' => 'Course can be included in service book', 'alert' => 'green');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'red');
+        }
+		
+        echo json_encode($json);
+    }
+
+    // GET STAFF LIST (SERVICE BOOK)
+    public function ATF118() {
+        $refid = $this->input->post('refid');
+        $tName = $this->input->post('tName');
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $data['tname'] = $tName;
+            $data['tr_detl'] = $this->mdl->getTrainingInfoDetail($refid);
+            $data['get_svc_book'] = $this->mdl->getStaffListSvcBook($refid);
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // ADD TO SERVICE BOOK
+    public function addServiceBook(){
+        $this->isAjax();
+ 
+        $refid = $this->input->post('refid');
+        $staffID = $this->input->post('stfID');
+        $success = 0;
+        $successSvc = 0;
+        
+        if(!empty($refid) && !empty($staffID)) {
+            
+            $tr_detl = $this->mdl->getTrDetlSvcBook($refid);
+            // GET TRAINING DETAIL
+            if(!empty($tr_detl)) {
+                // TRAINING TITLE
+                $tr_title = $tr_detl->TH_TRAINING_TITLE;
+                // TRAINING VENUE
+                $tr_venue = $tr_detl->TH_TRAINING_VENUE;
+                // TRAINING DATE FROM
+                $tr_date_from = $tr_detl->TH_DATEFR;
+                // TRAINING DATE TO
+                $tr_date_to = $tr_detl->TH_DATETO;
+                // TRAINING ORGANIZER NAME
+                $tr_organizer = $tr_detl->TH_ORGANIZER_NAME;
+            } else {
+                $tr_title = '';
+                $tr_venue = '';
+                $tr_date_from = '';
+                $tr_date_to = '';
+                $tr_organizer = '';
+            }
+
+            $sb_remark = 'Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.'.
+                            '<br>'.
+                            'Tajuk : '.$tr_title.
+                            '<br>'.
+                            'Tarikh : '.$tr_date_from.' hingga '.$tr_date_to.
+                            '<br>'.
+                            'Tempat : '.$tr_venue.
+                            '<br>'.
+                            'Anjuran : '.$tr_organizer.'';
+
+
+            foreach($staffID as $key => $sid) {
+                $success++;
+
+                $getJobCode = $this->mdl->getJobCode($sid);
+                if(!empty($getJobCode)) {
+                    $jobCode = $getJobCode->SM_JOB_CODE; 
+                } else {
+                    $jobCode = '';
+                }
+
+                $getPensionSts = $this->mdl->getPenisionSts($sid);
+                if(!empty($getPensionSts)) {
+                    $pensionSts = $getPensionSts->SS_PENSION_STATUS;
+                } else {
+                    $pensionSts = '';
+                }
+
+                $getPensionSts = $this->mdl->addServiceBook($refid, $sid, $sb_remark, $jobCode, $pensionSts, $tr_date_from, $tr_date_to);
+
+                if($getPensionSts > 0) {
+                    $this->mdl->updSthSvcBook($refid, $sid);
+                    $successSvc++;
+                } else {
+                    $successSvc = 0;
+                }
+            }
+
+            if($success == $successSvc) {
+                $json = array('sts' => 1, 'msg' => 'Successfully registered to Service Book', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to register to Service Book', 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'red');
+        }
+		
+        echo json_encode($json);
+    }
+
+    /*===========================================================
+       Staff Training Evaluation - ATF104
+    =============================================================*/
+
+    // STAFF LIST
+    public function getStaffListEvaluation()
+    {   
+        $refid = $this->input->post('refid', true);
+        $tName = $this->input->post('tName', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $data['tname'] = $tName;
+            $data['staff_list_eva'] = $this->mdl->getStaffListEvaluation($refid);
+        } 
+
+        $this->renderAjax($data);
+    }
+
+    // EVALUATION REPORT
+    public function genEvaReport($formCode, $refid) {
+    	// set param list
+    	if (!empty($refid)) {
+			$param = array('PARAMFORM' => 'NO', 'REFID' => $refid);	
+		} else {
+			$param = null;
+		}
+		
+		// Format = PDF
+        $this->lib->report($formCode, $param);
+    } 
+
+    // STAFF EVALUATION INDIVIDUAL REPORT
+    public function genStaffEvaReport($refid, $staffID) {
+    	// set param list
+    	if (!empty($refid)) {
+            $trDetl = $this->mdl->getTrainingDateFrom($refid);
+            $hrParm = $this->mdl->getStartDate($refid);
+
+            if($trDetl->TH_DATE_FROM >= $hrParm->HP_PARM_DESC) {
+                $formCode = 'ATR275';
+            } elseif($trDetl->TH_DATE_FROM < $hrParm->HP_PARM_DESC) {
+                $formCode = 'ATR131';
+            } else {
+                $formCode = '';
+            }
+
+			$param = array('PARAMFORM' => 'NO', 'REFID' => $refid, 'STAFFID' => $staffID);	
+		} else {
+			$param = null;
+		}
+		
+		// Format = PDF
+        $this->lib->report($formCode, $param);
+    }
+
+    // STAFF EVALUATION DETAILS
+    public function staffEvaluationDetails()
+    {   
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('stfID', true);
+        $staffN = $this->input->post('stfName', true);
+
+        if(!empty($refid) && !empty($staffID)) {
+            $data['refid'] = $refid;
+            $data['staffID'] = $staffID;
+            $data['staffN'] = $staffN;
+            $data['staff_eva_detl'] = $this->mdl->getStaffListEvaluation($refid, $staffID);
+        } 
+
+        $this->renderAjax($data);
+    }
+
+    // STAFF EVALUATION UPDATE MODAL
+    public function editStaffEvaluation()
+    {   
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('stfID', true);
+        $staffN = $this->input->post('stfName', true);
+
+        if(!empty($refid) && !empty($staffID)) {
+            $data['refid'] = $refid;
+            $data['staffID'] = $staffID;
+            $data['staffN'] = $staffN;
+            $data['staff_eva_detl'] = $this->mdl->getStaffListEvaluation($refid, $staffID);
+            $data['eva_list'] = $this->dropdown($this->mdl->getEvaluatorList(), 'SM_STAFF_ID', 'STF_ID_NAME', ' ---Please select--- ');
+        } 
+
+        $this->renderAjax($data);
+    }
+
+    // SAVE UPDATE APPLICANT DETAILS
+    public function saveUpdateStaffEvaDetails() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // TRAINING REF ID
+        $refid = $form['refid'];
+
+        // STAFF ID
+        $stfID = $form['staff_id'];
+
+        // form / input validation
+        $rule = array(
+            'submit_date' => 'max_length[11]',
+            'evaluator_id' => 'max_length[10]',
+            'evaluation_status' => 'max_length[1]',
+            'evaluation_date' => 'max_length[11]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1 && !empty($refid) && !empty($stfID)) {
+            $update = $this->mdl->saveUpdateStaffEvaDetails($form, $refid, $stfID);
+
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // PROCESS EVALUATOR ID
+    public function procEvaluatorId() {
+        $this->isAjax();
+        
+        $stfID = $this->input->post('stfID', true);
+        $refid = $this->input->post('refid', true);
+        $process = 0;
+        $successProcess = 0;
+        
+        if (!empty($refid) && !empty($stfID)) {
+            foreach ($stfID as $key => $fid) {
+                $process++;
+
+                // GET EVALUATOR ID
+                $evaID = $this->mdl->getProcessEvaluatorID($refid, $fid);
+                if(!empty($evaID)) {
+                    // EVALUATOR ID
+                    $procEvaID = $evaID->PROC_EVA_ID;
+                    // CHECK EVALUATOR ID IF NULL
+                    $checkEvaId = $this->mdl->verifyEvaID($refid, $fid);
+
+                    if(empty($checkEvaId->STH_EVALUATOR_ID)) {
+                        $updateEvaID = $this->mdl->updateEvaID($refid, $fid, $procEvaID);
+
+                        if($updateEvaID > 0) {
+                            $successProcess++;
+                        } else {
+                            $successProcess = 0;
+                        }
+                    } else {
+                        $successProcess++;
+                    }
+                } else {
+                    $successProcess++;
+                }
+            }
+
+            if($process == $successProcess) {
+                $json = array('sts' => 1, 'msg' => 'Process Completed', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Process Aborted', 'alert' => 'red');
+            }
+
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    /*===========================================================
+       Staff Evaluator Send Memo - ATF121
+    =============================================================*/
+
+    // STAFF LIST
+    public function getStaffListSendMemo()
+    {   
+        $refid = $this->input->post('refid', true);
+        $tName = $this->input->post('tName', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $data['tname'] = $tName;
+            $data['staff_list_sm'] = $this->mdl->getStaffListSendMemo($refid);
+        } 
+
+        $this->renderAjax($data);
+    }
+
+    // VERIFY SEND MEMO
+    public function verifySendMemo() {
+        $this->isAjax();
+        // get parameter values
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('stfID', true);
+        $evaID = $this->input->post('evaID', true);
+
+        
+
+        if (!empty($refid) && !empty($staffID) && !empty($evaID)) {
+            $getMemoSeq = $this->mdl->getStaffListSendMemo($refid, $staffID);
+            if(!empty($getMemoSeq)) {
+                $seqMemo = $getMemoSeq->SND_MEM;
+            } else {
+                $seqMemo = '0';
+            }
+
+            $getMaxSeq = $this->mdl->getMaxSeq();
+            if(!empty($getMaxSeq)) {
+                $maxSeq = $getMaxSeq->HP_PARM_DESC;
+            } else {
+                $maxSeq = '0';
+            }
+
+            if ($seqMemo > $maxSeq) {
+                $json = array('sts' => 0, 'msg' => 'Memos can only be sent ' .$maxSeq. ' only.', 'color' => 'red');
+                
+            } else {
+                $json = array('sts' => 1, 'msg' => 'Proceeed to send memo', 'color' => 'green');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'color' => 'red');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // SEND MEMO FORM
+    public function sendMemoForm()
+    {   
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('stfID', true);
+        $evaID = $this->input->post('evaID', true);
+        $from = 'K01715';
+
+        if(!empty($refid) && !empty($staffID)) {
+            $data['refid'] = $refid;
+            $data['staffID'] = $staffID;
+
+            $data['sendFrom'] = $this->mdl->getStaffInfo($from);
+            $data['sendTo'] = $this->mdl->getStaffInfo($evaID);
+
+            // EVALUATOR INFO
+            if(!empty($data['sendTo'])) {
+                $data['eva_id'] = $data['sendTo']->SM_STAFF_ID;
+                $data['eva_name'] = $data['sendTo']->SM_STAFF_NAME;
+            } else {
+                $data['eva_id'] = '';
+                $data['eva_name'] = '';
+            }
+
+            // SEND MEMO SEQ
+            $data['teh_seq'] = $this->mdl->getStaffListSendMemo($refid, $staffID);
+            if(!empty($data['teh_seq']->SND_MEM)) {
+                $data['teh_seq_val'] = $data['teh_seq']->SND_MEM;
+            } else {
+                $data['teh_seq_val'] = '0';
+            }
+
+            // GET TRAINING DETAIL
+            $data['tr_detl'] = $this->mdl->getTrDetl($refid);
+            if(!empty($data['tr_detl'])) {
+                // TRAINING TITLE
+                $data['tr_title'] = $data['tr_detl']->TH_TRAINING_TITLE;
+            } else {
+                $data['trTitle'] = '';
+            }
+
+            $data['title'] = 'Borang Penilaian Keberkesanan Latihan';
+
+            // REPLACE WITH DEFAULT CONTENT
+            $data['content'] = 'Nama : nn'."\r\n".
+                                'Kursus : xxxxxxx'."\r\n".
+                                'Tarikh : dd/mm/yyyy'."\r\n".
+                                'Tempat : kkkkkk'."\r\n"."\r\n".
+                                'Mohon tindakan Tuan/Puan untuk mengisi Borang Penilaian Keberkesanan Latihan terhadap penilaian kendiri staf di bawah seliaan yang '.
+                                'mengikuti latihan dalam tempoh satu (1) minggu dari tarikh penerimaan memo ini. Kegagalan Tuan/Puan dalam membuat penilaian '.
+                                'boleh mengakibatkan mata CPD staf bagi kursus berkenaan tidak akan <b>DIPROSES</b>. '."\r\n"."\r\n".
+                                'Borang penilaian boleh diakses secara atas talian di link berikut : FFFFFF'."\r\n".
+                                'Sekian, terima kasih.'."\r\n"."\r\n".
+                                'Unit Latihan, BSM'."\r\n"."\r\n".
+                                '-- system generated memo --';
+        } 
+
+        $this->renderAjax($data);
+    }
+
+    // SEND MEMO EVALUATOR
+    public function sendMemoEvaluator() {
+        $this->isAjax();
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // URL
+        $link = '<a href="training.jsp?action=list_of_evaluater"><b>Borang Penilaian Keberkesanan</b></a>';
+
+        // TRAINING REF ID
+        $refid = $form['training_ref_id'];
+
+        // MEMO SEQ
+        $memoSeq = $form['seq_send_memo'];
+
+        // GET MAX SEQ
+        $getMaxSeq = $this->mdl->getMaxSeq();
+        if(!empty($getMaxSeq)) {
+            $maxSeq = $getMaxSeq->HP_PARM_DESC;
+        } else {
+            $maxSeq = '0';
+        }
+
+        // MEMO FROM
+        $from = $form['from'];
+
+        // SEND TO
+        $sendTO = $form['to'];
+
+        // CC
+        $memoCC = $form['memo_cc'];
+        if(!empty($memoCC)) {
+            $staffInfo = $this->mdl->getStaffInfo($memoCC);
+            $memoCCId = $staffInfo->SM_STAFF_ID;
+            $memoCCName = $staffInfo->SM_STAFF_NAME;
+        } else {
+            $memoCCId = '';
+            $memoCCName = '';
+        }
+
+        // MEMO TITLE
+        $memoTitle = $form['title'];
+
+        // GET TRAINING DETAIL
+        $tr_detl = $this->mdl->getTrDetl($refid);
+        if(!empty($tr_detl)) {
+            // TRAINING TITLE
+            $tr_title = $tr_detl->TH_TRAINING_TITLE;
+            // TRAINING VENUE
+            $tr_venue = $tr_detl->TH_TRAINING_VENUE;
+            if(empty($tr_venue) || $tr_venue == '-') {
+                $getVenue = $this->mdl->getVenue($refid);
+                $venue = $getVenue->TH_VENUE;
+            } else {
+                $venue = $tr_detl->TH_TRAINING_VENUE;
+            }
+            // TRAINING DATE FROM
+            $tr_date_from = $tr_detl->TH_DATEFR;
+            // TRAINING DATE TO
+            $tr_date_to = $tr_detl->TH_DATETO;
+        } else {
+            $trTitle = '';
+            $tr_venue = '';
+            $tr_date_from = '';
+            $tr_date_to = '';
+        }
+
+        // MEMO CONTENT
+        $memoContent = 'Nama : '.$memoCCName.' ('.$memoCCId.')'.
+                            '<br>'.
+                            'Kursus : '.$tr_title.' - '.$refid.
+                            '<br>'.
+                            'Tarikh : '.$tr_date_from.' - '.$tr_date_to.
+                            '<br>'.
+                            'Tempat : '.$venue.
+                            '<br><br>'.
+                            'Mohon tindakan Tuan/Puan untuk mengisi Borang Penilaian Keberkesanan Latihan terhadap penilaian kendiri staf di bawah seliaan yang '.
+                            'mengikuti latihan dalam tempoh satu (1) minggu dari tarikh penerimaan memo ini. Kegagalan Tuan/Puan dalam membuat penilaian '.
+                            'boleh mengakibatkan mata CPD staf bagi kursus berkenaan tidak akan <b>DIPROSES</b>. '.
+                            '<br><br>'.
+                            'Borang penilaian boleh diakses secara atas talian di link berikut : '.$link.
+                            '<br>'.
+                            'Sekian, terima kasih.'.
+                            '<br><br>'.
+                            'Unit Latihan, BSM'.
+                            '<br><br>'.
+                            '-- system generated memo --';
+        // DEFAULT CONTENT
+        $defContent = $form['content'];
+        
+
+        if (!empty($from) && !empty($sendTO) && !empty($memoTitle) && !empty($memoContent) && $memoSeq < $maxSeq) {
+            $sendMemo = $this->mdl->createMemo($from, $sendTO, $memoTitle, $memoContent);
+
+            if ($sendMemo > 0) {
+                // INSERT INTO TRAINING_EVALUATION_HIS FOR REFERENCE PURPOSE
+                $countMemoSeq = $this->mdl->getCountMemoSeq($refid, $sendTO, $memoCC);
+                $curMemoCount = $countMemoSeq->MEMOC;
+                $insRef = $this->mdl->insertRefMemo($refid, $curMemoCount, $memoTitle, $defContent, $from, $sendTO, $memoCC);
+                if($insRef > 0) {
+                    $refMsg = 'Saved as reference';
+                } else {
+                    $refMsg = '';
+                }
+
+                $memoSeqRow = $this->mdl->getStaffListSendMemo($refid, $memoCC);
+                if(!empty($memoSeqRow)) {
+                    $memRow = $memoSeqRow->SND_MEM;
+                } else {
+                    $memRow = '';
+                }
+                
+                $json = array('sts' => 1, 'msg' => nl2br('Memo sent.'."\r\n"."\r\n".$refMsg), 'alert' => 'success', 'color' => 'green', 'memoRow' => $memRow);
+                
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to send memo.', 'alert' => 'danger', 'color' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Memo cannot be sent.', 'alert' => 'danger', 'color' => 'red');
+        }
+         
+        echo json_encode($json);
+    }
+
+
+    /*===========================================================
+       Report for Training Evaluation - ATF166
+    =============================================================*/
+
+    // POPULATE COURSE LIST
+    public function courseListRptTe(){
+        $this->isAjax();
+        
+        $year = $this->input->post('year_i', true);
+        
+        // get available records
+        if(!empty($year)) {
+            $courseList = $this->mdl->courseListRptTe($year);
+        } else {
+            $courseList = '';
+        }
+               
+        if (!empty($courseList)) {
+            $success = 1;
+        } else {
+            $success = 0;
+        }
+        
+        $json = array('sts' => $success, 'courseList' => $courseList);
+        
+        echo json_encode($json);
+    }
+
+    // REPORT PARAM
+    public function setParam() {
+		// clear filter for report
+        $this->session->set_userdata('repCode2','');
+        $this->session->set_userdata('year_i2','');
+        $this->session->set_userdata('department2','');
+        $this->session->set_userdata('staffID2','');
+        $this->session->set_userdata('corTitle22','');
+        $this->session->set_userdata('courseDate2','');
+        $this->session->set_userdata('sMonth2','');
+        $this->session->set_userdata('sYear2','');
+        $this->session->set_userdata('corTitle2','');
+		
+    	// get current value 
+    	$repCode = $this->input->post('repCode');
+    	$year_i = $this->input->post('year_i');
+    	$department = $this->input->post('department');
+        $staffID = $this->input->post('staffID');
+        $corTitle2 = $this->input->post('corTitle2');
+    	$courseDate = $this->input->post('courseDate');
+    	$sMonth = $this->input->post('sMonth');
+        $sYear = $this->input->post('sYear');
+        $corTitle = $this->input->post('corTitle');
+
+		// set session value
+        $this->session->set_userdata('repCode2',$repCode);
+        $this->session->set_userdata('year_i2',$year_i);
+        $this->session->set_userdata('department2',$department);
+        $this->session->set_userdata('staffID2',$staffID);
+        $this->session->set_userdata('corTitle22',$corTitle2);
+        $this->session->set_userdata('courseDate2',$courseDate);
+        $this->session->set_userdata('sMonth2',$sMonth);
+        $this->session->set_userdata('sYear2',$sYear);
+        $this->session->set_userdata('corTitle2',$corTitle);
+    }
+
+    // GENERATE REPORT
+    public function genReport() {
+        $repCode = $this->session->userdata('repCode2');
+    	$year_i = $this->session->userdata('year_i2');
+    	$department = $this->session->userdata('department2');
+        $staffID = $this->session->userdata('staffID2');
+        $corTitle2 = $this->session->userdata('corTitle22');
+        $courseDate = $this->session->userdata('courseDate2');
+
+        $sMonth = $this->session->userdata('sMonth2');
+        $sYear = $this->session->userdata('sYear2');
+
+        $corTitle = $this->session->userdata('corTitle2');
+        
+
+		if($repCode == 'ATR079' || $repCode == 'ATR084') {
+            $param = array('PARAMFORM' => 'NO', 'P_YEAR' => $year_i, 'P_DEPT_CODE' => $department, 'P_STAFF_ID' => $staffID, 'P_REF_ID' => $applDateTo, 'P_TRAINING_DATE' => $courseDate);
+            $this->lib->report($repCode, $param);
+        } elseif($repCode == 'ATR132') {
+            $param = array('PARAMFORM' => 'NO', 'YEAR' => $sYear, 'MONTH2' => $sMonth);
+            $this->lib->report($repCode, $param);
+        } elseif($repCode == 'ATR133') {
+            $param = array('PARAMFORM' => 'NO', 'REFID' => $corTitle);
+            $this->lib->report($repCode, $param);
+        } elseif($repCode == 'ATRPDF' || $repCode == 'ATRXLS') {
+            $getTrDate = $this->mdl->getTrainingDateFrom($corTitle);
+            $trDateFrom = $getTrDate->TH_DATE_FROM;
+
+            $getStartDate = $this->mdl->getStartDate();
+            $evaStartDate = $getStartDate->HP_PARM_DESC;
+
+            if($trDateFrom >= $evaStartDate) {
+                $rpCode = 'ATR277';
+            } elseif($trDateFrom < $evaStartDate) {
+                $rpCode = 'ATR185';
+            }
+
+            if($repCode == 'ATRPDF') {
+                $param = array('PARAMFORM' => 'NO', 'REFID' => $corTitle);
+                $this->lib->report($rpCode, $param, $format='pdf');
+            } elseif($repCode == 'ATRXLS') {
+                $param = array('PARAMFORM' => 'NO', 'REFID' => $corTitle);
+                $this->lib->report($rpCode, $param, $format='EXCEL');
+            }
+        } 
+    } 
+
+    /*===========================================================
+       Training Secretariat Report - Manual Entry - ATF147
+    =============================================================*/
+
+    // TRAINING LIST MANUAL ENTRY REPORT
+    public function getTrainingListRptManEnt()
+    {   
+        // selected filter value
+        $selIntExt = $this->input->post('intExt', true);
+        $selDept = $this->input->post('sDept', true);
+        $selMonth = $this->input->post('sMonth', true);
+        $selYear = $this->input->post('sYear', true);
+        $selSts = $this->input->post('tSts', true);
+
+        // verify filter
+        $disDept = $this->input->post('disDept', true);
+        $disYear = $this->input->post('disYear', true);
+        $disTsts = $this->input->post('disTsts', true);
+        $evaluation = $this->input->post('evaluation', true);
+        $screRpt = $this->input->post('screRpt', true);
+
+        // COUNT
+        $total_rpt = 0;
+        $total_filled = 0;
+        $total_unfilled = 0;
+
+        // default filter value
+        if (!empty($selIntExt)) {
+            $defIntExt = $selIntExt;
+        } else {
+            $defIntExt = '';
+        }
+
+        if (empty($selDept)) {
+            $curUsrDept = '';
+            if($disDept == '1') {
+                $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+                $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+            }
+        } else {
+            $curUsrDept = $selDept; 
+        }
+
+        if (empty($selMonth)) {
+            $defMonth = '';
+        }   else {
+            $defMonth = $selMonth;
+        }
+
+        if (empty($selYear)) {
+            $curYear = '';
+            if($disYear == '1') {
+                $data['cur_year'] = $this->mdl->getCurYear();
+                $curYear = $data['cur_year']->CUR_YEAR;
+            }
+            
+        } else {
+            $curYear = $selYear;
+        }
+
+        if (empty($selSts)) {
+            $defTrSts = '';
+            if($disTsts == '1') {
+                $defTrSts = '1';
+            }
+        } else {
+            $defTrSts = $selSts;
+        }
+
+        // get available records
+        $data['tr_list'] = $this->mdl->getTrainingList($defIntExt, $curUsrDept, $defMonth, $curYear, $defTrSts, $evaluation, $screRpt);
+        foreach($data['tr_list'] as $trCount) {
+            $total_rpt++;
+            if(!empty($trCount)) {
+                $trCountRefid = $trCount->TH_REF_ID;
+                $checkSubmittedReport = $this->mdl->getSubmittedReport($trCountRefid);
+
+                if(!empty($checkSubmittedReport)) {
+                    $total_filled++;
+                } else {
+                    $total_unfilled++;
+                }
+            }
+        }
+        $data['summary'] = nl2br('Total amount of secretariat report: <b>'.$total_rpt."</b>\r\n"."\r\n".
+                                    '<font color="green">Total amount of filled Secretariat Report: <b>'.$total_filled."</font></b>\r\n".
+                                    '<font color="red">Total amount of unfiilled Secretariat Report: <b>'.$total_unfilled.'</font></b>');
+
+        $this->render($data);
+    }
+
+    // REPORT MANUAL ENTRY FORM
+    public function reportManualEntryForm()
+    {  
+        $refid = $this->input->post('refid', true);
+        $tName = $this->input->post('tname', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid; 
+            $data['tName'] = $tName; 
+
+            // PARTICIPANT ATTENDANCE
+            $data['cr_date_from'] = $this->mdl->getTrainingDateFrom($refid);
+            if(!empty($data['cr_date_from'])) {
+                $date_from = $data['cr_date_from']->TH_DATE_FROM;
+                if($date_from < '2016') {
+                    $data['total_number_attend'] = $this->mdl->getTotalAttend1($refid);
+                    $data['total_attend'] = $data['total_number_attend']->TOTAL_ATTEND;
+                } else {
+                    $data['total_number_attend'] = $this->mdl->getTotalAttend2($refid);
+                    $data['total_attend'] = $data['total_number_attend']->TOTAL_ATTEND;
+                }
+            }
+            $data['attend_par'] = $this->mdl->getAttendParticipant($refid);
+            if(!empty($data['attend_par'])) {
+                $data['attended'] = $data['attend_par']->ATTENDED;
+            } else {
+                $data['attended'] = '0';
+            }
+            
+            // REPORT FORM DETL
+            $data['reportForm'] = $this->mdl->getSubmittedReport($refid);
+            if(!empty($data['reportForm'])) {
+                // Participant
+                $data['discipline'] = $data['reportForm']->TSR_PARTICIPANT_DISCIPLINE;
+                $data['participant_time'] = $data['reportForm']->TSR_PARTICIPANT_TIME;
+                $data['participant_remark'] = $data['reportForm']->TSR_PARTICIPANT_REMARK;
+
+                // Food / Drink
+                $data['cafe_name'] = $data['reportForm']->TSR_CAFE_NAME;
+                $data['food_drink_time'] = $data['reportForm']->TSR_CAFE_TIME;
+                $data['food_drink_quality'] = $data['reportForm']->TSR_CAFE_QUALITY;
+                $data['cafe_remark'] = $data['reportForm']->TSR_CAFE_REMARK;
+
+                // Training Room
+                $data['chair'] = $data['reportForm']->TSR_ROOM_CHAIR;
+                $data['aircond'] = $data['reportForm']->TSR_ROOM_AIRCOND;
+                $data['table'] = $data['reportForm']->TSR_ROOM_DESK;
+                $data['lamps'] = $data['reportForm']->TSR_ROOM_LAMP;
+                $data['training_room_remark'] = $data['reportForm']->TSR_ROOM_REMARK;
+
+                // Electronic Equipment
+                $data['laptop_desktop'] = $data['reportForm']->TSR_EQUIPMENT_COMPUTER;
+                $data['lcd_pointer'] = $data['reportForm']->TSR_EQUIPMENT_LCD;
+                $data['laser_pointer'] = $data['reportForm']->TSR_EQUIPMENT_LASERPOINTER;
+                $data['pa_system'] = $data['reportForm']->TSR_EQUIPMENT_PASYSTEM;
+                $data['equipment_remark'] = $data['reportForm']->TSR_EQUIPMENT_REMARK;
+
+                // Overall report / Improvements Suggestion
+                $data['overall_remark'] = $data['reportForm']->TSR_OVERALL_REPORT;
+            } else {
+                // Participant
+                $data['discipline'] = '';
+                $data['participant_time'] = '';
+                $data['participant_remark'] = '';
+
+                // Food / Drink
+                $data['cafe_name'] = '';
+                $data['food_drink_time'] = '';
+                $data['food_drink_quality'] = '';
+                $data['cafe_remark'] = '';
+
+                // Training Room
+                $data['chair'] = '';
+                $data['aircond'] = '';
+                $data['table'] = '';
+                $data['lamps'] = '';
+                $data['training_room_remark'] = '';
+
+                // Electronic Equipment
+                $data['laptop_desktop'] = '';
+                $data['lcd_pointer'] = '';
+                $data['laser_pointer'] = '';
+                $data['pa_system'] = '';
+                $data['equipment_remark'] = '';
+
+                // Overall report / Improvements Suggestion
+                $data['overall_remark'] = '';
+            }
+
+            // SECRETARIAT ON DUTY
+            $data['screDuty'] = $this->mdl->getScreOnDuty($refid);
+        }
+
+        $this->render($data);
+    }
+
+    // SAVE SECRET REPORT FORM    
+    public function saveSecretReport()
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // TRAINING REF ID
+        $refid = $form['refid'];
+
+        // form / input validation
+        $rule = array(
+            'discipline' => 'max_length[20]', 
+            'participant_time' => 'max_length[20]',
+            'participant_remark' => 'max_length[2000]',
+
+            'cafe_name' => 'max_length[200]',
+            'food_drink_time' => 'max_length[20]',
+            'food_drink_quality' => 'max_length[20]',
+            'cafe_remark' => 'max_length[2000]',
+
+            'chair' => 'max_length[20]',
+            'aircond' => 'max_length[20]',
+            'table' => 'max_length[20]',
+            'lamps' => 'max_length[20]',
+            'training_room_remark' => 'max_length[2000]',
+
+            'laptop_desktop' => 'max_length[20]',
+            'lcd_pointer' => 'max_length[20]',
+            'laser_pointer' => 'max_length[20]',
+            'pa_system' => 'max_length[20]',
+            'equipment_remark' => 'max_length[2000]',
+
+            'overall_remark' => 'max_length[2000]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        // Begin Insert New Record
+        if ($status == 1 && !empty($refid)) {
+            // check TRAINING_SECRETARIAT_REPORT
+            $check = $this->mdl->getSubmittedReport($refid);
+
+            if(empty($check)) {
+                // insert
+                $insert = $this->mdl->insertSecretReport($form, $refid);
+
+                if($insert > 0) {
+                    //$sp_row = $this->SpRow($refid, $spID);
+
+                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                }
+            } else {
+                // update
+                $update = $this->mdl->updateSecretReport($form, $refid);
+
+                if($update > 0) {
+                    $json = array('sts' => 2, 'msg' => 'Record has been updated', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to update record', 'alert' => 'danger');
+                }
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // ADD SECRET FORM MODAL
+    public function addSecretDuty()
+    { 
+        $refid = $this->input->post('refid', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $data['staff_list'] = $this->dropdown($this->mdl->getStaffListDD(), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
+        }
+
+        $this->render($data);
+    }
+
+    // GET STAFF DEPT    
+    public function getStaffDept(){
+        $this->isAjax();
+        
+        $staff_id = $this->input->post('staff_id', true);
+        
+        if(!empty($staff_id)) {
+            $staffDept = $this->mdl->getStaffDept($staff_id);
+        } else {
+            $staffDept = '';
+        }
+               
+        if (!empty($staffDept)) {
+            $dept = $staffDept->SM_DEPT_CODE;
+            $success = 1;
+        } else {
+            $dept = '';
+            $success = 0;
+        }
+        
+        $json = array('sts' => $success, 'dept' => $dept);
+        
+        echo json_encode($json);
+    }
+
+    // SAVE SECRET DUTY
+    public function saveSecretDuty()
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // TRAINING REF ID
+        $refid = $form['refid'];
+
+        // STAFF ID
+        $secretariat_id = $form['secretariat_id'];
+
+        // form / input validation
+        $rule = array(
+            'secretariat_id' => 'required|max_length[10]', 
+            'date' => 'max_length[11]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        // Begin Insert New Record
+        if ($status == 1 && !empty($refid)) {
+            // check TRAINING_SECRETARIAT_REPORT
+            $check = $this->mdl->checkSecretDuty($refid, $secretariat_id);
+
+            if(empty($check)) {
+                // insert
+                $insert = $this->mdl->insertSecretDuty($form, $refid);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                }
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist', 'alert' => 'danger');
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
     }
 }

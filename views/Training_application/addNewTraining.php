@@ -27,7 +27,7 @@
             ?>
         </div>
 
-        <label class="col-md-2 control-label">Structured Training></label>
+        <label class="col-md-2 control-label">Structured Training</label>
         <div class="col-md-2">
             <input name="form[structured_training]" placeholder="Ref ID" class="form-control" type="text" id="strTraining" readonly>
         </div>

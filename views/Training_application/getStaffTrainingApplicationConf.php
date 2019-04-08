@@ -28,7 +28,6 @@
 			<div class="panel-body" id="summary"><?php echo $summary?></div>
 		</div>
 	</div>
-	
 </div>
 <br>
 <div class="well">
@@ -72,7 +71,7 @@
 					<tr>
 						<td class="text-center col-md-1">
 							<div class="form-check text-center">
-								<input class="form-check-input position-static checkitem" type="checkbox" name="familyID" id="familyID" value="' . $stlc->SM_STAFF_ID . '" aria-label="...">
+								<input class="form-check-input position-static checkitem" type="checkbox" name="applicantID" id="applicantID" value="' . $stlc->SM_STAFF_ID . '" aria-label="...">
 							</div>
 						</td>
 						<td class="text-center col-md-1 sid">' .$opFont. $stlc->SM_STAFF_ID .$clFont. '</td>
@@ -87,9 +86,9 @@
 							<div class="btn-group">
 								<button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button>
 								<div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn">
-									<button type="button" class="btn btn-success text-left btn-block btn-xs edit_app_btn"><i class="fa fa-pencil-square-o"></i> Edit</button>
-									<button type="button" class="btn btn-info text-left btn-block btn-xs detl_conf_btn"><i class="fa fa-info-circle"></i> Other Details</button>
-									<button type="button" class="btn btn-info text-left btn-block btn-xs sta_history_btn"><i class="fa fa-history"></i> History</button>
+									<button type="button" class="btn btn-success text-left btn-block btn-xs edit_app_btn" value='.$refid.'><i class="fa fa-pencil-square-o"></i> Edit</button>
+									<button type="button" class="btn btn-info text-left btn-block btn-xs detl_conf_btn" value='.$refid.'><i class="fa fa-info-circle"></i> Other Details</button>
+									<button type="button" class="btn btn-info text-left btn-block btn-xs sta_history_btn" value='.$refid.'><i class="fa fa-history"></i> History</button>
 								</div>
 							</div>
 						</td>
@@ -106,12 +105,12 @@
 <br>
 <div class="row">
 	<div class="col-sm-2">
-		<div class="text-left col-xs-10">
-			<button type="button" class="btn btn-danger btn-sm resend_email_btn" value="<?php echo $refid?>"><i class="fa fa-envelope-o"></i> Resend Email</button>
+		<div class="text-left col-xs-8">
+			<button type="button" class="btn btn-danger btn-sm resend_email_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-envelope-o"></i> Resend Email</button>
 		</div>
 
 		<div class="text-left col-xs-2">
-			<button type="button" class="btn btn-primary btn-sm auto_conf_btn" value="<?php echo $refid?>"><i class="fa fa-check-square"></i> Auto Confirmation</button>
+			<button type="button" class="btn btn-primary btn-sm auto_conf_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-check-square"></i> Auto Confirmation</button>
 		</div>
 	</div>
 </div>

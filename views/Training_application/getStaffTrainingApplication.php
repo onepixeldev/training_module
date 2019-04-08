@@ -7,6 +7,7 @@
 	</div> 
 	<div class="col-sm-10">
 		<div class="form-group text-left"><?php echo $refid. " - " .$tname?></div>
+		<div class="form-group text-left app_stf_tr_name" style="display:none"><?php echo $tname?></div>
 	</div> 
 </div>
 <div class="well">
@@ -14,6 +15,7 @@
 		<table class="table table-bordered table-hover" id="tbl_list_sta">
 		<thead>
 		<tr>
+			<th class="text-center">Select</th>
 			<th class="text-center">Staff ID</th>
             <th class="text-left">Name</th>
 			<th class="text-center">Email</th>
@@ -26,8 +28,13 @@
 			if (!empty($staff_tr_list)) {
 				foreach ($staff_tr_list as $stl) {
 					echo '
-                    <tr>
-						<td class="text-center col-md-1">' . $stl->SM_STAFF_ID . '</td>
+					<tr>
+						<td class="text-center col-md-1">
+							<div class="form-check text-center">
+								<input class="form-check-input position-static checkitem" type="checkbox" name="applicantID" id="applicantID" value="' . $stl->SM_STAFF_ID . '" aria-label="...">
+							</div>
+						</td>
+						<td class="text-center col-md-1 sid">' . $stl->SM_STAFF_ID . '</td>
 						<td class="text-left col-md-3">' . $stl->SM_STAFF_NAME . '</td>
 						<td class="text-center col-md-2">' . $stl->SM_EMAIL_ADDR . '</td>
 						<td class="text-center col-md-1">
@@ -37,9 +44,7 @@
 							</div>
 						</div>
 						</td>
-						<td class="text-center col-md-9">
-							<button type="button" class="btn btn-primary btn-xs sta_appsm_btn" value='.$refid.'><i class="fa fa-check-square"></i> Approve & Send Email</button>
-							<button type="button" class="btn btn-danger btn-xs sta_reject_btn" value='.$refid.'><i class="fa fa-times-circle"></i> Reject</button>
+						<td class="text-center col-md-2">
 							<button type="button" class="btn btn-success btn-xs sta_detl_btn" value='.$refid.'><i class="fa fa-info-circle"></i> Detail</button>
 							<button type="button" class="btn btn-info btn-xs sta_history_btn"><i class="fa fa-history"></i> History</button>
 						</td>
@@ -50,6 +55,19 @@
 		?>
 		</tbody>
 		</table>	
+	</div>
+</div>
+
+<br>
+<div class="row">
+	<div class="col-sm-3">
+		<div class="text-left col-sm-7">
+			<button type="button" class="btn btn-primary btn-sm sta_appsm_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-check-square"></i> Approve & Send Email</button>
+		</div>
+
+		<div class="text-left col-sm-1">
+			<button type="button" class="btn btn-danger btn-sm sta_reject_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-times-circle"></i> Reject</button>
+		</div>
 	</div>
 </div>
 </p>

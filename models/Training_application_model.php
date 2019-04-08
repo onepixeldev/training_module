@@ -1321,7 +1321,8 @@ class Training_application_model extends MY_Model
     // GET TRAINING DATE FROM
     public function getTrainingDateFrom($refID)
     {
-        $this->db->select("TO_CHAR_VAL(SYSDATE, 'YYYYMMDD') AS CUR_DATE, TO_CHAR_VAL(TH_DATE_FROM, 'YYYYMMDD') AS TH_DATE_FROM");
+        $this->db->select("TO_CHAR_VAL(SYSDATE, 'YYYYMMDD') AS CUR_DATE, TO_CHAR_VAL(TH_DATE_FROM, 'YYYYMMDD') AS TH_DATE_FROM,
+                            TO_CHAR_VAL(TH_DATE_TO, 'YYYYMMDD') AS TH_DATE_TO_FULL, TO_CHAR_VAL(TH_DATE_TO, 'YYYY') AS TH_DATE_TO_YEAR");
         $this->db->from('TRAINING_HEAD');
         $this->db->where("TH_REF_ID", $refID);
         $q = $this->db->get();
@@ -1330,10 +1331,14 @@ class Training_application_model extends MY_Model
     }
 
     // GET TRAINING HEAD BASED ON FILTER
-    public function getTrainingList($defIntExt = null, $curUsrDept = null, $defMonth = null, $curYear = null, $defTrSts = null)
+    public function getTrainingList($defIntExt = null, $curUsrDept = null, $defMonth = null, $curYear = null, $defTrSts = null, $evaluation = null, $screRpt = null)
     {
         $this->db->select('*');
         $this->db->from('TRAINING_HEAD');
+        if($screRpt == '1') {
+            $this->db->join("TRAINING_SECRETARIAT_REPORT","TH_REF_ID = TSR_REFID","LEFT");
+        }
+
         if(!empty($curUsrDept)) {
             $this->db->where("TH_DEPT_CODE = '$curUsrDept'");
         }
@@ -1356,7 +1361,18 @@ class Training_application_model extends MY_Model
             $this->db->where("TH_STATUS", $defTrSts);
         } elseif(empty($defTrSts)) {
             $this->db->where("NVL(TH_STATUS,'ENTRY') = 'APPROVE'");
-        } 
+        }
+        
+        if($evaluation == '1') {
+            $this->db->where("TH_REF_ID IN (SELECT THD_REF_ID
+                                FROM TRAINING_HEAD_DETL
+                                WHERE NVL(THD_EVALUATION,'N') = 'Y')");
+        }
+
+        if($screRpt == '1') {
+            $this->db->where("TO_CHAR_VAL(TO_DATE_VAL(TH_DATE_FROM, 'DD/MM/YYYY'), 'YYYYMMDD') < TO_CHAR_VAL(TO_DATE_VAL(SYSDATE, 'DD/MM/YYYY'), 'YYYYMMDD')");
+            $this->db->where("TH_ORGANIZER_NAME = 'ULAT'");
+        }
         
         $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE");
 
@@ -2240,5 +2256,761 @@ class Training_application_model extends MY_Model
        
         $q = $this->db->get();
         return $q->result();
+    }
+
+    // GET STAFF LIST (SERVICE BOOK)
+    public function getStaffListSvcBook($refid) {
+        $query = "SELECT STH_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, TPR_DESC, STH_STATUS, STH_SERVICE_BOOK, SBH_REF_ID FROM (SELECT *
+        FROM STAFF_TRAINING_HEAD 
+        JOIN STAFF_MAIN ON STH_STAFF_ID = SM_STAFF_ID
+        JOIN TRAINING_PARTICIPANT_ROLE ON STH_PARTICIPANT_ROLE = TPR_CODE 
+        WHERE STH_STAFF_ID IN
+        (
+        SELECT STH_STAFF_ID
+        FROM STAFF_TRAINING_HEAD,TRAINING_HEAD
+        WHERE STH_STATUS = 'APPROVE'
+        AND STH_TRAINING_REFID = TH_REF_ID 
+        AND STH_PARTICIPANT_ROLE = 'D'
+        AND STH_TRAINING_REFID = '$refid'
+        AND TO_CHAR_VAL(TH_DATE_FROM,'YYYY') < '2016'
+        AND TH_INTERNAL_EXTERNAL <> 'EXTERNAL_AGENCY'
+        AND (((STH_SERVICE_BOOK IS NULL OR STH_SERVICE_BOOK = 'N') AND NOT EXISTS (SELECT *
+        FROM SERVICE_BOOK_HEAD 
+        WHERE SBH_SUBSYSTEM_REFID = STH_TRAINING_REFID
+        AND SBH_STAFF_ID = STH_STAFF_ID
+        AND SBH_SUBSYSTEM_ID = 'COURSE'
+        AND SBH_TRANS_GROUP = 'SG0011'
+        AND SBH_TRANS_CODE = 'S0082')) 
+        
+        OR (STH_SERVICE_BOOK = 'Y' 
+        AND NOT EXISTS (select *
+        FROM SERVICE_BOOK_HEAD 
+        WHERE SBH_SUBSYSTEM_REFID = sth_training_refid
+        AND SBH_STAFF_ID = STH_STAFF_ID
+        AND SBH_SUBSYSTEM_ID = 'COURSE'
+        AND SBH_TRANS_GROUP = 'SG0011'
+        AND SBH_TRANS_CODE = 'S0082')))
+        
+        UNION
+        SELECT STH_STAFF_ID
+        FROM STAFF_TRAINING_HEAD,TRAINING_HEAD
+        WHERE STH_STATUS = 'APPROVE'
+        AND STH_TRAINING_REFID = TH_REF_ID 
+        AND STH_PARTICIPANT_ROLE = 'D'
+        AND STH_TRAINING_REFID = '$refid'
+        AND TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'
+        AND (((STH_SERVICE_BOOK IS NULL OR STH_SERVICE_BOOK = 'N') AND NOT EXISTS (SELECT *
+        FROM SERVICE_BOOK_HEAD 
+        WHERE SBH_SUBSYSTEM_REFID = STH_TRAINING_REFID
+        AND SBH_STAFF_ID = STH_STAFF_ID
+        AND SBH_SUBSYSTEM_ID = 'COURSE'
+        AND SBH_TRANS_GROUP = 'SG0011'
+        AND SBH_TRANS_CODE = 'S0082')) 
+        
+        OR (STH_SERVICE_BOOK = 'Y' 
+        AND NOT EXISTS (SELECT *
+        FROM SERVICE_BOOK_HEAD 
+        WHERE SBH_SUBSYSTEM_REFID = STH_TRAINING_REFID
+        AND SBH_STAFF_ID = STH_STAFF_ID
+        AND SBH_SUBSYSTEM_ID = 'COURSE'
+        AND SBH_TRANS_GROUP = 'SG0011'
+        AND SBH_TRANS_CODE = 'S0082')))
+        
+        UNION
+        SELECT STD_STAFF_ID 
+        FROM STAFF_TRAINING_DETL,TRAINING_HEAD,STAFF_TRAINING_HEAD
+        WHERE NVL(STD_ATTEND,'N') IN ('Y','A')
+        AND STD_TRAINING_REFID = '$refid'
+        AND STH_STATUS = 'APPROVE' 
+        AND STH_PARTICIPANT_ROLE = 'D'
+        AND STH_TRAINING_REFID = STD_TRAINING_REFID
+        AND STH_TRAINING_REFID = TH_REF_ID
+        AND STH_STAFF_ID = STD_STAFF_ID
+        AND TO_CHAR_VAL(TH_DATE_FROM,'YYYY') >= '2016'
+        AND TH_INTERNAL_EXTERNAL <> 'EXTERNAL_AGENCY'
+        AND (((STH_SERVICE_BOOK IS NULL OR STH_SERVICE_BOOK = 'N') AND NOT EXISTS (SELECT *
+        FROM SERVICE_BOOK_HEAD 
+        WHERE SBH_SUBSYSTEM_REFID = STH_TRAINING_REFID
+        AND SBH_STAFF_ID = STH_STAFF_ID
+        AND SBH_SUBSYSTEM_ID = 'COURSE'
+        AND SBH_TRANS_GROUP = 'SG0011'
+        AND SBH_TRANS_CODE = 'S0082')) 
+        
+        OR (STH_SERVICE_BOOK = 'Y' 
+        AND NOT EXISTS (SELECT *
+        FROM SERVICE_BOOK_HEAD 
+        WHERE SBH_SUBSYSTEM_REFID = STH_TRAINING_REFID
+        AND SBH_STAFF_ID = STH_STAFF_ID
+        AND SBH_SUBSYSTEM_ID = 'COURSE'
+        AND SBH_TRANS_GROUP = 'SG0011'
+        AND SBH_TRANS_CODE = 'S0082')))
+        
+        UNION
+        SELECT STE_STAFF_ID
+        FROM STAFF_TRAINING_EXAM,TRAINING_HEAD,STAFF_TRAINING_HEAD
+        WHERE TH_REF_ID = STE_REF_ID
+        AND STH_TRAINING_REFID = STE_REF_ID
+        AND STH_STAFF_ID = STE_STAFF_ID
+        AND STH_STATUS = 'APPROVE'
+        AND STE_REF_ID = '$refid'
+        AND STE_STATUS IN ('LULUS','PENGECUALIAN')
+        AND (((STH_SERVICE_BOOK IS NULL OR STH_SERVICE_BOOK = 'N') AND NOT EXISTS (SELECT *
+        FROM SERVICE_BOOK_HEAD 
+        WHERE SBH_SUBSYSTEM_REFID = STH_TRAINING_REFID
+        AND SBH_STAFF_ID = STH_STAFF_ID
+        AND SBH_SUBSYSTEM_ID = 'COURSE'
+        AND SBH_TRANS_GROUP = 'SG0011'
+        AND SBH_TRANS_CODE = 'S0082')) 
+        
+        OR (STH_SERVICE_BOOK = 'Y' 
+        AND NOT EXISTS (SELECT *
+        FROM SERVICE_BOOK_HEAD 
+        WHERE SBH_SUBSYSTEM_REFID = STH_TRAINING_REFID
+        AND SBH_STAFF_ID = STH_STAFF_ID
+        AND SBH_SUBSYSTEM_ID = 'COURSE'
+        AND SBH_TRANS_GROUP = 'SG0011'
+        AND SBH_TRANS_CODE = 'S0082'))))
+        
+        AND STH_TRAINING_REFID = '$refid'
+        AND STH_PARTICIPANT_ROLE = 'D'
+        ) 
+        LEFT JOIN SERVICE_BOOK_HEAD ON SBH_STAFF_ID = STH_STAFF_ID AND SBH_SUBSYSTEM_REFID = STH_TRAINING_REFID";
+
+        $q = $this->db->query($query);
+        return $q->result();
+    }
+
+    // VERIFY TRAINING SERVICE BOOK
+    public function verifySvcBook($refid)
+    {
+        $this->db->select("TT_SERVICE_BOOK");
+        $this->db->from("TRAINING_TYPE, TRAINING_HEAD");
+        $this->db->where("TT_CODE = TH_TYPE");
+        $this->db->where("TH_REF_ID", $refid);
+       
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET TRAINING DETAIL FOR SERVICE BOOK
+    public function getTrDetlSvcBook($refid)
+    {
+        $this->db->select("TH_REF_ID, 
+                            TH_TRAINING_TITLE,
+                            TH_TRAINING_VENUE,
+                            TO_DATE_VAL(TH_DATE_FROM, 'DD-MM-YYYY') AS TH_DATEFR,
+                            TO_DATE_VAL(TH_DATE_TO, 'DD-MM-YYY') AS TH_DATETO, 
+                            TH_ORGANIZER_NAME");
+        $this->db->from('TRAINING_HEAD');
+        $this->db->where("TH_REF_ID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET JOB CODE
+    public function getJobCode($sid)
+    {
+        $this->db->select("SM_JOB_CODE");
+        $this->db->from('STAFF_MAIN');
+        $this->db->where("SM_STAFF_ID", $sid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET PENSION STATUS
+    public function getPenisionSts($sid)
+    {
+        $this->db->select("SS_PENSION_STATUS");
+        $this->db->from('STAFF_SERVICE');
+        $this->db->where("SS_STAFF_ID", $sid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // ADD TO SERVICE BOOK
+    public function addServiceBook($refid, $sid, $sb_remark, $jobCode, $pensionSts, $tr_date_from = null, $tr_date_to = null)
+    {
+        $curUser = $this->staff_id;
+        $curDate = 'SYSDATE';
+        $sbhRefid = "to_char(sysdate,'YYYY') || '-' || ltrim(to_char(SERVICE_DETL_SEQ.nextval,'00000000'))";
+
+        $data = array(
+            "SBH_STAFF_ID" => $sid,
+            "SBH_TRANS_GROUP" => 'SG0011',
+            "SBH_TRANS_CODE" => 'S0082',
+            "SBH_SUBSYSTEM_ID" => 'COURSE',
+            "SBH_SUBSYSTEM_REFID" => $refid,
+            "SBH_SERVICE_CODE" => $jobCode,
+            "SBH_START_DATE" => $tr_date_from,
+            "SBH_END_DATE" => $tr_date_to,
+            "SBH_REMARK" => $sb_remark,
+            "SBH_STATUS" => 'APPRV',
+            "SBH_ENTER_BY" => $curUser,
+            //"SBH_ENTER_DATE" => $curDate,
+            "SBH_DISPLAY" => 'Y',
+            "SBH_PENSION_STATUS" => $pensionSts
+        );
+
+        $this->db->set("SBH_REF_ID", $sbhRefid, false);
+        $this->db->set("SBH_ENTER_DATE", $curDate, false);
+
+        return $this->db->insert("SERVICE_BOOK_HEAD", $data);
+    }
+
+    // UPDATE STH_SERVICE_BOOK
+    public function updSthSvcBook($refid, $sid)
+    {
+        $data = array(
+            "STH_SERVICE_BOOK" => 'Y'
+        );
+
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_STAFF_ID", $sid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    /*===========================================================
+       Staff Training Evaluation - ATF104
+    =============================================================*/
+
+    // GET STAFF LIST
+    public function getStaffListEvaluation($refid, $staffID = null)
+    {
+        $this->db->select("STH.STH_STAFF_ID STF_ID, SM1.SM_STAFF_NAME STF_N1, 
+                            SM1.SM_DEPT_CODE STF_DEPT1, TO_CHAR_VAL(STH.STH_SUBMIT_DATE, 'DD/MM/YYYY') STH_SB_DT, 
+                            STH.STH_EVALUATOR_ID EVA_ID, SM2.SM_STAFF_NAME STF_N2, 
+                            STH.STH_HOD_EVALUATION SHE, TO_CHAR_VAL(STH.STH_EVALUATION_DATE, 'DD/MM/YYYY') SED,
+                            STH.STH_EVALUATOR_ID ||' - '|| SM2.SM_STAFF_NAME EVA_ID_NAME");
+        $this->db->from("STAFF_TRAINING_HEAD STH");
+        $this->db->join("STAFF_MAIN SM1", "STH.STH_STAFF_ID = SM1.SM_STAFF_ID", "LEFT");
+        $this->db->join("STAFF_MAIN SM2", "STH.STH_EVALUATOR_ID = SM2.SM_STAFF_ID", "LEFT");
+        
+        $this->db->where("STH_STAFF_ID IN (SELECT 
+                            SM_STAFF_ID FROM STAFF_MAIN,STAFF_STATUS 
+                            WHERE SM_STAFF_STATUS = '01' AND 
+                            SM_STAFF_STATUS = SS_STATUS_CODE AND SS_STATUS_STS = 'ACTIVE')");
+        $this->db->where("STH_STAFF_ID IN 
+                            (
+                            SELECT STH_STAFF_ID 
+                            FROM STAFF_TRAINING_HEAD,TRAINING_HEAD 
+                            WHERE STH_TRAINING_REFID = TH_REF_ID 
+                            AND STH_STATUS = 'APPROVE' 
+                            AND TO_CHAR_VAL(TH_DATE_FROM,'yyyy') < '2016'
+                            AND TH_INTERNAL_EXTERNAL <> 'EXTERNAL_AGENCY'
+                            AND STH_TRAINING_REFID = '$refid'
+                            UNION
+                            select STH_STAFF_ID 
+                            from STAFF_TRAINING_HEAD,TRAINING_HEAD 
+                            where STH_TRAINING_REFID = TH_REF_ID 
+                            and STH_STATUS = 'APPROVE' 
+                            and TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'
+                            and STH_TRAINING_REFID = '$refid'
+                            union
+                            SELECT STH_STAFF_ID 
+                            FROM STAFF_TRAINING_HEAD,TRAINING_HEAD,STAFF_TRAINING_DETL
+                            WHERE STH_TRAINING_REFID = TH_REF_ID 
+                            AND STH_STATUS = 'APPROVE' 
+                            AND TO_CHAR_VAL(TH_DATE_FROM,'yyyy') >= '2016'
+                            AND TH_INTERNAL_EXTERNAL <> 'EXTERNAL_AGENCY'
+                            AND STH_TRAINING_REFID = STD_TRAINING_REFID
+                            AND STH_STAFF_ID = STD_STAFF_ID
+                            AND STH_TRAINING_REFID = '$refid'
+                            AND STD_ATTEND IN ('Y','A')
+                            )");
+        
+        if(!empty($staffID)) {
+            $this->db->where("STH.STH_TRAINING_REFID", $refid);
+            $this->db->where("STH.STH_STAFF_ID", $staffID);
+
+            $q = $this->db->get();
+            return $q->row();
+        } else {
+            $this->db->where("STH.STH_TRAINING_REFID", $refid);
+            $this->db->order_by("STH.STH_STAFF_ID");
+
+            $q = $this->db->get();
+            return $q->result();
+        }
+    }
+
+    // GET EVALUATION START DATE
+    public function getStartDate() {
+        $this->db->select("TO_CHAR_VAL(TO_DATE_VAL(HP_PARM_DESC,'DD/MM/YYYY'), 'YYYYMMDD') AS HP_PARM_DESC");
+        $this->db->from("HRADMIN_PARMS");
+        $this->db->where("HP_PARM_CODE = 'TRAINING_EVALUATION_STARTED'");
+        $this->db->where("HP_PARM_NO = 1");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET EVALUATOR LIST
+    public function getEvaluatorList() {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID||' - '||SM_STAFF_NAME STF_ID_NAME");
+        $this->db->from("STAFF_MAIN");
+        $this->db->where("SM_STAFF_STATUS IN (SELECT SS_STATUS_CODE FROM STAFF_STATUS WHERE SS_STATUS_STS='ACTIVE')");
+        $this->db->where("SM_STAFF_ID LIKE 'K%'");
+        $this->db->order_by("SM_STAFF_NAME");
+
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // SAVE UPDATE APPLICANT DETAILS
+    public function saveUpdateStaffEvaDetails($form, $refid, $stfID)
+    {
+        $data = array(
+            "STH_EVALUATOR_ID" => $form['evaluator_id'],
+            "STH_HOD_EVALUATION" => $form['evaluation_status'],
+        );
+
+        if(!empty($form['submit_date'])){
+            $submit_date = "TO_DATE_VAL('".$form['submit_date']."', 'DD/MM/YYYY')";
+            $this->db->set("STH_SUBMIT_DATE", $submit_date, false);
+        }
+
+        if(!empty($form['evaluation_date'])){
+            $eva_date = "TO_DATE_VAL('".$form['evaluation_date']."', 'DD/MM/YYYY')";
+            $this->db->set("STH_EVALUATION_DATE", $eva_date, false);
+        }
+
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_STAFF_ID", $stfID);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    // GET PROCESS EVALUATOR ID
+    public function getProcessEvaluatorID($refid, $fid) {
+        $this->db->select("NVL(STH_VERIFY_BY,NVL(STH_RECOMMEND_BY,NVL(LSH_RECOMMEND_BY,LSH_APPROVE_BY))) AS PROC_EVA_ID");
+        $this->db->from("STAFF_TRAINING_HEAD, LEAVE_STAFF_HIERARCHY");
+        $this->db->where("STH_STAFF_ID", $fid);
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("LSH_STAFF_ID = STH_STAFF_ID");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // VERIFY STH_EVALUATOR_ID
+    public function verifyEvaID($refid, $fid) {
+        $this->db->select("STH_EVALUATOR_ID");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->where("STH_STAFF_ID", $fid);
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // UPDATE EVA ID
+    public function updateEvaID($refid, $fid, $procEvaID)
+    {
+        $data = array(
+            "STH_EVALUATOR_ID" => $procEvaID,
+        );
+
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_STAFF_ID", $fid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+     /*===========================================================
+       Staff Evaluator Send Memo - ATF121
+    =============================================================*/
+    // GET STAFF LIST
+    public function getStaffListSendMemo($refid, $staffID = null)
+    {
+        $this->db->distinct();
+        $this->db->select("STH.STH_STAFF_ID STF_ID, SM1.SM_STAFF_NAME STF_N1, 
+                            SM1.SM_DEPT_CODE STF_DEPT1, TO_CHAR_VAL(STH.STH_SUBMIT_DATE, 'DD/MM/YYYY') STH_SB_DT, 
+                            STH.STH_EVALUATOR_ID EVA_ID, SM2.SM_STAFF_NAME STF_N2,
+                            STH.STH_EVALUATOR_ID ||' - '|| SM2.SM_STAFF_NAME EVA_ID_NAME, 
+                            MAX(TEH.TEH_SEQ) OVER (PARTITION BY STH.STH_STAFF_ID) SND_MEM");
+        $this->db->from("STAFF_TRAINING_HEAD STH");
+        $this->db->join("STAFF_MAIN SM1", "STH.STH_STAFF_ID = SM1.SM_STAFF_ID", "LEFT");
+        $this->db->join("STAFF_MAIN SM2", "STH.STH_EVALUATOR_ID = SM2.SM_STAFF_ID", "LEFT");
+        $this->db->join("TRAINING_EVALUATION_HIS TEH", "TEH.TEH_TRAINING_REFID = STH.STH_TRAINING_REFID AND TEH.TEH_SEND_TO = STH.STH_EVALUATOR_ID and TEH.TEH_CC = STH.STH_STAFF_ID", "LEFT");
+        $this->db->where("STH_STAFF_ID IN 
+                            (
+                            SELECT STH_STAFF_ID
+                            FROM STAFF_TRAINING_HEAD,TRAINING_HEAD 
+                            WHERE STH_STATUS = 'APPROVE' 
+                            AND STH_SUBMIT_DATE IS NOT NULL 
+                            AND STH_EVALUATOR_ID IS NOT NULL
+                            AND (STH_HOD_EVALUATION IS NULL OR STH_HOD_EVALUATION = 'N')
+                            AND STH_EVALUATION_DATE IS NULL
+                            AND STH_TRAINING_REFID = '$refid'
+                            AND STH_TRAINING_REFID = TH_REF_ID 
+                            AND TH_INTERNAL_EXTERNAL <> 'EXTERNAL_AGENCY'
+                            AND TO_CHAR(TH_DATE_FROM,'YYYY') < '2016'
+                            UNION
+                            SELECT STH_STAFF_ID
+                            FROM STAFF_TRAINING_HEAD,TRAINING_HEAD 
+                            WHERE STH_STATUS = 'APPROVE' 
+                            AND STH_SUBMIT_DATE IS NOT NULL 
+                            AND STH_EVALUATOR_ID IS NOT NULL
+                            AND (STH_HOD_EVALUATION IS NULL OR STH_HOD_EVALUATION = 'N')
+                            AND STH_EVALUATION_DATE IS NULL
+                            AND STH_TRAINING_REFID = '$refid'
+                            AND STH_TRAINING_REFID = TH_REF_ID 
+                            AND TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'
+                            UNION
+                            SELECT STH_STAFF_ID
+                            FROM STAFF_TRAINING_HEAD,TRAINING_HEAD,STAFF_TRAINING_DETL 
+                            WHERE STH_STATUS = 'APPROVE' 
+                            AND STH_SUBMIT_DATE IS NOT NULL 
+                            AND STH_EVALUATOR_ID IS NOT NULL
+                            AND (STH_HOD_EVALUATION IS NULL OR STH_HOD_EVALUATION = 'N')
+                            AND STH_EVALUATION_DATE IS NULL
+                            AND STH_TRAINING_REFID = '$refid'
+                            AND STH_TRAINING_REFID = TH_REF_ID 
+                            AND TH_INTERNAL_EXTERNAL <> 'EXTERNAL_AGENCY'
+                            AND TO_CHAR(TH_DATE_FROM,'YYYY') >= '2016'
+                            AND STH_TRAINING_REFID = STD_TRAINING_REFID
+                            AND STH_STAFF_ID = STD_STAFF_ID
+                            AND STD_ATTEND IN ('Y','A')
+                            )");
+        
+        if(!empty($staffID)) {
+            $this->db->where("STH.STH_TRAINING_REFID", $refid);
+            $this->db->where("STH.STH_STAFF_ID", $staffID);
+
+            $q = $this->db->get();
+            return $q->row();
+        } else {
+            $this->db->where("STH.STH_TRAINING_REFID", $refid);
+            $this->db->order_by("STH.STH_EVALUATOR_ID");
+
+            $q = $this->db->get();
+            return $q->result();
+        }
+    }
+
+    // GET STAFF INFO
+    public function getStaffInfo($staffID) {
+        $this->db->select("*");
+        $this->db->from("STAFF_MAIN");
+        $this->db->where("SM_STAFF_ID", $staffID);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET MAX SEQ
+    public function getMaxSeq() {
+        $this->db->select("TO_NUMBER(HP_PARM_DESC) HP_PARM_DESC");
+        $this->db->from("HRADMIN_PARMS");
+        $this->db->where("HP_PARM_CODE = 'TRAINING_EVALUATION_MEMO'");
+        $this->db->where("HP_PARM_NO = 1");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // SEND MEMO
+    public function createMemo($from, $sendTO, $memoTitle, $memoContent) {
+		$sql = oci_parse($this->db->conn_id, "begin create_memo(:bind1,:bind2,null,:bind3,:bind4); end;");
+		oci_bind_by_name($sql, ":bind1", $from);				//IN
+		oci_bind_by_name($sql, ":bind2", $sendTO);				//IN
+		oci_bind_by_name($sql, ":bind3", $memoTitle, 255);		//IN
+		oci_bind_by_name($sql, ":bind4", $memoContent, 4000);	//IN
+		$q = oci_execute($sql, OCI_DEFAULT); 
+		
+        if ($q === FALSE) {
+			return 0;
+		}
+		
+		return 1;	
+    } 
+
+    // GET STAFF INFO
+    public function getVenue($refid) {
+        $this->db->select("DISTINCT DECODE(TH_TRAINING_VENUE,'',TH_TRAINING_VENUE||', ')||CM_COUNTRY_DESC TH_VENUE");
+        $this->db->from("TRAINING_HEAD, COUNTRY_MAIN");
+        $this->db->where("TH_TRAINING_COUNTRY = CM_COUNTRY_CODE");
+        $this->db->where("TH_REF_ID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET COUNT MEMO SEQ
+    public function getCountMemoSeq($refid, $sendTO, $memoCC) {
+        $this->db->select("COUNT(1)+1 AS MEMOC");
+        $this->db->from("TRAINING_EVALUATION_HIS");
+        $this->db->where("TEH_TRAINING_REFID", $refid);
+        $this->db->where("TEH_SEND_TO", $sendTO);
+        $this->db->where("TEH_CC", $memoCC);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // UPDATE EVA ID
+    public function insertRefMemo($refid, $curMemoCount, $memoTitle, $defContent, $from, $sendTO, $memoCC)
+    {
+        $sendDate = 'SYSDATE';
+        $data = array(
+            "TEH_TRAINING_REFID" => $refid,
+            "TEH_SEQ" => $curMemoCount,
+            "TEH_TITLE" => $memoTitle,
+            "TEH_CONTENT" => $defContent,
+            "TEH_SEND_BY" => $from,
+            "TEH_SEND_TO" => $sendTO,
+            "TEH_CC" => $memoCC,
+        );
+
+        $this->db->set("TEH_SEND_DATE", $sendDate, false);
+
+        return $this->db->insert("TRAINING_EVALUATION_HIS", $data);
+    }
+
+    /*===========================================================
+       Report for Training Evaluation - ATF166
+    =============================================================*/
+
+    // GET STAFF LIST DD
+    public function getStaffListDD() {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID||' - '||SM_STAFF_NAME AS STAFF_ID_NAME");
+        $this->db->from("STAFF_MAIN, STAFF_STATUS");
+        $this->db->where("SM_STAFF_STATUS = SS_STATUS_CODE");
+        $this->db->where("SM_STAFF_TYPE = 'STAFF'");
+        $this->db->where("SS_STATUS_STS = 'ACTIVE'");
+        $this->db->order_by("SM_STAFF_NAME");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // GET COURSE DD EFF LIST
+    public function getCourseListEff() {
+        $this->db->select("TH_REF_ID, TH_TRAINING_TITLE, TH_REF_ID||' - '||TH_TRAINING_TITLE COURSE_ID_NAME,TH_REF_ID||' - '||TH_TRAINING_TITLE||'|'||TO_CHAR(TH_DATE_FROM,'DD/MM/YYYY')||' - '||TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') COURSE_DETL");
+        $this->db->from("TRAINING_HEAD, TRAINING_HEAD_DETL");
+        $this->db->where("TH_REF_ID = THD_REF_ID");
+        $this->db->where("NVL(THD_EVALUATION,'N') = 'Y'");
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $this->db->order_by("TH_REF_ID");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // GET COURSE LIST REPORT TRAINING EVALUATION
+    public function courseListRptTe($year) {
+        $this->db->select("TH_REF_ID, TH_TRAINING_TITLE, TH_REF_ID||' - '||TH_TRAINING_TITLE TH_ID_NAME,
+                            TO_CHAR(TH_DATE_FROM, 'DD/MM/YYYY')||' - '||TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') TH_DATE, TH_DATE_FROM");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $this->db->where("TO_CHAR(TH_DATE_FROM,'YYYY') = NVL($year,TO_CHAR(SYSDATE,'YYYY'))");
+        $this->db->where("TH_REF_ID IN (SELECT TMH_TRAINING_REFID FROM TRAINING_MEMO_HISTORY)");
+        $this->db->order_by("TH_DATE_FROM, TH_TRAINING_TITLE");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    /*===========================================================
+       Training Secretariat Report - Manual Entry - ATF147
+    =============================================================*/
+
+    // GET COURSE LIST REPORT TRAINING EVALUATION
+    public function getSubmittedReport($trCountRefid) {
+        $this->db->select("*");
+        $this->db->from("TRAINING_SECRETARIAT_REPORT");
+        $this->db->where("TSR_REFID", $trCountRefid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET TOTAL ATTEND < 2016
+    public function getTotalAttend1($refid) {
+        $this->db->select("TH_MAX_PARTICIPANT AS TOTAL_ATTEND");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_INTERNAL_EXTERNAL <> 'EXTERNAL_AGENCY'");
+        $this->db->where("TO_CHAR(TH_DATE_FROM,'YYYY') < '2016'");
+        $this->db->where("TH_REF_ID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET TOTAL ATTEND >= 2016
+    public function getTotalAttend2($refid) {
+        $this->db->select("COUNT(STH_STAFF_ID) TOTAL_ATTEND");
+        $this->db->from("STAFF_TRAINING_HEAD, TRAINING_HEAD");
+        $this->db->where("STH_STATUS = 'APPROVE'");
+        $this->db->where("STH_TRAINING_REFID = TH_REF_ID");
+        $this->db->where("TH_INTERNAL_EXTERNAL <> 'EXTERNAL_AGENCY'");
+        $this->db->where("TO_CHAR(TH_DATE_FROM,'YYYY') >= '2016'");
+        $this->db->where("TH_REF_ID", $refid);
+        $this->db->where("STH_PARTICIPANT_ROLE = 'D'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET ATTENDED PARTICIPANT
+    public function getAttendParticipant($refid) {
+        $this->db->select("COUNT(STH_STAFF_ID) ATTENDED");
+        $this->db->from("(
+                            SELECT STH_STAFF_ID
+                            FROM STAFF_TRAINING_HEAD,TRAINING_HEAD 
+                            WHERE STH_STATUS = 'APPROVE' 
+                            AND STH_TRAINING_REFID = TH_REF_ID 
+                            AND TH_INTERNAL_EXTERNAL <> 'EXTERNAL_AGENCY'
+                            AND TO_CHAR(TH_DATE_FROM,'yyyy') < '2016'
+                            AND STH_PARTICIPANT_ROLE = 'D'
+                            AND STH_TRAINING_REFID = '$refid'
+                            UNION
+                            SELECT STH_STAFF_ID
+                            FROM STAFF_TRAINING_HEAD,TRAINING_HEAD,STAFF_TRAINING_DETL 
+                            WHERE STH_STATUS = 'APPROVE' 
+                            AND STH_TRAINING_REFID = TH_REF_ID 
+                            AND TH_INTERNAL_EXTERNAL <> 'EXTERNAL_AGENCY'
+                            AND TO_CHAR(TH_DATE_FROM,'yyyy') >= '2016'
+                            AND STH_TRAINING_REFID = STD_TRAINING_REFID
+                            AND STH_STAFF_ID = STD_STAFF_ID
+                            AND STH_PARTICIPANT_ROLE = 'D'
+                            AND STD_ATTEND IN ('Y','A')
+                            AND STH_TRAINING_REFID = '$refid'
+                        )");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // SECRETARIAT ON DUTY
+    public function getScreOnDuty($refid) {
+        $this->db->select("TSI_SEQ, TSI_INCHARGE, SM_STAFF_NAME, TO_CHAR_VAL(TSI_INCHARGE_DATE, 'DD/MM/YYYY') AS INCHARGE_DATE");
+        $this->db->from("TRAINING_SECRET_INCHARGE");
+        $this->db->join("STAFF_MAIN", "SM_STAFF_ID = TSI_INCHARGE");
+        $this->db->where("TSI_REFID", $refid);
+        $this->db->order_by("TSI_SEQ");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // INSERT SECRET REPORT
+    public function insertSecretReport($form, $refid)
+    {
+        $data = array(
+            "TSR_REFID" => $refid,
+            "TSR_PARTICIPANT_DISCIPLINE" => $form['discipline'],
+            "TSR_PARTICIPANT_TIME" => $form['participant_time'],
+            "TSR_PARTICIPANT_REMARK" => $form['participant_remark'],
+
+            "TSR_CAFE_NAME" => $form['cafe_name'],
+            "TSR_CAFE_TIME" => $form['food_drink_time'],
+            "TSR_CAFE_QUALITY" => $form['food_drink_quality'],
+            "TSR_CAFE_REMARK" => $form['cafe_remark'],
+
+            "TSR_ROOM_CHAIR" => $form['chair'],
+            "TSR_ROOM_DESK" => $form['table'],
+            "TSR_ROOM_AIRCOND" => $form['aircond'],
+            "TSR_ROOM_LAMP" => $form['lamps'],
+            "TSR_ROOM_REMARK" => $form['training_room_remark'],
+
+            "TSR_EQUIPMENT_COMPUTER" => $form['laptop_desktop'],
+            "TSR_EQUIPMENT_LASERPOINTER" => $form['laser_pointer'],
+            "TSR_EQUIPMENT_LCD" => $form['lcd_pointer'],
+            "TSR_EQUIPMENT_PASYSTEM" => $form['pa_system'],
+            "TSR_EQUIPMENT_REMARK" => $form['equipment_remark'],
+
+            "TSR_OVERALL_REPORT" => $form['overall_remark']
+        );
+
+        //$this->db->set("TH_REF_ID", $refID, false);
+
+        return $this->db->insert("TRAINING_SECRETARIAT_REPORT", $data);
+    }
+
+    // UPDATE SECRET REPORT
+    public function updateSecretReport($form, $refid)
+    {
+        $data = array(
+            "TSR_PARTICIPANT_DISCIPLINE" => $form['discipline'],
+            "TSR_PARTICIPANT_TIME" => $form['participant_time'],
+            "TSR_PARTICIPANT_REMARK" => $form['participant_remark'],
+
+            "TSR_CAFE_NAME" => $form['cafe_name'],
+            "TSR_CAFE_TIME" => $form['food_drink_time'],
+            "TSR_CAFE_QUALITY" => $form['food_drink_quality'],
+            "TSR_CAFE_REMARK" => $form['cafe_remark'],
+
+            "TSR_ROOM_CHAIR" => $form['chair'],
+            "TSR_ROOM_DESK" => $form['table'],
+            "TSR_ROOM_AIRCOND" => $form['aircond'],
+            "TSR_ROOM_LAMP" => $form['lamps'],
+            "TSR_ROOM_REMARK" => $form['training_room_remark'],
+
+            "TSR_EQUIPMENT_COMPUTER" => $form['laptop_desktop'],
+            "TSR_EQUIPMENT_LASERPOINTER" => $form['laser_pointer'],
+            "TSR_EQUIPMENT_LCD" => $form['lcd_pointer'],
+            "TSR_EQUIPMENT_PASYSTEM" => $form['pa_system'],
+            "TSR_EQUIPMENT_REMARK" => $form['equipment_remark'],
+
+            "TSR_OVERALL_REPORT" => $form['overall_remark']
+        );
+
+        $this->db->where("TSR_REFID", $refid);
+
+        return $this->db->update("TRAINING_SECRETARIAT_REPORT", $data);
+    }
+
+    // GET STAFF DEPT
+    public function getStaffDept($staff_id)
+    {
+        $this->db->select("SM_DEPT_CODE");
+        $this->db->from("STAFF_MAIN");
+        $this->db->where("SM_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // CHECK SECRETARIAT ON DUTY
+    public function checkSecretDuty($refid, $secretariat_id) {
+        $this->db->select("TSI_SEQ, TSI_INCHARGE, TO_CHAR_VAL(TSI_INCHARGE_DATE, 'DD/MM/YYYY') AS INCHARGE_DATE");
+        $this->db->from("TRAINING_SECRET_INCHARGE");
+        $this->db->where("TSI_REFID", $refid);
+        $this->db->where("TSI_INCHARGE", $secretariat_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // INSERT SECRET REPORT
+    public function insertSecretDuty($form, $refid)
+    {
+        $tsi_seq = "(SELECT COUNT(TSI_SEQ)+1 AS TSI_SEQ
+        FROM TRAINING_SECRET_INCHARGE
+        WHERE TSI_REFID = '$refid')";
+
+        $curDate = "SYSDATE";
+
+        $data = array(
+            "TSI_REFID" => $refid,
+            "TSI_INCHARGE" => $form['secretariat_id']
+        );
+
+        $this->db->set("TSI_SEQ", $tsi_seq, false);
+
+        if(!empty($form['date'])){
+            $date = "TO_DATE_VAL('".$form['date']."', 'DD/MM/YYYY')";
+            $this->db->set("TSI_INCHARGE_DATE", $date, false);
+        } else {
+            $this->db->set("TSI_INCHARGE_DATE", $curDate, false);
+        }
+
+        return $this->db->insert("TRAINING_SECRET_INCHARGE", $data);
     }
 }

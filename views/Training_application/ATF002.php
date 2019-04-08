@@ -487,7 +487,7 @@
 		var thisBtn = $(this);
 		var refid = thisBtn.val();
 		var td = thisBtn.parent().siblings();
-		var staffID = td.eq(0).html().trim();
+		var staffID = td.eq(1).html().trim();
 		
 		//alert(staffID+' '+refid);
 
@@ -529,24 +529,46 @@
 		});
 	});
 
-	// APPROVE & SEND MEMO BTN
+	// APPROVE & SEND MEMO MODAL BTN
 	$('#staff_training_application').on('click', '.sta_appsm_btn', function() {
 		var thisBtn = $(this);
 		var refid = thisBtn.val();
-		var td = thisBtn.parent().siblings();
-		var staffID = td.eq(0).html().trim();
-		var staffN = td.eq(1).html().trim();
-		var remark = thisBtn.parents('tr').find('[name="remark"]').val();
+		var trainingN = $('.sta_appsm_btn').text();
+		var staffIDArr = [];
+		var remarkArr = [];
+		var selectedID = 0;
 		
 		//alert(remark+' '+refid);
 
 		$.confirm({
-		    title: 'Approve Applicant',
-		    content: 'Press <b>YES</b> to continue <br> Applicant: <b>'+staffID+' - '+staffN+'</b>',
+		    title: 'Approve & Send Email Memo to applicant',
+		    content: 'Press <b>YES</b> to continue.',
 			type: 'blue',
 		    buttons: {
 		        yes: function () {
-					// checking checking send email (if th_date_from is !null && > sysdate)
+					$('.checkitem:checked').each(function() {
+						// check the checked property 
+						var currentID = $(this).val();
+						staffID = $(this).closest("tr").find(".sid").text();
+						remark = $(this).closest('tr').find('[name="remark"]').val();
+						++selectedID;
+
+						staffIDArr.push(staffID);
+						remarkArr.push(remark);
+					});
+					//alert(staffIDArr);
+					//alert(remarkArr);
+
+					if (selectedID == 0) {
+						$.alert({
+							title: 'Alert!',
+							content: 'You must select at least one record to continue.',
+							type: 'red'
+						});
+						return;
+					}
+
+					// checking approve only or approve & send email
 					$.ajax({
 						type: 'POST',
 						url: '<?php echo $this->lib->class_url('verifyTrainingDate')?>',
@@ -554,164 +576,139 @@
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
-								// if th_date_from is !null && > sysdate
-								// $.ajax({
-								// 	type: 'POST',
-								// 	url: '<?php echo $this->lib->class_url('approveStf')?>',
-								// 	data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-								// 	dataType: 'JSON',
-								// 	success: function(res) {
-								// 		if (res.sts==1) {
-								// 			thisBtn.parents('tr').fadeOut().delay(1000).remove();
-								// 			$.alert({
-								// 				title: 'Success!',
-								// 				content: res.msg,
-								// 				type: 'green',
-								// 			});
-								// 		} else {
-								// 			$.alert({
-								// 				title: 'Alert!',
-								// 				content: res.msg,
-								// 				type: 'red',
-								// 			});
-								// 		}
-								// 	}
-								// });
-									
+								// SYSDATE DID NOT PAST COURSE DATE
+                    			// SEND EMAIL & APPROVE
+
 								$.ajax({
 									type: 'POST',
 									url: '<?php echo $this->lib->class_url('sendEmailApplicant')?>',
-									data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
+									data: {'stfID' : staffIDArr, 'refid' : refid},
+									dataType: 'JSON',
+									beforeSend: function() {
+										//$('.nav-tabs li:eq(1) a').tab('show');
+										$('.btn').attr('disabled', 'disabled');
+										$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										var from = res.from;
+										var staffNameArr = res.staffNameArr;
+										var staffEmailArr = res.staffEmailArr;
+
+										var staffIDCCArr = res.staffIDCCArr;
+										var staffNameCCArr = res.staffNameCCArr;
+										var staffEmailCCArr = res.staffEmailCCArr;
+
+										var msg_title = res.msg_title;
+										var msg_content = res.msg_content;
+
+
+										$('#myModalis .modal-content').empty();
+										$('#myModalis').modal('show');
+										$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+									
+										$.ajax({
+											type: 'POST',
+											url: '<?php echo $this->lib->class_url('emailForm')?>',
+											data: {'refid' : refid},
+											success: function(res) {
+												$('#myModalis .modal-content').html(res);
+
+												$.ajax({
+													type: 'POST',
+													url: '<?php echo $this->lib->class_url('approveStf')?>',
+													data: {'refid' : refid, 'staffIDArr' : staffIDArr, 'remarkArr' : remarkArr},
+													dataType: 'JSON',
+													success: function(res) {
+														if (res.sts==1) {
+															$.alert({
+																title: 'Success!',
+																content: res.msg,
+																type: res.alert,
+															});
+														} else {
+															$.alert({
+																title: 'Alert!',
+																content: res.msg,
+																type: res.alert,
+															});
+														}
+													}
+												});
+												
+												$('#myModalis #from').val(from);
+												$('#myModalis #sit').val(staffIDArr);
+												$('#myModalis #nameTo').val(staffNameArr);
+												$('#myModalis #emailTo').val(staffEmailArr);
+												$('#myModalis #staffIDcc').val(staffIDCCArr);
+												$('#myModalis #staffNamecc').val(staffNameCCArr);
+												$('#myModalis #emailCC').val(staffEmailCCArr);
+												$('#myModalis #emailTitle').val(msg_title);
+												$('#myModalis #emailContent').val(msg_content);
+											}
+										});
+
+										$('.btn').removeAttr('disabled');
+										$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').hide();
+									}
+								});	
+
+								// $.alert({
+								// 	title: 'Success!',
+								// 	content: res.msg,
+								// 	type: res.alert,
+								// });
+							} else {
+								// SYSDATE PAST COURSE DATE
+                    			// APPROVE ONLY
+						
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('approveStf')?>',
+									data: {'refid' : refid, 'staffIDArr' : staffIDArr, 'remarkArr' : remarkArr},
 									dataType: 'JSON',
 									success: function(res) {
 										if (res.sts==1) {
 											$.alert({
 												title: 'Success!',
 												content: res.msg,
-												type: 'green',
+												type: res.alert,
 											});
-				
+
 											$.ajax({
 												type: 'POST',
-												url: '<?php echo $this->lib->class_url('approveStf')?>',
-												data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-												dataType: 'JSON',
+												url: '<?php echo $this->lib->class_url('getStaffTrainingApplication')?>',
+												data: {'refid' : refid, 'tName' : trainingN},
+												beforeSend: function() {
+													$('.nav-tabs li:eq(1) a').tab('show');
+													$('#staff_training_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+												},
 												success: function(res) {
-													if (res.sts==1) {
-														thisBtn.parents('tr').fadeOut().delay(1000).remove();
-														$.alert({
-															title: 'Success!',
-															content: res.msg,
-															type: 'green',
-														});
-													} else {
-														$.alert({
-															title: 'Alert!',
-															content: res.msg,
-															type: 'red',
-														});
-													}
+													$('#staff_training_application').html(res);
+													$('#training_list_staff').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff History from Staff Training Applications</th></tr></thead></table></p>');
+													
+													tr_row = $('#tbl_list_sta').DataTable({
+														"ordering":false,
+													});
 												}
 											});
 										} else {
 											$.alert({
 												title: 'Alert!',
 												content: res.msg,
-												type: 'red',
+												type: res.alert,
 											});
 										}
 									}
 								});
-
 
 								// $.alert({
 								// 	title: 'Success!',
 								// 	content: res.msg,
-								// 	type: 'green',
-								// });
-							} else {
-								// $.ajax({
-								// 	type: 'POST',
-								// 	url: '<?php echo $this->lib->class_url('sendEmailApplicant')?>',
-								// 	data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-								// 	dataType: 'JSON',
-								// 	success: function(res) {
-								// 		if (res.sts==1) {
-								// 			$.alert({
-								// 				title: 'Success!',
-								// 				content: res.msg,
-								// 				type: 'green',
-								// 			});
-				
-								// 			$.ajax({
-								// 				type: 'POST',
-								// 				url: '<?php echo $this->lib->class_url('approveStf')?>',
-								// 				data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-								// 				dataType: 'JSON',
-								// 				success: function(res) {
-								// 					if (res.sts==1) {
-								// 						thisBtn.parents('tr').fadeOut().delay(1000).remove();
-								// 						$.alert({
-								// 							title: 'Success!',
-								// 							content: res.msg,
-								// 							type: 'green',
-								// 						});
-								// 					} else {
-								// 						$.alert({
-								// 							title: 'Alert!',
-								// 							content: res.msg,
-								// 							type: 'red',
-								// 						});
-								// 					}
-								// 				}
-								// 			});
-								// 		} else {
-								// 			$.alert({
-								// 				title: 'Alert!',
-								// 				content: res.msg,
-								// 				type: 'red',
-								// 			});
-								// 		}
-								// 	}
-								// });
-
-
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('approveStf')?>',
-									data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
-									dataType: 'JSON',
-									success: function(res) {
-										if (res.sts==1) {
-											thisBtn.parents('tr').fadeOut().delay(1000).remove();
-											$.alert({
-												title: 'Success!',
-												content: res.msg,
-												type: 'green',
-											});
-										} else {
-											$.alert({
-												title: 'Alert!',
-												content: res.msg,
-												type: 'red',
-											});
-										}
-									}
-								});
-
-
-
-								// $.alert({
-								// 	title: 'Alert!',
-								// 	content: res.msg,
-								// 	type: 'red',
+								// 	type: res.alert,
 								// });
 							}
 						}
-					});	
-
-
-										
+					});							
 		        },
 		        cancel: function () {
 		            $.alert('Training Application (approval & send memo) has been cancelled!');
@@ -720,35 +717,159 @@
 		});
 	});
 
+	// RESEND EMAIL
+	$('#myModalis').on('click', '.resend_email_btn_mdl', function (e) { 
+		e.preventDefault();
+        var data = $('#resendEmailForm').serialize();
+		var emailTo = $('#emailTo').val();
+		var emailTitle = $('#emailTitle').val();
+		var emailContent = $('#emailContent').val();
+		refid = $('.sta_appsm_btn').val();
+		trainingN = $('.sta_appsm_btn').data("tr-name");
+		msg.wait('#resendEmailAlert');
+		msg.wait('#resendEmailAlertFooter');
+		// alert(trainingN);
+		
+		
+		if(emailTo == '') {
+			msg.danger('Email To field is empty', '#resendEmailAlert');
+			msg.danger('Email To field is empty', '#resendEmailAlertFooter');
+			return;
+		}
+
+		if(emailTitle == '') {
+			msg.warning('Please fill in <b>Title</b>', '#resendEmailAlert');
+			msg.warning('Please fill in <b>Title</b>', '#resendEmailAlertFooter');
+			return;
+		}
+
+		if(emailContent == '') {
+			msg.warning('Please fill in <b>Content</b>', '#resendEmailAlert');
+			msg.warning('Please fill in <b>Content</b>', '#resendEmailAlertFooter');
+			return;
+		}
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('resendEmail')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				if (res.sts == 1) {
+					$.alert({
+						title: 'Success!',
+						content: res.msg,
+						type: res.alert,
+					});
+					msg.success('Email has been sent', '#resendEmailAlert');
+					msg.success('Email has been sent', '#resendEmailAlertFooter');
+					$('.btn').removeAttr('disabled');
+					$('#myModalis').modal('hide');
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('getStaffTrainingApplication')?>',
+						data: {'refid' : refid, 'tName' : trainingN},
+						beforeSend: function() {
+							$('.nav-tabs li:eq(1) a').tab('show');
+							$('#staff_training_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						},
+						success: function(res) {
+							$('#staff_training_application').html(res);
+							$('#training_list_staff').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff History from Staff Training Applications</th></tr></thead></table></p>');
+							
+							tr_row = $('#tbl_list_sta').DataTable({
+								"ordering":false,
+							});
+						}
+					});
+				} else {
+					$.alert({
+						title: 'Alert!',
+						content: res.msg,
+						type: res.alert,
+					});
+					msg.success('Fail to send email', '#resendEmailAlert');
+					msg.success('Fail to send email', '#resendEmailAlertFooter');
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alertAppOthDetl');
+			}
+		});	
+    });
+
 	// REJECT TRAINING
 	$('#staff_training_application').on('click', '.sta_reject_btn', function() {
 		var thisBtn = $(this);
 		var refid = thisBtn.val();
-		var td = thisBtn.parent().siblings();
-		var staffID = td.eq(0).html().trim();
-		var staffN = td.eq(1).html().trim();
-		var remark = thisBtn.parents('tr').find('[name="remark"]').val();
-		
+		var trainingN = $('.sta_reject_btn').data("tr-name");
+
+		var staffIDArr = [];
+		var remarkArr = [];
+		var selectedID = 0;
 		//alert(remark+' '+refid);
 
 		$.confirm({
 		    title: 'Reject Applicant',
-		    content: 'Press <b>YES</b> to continue <br> Applicant: <b>'+staffID+' - '+staffN+'</b>',
+		    content: 'Press <b>YES</b> to continue',
 			type: 'red',
 		    buttons: {
 		        yes: function () {
+					$('.checkitem:checked').each(function() {
+						// check the checked property 
+						var currentID = $(this).val();
+						staffID = $(this).closest("tr").find(".sid").text();
+						remark = $(this).closest('tr').find('[name="remark"]').val();
+						++selectedID;
+
+						staffIDArr.push(staffID);
+						remarkArr.push(remark);
+					});
+					//alert(staffIDArr);
+					//alert(remarkArr);
+
+					if (selectedID == 0) {
+						$.alert({
+							title: 'Alert!',
+							content: 'You must select at least one record to continue.',
+							type: 'red'
+						});
+						return;
+					}
+
 					$.ajax({
 						type: 'POST',
 						url: '<?php echo $this->lib->class_url('rejectStf')?>',
-						data: {'refid' : refid, 'staffID' : staffID, 'remark' : remark},
+						data: {'refid' : refid, 'staffID' : staffIDArr, 'remark' : remarkArr},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
-								thisBtn.parents('tr').fadeOut().delay(1000).remove();
 								$.alert({
 									title: 'Success!',
 									content: res.msg,
 									type: 'green',
+								});
+
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('getStaffTrainingApplication')?>',
+									data: {'refid' : refid, 'tName' : trainingN},
+									beforeSend: function() {
+										$('.nav-tabs li:eq(1) a').tab('show');
+										$('#staff_training_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										$('#staff_training_application').html(res);
+										$('#training_list_staff').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff History from Staff Training Applications</th></tr></thead></table></p>');
+										
+										tr_row = $('#tbl_list_sta').DataTable({
+											"ordering":false,
+										});
+									}
 								});
 							} else {
 								$.alert({
@@ -771,8 +892,8 @@
 	$('#staff_training_application').on('click','.sta_history_btn', function(){
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
-		var stfID = td.eq(0).html().trim();
-		var stfName = td.eq(1).html().trim();
+		var stfID = td.eq(1).html().trim();
+		var stfName = td.eq(2).html().trim();
 		//var scCode = '1';
 		//alert(''+stfID+' '+stfName+'');
 

@@ -6,7 +6,7 @@
         <div id="alertSendMemo">
         </div>
 
-        <input name="form[refid]" class="form-control" value="<?php echo $refid?>" type="text" readonly>
+        <input name="form[refid]" class="form-control" value="<?php echo $refid?>" type="hidden" readonly>
 
         <div class="form-group">
             <label class="col-md-2 control-label">From</label>
