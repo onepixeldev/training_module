@@ -215,8 +215,7 @@
                                 <td class="text-left col-md-4">' . $sd->SM_STAFF_NAME . '</td>
                                 <td class="text-center col-md-1">' . $sd->INCHARGE_DATE . '</td>
                                 <td class="text-center col-md-1">
-                                    <button type="button" class="btn btn-xs btn-success edit_scr_btn"><i class="fa fa-pencil-square-o"></i> Edit</button>
-                                    <button type="button" class="btn btn-xs btn-danger del_scr_btn"><i class="fa fa-trash-o"></i> delete</button>
+                                    <button type="button" class="btn btn-xs btn-danger del_scr_btn" value='.$refid.'><i class="fa fa-trash-o"></i> delete</button>
                                 </td>
                             </tr>
                         ';

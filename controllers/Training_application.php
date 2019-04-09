@@ -298,7 +298,7 @@ class Training_application extends MY_Controller
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
         $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
-        //get month dd list
+        //get course list
         $data['course_list_btm'] = $this->dropdown($this->mdl->getCourseListEff(), 'TH_REF_ID', 'COURSE_ID_NAME', ' ---Please select--- ');
 
         $this->render($data);
@@ -320,6 +320,32 @@ class Training_application extends MY_Controller
 
         // get department dd list
         $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+
+        $this->render($data);
+    }
+
+    // TRAINING APPLICATION REPORTS
+    public function ATF081()
+    {   
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptListAppRpt(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
         //get year dd list
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
@@ -4356,9 +4382,13 @@ class Training_application extends MY_Controller
             $getStartDate = $this->mdl->getStartDate();
             $evaStartDate = $getStartDate->HP_PARM_DESC;
 
-            if($trDateFrom >= $evaStartDate) {
+            if($trDateFrom >= $evaStartDate && $repCode == 'ATRPDF') {
                 $rpCode = 'ATR277';
-            } elseif($trDateFrom < $evaStartDate) {
+            } elseif($trDateFrom < $evaStartDate && $repCode == 'ATRPDF') {
+                $rpCode = 'ATR185';
+            } elseif($trDateFrom >= $evaStartDate && $repCode == 'ATRXLS') {
+                $rpCode = 'ATR277X';
+            } elseif($trDateFrom < $evaStartDate && $repCode == 'ATRXLS') {
                 $rpCode = 'ATR185';
             }
 
@@ -4717,5 +4747,45 @@ class Training_application extends MY_Controller
         }
          
         echo json_encode($json);
+    }
+
+    // DELETE SECRETARIAT INCHARGE
+    public function deleteScrIncharge() {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $seq = $this->input->post('seq', true);
+        $scrId = $this->input->post('scrId', true);
+        
+        if (!empty($refid) && !empty($seq) && !empty($scrId)) {
+        	$del = $this->mdl->deleteScrIncharge($refid, $seq, $scrId);
+            
+        	if ($del > 0) {
+          		$json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+        	} else {
+          		$json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+        	}
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    /*===========================================================
+       Training Application Report - ATF081
+    =============================================================*/
+    
+
+    // COURSE LIST TABLE MODAL
+    public function getCourseListRpti()
+    { 
+        $year = $this->input->post('year_i2', true);
+
+        if(!empty($year)) {
+            //get course list report I
+            $data['course_list_rpi'] = $this->mdl->getCourseListRpti($year);
+        }
+
+        $this->render($data);
     }
 }

@@ -2991,7 +2991,7 @@ class Training_application_model extends MY_Model
     // INSERT SECRET REPORT
     public function insertSecretDuty($form, $refid)
     {
-        $tsi_seq = "(SELECT COUNT(TSI_SEQ)+1 AS TSI_SEQ
+        $tsi_seq = "(SELECT MAX(TSI_SEQ)+1 AS TSI_SEQ
         FROM TRAINING_SECRET_INCHARGE
         WHERE TSI_REFID = '$refid')";
 
@@ -3012,5 +3012,44 @@ class Training_application_model extends MY_Model
         }
 
         return $this->db->insert("TRAINING_SECRET_INCHARGE", $data);
+    }
+
+    // DELETE SECRETARIAT INCHARGE
+    public function deleteScrIncharge($refid, $seq, $scrId) {
+        $this->db->where('TSI_REFID', $refid);
+        $this->db->where('TSI_SEQ', $seq);
+        $this->db->where('TSI_INCHARGE', $scrId);
+        return $this->db->delete('TRAINING_SECRET_INCHARGE');
+    }
+
+    /*===========================================================
+       Training Application Report - ATF081
+    =============================================================*/
+
+    // GET DEPARTMENT LIST
+    public function getDeptListAppRpt() {
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_DESC, DM_DEPT_CODE ||' - '|| DM_DEPT_DESC AS DEPT_CODE_DESC");
+        $this->db->from('DEPARTMENT_MAIN');
+		$this->db->where("DM_STATUS = 'ACTIVE'");
+		$this->db->where('DM_LEVEL <= 2');
+        $this->db->order_by('DM_DEPT_DESC');
+        $q = $this->db->get();
+		        
+        return $q->result();
+    }
+
+    // GET TRAINING LIST REPORT I
+    public function getCourseListRpti($year) {
+        $this->db->select("TH_REF_ID, TH_TRAINING_TITLE, TO_CHAR(TH_DATE_FROM,'DD/MM/YYYY')||' - '||TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') TH_DATE,
+                            TH_DATE_FROM");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $this->db->where("TO_CHAR(TH_DATE_FROM,'YYYY') = NVL($year,TO_CHAR(SYSDATE,'YYYY'))");
+        $this->db->where("TH_REF_ID IN (SELECT TMH_TRAINING_REFID FROM TRAINING_MEMO_HISTORY)");
+        
+        $this->db->order_by("TH_DATE_FROM, TH_TRAINING_TITLE");
+
+        $q = $this->db->get();
+        return $q->result();
     }
 }

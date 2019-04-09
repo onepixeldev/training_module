@@ -217,6 +217,9 @@
 			},
 			success: function(res) {
 				$('#scre_report_form').html(res);
+				$('html, body').animate({
+					scrollTop: $("#scre_report_form").offset().top
+				}, 1000)
 			}
 		});
     });
@@ -400,4 +403,50 @@
 			}
 		});
     });
+
+	// SECRETARIAT ON DUTY
+	$('#training_list').on('click','.del_scr_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = thisBtn.val();
+		var seq = td.eq(0).html().trim();
+		var scrId = td.eq(1).html().trim();
+		var scrName = td.eq(2).html().trim();
+		// alert(refid+' '+seq+' '+scrId+' '+spName);
+		
+		$.confirm({
+		    title: 'Delete Secretariat Incharge',
+		    content: 'Are you sure to delete this record? <br> <b>'+scrId+' - '+scrName+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteScrIncharge')?>',
+						data: {'refid' : refid, 'seq' : seq, 'scrId' : scrId},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+	});
 </script>
