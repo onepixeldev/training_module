@@ -47,7 +47,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[aca_nonaca]', '', '', 'class="form-control" id="aca_nonaca"') ?>	
+                                    <?php echo form_dropdown('form[aca_nonaca]', array('AKA'=>'ACADEMIC STAFF', 'NAKA'=>'NON-ACADEMIC STAFF', ''=>'ALL'), '', 'class="form-control" id="aca_nonaca"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -65,9 +65,9 @@
                                     <label><b>Organizer</b></label>
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[orga_vi]', '', '', 'class="form-control" id="orga_vi"') ?>	
+                                    <?php echo form_dropdown('form[orga_vi]', array('ULAT'=>'ULAT', ''=>'ALL'), '', 'class="form-control" id="orga_vi"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -85,9 +85,9 @@
                                     <label><b>Report Format</b></label>
                                 </div>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[re_formatvi]', '', '', 'class="form-control" id="re_formatvi"') ?>	
+                                    <?php echo form_dropdown('form[re_formatvi]', array('PDF'=>'PDF', 'HTML'=>'HTML', 'EXCEL'=>'EXCEL', 'SPREADSHEET'=>'SPREADSHEET'), '', 'class="form-control" id="re_formatvi"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -128,7 +128,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR242" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                        <button type="button" repCode="ATR242" class="btn btn-danger btn-sm genReportvi"><i class="fa fa-print"></i> Print</button>
                     </div>
                 </div>
             </div>
@@ -158,7 +158,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR243" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                        <button type="button" repCode="ATR243" class="btn btn-danger btn-sm genReportvi"><i class="fa fa-print"></i> Print</button>
                     </div>
                 </div>
             </div>
@@ -188,7 +188,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR244" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                        <button type="button" repCode="ATR244" class="btn btn-danger btn-sm genReportvi"><i class="fa fa-print"></i> Print</button>
                     </div>
                 </div>
             </div>
@@ -218,7 +218,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR245" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                        <button type="button" repCode="ATR245" class="btn btn-danger btn-sm genReportvi"><i class="fa fa-print"></i> Print</button>
                     </div>
                 </div>
             </div>
@@ -248,7 +248,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR246" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                        <button type="button" repCode="ATR246" class="btn btn-danger btn-sm genReportvi"><i class="fa fa-print"></i> Print</button>
                     </div>
                 </div>
             </div>
@@ -278,7 +278,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR247" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                        <button type="button" repCode="ATR247" class="btn btn-danger btn-sm genReportvi"><i class="fa fa-print"></i> Print</button>
                     </div>
                 </div>
             </div>
@@ -308,7 +308,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR248" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                        <button type="button" repCode="ATR248" class="btn btn-danger btn-sm genReportvi"><i class="fa fa-print"></i> Print</button>
                     </div>
                 </div>
             </div>
@@ -338,7 +338,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR267" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                        <button type="button" repCode="ATR267" class="btn btn-danger btn-sm genReportvi"><i class="fa fa-print"></i> Print</button>
                     </div>
                 </div>
             </div>
@@ -366,7 +366,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[staff_id_vi]', '', NULL, 'class="form-control" id="staff_id_vi"') ?>	
+                                    <?php echo form_dropdown('form[staff_id_vi]', $staff_list, NULL, 'class="form-control" id="staff_id_vi"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -391,7 +391,7 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR268" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR268" class="btn btn-danger btn-sm genReportvi"><i class="fa fa-print"></i> Print</button>
                                 </div>
                             </div>
                         </div>

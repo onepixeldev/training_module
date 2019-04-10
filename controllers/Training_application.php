@@ -4871,12 +4871,16 @@ class Training_application extends MY_Controller
     // REPORT V
     public function tarReportv()
     { 
-        // default value filter
-        // default dept
-        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
-        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
-        // default month
-        $data['defMonth'] = '';
+        $this->session->set_userdata('repCodev','');
+        $this->session->set_userdata('year_av','');
+        $this->session->set_userdata('month_from_av','');
+        $this->session->set_userdata('month_to_av','');
+        $this->session->set_userdata('department_v','');
+        $this->session->set_userdata('quarter_v','');
+        $this->session->set_userdata('quarter_month_av','');
+        $this->session->set_userdata('quarter_month_bv','');
+        $this->session->set_userdata('quarter_month_cv','');
+
         // default year
         $data['cur_year'] = $this->mdl->getCurYear();
         $data['curYear'] = $data['cur_year']->CUR_YEAR;
@@ -4888,8 +4892,6 @@ class Training_application extends MY_Controller
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
         $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
-        //get training status list
-        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
 
         $this->render($data);
     }
@@ -4897,13 +4899,16 @@ class Training_application extends MY_Controller
     // REPORT VI
     public function tarReportvi()
     { 
-        // default value filter
-        // default dept
-        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
-        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
-        // default month
-        $data['defMonth'] = '';
-        // default year
+        // clear filter for report
+        $this->session->set_userdata('repCodevi','');
+        $this->session->set_userdata('month_vi','');
+        $this->session->set_userdata('year_vi','');
+        $this->session->set_userdata('month_to_av','');
+        $this->session->set_userdata('aca_nonaca','');
+        $this->session->set_userdata('orga_vi','');
+        $this->session->set_userdata('re_formatvi','');
+        $this->session->set_userdata('staff_id_vi','');
+
         $data['cur_year'] = $this->mdl->getCurYear();
         $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
@@ -4914,8 +4919,8 @@ class Training_application extends MY_Controller
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
         $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
-        //get training status list
-        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+        //get staff list
+        $data['staff_list'] = $this->dropdown($this->mdl->getCoordinator(), 'SM_STAFF_ID', 'SM_STAFF_ID_NAME', ' ---Please select--- ');
 
         $this->render($data);
     }
@@ -5309,4 +5314,265 @@ class Training_application extends MY_Controller
             $this->lib->report($repCode, $param);
         }
     }
+
+    // REPORT PARAM V
+    public function setParamv() {
+		// clear filter for report
+        $this->session->set_userdata('repCodev','');
+        $this->session->set_userdata('year_av','');
+        $this->session->set_userdata('month_from_av','');
+        $this->session->set_userdata('month_to_av','');
+        $this->session->set_userdata('department_v','');
+        $this->session->set_userdata('quarter_v','');
+        $this->session->set_userdata('quarter_month_av','');
+        $this->session->set_userdata('quarter_month_bv','');
+        $this->session->set_userdata('quarter_month_cv','');
+		
+    	// get current value 
+    	$repCode = $this->input->post('repCode');
+    	$year_av = $this->input->post('year_av');
+    	$month_from_av = $this->input->post('month_from_av');
+        $month_to_av = $this->input->post('month_to_av');
+        $department_v = $this->input->post('department_v');
+        $quarter_v = $this->input->post('quarter_v');
+        $quarter_month_av = $this->input->post('quarter_month_av');
+        $quarter_month_bv = $this->input->post('quarter_month_bv');
+        $quarter_month_cv = $this->input->post('quarter_month_cv');
+
+		// set session value
+        $this->session->set_userdata('repCodev', $repCode);
+        $this->session->set_userdata('year_av', $year_av);
+        $this->session->set_userdata('month_from_av', $month_from_av);
+        $this->session->set_userdata('month_to_av', $month_to_av);
+        $this->session->set_userdata('department_v', $department_v);
+        $this->session->set_userdata('quarter_v', $quarter_v);
+        $this->session->set_userdata('quarter_month_av', $quarter_month_av);
+        $this->session->set_userdata('quarter_month_bv', $quarter_month_bv);
+        $this->session->set_userdata('quarter_month_cv', $quarter_month_cv);
+    }
+
+    // GENERATE REPORT V
+    public function genReportv() {
+        $repCode = $this->session->userdata('repCodev');
+        $year_av = $this->session->userdata('year_av');
+        $month_from_av = $this->session->userdata('month_from_av');
+        $month_to_av = $this->session->userdata('month_to_av');
+        $department_v = $this->session->userdata('department_v');
+        $quarter_v = $this->session->userdata('quarter_v');
+        $quarter_month_av = $this->session->userdata('quarter_month_av');
+        $quarter_month_bv = $this->session->userdata('quarter_month_bv');
+        $quarter_month_cv = $this->session->userdata('quarter_month_cv');
+        
+		if($repCode == 'ATR220') {
+
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av);
+            $this->lib->report($repCode, $param);
+        } 
+        elseif($repCode == 'ATR220X') {
+
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR221') {
+
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR221X') {
+
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }  
+        elseif($repCode == 'ATR222') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR222X') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR223') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR223X') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR224') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR224X') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR225') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR225X') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR226') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR226X') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR227') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'DEPARTMENT' => $department_v);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR227X') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'DEPARTMENT' => $department_v);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR228') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'SUKU_TAHUN' => $quarter_v, 'SUKU_BULAN1' => $quarter_month_av, 'SUKU_BULAN2' => $quarter_month_bv, 'SUKU_BULAN3' => $quarter_month_cv);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR228X') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'SUKU_TAHUN' => $quarter_v, 'SUKU_BULAN1' => $quarter_month_av, 'SUKU_BULAN2' => $quarter_month_bv, 'SUKU_BULAN3' => $quarter_month_cv);
+            $this->lib->report($repCode, $param);
+        }
+    }
+
+    // REPORT PARAM VI
+    public function setParamvi() {
+		// clear filter for report
+        $this->session->set_userdata('repCodevi','');
+        $this->session->set_userdata('month_vi','');
+        $this->session->set_userdata('year_vi','');
+        $this->session->set_userdata('month_to_av','');
+        $this->session->set_userdata('aca_nonaca','');
+        $this->session->set_userdata('orga_vi','');
+        $this->session->set_userdata('re_formatvi','');
+        $this->session->set_userdata('staff_id_vi','');
+		
+    	// get current value 
+    	$repCode = $this->input->post('repCode');
+    	$month_vi = $this->input->post('month_vi');
+    	$year_vi = $this->input->post('year_vi');
+        $aca_nonaca = $this->input->post('aca_nonaca');
+        $orga_vi = $this->input->post('orga_vi');
+        $re_formatvi = $this->input->post('re_formatvi');
+        $staff_id_vi = $this->input->post('staff_id_vi');
+
+		// set session value
+        $this->session->set_userdata('repCodevi', $repCode);
+        $this->session->set_userdata('month_vi', $month_vi);
+        $this->session->set_userdata('year_vi', $year_vi);
+        $this->session->set_userdata('aca_nonaca', $aca_nonaca);
+        $this->session->set_userdata('orga_vi', $orga_vi);
+        $this->session->set_userdata('re_formatvi', $re_formatvi);
+        $this->session->set_userdata('staff_id_vi', $staff_id_vi);
+    }
+
+    // GENERATE REPORT VI
+    public function genReportvi() {
+        $repCode = $this->session->userdata('repCodevi');
+        $month_vi = $this->session->userdata('month_vi');
+        $year_vi = $this->session->userdata('year_vi');
+        $aca_nonaca = $this->session->userdata('aca_nonaca');
+        $orga_vi = $this->session->userdata('orga_vi');
+        $re_formatvi = $this->session->userdata('re_formatvi');
+        $staff_id_vi = $this->session->userdata('staff_id_vi');
+        
+		if($repCode == 'ATR242') {
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR242X';
+            } else {
+                $repCode = 'ATR242';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
+            $this->lib->report($repCode, $param, $re_formatvi);
+        }
+        elseif($repCode == 'ATR243') {
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR243X';
+            } else {
+                $repCode = 'ATR243';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
+            $this->lib->report($repCode, $param, $re_formatvi);
+        }
+        elseif($repCode == 'ATR244') {
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR244X';
+            } else {
+                $repCode = 'ATR244';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
+            $this->lib->report($repCode, $param, $re_formatvi);
+        }
+        elseif($repCode == 'ATR245') {
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR245X';
+            } else {
+                $repCode = 'ATR245';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
+            $this->lib->report($repCode, $param, $re_formatvi);
+        }
+        elseif($repCode == 'ATR246') {
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR246X';
+            } else {
+                $repCode = 'ATR246';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
+            $this->lib->report($repCode, $param, $re_formatvi);
+        }
+        elseif($repCode == 'ATR247') {
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR247X';
+            } else {
+                $repCode = 'ATR247';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
+            $this->lib->report($repCode, $param, $re_formatvi);
+        }
+        elseif($repCode == 'ATR248') {
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR248X';
+            } else {
+                $repCode = 'ATR248';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
+            $this->lib->report($repCode, $param, $re_formatvi);
+        }
+        elseif($repCode == 'ATR267') {
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR267X';
+            } else {
+                $repCode = 'ATR267';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
+            $this->lib->report($repCode, $param, $re_formatvi);
+        }
+        elseif($repCode == 'ATR268') {
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR268X';
+            } else {
+                $repCode = 'ATR268';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'P_STH_STAFF_ID' => $staff_id_vi);
+            $this->lib->report($repCode, $param, $re_formatvi);
+        }
+    }
+
+    
 }

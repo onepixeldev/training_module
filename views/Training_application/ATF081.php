@@ -428,7 +428,7 @@
 		});
     });
 
-    // REPORT VI
+    // REPORT IV
     $('#report_iv').on('click', '.genReportiv', function () {
         var repCode = $(this).attr('repCode');
         var induction_courseiv = $("#induction_courseiv").val(); 
@@ -450,7 +450,7 @@
         });
     });
 
-    // REPORT VI - ATR125 / ATR119
+    // REPORT IV - ATR125 / ATR119
     $('#report_iv').on('click', '.genReportivTi', function () {
         var repCode = $(this).attr('repCode'); 
         var induction_test_sts = $("#induction_test_sts").val(); 
@@ -490,6 +490,62 @@
             // msg.danger('Please contact administrator.', '#alert');        
         });
     });
+
+    // REPORT V
+    $('#report_v').on('click', '.genReportv', function () {
+        var repCode = $(this).attr('repCode');
+        var year_av = $("#year_av").val(); 
+        var month_from_av = $("#month_from_av").val(); 
+        var month_to_av = $("#month_to_av").val(); 
+        var department_v = $("#department_v").val(); 
+        var quarter_v = $("#quarter_v").val(); 
+        var quarter_month_av = $("#quarter_month_av").val();
+        var quarter_month_bv = $("#quarter_month_bv").val();
+        var quarter_month_cv = $("#quarter_month_cv").val();
+
+        // alert(repCode+' '+year_aiii+' '+department_aiii+' '+course_titleiii+' '+staff_idiii+' '+date_course_fromiii+' '+department_biii);
+        
+        $.post('<?php echo $this->lib->class_url('setParamv') ?>', {repCode: repCode, year_av: year_av, month_from_av: month_from_av, 
+            month_to_av: month_to_av, department_v: department_v, quarter_v: quarter_v, quarter_month_av: quarter_month_av,
+            quarter_month_bv: quarter_month_bv, quarter_month_cv: quarter_month_cv}, function (res) {
+            var repURL = '<?php echo $this->lib->class_url('genReportv') ?>';
+            //alert(repURL);
+            var mywin = window.open( repURL , 'report');
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
+            });
+            // msg.danger('Please contact administrator.', '#alert');        
+        });
+    });
     
+    // REPORT VI
+    $('#report_vi').on('click', '.genReportvi', function () {
+        var repCode = $(this).attr('repCode');
+        var month_vi = $("#month_vi").val(); 
+        var year_vi = $("#year_vi").val(); 
+        var aca_nonaca = $("#aca_nonaca").val(); 
+        var orga_vi = $("#orga_vi").val(); 
+        var re_formatvi = $("#re_formatvi").val(); 
+        var staff_id_vi = $("#staff_id_vi").val();
+
+        // alert(month_vi+' '+year_vi+' '+aca_nonaca+' '+orga_vi+' '+re_formatvi+' '+staff_id_vi);
+        
+        $.post('<?php echo $this->lib->class_url('setParamvi') ?>', {repCode: repCode, month_vi: month_vi, year_vi: year_vi, 
+            aca_nonaca: aca_nonaca, orga_vi: orga_vi, re_formatvi: re_formatvi, staff_id_vi: staff_id_vi}, function (res) {
+            var repURL = '<?php echo $this->lib->class_url('genReportvi') ?>';
+            //alert(repURL);
+            var mywin = window.open( repURL , 'report');
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
+            });
+            // msg.danger('Please contact administrator.', '#alert');        
+        });
+    });
     
 </script>

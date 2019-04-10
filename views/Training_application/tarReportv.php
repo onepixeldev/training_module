@@ -19,7 +19,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[year_v]', $year_list, $curYear, 'class="form-control" id="year_v"') ?>	
+                                    <?php echo form_dropdown('form[year_av]', $year_list, $curYear, 'class="form-control" id="year_av"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -39,7 +39,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[month_from_v]', $month_list, NULL, 'class="form-control" id="month_from_v"') ?>	
+                                    <?php echo form_dropdown('form[month_from_av]', $month_list, NULL, 'class="form-control" id="month_from_av"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-1">
@@ -49,7 +49,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[month_to_v]', $month_list, NULL, 'class="form-control" id="month_to_v"') ?>	
+                                    <?php echo form_dropdown('form[month_to_av]', $month_list, NULL, 'class="form-control" id="month_to_av"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -69,7 +69,7 @@
                             </div>
                             <div class="col-sm-10">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[department_v]', '', NULL, 'class="form-control" id="department_v"') ?>	
+                                    <?php echo form_dropdown('form[department_v]', $dept_list, NULL, 'class="form-control" id="department_v"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -89,7 +89,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[quarter_year_v]', '', NULL, 'class="form-control" id="quarter_v"') ?>	
+                                    <?php echo form_dropdown('form[quarter_year_v]', array(''=>'---Please select---', '1'=>'FIRST QUARTER', '2'=>'SECOND QUARTER', '3'=>'THIRD QUARTER', '4'=>'FOURTH QUARTER'), NULL, 'class="form-control" id="quarter_v"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -109,13 +109,13 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[quarter_month_v]', '', NULL, 'class="form-control" id="quarter_month_v"') ?>	
+                                    <?php echo form_dropdown('form[quarter_month_av]', array(''=>'---Please select---', '01'=>'JANUARY', '04'=>'APRIL', '07'=>'JULY', '10'=>'OCTOBER'), NULL, 'class="form-control" id="quarter_month_av"') ?>	
                                 </div>
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[quarter_month_v]', '', NULL, 'class="form-control" id="quarter_month_v"') ?>	
+                                    <?php echo form_dropdown('form[quarter_month_bv]', array(''=>'---Please select---', '02'=>'FEBRUARY', '05'=>'MAY', '08'=>'AUGUST', '11'=>'NOVEMBER'), NULL, 'class="form-control" id="quarter_month_bv"') ?>	
                                 </div>
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[quarter_month_v]', '', NULL, 'class="form-control" id="quarter_month_v"') ?>	
+                                    <?php echo form_dropdown('form[quarter_month_cv]', array(''=>'---Please select---', '03'=>'MAC', '06'=>'JUNE', '09'=>'SEPTEMBER', '12'=>'DECEMBER'), NULL, 'class="form-control" id="quarter_month_cv"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -162,8 +162,8 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR220" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                    <button type="button" repCode="ATR220X" class="btn btn-success btn-sm genReport"><i class="fa fa-file-excel-o"></i> Excel</button>
+                                    <button type="button" repCode="ATR220" class="btn btn-danger btn-sm genReportv"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR220X" class="btn btn-success btn-sm genReportv"><i class="fa fa-file-excel-o"></i> Excel</button>
                                 </div>
                             </div>
                         </div>
@@ -205,8 +205,8 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR221" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                    <button type="button" repCode="ATR221X" class="btn btn-success btn-sm genReport"><i class="fa fa-file-excel-o"></i> Excel</button>
+                                    <button type="button" repCode="ATR221" class="btn btn-danger btn-sm genReportv"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR221X" class="btn btn-success btn-sm genReportv"><i class="fa fa-file-excel-o"></i> Excel</button>
                                 </div>
                             </div>
                         </div>
@@ -228,8 +228,8 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR222" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                    <button type="button" repCode="ATR222X" class="btn btn-success btn-sm genReport"><i class="fa fa-file-excel-o"></i> Excel</button>
+                                    <button type="button" repCode="ATR222" class="btn btn-danger btn-sm genReportv"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR222X" class="btn btn-success btn-sm genReportv"><i class="fa fa-file-excel-o"></i> Excel</button>
                                 </div>
                             </div>
                         </div>
@@ -251,8 +251,8 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR223" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                    <button type="button" repCode="ATR223X" class="btn btn-success btn-sm genReport"><i class="fa fa-file-excel-o"></i> Excel</button>
+                                    <button type="button" repCode="ATR223" class="btn btn-danger btn-sm genReportv"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR223X" class="btn btn-success btn-sm genReportv"><i class="fa fa-file-excel-o"></i> Excel</button>
                                 </div>
                             </div>
                         </div>
@@ -274,8 +274,8 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR224" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                    <button type="button" repCode="ATR224X" class="btn btn-success btn-sm genReport"><i class="fa fa-file-excel-o"></i> Excel</button>
+                                    <button type="button" repCode="ATR224" class="btn btn-danger btn-sm genReportv"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR224X" class="btn btn-success btn-sm genReportv"><i class="fa fa-file-excel-o"></i> Excel</button>
                                 </div>
                             </div>
                         </div>
@@ -297,8 +297,8 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR225" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                    <button type="button" repCode="ATR225X" class="btn btn-success btn-sm genReport"><i class="fa fa-file-excel-o"></i> Excel</button>
+                                    <button type="button" repCode="ATR225" class="btn btn-danger btn-sm genReportv"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR225X" class="btn btn-success btn-sm genReportv"><i class="fa fa-file-excel-o"></i> Excel</button>
                                 </div>
                             </div>
                         </div>
@@ -320,8 +320,8 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR226" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                    <button type="button" repCode="ATR226X" class="btn btn-success btn-sm genReport"><i class="fa fa-file-excel-o"></i> Excel</button>
+                                    <button type="button" repCode="ATR226" class="btn btn-danger btn-sm genReportv"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR226X" class="btn btn-success btn-sm genReportv"><i class="fa fa-file-excel-o"></i> Excel</button>
                                 </div>
                             </div>
                         </div>
@@ -363,8 +363,8 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR227" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                    <button type="button" repCode="ATR227X" class="btn btn-success btn-sm genReport"><i class="fa fa-file-excel-o"></i> Excel</button>
+                                    <button type="button" repCode="ATR227" class="btn btn-danger btn-sm genReportv"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR227X" class="btn btn-success btn-sm genReportv"><i class="fa fa-file-excel-o"></i> Excel</button>
                                 </div>
                             </div>
                         </div>
@@ -406,8 +406,8 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR228" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                    <button type="button" repCode="ATR228X" class="btn btn-success btn-sm genReport"><i class="fa fa-file-excel-o"></i> Excel</button>
+                                    <button type="button" repCode="ATR228" class="btn btn-danger btn-sm genReportv"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR228X" class="btn btn-success btn-sm genReportv"><i class="fa fa-file-excel-o"></i> Excel</button>
                                 </div>
                             </div>
                         </div>
