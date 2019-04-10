@@ -53,590 +53,31 @@
 
                                 <div class="tab-pane fade active in" id="s1">
 									<div id="report_i">
-                                        <!--START report_i-->
-                                            <div role="content">
-                                                <div class="row">
-                                                    <div class="col-sm-8">
-                                                        <div class="col-sm-2">
-                                                            <div class="form-group text-right">
-                                                                <label><b>Year</b></label>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-3">
-                                                            <div class="form-group text-left">
-                                                                <?php echo form_dropdown('form[year_i]', $year_list, $curYear, 'class="form-control" id="year_i"') ?>	
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <div class="text-left">   
-                                                                &nbsp;
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <br><br>
-                                                <div class="row">
-                                                    <div class="col-sm-1">
-                                                        <div class="text-left">   
-                                                            &nbsp;
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="container col-md-10">
-                                                        <div class="panel panel-default text-right">
-                                                            <div class="panel-body" id="summary">
-                                                                <div class="row">
-                                                                    <div class="col-sm-2">
-                                                                        <div class="form-group text-right">
-                                                                            <label><b>ATR057</b></label>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="col-sm-7">
-                                                                        <div class="form-group text-left">
-                                                                            <label>Senarai Kakitangan Yang Menghadiri Latihan Mengikut PTJ/Fakulti dan Tahun Semasa</label>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="col-sm-3">
-                                                                        <div class="form-group text-left">
-                                                                            <button type="button" repCode="ATR057" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="row">
-                                                                    <div class="col-sm-2">
-                                                                        <div class="form-group text-right">
-                                                                            <label><b>Department</b></label>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-8">
-                                                                        <div class="form-group text-left">
-                                                                            <?php echo form_dropdown('form[department]', $dept_list, NULL, 'class="form-control" id="department"') ?>	
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="text-left">   
-                                                                            &nbsp;
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col-sm-1">
-                                                        <div class="text-left">   
-                                                            &nbsp;
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="container col-md-10">
-                                                        <div class="panel panel-default text-right">
-                                                            <div class="panel-body" id="summary">
-                                                                <div class="row">
-                                                                    <div class="col-sm-2">
-                                                                        <div class="form-group text-right">
-                                                                            <label><b>ATR058</b></label>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="col-sm-7">
-                                                                        <div class="form-group text-left">
-                                                                            <label>Statistik Kakitangan Yang Menghadiri Latihan ( Keseluruhan )</label>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="col-sm-3">
-                                                                        <div class="form-group text-left">
-                                                                            <button type="button" repCode="ATR058LIST" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="row">
-                                                                    <div class="col-sm-2">
-                                                                        <div class="form-group text-right">
-                                                                            <label><b>Choices</b></label>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-3">
-                                                                        <div class="form-group text-left">
-                                                                            <?php echo form_dropdown('form[department]', array(''=>'--- Please Select ---', 'A'=>'All', 'Y'=>'CONDUCTED', 'N'=>'NOT CONDUCTED'), NULL, 'class="form-control" id="pilihan"') ?>	
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="text-left">   
-                                                                            &nbsp;
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <br>
-
-                                                <div class="row">
-                                                    <div class="col-sm-1">
-                                                        <div class="text-left">   
-                                                            &nbsp;
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-10">
-                                                        <div class="row">
-                                                            <div class="col-sm-2">
-                                                                <div class="form-group text-right">
-                                                                    <label><b>ATR059</b></label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-sm-7">
-                                                                <div class="form-group text-left">
-                                                                    <label>Statistik Kakitangan Yang Menghadiri Latihan ( 2 kali atau lebih setahun )</label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-sm-3">
-                                                                <div class="form-group text-left">
-                                                                    <button type="button" repCode="ATR059" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col-sm-1">
-                                                        <div class="text-left">   
-                                                            &nbsp;
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-10">
-                                                        <div class="row">
-                                                            <div class="col-sm-2">
-                                                                <div class="form-group text-right">
-                                                                    <label><b>ATR060</b></label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-sm-7">
-                                                                <div class="form-group text-left">
-                                                                    <label>Statistik Kakitangan Yang Menghadiri Latihan ( kurang daripada 2 kali setahun )</label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-sm-3">
-                                                                <div class="form-group text-left">
-                                                                    <button type="button" repCode="ATR060" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col-sm-1">
-                                                        <div class="text-left">   
-                                                            &nbsp;
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-10">
-                                                        <div class="row">
-                                                            <div class="col-sm-2">
-                                                                <div class="form-group text-right">
-                                                                    <label><b>ATR085</b></label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-sm-7">
-                                                                <div class="form-group text-left">
-                                                                    <label>Statistik Kakitangan Yang Menghadiri Latihan ( 7 hari atau lebih setahun )</label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-sm-3">
-                                                                <div class="form-group text-left">
-                                                                    <button type="button" repCode="ATR085" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col-sm-1">
-                                                        <div class="text-left">   
-                                                            &nbsp;
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-10">
-                                                        <div class="row">
-                                                            <div class="col-sm-2">
-                                                                <div class="form-group text-right">
-                                                                    <label><b>ATR086</b></label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-sm-7">
-                                                                <div class="form-group text-left">
-                                                                    <label>Statistik Kakitangan Yang Menghadiri Latihan ( kurang daripada 7 hari setahun )</label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-sm-3">
-                                                                <div class="form-group text-left">
-                                                                    <button type="button" repCode="ATR086" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <br>
-
-                                                <div class="row">
-                                                    <div class="col-sm-1">
-                                                        <div class="text-left">   
-                                                            &nbsp;
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="container col-md-10">
-                                                        <div class="panel panel-default text-right">
-                                                            <div class="panel-body" id="summary">
-                                                                <div class="row">
-                                                                    <div class="col-sm-2">
-                                                                        <div class="form-group text-right">
-                                                                            <label><b>ATR065</b></label>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="col-sm-7">
-                                                                        <div class="form-group text-left">
-                                                                            <label>Statistik Kakitangan Yang Menghadiri Latihan</label>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="col-sm-3">
-                                                                        <div class="form-group text-left">
-                                                                            <button type="button" repCode="ATR065" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="row">
-                                                                    <div class="col-sm-2">
-                                                                        <div class="form-group text-right">
-                                                                            <label><b>From</b></label>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-3">
-                                                                        <div class="form-group text-left">
-                                                                            <?php echo form_dropdown('sMonth', $month_list, NULL, 'class="form-control listFilter" id="monthFrom"'); ?>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-2">
-                                                                        <div class="form-group text-left">
-                                                                            <?php echo form_dropdown('form[year_i]', $year_list, $curYear, 'class="form-control" id="yearFrom"') ?>	
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="text-left">   
-                                                                            &nbsp;
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="row">
-                                                                    <div class="col-sm-2">
-                                                                        <div class="form-group text-right">
-                                                                            <label><b>To</b></label>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-3">
-                                                                        <div class="form-group text-left">
-                                                                            <?php echo form_dropdown('sMonth', $month_list, NULL, 'class="form-control listFilter" id="monthTo"'); ?>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-2">
-                                                                        <div class="form-group text-left">
-                                                                            <?php echo form_dropdown('form[year_i]', $year_list, $curYear, 'class="form-control" id="yearTo"') ?>	
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="text-left">   
-                                                                            &nbsp;
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <br>
-
-                                                <div class="row">
-                                                    <div class="col-sm-1">
-                                                        <div class="text-left">   
-                                                            &nbsp;
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-10">
-                                                        <div class="row">
-                                                            <div class="col-sm-2">
-                                                                <div class="form-group text-right">
-                                                                    <label><b>ATR072</b></label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-sm-7">
-                                                                <div class="form-group text-left">
-                                                                    <label>Statistik Bilangan Pegawai Yang Menghadiri Kursus (format KPT)</label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-sm-3">
-                                                                <div class="form-group text-left">
-                                                                    <button type="button" repCode="ATR072" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <br>
-
-                                                <div class="alert alert-info fade in">
-                                                    <b>Programme / Speaker Evaluation</b>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-1">
-                                                        <div class="text-left">   
-                                                            &nbsp;
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="container col-md-10">
-                                                        <div class="panel panel-default text-right">
-                                                            <div class="panel-body" id="summary">
-                                                                <div class="row">
-                                                                    <div class="row">
-                                                                        <div class="col-sm-2">
-                                                                            <div class="form-group text-right">
-                                                                                <label><b>Year</b></label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-sm-2">
-                                                                            <div class="form-group text-left">
-                                                                                <?php echo form_dropdown('form[year_i]', $year_list, $curYear, 'class="form-control" id="year_i2"') ?>	
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-sm-4">
-                                                                            <div class="text-left">   
-                                                                                &nbsp;
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-sm-2">
-                                                                            <div class="form-group text-right">
-                                                                                <label><b>Course Title</b></label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-sm-2">
-                                                                            <div class="form-group text-left">
-                                                                                <input name="form[refid]" class="form-control" value="" type="text" id="courseRefid" readonly>	
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-sm-4">
-                                                                            <div class="form-group text-left">
-                                                                                <input name="form[course_title]" class="form-control" value="" type="text" id="courseTitle" readonly>	
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-sm-3">
-                                                                            <div class="form-group text-left">
-                                                                                <button type="button" class="btn btn-primary btn-sm select_course_btn"><i class="fa fa-search"></i></button>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-sm-4">
-                                                                            <div class="text-left">   
-                                                                                &nbsp;
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-sm-2">
-                                                                            <div class="form-group text-right">
-                                                                                <label><b>ATR061</b></label>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="col-sm-7">
-                                                                            <div class="form-group text-left">
-                                                                                <label>Laporan Penilaian Program (Laporan 1)</label>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="col-sm-3">
-                                                                            <div class="form-group text-left">
-                                                                                <button type="button" repCode="ATR061" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-sm-2">
-                                                                            <div class="form-group text-right">
-                                                                                <label><b>ATR062</b></label>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="col-sm-7">
-                                                                            <div class="form-group text-left">
-                                                                                <label>Laporan Penilaian Program (Laporan 2)</label>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="col-sm-3">
-                                                                            <div class="form-group text-left">
-                                                                                <button type="button" repCode="ATR062" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-sm-2">
-                                                                            <div class="form-group text-right">
-                                                                                <label><b>ATR063</b></label>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="col-sm-7">
-                                                                            <div class="form-group text-left">
-                                                                                <label>Laporan Penilaian Penceramah (Laporan 1)</label>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="col-sm-3">
-                                                                            <div class="form-group text-left">
-                                                                                <button type="button" repCode="ATR063" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-sm-2">
-                                                                            <div class="form-group text-right">
-                                                                                <label><b>ATR064</b></label>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="col-sm-7">
-                                                                            <div class="form-group text-left">
-                                                                                <label>Laporan Penilaian Penceramah (Laporan 2)</label>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="col-sm-3">
-                                                                            <div class="form-group text-left">
-                                                                                <button type="button" repCode="ATR064" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        <!-- END -->
 									</div>
                                 </div>
 
                                 <div class="tab-pane fade" id="s2">
 									<div id="report_ii">
-										<p>
-											<table class="table table-bordered table-hover">
-												<thead>
-												<tr>
-													<th class="text-center">Please select training from List of Training Evaluation</th>
-												</tr>
-												</thead>
-											</table>
-										</p>	
 									</div>
                                 </div>
 
                                 <div class="tab-pane fade" id="s3">
 									<div id="report_iii">
-										<p>
-											<table class="table table-bordered table-hover">
-												<thead>
-												<tr>
-													<th class="text-center">Please select training from List of Training Evaluation</th>
-												</tr>
-												</thead>
-											</table>
-										</p>	
 									</div>
                                 </div>
 
 								<div class="tab-pane fade" id="s4">
 									<div id="report_iv">
-										<p>
-											<table class="table table-bordered table-hover">
-												<thead>
-												<tr>
-													<th class="text-center">Please select training from List of Training Evaluation</th>
-												</tr>
-												</thead>
-											</table>
-										</p>	
 									</div>
                                 </div>
 
 								<div class="tab-pane fade" id="s5">
 									<div id="report_v">
-										<p>
-											<table class="table table-bordered table-hover">
-												<thead>
-												<tr>
-													<th class="text-center">Please select training from List of Training Evaluation</th>
-												</tr>
-												</thead>
-											</table>
-										</p>	
 									</div>
                                 </div>
 
 								<div class="tab-pane fade" id="s6">
 									<div id="report_vi">
-										<p>
-											<table class="table table-bordered table-hover">
-												<thead>
-												<tr>
-													<th class="text-center">Please select training from List of Training Evaluation</th>
-												</tr>
-												</thead>
-											</table>
-										</p>	
 									</div>
                                 </div>
 
@@ -710,235 +151,160 @@
 		$(this).tab('show');
     });
 
-    // POPULATE TRAINING LIST
+    // REPORT I
 	$.ajax({
 		type: 'POST',
-		url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-		data: {'disDept' : disDept, 'disYear' : disYear, 'evaluation' : evaluation},
+		url: '<?php echo $this->lib->class_url('tarReport')?>',
+		data: '',
 		beforeSend: function() {
-			$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			$('#report_i').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		},
 		success: function(res) {
-            $('#training_list').html(res);
-			tr_row = $('#tbl_tr_list').DataTable({
-                "ordering":false,
-                drawCallback: function(){
-                    $(function() {
-                        $('#tbl_tr_list').each(function() {
-                        var Cell = $(this).find('td:eq(5)');
-                        //debugger;
-                            if (Cell.text() !== 'error') {
-                                //$(this).find('btn').hide();
-                                $('#tbl_tr_list tbody .approve_training_btn').hide();
-                                $('#tbl_tr_list tbody .postpone_training_btn').hide();
-                                $('#tbl_tr_list tbody .reject_training_btn').hide();
-                                $('#tbl_tr_list tbody .amend_training_btn').hide();
-                            }
-                        });
-                    });
-                }
+            $('#report_i').html(res);
+		},
+    });
+
+    // REPORT II
+	$.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('tarReportii')?>',
+		data: '',
+		beforeSend: function() {
+			$('#report_ii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		},
+		success: function(res) {
+            $('#report_ii').html(res);
+		},
+    });
+
+    // REPORT III
+	$.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('tarReportiii')?>',
+		data: '',
+		beforeSend: function() {
+			$('#report_iii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		},
+		success: function(res) {
+            $('#report_iii').html(res);
+		},
+    });
+
+    // REPORT IV
+    $.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('tarReportiv')?>',
+		data: '',
+		beforeSend: function() {
+			$('#report_iv').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		},
+		success: function(res) {
+            $('#report_iv').html(res);
+		},
+    });
+
+    // REPORT V
+    $.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('tarReportv')?>',
+		data: '',
+		beforeSend: function() {
+			$('#report_v').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		},
+		success: function(res) {
+            $('#report_v').html(res);
+		},
+    });
+
+    // REPORT VI
+    $.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('tarReportvi')?>',
+		data: '',
+		beforeSend: function() {
+			$('#report_vi').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		},
+		success: function(res) {
+            $('#report_vi').html(res);
+		},
+    });
+
+    // REPORT I
+    $('#report_i').on('click', '.genReporti', function () {
+        var repCode = $(this).attr('repCode');
+        var year_ai = $("#year_ai").val(); 
+        var department_ai = $("#department_ai").val(); 
+        var choice_ai = $("#choice_ai").val(); 
+        // var fr_month_ai = $("#fr_month_ai").val(); 
+        // var fr_year_ai = $("#fr_year_ai").val(); 
+        // var to_month_ai = $("#to_month_ai").val(); 
+        // var to_year_ai = $("#to_year_ai").val();
+        var year_bi = $("#year_bi").val();
+        var courseRefid = $("#courseRefid").val();
+
+        // alert(repCode+' '+year_ai+' '+department_ai+' '+choice_ai+' '+fr_month_ai+' '+fr_year_ai+' '+to_month_ai+' '+to_year_ai+' '+year_bi+' '+courseRefid);
+        
+        $.post('<?php echo $this->lib->class_url('setParami') ?>', {repCode: repCode, year_ai: year_ai, department_ai: department_ai, 
+        choice_ai: choice_ai, year_bi: year_bi, courseRefid: courseRefid}, function (res) {
+            var repURL = '<?php echo $this->lib->class_url('genReporti') ?>';
+            //alert(repURL);
+            var mywin = window.open( repURL , 'report');
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
             });
-			$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-1">Action</th>');
-		},
-		complete: function(){
-			$('#loader').hide();
-		},
+            // msg.danger('Please contact administrator.', '#alert');     
+        });
+        
     });
 
-	// TRAINING LIST FILTER
-	$('.listFilter').change(function() {
-		var sDept = $('#sDept').val();
-		var sMonth = $('#sMonth').val();
-		var sYear = $('#sYear').val();
-		//alert(''+sDept+',' +sMonth+''+sYear+'');
-		
-		$('.nav-tabs li:eq(0) a').tab('show');
-		$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('getTrainingList')?>',
-			data: {'sDept' : sDept, 'sMonth' : sMonth, 'sYear' : sYear, 'evaluation' : evaluation},
-			success: function(res) {
-				$('#training_list').html(res);
-				tr_row = $('#tbl_tr_list').DataTable({
-                    "ordering":false,
-                    drawCallback: function(){
-                        $(function() {
-                            $('#tbl_tr_list').each(function() {
-                            var Cell = $(this).find('td:eq(5)');
-                            //debugger;
-                                if (Cell.text() !== 'error') {
-                                    //$(this).find('btn').hide();
-                                    $('#tbl_tr_list tbody .approve_training_btn').hide();
-                                    $('#tbl_tr_list tbody .postpone_training_btn').hide();
-                                    $('#tbl_tr_list tbody .reject_training_btn').hide();
-                                    $('#tbl_tr_list tbody .amend_training_btn').hide();
-                                }
-                            });
-                        });
-                    }
-				});
-                $('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-1">Action</th>');
-			}
-		});
+    // REPORT I
+    $('#report_i').on('click', '.genReportMMi', function () {
+        var repCode = $(this).attr('repCode');
+        var fr_month_ai = $("#fr_month_ai").val(); 
+        var fr_year_ai = $("#fr_year_ai").val(); 
+        var to_month_ai = $("#to_month_ai").val(); 
+        var to_year_ai = $("#to_year_ai").val();
+
+        if(fr_month_ai == '' || fr_year_ai == '' || to_month_ai == '' || to_year_ai == '') {
+            $.alert({
+                title: 'Alert!',
+                content: 'Please select <b>From (month, year)</b> and <b>To (month, year)</b>',
+                type: 'red',
+            });
+            return;
+        }
+
+        $.post('<?php echo $this->lib->class_url('setParami') ?>', {repCode: repCode, fr_month_ai: fr_month_ai, 
+        fr_year_ai: fr_year_ai, to_month_ai: to_month_ai, to_year_ai: to_year_ai}, function (res) {
+            var repURL = '<?php echo $this->lib->class_url('genReporti') ?>';
+            //alert(repURL);
+            var mywin = window.open( repURL , 'report');
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
+            });
+            // msg.danger('Please contact administrator.', '#alert');      
+        });
     });
-    
-    // SELECT TRAINING BTN
-	$('#training_list').on('click','.select_training_btn', function(){
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var trRefID = td.eq(0).html().trim();
-		var trainingN = td.eq(2).html().trim();
-		//var scCode = 'ATF002';
-		//alert(refid);
 
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('getStaffListEvaluation')?>',
-			data: {'refid' : trRefID, 'tName' : trainingN},
-			beforeSend: function() {
-				$('.nav-tabs li:eq(1) a').tab('show');
-				$('#staff_training_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-			},
-			success: function(res) {
-				$('#staff_training_application').html(res);
-				
-				tr_row = $('#tbl_list_sta_eva').DataTable({
-					"ordering":false,
-				});
-                
-                $('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-                $('#training_list_detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-                $('#training_list_detl4').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('editTraining')?>',
-					data: {'refID' : trRefID},
-					beforeSend: function() {
-						$('#training_list_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-					},
-					success: function(res) {
-						$('#training_list_detl').html(res);
+    // REPORT I - POPULATE COURSE TITLE LIST
+	$('#report_i').on('click', '.select_course_btn', function() {
+        var year_bi = $("#year_bi").val();
+        var courseRefid = $("#courseRefid").val();
 
-						$('.modal-header').hide();
-						$('#alert').hide();
-						$('.field_inpt').prop("disabled", true);
-						$('.save_upd_tr_info').hide();
-						$('#search_str_tr_ver').hide();
-				
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('speakerInfo')?>',
-							data: {'tsRefID' : trRefID},
-							beforeSend: function() {
-								$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#speakerInfo').html(res);
-								$('.add_tr_sp').hide();
-								$('#speakerInfo #spAct').hide();
-							}
-						});
-
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
-							data: {'tsRefID' : trRefID},
-							beforeSend: function() {
-								$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#facilitatorInfo').html(res);
-								$('.add_tr_fi').hide();
-								$('#facilitatorInfo #fiAct').hide();
-							}
-						});
-
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('verExternalAgency')?>',
-							data: {'trRefID' : trRefID},
-							dataType: 'JSON',
-							success: function(res) {
-								if(res.sts == 1) {
-									$.ajax({
-										type: 'POST',
-										url: '<?php echo $this->lib->class_url('trainingCost')?>',
-										data: {'trRefID' : trRefID, 'tName' : trainingN},
-										beforeSend: function() {
-											$('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-										},
-										success: function(res) {
-											$('#training_list_detl2').html(res);
-										}
-									});
-								} else {
-									$('#training_list_detl2').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Training Cost only available for External Agency Training</th></tr></thead></table></p>');
-								};
-							}
-						});
-					
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('targetGroup')?>',
-							data: {'trRefID' : trRefID, 'tName' : trainingN},
-							beforeSend: function() {
-								$('#training_list_detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#training_list_detl3').html(res);
-								$('.add_tg').hide();
-								$('.del_tg_btn').hide();
-
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('moduleSetup')?>',
-									data: {'tsRefID' : trRefID},
-									beforeSend: function() {
-										$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#module_setup').html(res);
-										$('#msBTN').hide();
-										$('.edit_ms1_btn').hide();
-										$('.edit_ms2_btn').hide();
-										$('.edit_ms3_btn').hide();
-									}
-								});
-							}
-						});
-
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('cpdSetup')?>',
-							data: {'tsRefID' : trRefID, 'tName' : trainingN},
-							beforeSend: function() {
-								$('#training_list_detl4').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#training_list_detl4').html(res);
-								$('#cpdBTN').hide();
-								$('.edit_cpd1_btn').hide();
-								$('.edit_cpd2_btn').hide();
-								$('.edit_cpd3_btn').hide();
-								$('.edit_cpd4_btn').hide();
-								$('.edit_cpd5_btn').hide();
-							}
-						});
-					}
-				});
-			}
-		});
-    });	
-    
-    // LIST OF ELIGIBLE POSITION //
-	$('#training_list_detl3').on('click', '.pos_tg_btn', function() {
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		//var refid = thisBtn.val();
-		var gpCode = td.eq(0).html().trim();
-		//alert(gpCode);
+        if(year_bi == '') {
+            $.alert({
+                title: 'Alert!',
+                content: 'Please select <b>Year</b>',
+                type: 'red',
+            });
+            return;
+        }
 
 		$('#myModalis .modal-content').empty();
 		$('#myModalis').modal('show');
@@ -946,183 +312,184 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('listEgPosition')?>',
-			data: {'gpCode' : gpCode},
+			url: '<?php echo $this->lib->class_url('courseTitlei')?>',
+			data: {'year_bi' : year_bi},
 			success: function(res) {
-				$('#myModalis .modal-content').html(res);	
-				$('#postAction').hide();
-				$('#tbl_list_eg_pos tbody #postAction').hide();
+				$('#myModalis .modal-content').html(res);
+				$('#courseRefid').val('');
+			    $('#courseTitle').val('');
+				dt_row = $('#tbl_list_cr_title').DataTable({
+					"ordering":false,
+					"lengthMenu": [[5, 10], [5, 10]]
+				});		
 			}
 		});
 	});
 
-    // EVALUATION REPORT
-	$('#staff_training_application').on('click', '.eva_report_btn', function () { 
-		var refid =  $(this).val();
-        var formCode =  $(this).data("form-code");
+    // REPORT I - POPULATE COURSE REFID
+	$('#myModalis').on('click', '.select_course_title', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var courseTitle = td.eq(1).html().trim().replace(/&amp;/g, '&');
+		//alert(trTitle);
+		if(refid != null && courseTitle != null){
+			$('#courseRefid').val(refid);
+			$('#courseTitle').val(courseTitle);
+			$('#myModalis').modal('hide');
+		}
+	});
 
-		var formURL = '<?php echo $this->lib->class_url('genEvaReport') ?>' + '/' + formCode + '/' + refid;
-        var mywin = window.open( formURL , 'report');
+    // REPORT II
+    $('#report_ii').on('click', '.genReportii', function () {
+        var repCode = $(this).attr('repCode');
+        var year_aii = $("#year_aii").val(); 
+        var organizer_ii = $("#organizer_ii").val(); 
+        var rep_for_ii = $("#rep_for_ii").val(); 
+        var fr_month_aii = $("#fr_month_aii").val(); 
+        var fr_year_aii = $("#fr_year_aii").val(); 
+        var to_month_aii = $("#to_month_aii").val(); 
+        var to_year_aii = $("#to_year_aii").val();
+        var org_codeii = $("#org_codeii").val();
+        var sector_ii = $("#sector_ii").val();
+        var coor_ii = $("#coor_ii").val();
+
+        // alert(repCode+' '+year_aii+' '+organizer_ii+' '+rep_for_ii+' '+fr_month_aii+' '+fr_year_aii+' '+to_month_aii+' '+to_year_aii+' '+org_codeii+' '+sector_ii+' '+coor_ii);
+        
+        $.post('<?php echo $this->lib->class_url('setParamii') ?>', {repCode: repCode, year_aii: year_aii, organizer_ii: organizer_ii, 
+        rep_for_ii: rep_for_ii, fr_month_aii: fr_month_aii, fr_year_aii: fr_year_aii, to_month_aii: to_month_aii, to_year_aii: to_year_aii, 
+        org_codeii: org_codeii, sector_ii: sector_ii, coor_ii: coor_ii}, function (res) {
+            var repURL = '<?php echo $this->lib->class_url('genReportii') ?>';
+            //alert(repURL);
+            var mywin = window.open( repURL , 'report');
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
+            });
+            // msg.danger('Please contact administrator.', '#alert');     
+        });
+        
     });
 
-    // STAFF EVALUATION REPORT
-	$('#staff_training_application').on('click', '.sta_eva_print_btn', function () { 
-		var refid =  $(this).val();
-        var staffID =  $(this).data("staff-id");
+    // REPORT III
+    $('#report_iii').on('click', '.genReportiii', function () {
+        var repCode = $(this).attr('repCode');
+        var year_aiii = $("#year_aiii").val(); 
+        var department_aiii = $("#department_aiii").val(); 
+        var course_titleiii = $("#course_titleiii").val(); 
+        var staff_idiii = $("#staff_idiii").val(); 
+        var date_course_fromiii = $("#date_course_fromiii").val(); 
+        var department_biii = $("#department_biii").val();
 
-		var formURL = '<?php echo $this->lib->class_url('genStaffEvaReport') ?>' + '/' + refid + '/' + staffID;
-        var mywin = window.open( formURL , 'report');
+        // alert(repCode+' '+year_aiii+' '+department_aiii+' '+course_titleiii+' '+staff_idiii+' '+date_course_fromiii+' '+department_biii);
+        
+        $.post('<?php echo $this->lib->class_url('setParamiii') ?>', {repCode: repCode, year_aiii: year_aiii, department_aiii: department_aiii, 
+        course_titleiii: course_titleiii, staff_idiii: staff_idiii, date_course_fromiii: date_course_fromiii, department_biii: department_biii}, function (res) {
+            var repURL = '<?php echo $this->lib->class_url('genReportiii') ?>';
+            //alert(repURL);
+            var mywin = window.open( repURL , 'report');
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
+            });
+            // msg.danger('Please contact administrator.', '#alert');        
+        });
     });
-    
-    // STAFF EVALUATION DETAILS
-	$('#staff_training_application').on('click', '.sta_eva_detl_btn', function() {
-		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");
-		var stfID = td.find(".sid").text();
-		var stfName =  td.find(".sname").text();
-		var refid =  thisBtn.val();
-		//alert(stfID+stfName+refid);
 
-		$('#myModalis2 .modal-content').empty();
-		$('#myModalis2').modal('show');
-		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
+    // POPULATE COURSE TITLE - REPORT III
+	$('#report_iii').on('change','#year_aiii', function() {
+		var year = $(this).val();
+		$('#crtloader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$('#course_titleiii').html('');
+		// alert(year);
+		
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('staffEvaluationDetails')?>',
-			data: {'refid' : refid, 'stfID' : stfID, 'stfName' : stfName},
-			success: function(res) {
-				$('#myModalis2 .modal-content').html(res);
-			}
-		});
-	});
-
-    // EDIT STAFF EVALUATION DETAILS
-	$('#staff_training_application').on('click', '.sta_eva_edit_btn', function() {
-		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");
-		var stfID = td.find(".sid").text();
-		var stfName =  td.find(".sname").text();
-		var refid =  thisBtn.val();
-		//alert(stfID+stfName+refid);
-
-		srow = $(this).closest("tr");
-
-		$('#myModalis2 .modal-content').empty();
-		$('#myModalis2').modal('show');
-		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editStaffEvaluation')?>',
-			data: {'refid' : refid, 'stfID' : stfID, 'stfName' : stfName},
-			success: function(res) {
-				$('#myModalis2 .modal-content').html(res);
-			}
-		});
-	});
-
-    // SAVE UPDATE STAFF EVALUATION DETAILS
-	$('#myModalis2').on('click', '.upd_stf_eva_detl', function (e) { 
-		e.preventDefault();
-        var data = $('#formUpdStaffEvaDetl').serialize();
-		msg.wait('#alertUpdStaffEvaDetl');
-		// alert(data);
-		$('.btn').attr('disabled', 'disabled');
-
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateStaffEvaDetails')?>',
-			data: data,
+			url: '<?php echo $this->lib->class_url('courseTitleiii')?>',
+			data: {'year' : year},
 			dataType: 'JSON',
 			success: function(res) {
-                msg.show(res.msg, res.alert, '#alertUpdStaffEvaDetl');
+				$('#crtloader').html('');
+
+				var resList = '<option value="" selected > ---Please select--- </option>';
+				
 				if (res.sts == 1) {
-					setTimeout(function () {
-						$('#myModalis2').modal('hide');
-						$('.btn').removeAttr('disabled');
-					}, 1500);
-					//$('.btn').removeAttr('disabled');
-				} else {
-					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alertUpdStaffEvaDetl');
+					for (var i in res.courseList) {
+						resList += '<option value="'+res.courseList[i]['TH_REF_ID']+'">'+res.courseList[i]['TH_ID_TITLE']+'</option>';
+					}
+				} 
+				
+				$("#course_titleiii").html(resList);
 			}
-		});	
+		});
     });
 
-	// PROCESS EVALUATOR ID
-	$('#staff_training_application').on('click','.proc_eva_id_btn', function(){
-		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");
-		var refid =  $('.proc_eva_id_btn').val();
-		var trainingN =  thisBtn.data("tr-name");
-		var staffIDArr = []; 
-		var selectedID = 0;
+    // REPORT VI
+    $('#report_iv').on('click', '.genReportiv', function () {
+        var repCode = $(this).attr('repCode');
+        var induction_courseiv = $("#induction_courseiv").val(); 
+        var year_avi = $("#year_avi").val();
 
-		$.confirm({
-		    title: 'Process Evaluator ID',
-		    content: 'Press YES to confirm',
-			type: 'blue',
-		    buttons: {
-		        yes: function () {
-					$('.checkitem:checked').each(function() {
-						// check the checked property 
-						var currentID = $(this).val();
-						stfID = $(this).closest("tr").find(".sid").text();
-						++selectedID;
-						
-						staffIDArr.push(stfID);
-					});
-					//alert(staffIDArr);
+        // alert(repCode+' '+induction_courseiv+' '+induction_test_sts+' '+pnp_course_sts+' '+year_avi);
+        
+        $.post('<?php echo $this->lib->class_url('setParamiv') ?>', {repCode: repCode, induction_courseiv: induction_courseiv, year_avi: year_avi}, function (res) {
+            var repURL = '<?php echo $this->lib->class_url('genReportiv') ?>';
+            //alert(repURL);
+            var mywin = window.open( repURL , 'report');
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
+            });
+            // msg.danger('Please contact administrator.', '#alert');        
+        });
+    });
 
-					if (selectedID == 0) {
-						$.alert({
-							title: 'Alert!',
-							content: 'You must select at least one record to continue.',
-							type: 'red'
-						});
-						return;
-					}
+    // REPORT VI - ATR125 / ATR119
+    $('#report_iv').on('click', '.genReportivTi', function () {
+        var repCode = $(this).attr('repCode'); 
+        var induction_test_sts = $("#induction_test_sts").val(); 
+        var pnp_course_sts = $("#pnp_course_sts").val(); 
 
-					$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('procEvaluatorId')?>',
-							data: {'stfID' : staffIDArr, 'refid' : refid},
-							dataType: 'JSON',
-							beforeSend: function() {
-								//$('.nav-tabs li:eq(1) a').tab('show');
-								$('.btn').attr('disabled', 'disabled');
-								$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								if (res.sts==1) {
-									$.alert({
-										title: 'Success!',
-										content: res.msg,
-										type: res.alert,
-									});
-								} else {
-									$.alert({
-										title: 'Alert!',
-										content: res.msg,
-										type: 'red',
-									});
-								}
-							},
-							complete: function(){
-								$('.btn').removeAttr('disabled');
-								$('#loader').hide();
-							},
-					});		
-		        },
-		        cancel: function () {
-		            $.alert('Process Evaluator ID has been cancelled!');
-		        }
-		    }
-		});
-	});
+        // alert(repCode+' '+induction_courseiv+' '+induction_test_sts+' '+pnp_course_sts+' '+year_avi);
+
+        if(induction_test_sts == '') {
+            $.alert({
+                title: 'Alert!',
+                content: 'Please select <b>General induction test status</b>',
+                type: 'red',
+            });
+            return;
+        }
+
+        if(pnp_course_sts == '') {
+            $.alert({
+                title: 'Alert!',
+                content: 'Please select <b>P & P course status</b>',
+                type: 'red',
+            });
+            return;
+        }
+        
+        $.post('<?php echo $this->lib->class_url('setParamiv') ?>', {repCode: repCode, induction_test_sts: induction_test_sts, 
+        pnp_course_sts: pnp_course_sts}, function (res) {
+            var repURL = '<?php echo $this->lib->class_url('genReportiv') ?>';
+            //alert(repURL);
+            var mywin = window.open( repURL , 'report');
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
+            });
+            // msg.danger('Please contact administrator.', '#alert');        
+        });
+    });
+    
+    
 </script>

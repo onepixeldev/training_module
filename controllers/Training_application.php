@@ -333,27 +333,7 @@ class Training_application extends MY_Controller
     // TRAINING APPLICATION REPORTS
     public function ATF081()
     {   
-        // default value filter
-        // default dept
-        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
-        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
-        // default month
-        $data['defMonth'] = '';
-        // default year
-        $data['cur_year'] = $this->mdl->getCurYear();
-        $data['curYear'] = $data['cur_year']->CUR_YEAR;
-
-
-        // get department dd list
-        $data['dept_list'] = $this->dropdown($this->mdl->getDeptListAppRpt(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
-        //get year dd list
-        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
-        //get month dd list
-        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
-        //get training status list
-        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
-
-        $this->render($data);
+        $this->render();
     }
 
     // View Page Filter
@@ -4775,17 +4755,558 @@ class Training_application extends MY_Controller
        Training Application Report - ATF081
     =============================================================*/
     
-
-    // COURSE LIST TABLE MODAL
-    public function getCourseListRpti()
+    // REPORT I
+    public function tarReport()
     { 
-        $year = $this->input->post('year_i2', true);
+        // clear filter for report
+        $this->session->set_userdata('repCodei','');
+        $this->session->set_userdata('year_ai','');
+        $this->session->set_userdata('department_ai','');
+        $this->session->set_userdata('choice_ai','');
+        $this->session->set_userdata('fr_month_ai','');
+        $this->session->set_userdata('fr_year_ai','');
+        $this->session->set_userdata('to_month_ai','');
+        $this->session->set_userdata('to_year_ai','');
+        $this->session->set_userdata('year_bi','');
+        $this->session->set_userdata('courseRefid','');
+        
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
-        if(!empty($year)) {
-            //get course list report I
-            $data['course_list_rpi'] = $this->mdl->getCourseListRpti($year);
-        }
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptListAppRpt(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' --Please select-- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
 
         $this->render($data);
+    }
+
+    // REPORT II
+    public function tarReportii()
+    { 
+        // clear filter for report
+        $this->session->set_userdata('repCodeii','');
+        $this->session->set_userdata('year_aii','');
+        $this->session->set_userdata('organizer_ii','');
+        $this->session->set_userdata('rep_for_ii','');
+        $this->session->set_userdata('fr_month_aii','');
+        $this->session->set_userdata('fr_year_aii','');
+        $this->session->set_userdata('to_month_aii','');
+        $this->session->set_userdata('to_year_aii','');
+        $this->session->set_userdata('org_codeii','');
+        $this->session->set_userdata('sector_ii','');
+        $this->session->set_userdata('coor_ii','');
+
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get sector list
+        $data['org_list_ii'] = $this->dropdown($this->mdl->getOrganizer(), 'TOH_ORG_CODE', 'TOH_CODE_DESC', ' ---Please select--- ');
+        //get sector list
+        $data['sec_list_ii'] = $this->dropdown($this->mdl->getSector(), 'TSL_CODE', 'TSL_CODE_DESC', ' ---Please select--- ');
+        //get coordinator list
+        $data['corr_list_ii'] = $this->dropdown($this->mdl->getCoordinator(), 'SM_STAFF_ID', 'SM_STAFF_ID_NAME', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // REPORT III
+    public function tarReportiii()
+    { 
+        // clear filter for report
+        $this->session->set_userdata('repCodeiii','');
+        $this->session->set_userdata('year_aiii','');
+        $this->session->set_userdata('department_aiii','');
+        $this->session->set_userdata('course_titleiii','');
+        $this->session->set_userdata('staff_idiii','');
+        $this->session->set_userdata('date_course_fromiii','');
+        $this->session->set_userdata('department_biii','');
+
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptListAppRpt(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get coordinator list
+        $data['staff_list'] = $this->dropdown($this->mdl->getCoordinator(), 'SM_STAFF_ID', 'SM_STAFF_ID_NAME', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // REPORT IV
+    public function tarReportiv()
+    { 
+        // clear filter for report
+        $this->session->set_userdata('repCodeiv','');
+        $this->session->set_userdata('induction_courseiv','');
+        $this->session->set_userdata('induction_test_sts','');
+        $this->session->set_userdata('pnp_course_sts','');
+        $this->session->set_userdata('year_avi','');
+
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // REPORT V
+    public function tarReportv()
+    { 
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptListAppRpt(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+
+        $this->render($data);
+    }
+
+    // REPORT VI
+    public function tarReportvi()
+    { 
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptListAppRpt(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+
+        $this->render($data);
+    }
+
+    // REPORT PARAM I
+    public function setParami() {
+		// clear filter for report
+        $this->session->set_userdata('repCodei','');
+        $this->session->set_userdata('year_ai','');
+        $this->session->set_userdata('department_ai','');
+        $this->session->set_userdata('choice_ai','');
+        $this->session->set_userdata('fr_month_ai','');
+        $this->session->set_userdata('fr_year_ai','');
+        $this->session->set_userdata('to_month_ai','');
+        $this->session->set_userdata('to_year_ai','');
+        $this->session->set_userdata('year_bi','');
+        $this->session->set_userdata('courseRefid','');
+		
+    	// get current value 
+    	$repCode = $this->input->post('repCode');
+    	$year_ai = $this->input->post('year_ai');
+    	$department_ai = $this->input->post('department_ai');
+        $choice_ai = $this->input->post('choice_ai');
+        $fr_month_ai = $this->input->post('fr_month_ai');
+    	$fr_year_ai = $this->input->post('fr_year_ai');
+    	$to_month_ai = $this->input->post('to_month_ai');
+        $to_year_ai = $this->input->post('to_year_ai');
+        $year_bi = $this->input->post('year_bi');
+        $courseRefid = $this->input->post('courseRefid');
+
+		// set session value
+        $this->session->set_userdata('repCodei', $repCode);
+        $this->session->set_userdata('year_ai', $year_ai);
+        $this->session->set_userdata('department_ai', $department_ai);
+        $this->session->set_userdata('choice_ai', $choice_ai);
+        $this->session->set_userdata('fr_month_ai', $fr_month_ai);
+        $this->session->set_userdata('fr_year_ai', $fr_year_ai);
+        $this->session->set_userdata('to_month_ai', $to_month_ai);
+        $this->session->set_userdata('to_year_ai', $to_year_ai);
+        $this->session->set_userdata('year_bi', $year_bi);
+        $this->session->set_userdata('courseRefid', $courseRefid);
+    }
+
+    // GENERATE REPORT I
+    public function genReporti() {
+        $repCode = $this->session->userdata('repCodei');
+
+    	$year_ai = $this->session->userdata('year_ai');
+    	$department_ai = $this->session->userdata('department_ai');
+        $choice_ai = $this->session->userdata('choice_ai');
+
+        $fr_month_ai = $this->session->userdata('fr_month_ai');
+        $fr_year_ai = $this->session->userdata('fr_year_ai');
+        $to_month_ai = $this->session->userdata('to_month_ai');
+        $to_year_ai = $this->session->userdata('to_year_ai');
+        $mm_from = $fr_month_ai.'/'.$fr_year_ai;
+        $mm_to = $to_month_ai.'/'.$to_year_ai;
+
+        $year_bi = $this->session->userdata('year_bi');
+        $courseRefid = $this->session->userdata('courseRefid');
+        
+
+		if($repCode == 'ATR057') {
+            $param = array('PARAMFORM' => 'NO', 'DM_DEPT_CODE' => $department_ai, 'YEAR_YEAR' => $year_ai);
+            $this->lib->report($repCode, $param);
+        } 
+        elseif($repCode == 'ATR058LIST') {
+            if($choice_ai == 'A') {
+                $newRepCode = 'ATR058';
+            } elseif($choice_ai == 'Y') {
+                $newRepCode = 'ATR058B';
+            } else {
+                $newRepCode = 'ATR058C';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai);
+            $this->lib->report($newRepCode, $param);
+        } 
+        elseif($repCode == 'ATR059') {
+            $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai);
+            $this->lib->report($repCode, $param);
+        } 
+        elseif($repCode == 'ATR060') {
+            $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR085') {
+            $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR086') {
+            $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR065') {
+            $param = array('PARAMFORM' => 'NO', 'MONTH_FROM' => $mm_from, 'MONTH_TO' => $mm_to);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR072') {
+            $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR061') {
+            $param = array('PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR062') {
+            $param = array('PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR063') {
+            $param = array('PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR064') {
+            $param = array('PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi);
+            $this->lib->report($repCode, $param);
+        }
+    }
+    
+    // SELECT TABLE MODAL COURSE TITLE
+    public function courseTitlei()
+    {
+        $year = $this->input->post('year_bi');
+
+        $data['cr_title'] = $this->mdl->courseTitlei($year);
+
+        $this->renderAjax($data);
+    }
+
+    // REPORT PARAM II
+    public function setParamii() {
+		// clear filter for report
+        $this->session->set_userdata('repCodeii','');
+        $this->session->set_userdata('year_aii','');
+        $this->session->set_userdata('organizer_ii','');
+        $this->session->set_userdata('rep_for_ii','');
+        $this->session->set_userdata('fr_month_aii','');
+        $this->session->set_userdata('fr_year_aii','');
+        $this->session->set_userdata('to_month_aii','');
+        $this->session->set_userdata('to_year_aii','');
+        $this->session->set_userdata('org_codeii','');
+        $this->session->set_userdata('sector_ii','');
+        $this->session->set_userdata('coor_ii','');
+		
+    	// get current value 
+    	$repCode = $this->input->post('repCode');
+    	$year_aii = $this->input->post('year_aii');
+    	$organizer_ii = $this->input->post('organizer_ii');
+        $rep_for_ii = $this->input->post('rep_for_ii');
+        $fr_month_aii = $this->input->post('fr_month_aii');
+    	$fr_year_aii = $this->input->post('fr_year_aii');
+    	$to_month_aii = $this->input->post('to_month_aii');
+        $to_year_aii = $this->input->post('to_year_aii');
+        $org_codeii = $this->input->post('org_codeii');
+        $sector_ii = $this->input->post('sector_ii');
+        $coor_ii = $this->input->post('coor_ii');
+
+		// set session value
+        $this->session->set_userdata('repCodeii', $repCode);
+        $this->session->set_userdata('year_aii', $year_aii);
+        $this->session->set_userdata('organizer_ii', $organizer_ii);
+        $this->session->set_userdata('rep_for_ii', $rep_for_ii);
+        $this->session->set_userdata('fr_month_aii', $fr_month_aii);
+        $this->session->set_userdata('fr_year_aii', $fr_year_aii);
+        $this->session->set_userdata('to_month_aii', $to_month_aii);
+        $this->session->set_userdata('to_year_aii', $to_year_aii);
+        $this->session->set_userdata('org_codeii', $org_codeii);
+        $this->session->set_userdata('sector_ii', $sector_ii);
+        $this->session->set_userdata('coor_ii', $coor_ii);
+    }
+
+    // GENERATE REPORT II
+    public function genReportii() {
+        $repCode = $this->session->userdata('repCodeii');
+
+        $year_aii = $this->session->userdata('year_aii');
+        $organizer_ii = $this->session->userdata('organizer_ii');
+        $rep_for_ii = $this->session->userdata('rep_for_ii');
+
+        $fr_month_aii = $this->session->userdata('fr_month_aii');
+        $fr_year_aii = $this->session->userdata('fr_year_aii');
+        $to_month_aii = $this->session->userdata('to_month_aii');
+        $to_year_aii = $this->session->userdata('to_year_aii');
+        $org_codeii = $this->session->userdata('org_codeii');
+        $sector_ii = $this->session->userdata('sector_ii');
+        $coor_ii = $this->session->userdata('coor_ii');
+        
+        $mm_from = $fr_month_aii.'/'.$fr_year_aii;
+        $mm_to = $to_month_aii.'/'.$to_year_aii;
+        
+
+		if($repCode == 'ATR047') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii);
+            $this->lib->report($repCode, $param, $rep_for_ii);
+        } 
+        elseif($repCode == 'ATR047X') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii);
+            $this->lib->report($repCode, $param, 'EXCEL');
+        }
+        elseif($repCode == 'ATR087') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii);
+            $this->lib->report($repCode, $param, $rep_for_ii);
+        } 
+        elseif($repCode == 'ATR108') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii);
+            $this->lib->report($repCode, $param, $rep_for_ii);
+        }
+        elseif($repCode == 'ATR109') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii);
+            $this->lib->report($repCode, $param, $rep_for_ii);
+        }
+        elseif($repCode == 'ATR113') {
+            $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_aii);
+            $this->lib->report($repCode, $param, $rep_for_ii);
+        }
+        elseif($repCode == 'ATR123') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii, 'TRAINING_MONTH' => $mm_from, 'TRAINING_MONTH2' => $mm_to, 'P_PTJ' => $org_codeii, 'SECTOR' => $sector_ii, 'COORDINATOR' => $coor_ii);
+            $this->lib->report($repCode, $param, $rep_for_ii);
+        }
+        elseif($repCode == 'ATR123X') {
+            $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii, 'TRAINING_MONTH' => $mm_from, 'TRAINING_MONTH2' => $mm_to, 'P_PTJ' => $org_codeii, 'SECTOR' => $sector_ii, 'COORDINATOR' => $coor_ii);
+            $this->lib->report($repCode, $param, 'EXCEL');
+        }
+    }
+
+    // COURSE TITLE - REPORT III
+    public function courseTitleiii(){
+        $this->isAjax();
+        
+        $year = $this->input->post('year', true);
+        
+        // get available records
+        $courseList = $this->mdl->courseTitleiii($year);
+               
+        if (!empty($courseList)) {
+            $success = 1;
+        } else {
+            $success = 0;
+            $courseList = '';
+        }
+        
+        $json = array('sts' => $success, 'courseList' => $courseList);
+        
+        echo json_encode($json);
+    }
+
+    // REPORT PARAM III
+    public function setParamiii() {
+		// clear filter for report
+        $this->session->set_userdata('repCodeiii','');
+        $this->session->set_userdata('year_aiii','');
+        $this->session->set_userdata('department_aiii','');
+        $this->session->set_userdata('course_titleiii','');
+        $this->session->set_userdata('staff_idiii','');
+        $this->session->set_userdata('date_course_fromiii','');
+        $this->session->set_userdata('department_biii','');
+		
+    	// get current value 
+    	$repCode = $this->input->post('repCode');
+    	$year_aiii = $this->input->post('year_aiii');
+    	$department_aiii = $this->input->post('department_aiii');
+        $course_titleiii = $this->input->post('course_titleiii');
+        $staff_idiii = $this->input->post('staff_idiii');
+    	$date_course_fromiii = $this->input->post('date_course_fromiii');
+    	$department_biii = $this->input->post('department_biii');
+
+		// set session value
+        $this->session->set_userdata('repCodeiii', $repCode);
+        $this->session->set_userdata('year_aiii', $year_aiii);
+        $this->session->set_userdata('department_aiii', $department_aiii);
+        $this->session->set_userdata('course_titleiii', $course_titleiii);
+        $this->session->set_userdata('staff_idiii', $staff_idiii);
+        $this->session->set_userdata('date_course_fromiii', $date_course_fromiii);
+        $this->session->set_userdata('department_biii', $department_biii);
+    }
+
+    // GENERATE REPORT III
+    public function genReportiii() {
+        $repCode = $this->session->userdata('repCodeiii');
+
+        $year_aiii = $this->session->userdata('year_aiii');
+
+        $department_aiii = $this->session->userdata('department_aiii');
+        $course_titleiii = $this->session->userdata('course_titleiii');
+        $staff_idiii = $this->session->userdata('staff_idiii');
+        
+        $date_course_fromiii = $this->session->userdata('date_course_fromiii');
+
+        $department_biii = $this->session->userdata('department_biii');
+        
+		if($repCode == 'ATR110') {
+            $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR6' => $year_aiii, 'P_PTJ' => $department_aiii, 'P_KURSUS' => $course_titleiii, 'P_STAF' => $staff_idiii);
+            $this->lib->report($repCode, $param);
+        } 
+        elseif($repCode == 'ATR111') {
+            $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR6' => $year_aiii, 'P_PTJ' => $department_aiii, 'P_KURSUS' => $course_titleiii, 'P_STAF' => $staff_idiii);
+            $this->lib->report($repCode, $param);
+        } 
+        elseif($repCode == 'ATR147') {
+            $param = array('PARAMFORM' => 'NO', 'P_TH_DATE_FROM' => $date_course_fromiii);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR141') {
+            $param = array('PARAMFORM' => 'NO');
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR144') {
+            $param = array('PARAMFORM' => 'NO');
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR142') {
+            $param = array('PARAMFORM' => 'NO', 'DEPARTMENT' => $department_biii);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR143') {
+            $param = array('PARAMFORM' => 'NO', 'DEPARTMENT' => $department_biii);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR145') {
+            $param = array('PARAMFORM' => 'NO', 'DEPARTMENT' => $department_biii);
+            $this->lib->report($repCode, $param);
+        }
+        elseif($repCode == 'ATR146') {
+            $param = array('PARAMFORM' => 'NO', 'DEPARTMENT' => $department_biii);
+            $this->lib->report($repCode, $param);
+        }
+    }
+
+    // REPORT PARAM VI
+    public function setParamiv() {
+		// clear filter for report
+        $this->session->set_userdata('repCodeiv','');
+        $this->session->set_userdata('induction_courseiv','');
+        $this->session->set_userdata('induction_test_sts','');
+        $this->session->set_userdata('pnp_course_sts','');
+        $this->session->set_userdata('year_avi','');
+		
+    	// get current value 
+    	$repCode = $this->input->post('repCode');
+    	$induction_courseiv = $this->input->post('induction_courseiv');
+    	$induction_test_sts = $this->input->post('induction_test_sts');
+        $pnp_course_sts = $this->input->post('pnp_course_sts');
+        $year_avi = $this->input->post('year_avi');
+
+		// set session value
+        $this->session->set_userdata('repCodeiv', $repCode);
+        $this->session->set_userdata('induction_courseiv', $induction_courseiv);
+        $this->session->set_userdata('induction_test_sts', $induction_test_sts);
+        $this->session->set_userdata('pnp_course_sts', $pnp_course_sts);
+        $this->session->set_userdata('year_avi', $year_avi);
+    }
+
+    // GENERATE REPORT VI
+    public function genReportiv() {
+        $repCode = $this->session->userdata('repCodeiv');
+
+        $induction_courseiv = $this->session->userdata('induction_courseiv');
+
+        $induction_test_sts = $this->session->userdata('induction_test_sts');
+        $pnp_course_sts = $this->session->userdata('pnp_course_sts');
+
+        $year_avi = $this->session->userdata('year_avi');
+        
+		if($repCode == 'ATRCOURSEINDUCTION') {
+            if($induction_courseiv == 'LULUS') {
+                $newRepCode = 'ATR126';
+            } elseif($induction_courseiv == 'GAGAL') {
+                $newRepCode = 'ATR088';
+            } elseif($induction_courseiv == 'PENGECUALIAN') {
+                $newRepCode = 'ATR127';
+            } else {
+                $newRepCode = 'ATR124';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'STATUS' => $induction_courseiv);
+            $this->lib->report($newRepCode, $param);
+        } 
+        elseif($repCode == 'ATRTESTINDUCTION') {
+            if(!empty($induction_test_sts) && !empty($pnp_course_sts)) {
+                $newRepCode = 'ATR125';
+            } elseif(empty($induction_test_sts) && empty($pnp_course_sts)) {
+                $newRepCode = 'ATR119';
+            } 
+
+            $param = array('PARAMFORM' => 'NO', 'STATUS' => $induction_test_sts, 'STATUS2' => $pnp_course_sts);
+            $this->lib->report($newRepCode, $param);
+        } 
+        elseif($repCode == 'ATR206') {
+            $param = array('PARAMFORM' => 'NO', 'P_YEAR' => $year_avi);
+            $this->lib->report($repCode, $param);
+        }
     }
 }

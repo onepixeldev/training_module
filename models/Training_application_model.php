@@ -3038,14 +3038,51 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
-    // GET TRAINING LIST REPORT I
-    public function getCourseListRpti($year) {
+    // GET COURSE LIST REPORT I
+    public function courseTitlei($year) {
         $this->db->select("TH_REF_ID, TH_TRAINING_TITLE, TO_CHAR(TH_DATE_FROM,'DD/MM/YYYY')||' - '||TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') TH_DATE,
                             TH_DATE_FROM");
         $this->db->from("TRAINING_HEAD");
         $this->db->where("TH_STATUS = 'APPROVE'");
-        $this->db->where("TO_CHAR(TH_DATE_FROM,'YYYY') = NVL($year,TO_CHAR(SYSDATE,'YYYY'))");
+        $this->db->where("TO_CHAR(TH_DATE_FROM,'YYYY') = NVL('$year',TO_CHAR(SYSDATE,'YYYY'))");
         $this->db->where("TH_REF_ID IN (SELECT TMH_TRAINING_REFID FROM TRAINING_MEMO_HISTORY)");
+        
+        $this->db->order_by("TH_DATE_FROM, TH_TRAINING_TITLE");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // GET ORGANIZER LIST REPORT II
+    public function getOrganizer() {
+        $this->db->select("TOH_ORG_CODE, TOH_ORG_DESC, TOH_ORG_CODE||' - '||TOH_ORG_DESC AS TOH_CODE_DESC,
+                            TOH_ADDRESS, TOH_POSTCODE, TOH_CITY, 
+                            SM_STATE_DESC, CM_COUNTRY_DESC");
+        $this->db->from("TRAINING_ORGANIZER_HEAD, STATE_MAIN, COUNTRY_MAIN");
+        $this->db->where("TOH_STATE = SM_STATE_CODE AND TOH_COUNTRY = CM_COUNTRY_CODE");
+        $this->db->order_by("2");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // GET SECTOR LIST REPORT II
+    public function getSector() {
+        $this->db->select("TSL_CODE, TSL_DESC, TSL_CODE||' - '||TSL_DESC TSL_CODE_DESC");
+        $this->db->from("TRAINING_SECTOR_LEVEL");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // GET COURSE LIST REPORT III
+    public function courseTitleiii($year) {
+        $this->db->select("TH_REF_ID, TH_TRAINING_TITLE, TH_REF_ID||' - '||TH_TRAINING_TITLE TH_ID_TITLE, 
+                            TO_CHAR(TH_DATE_FROM,'DD/MM/YYYY')||' - '||TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') TH_DATE,
+                            TH_DATE_FROM");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $this->db->where("TO_CHAR(TH_DATE_FROM,'YYYY') = NVL('$year',TO_CHAR(SYSDATE,'YYYY'))");
         
         $this->db->order_by("TH_DATE_FROM, TH_TRAINING_TITLE");
 

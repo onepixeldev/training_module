@@ -288,7 +288,9 @@
 
             //alert(corTitle);
 			
-			$.post('<?php echo $this->lib->class_url('setParam') ?>', {repCode: repCode, year_i: year_i, department: department, staffID: staffID, corTitle2: corTitle2, courseDate: courseDate, sMonth: sMonth, sYear: sYear, corTitle: corTitle}, function (res) {
+			$.post('<?php echo $this->lib->class_url('setParam') ?>', {repCode: repCode, year_i: year_i,
+             department: department, staffID: staffID, corTitle2: corTitle2, courseDate: courseDate, 
+             sMonth: sMonth, sYear: sYear, corTitle: corTitle}, function (res) {
 				var repURL = '<?php echo $this->lib->class_url('genReport') ?>';
 				//alert(repURL);
 				var mywin = window.open( repURL , 'report');
