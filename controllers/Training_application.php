@@ -5490,7 +5490,6 @@ class Training_application extends MY_Controller
             }
 
             $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
-            $this->lib->report($repCode, $param, $re_formatvi);
         }
         elseif($repCode == 'ATR243') {
             if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
@@ -5500,7 +5499,6 @@ class Training_application extends MY_Controller
             }
 
             $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
-            $this->lib->report($repCode, $param, $re_formatvi);
         }
         elseif($repCode == 'ATR244') {
             if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
@@ -5510,7 +5508,6 @@ class Training_application extends MY_Controller
             }
 
             $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
-            $this->lib->report($repCode, $param, $re_formatvi);
         }
         elseif($repCode == 'ATR245') {
             if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
@@ -5520,7 +5517,6 @@ class Training_application extends MY_Controller
             }
 
             $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
-            $this->lib->report($repCode, $param, $re_formatvi);
         }
         elseif($repCode == 'ATR246') {
             if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
@@ -5530,7 +5526,6 @@ class Training_application extends MY_Controller
             }
 
             $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
-            $this->lib->report($repCode, $param, $re_formatvi);
         }
         elseif($repCode == 'ATR247') {
             if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
@@ -5540,7 +5535,6 @@ class Training_application extends MY_Controller
             }
 
             $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
-            $this->lib->report($repCode, $param, $re_formatvi);
         }
         elseif($repCode == 'ATR248') {
             if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
@@ -5550,7 +5544,6 @@ class Training_application extends MY_Controller
             }
 
             $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
-            $this->lib->report($repCode, $param, $re_formatvi);
         }
         elseif($repCode == 'ATR267') {
             if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
@@ -5560,7 +5553,6 @@ class Training_application extends MY_Controller
             }
 
             $param = array('PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi);
-            $this->lib->report($repCode, $param, $re_formatvi);
         }
         elseif($repCode == 'ATR268') {
             if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
@@ -5570,8 +5562,9 @@ class Training_application extends MY_Controller
             }
 
             $param = array('PARAMFORM' => 'NO', 'P_STH_STAFF_ID' => $staff_id_vi);
-            $this->lib->report($repCode, $param, $re_formatvi);
         }
+
+        $this->lib->report($repCode, $param, $re_formatvi);
     }
 
     
