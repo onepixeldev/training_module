@@ -49,9 +49,9 @@
         </div>
 
         <div class="form-group">
-            <label class="col-md-3 control-label">Referrence No. <b><font color="red">*</font></b></label>
+            <label class="col-md-3 control-label">Reference No. <b><font color="red">*</font></b></label>
             <div class="col-md-4">
-                <input name="form[refeffence_no]" class="form-control" type="text" value="<?php echo $ref_no?>" id="refNo">
+                <input name="form[reference_no]" class="form-control" type="text" value="<?php echo $ref_no?>" id="refNo">
             </div>
         </div>
 

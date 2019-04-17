@@ -107,7 +107,7 @@
                     <div class="row">
                         <div class="col-sm-2">
                             <div class="form-group text-right">
-                                <label><b>Choices</b></label>
+                                <label><b>Option</b></label>
                             </div>
                         </div>
                         <div class="col-sm-3">

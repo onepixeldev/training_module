@@ -2910,13 +2910,20 @@ class Training_application extends MY_Controller
         $staffId = $this->input->post('staffId', true);
         
         if (!empty($refid) && !empty($staffId)) {
-            $del = $this->mdl->deleteAssignedStaff($refid, $staffId);
-        
-            if ($del > 0) {
-                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            $verDel = $this->mdl->checkStaffTr($refid, $staffId);
+
+            if(empty($verDel)) {
+                $del = $this->mdl->deleteAssignedStaff($refid, $staffId);
+            
+                if ($del > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+                }
             } else {
-                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
-            }
+                $json = array('sts' => 0, 'msg' => 'Cannot delete master record when matching detail records exist', 'alert' => 'danger');
+            } 
+                
         } else {
             $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
         }
@@ -5371,7 +5378,7 @@ class Training_application extends MY_Controller
         elseif($repCode == 'ATR220X') {
 
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av);
-            $this->lib->report($repCode, $param);
+            $this->lib->report($repCode, $param, 'EXCEL');
         }
         elseif($repCode == 'ATR221') {
 

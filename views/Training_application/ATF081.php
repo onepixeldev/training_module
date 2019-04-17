@@ -39,7 +39,7 @@
                                     <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Reports (III)</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Reports (VI)</a>
+                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Reports (IV)</a>
                                 </li>
 								<li class="">
                                     <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">Reports (V)</a>
@@ -370,7 +370,6 @@
             });
             // msg.danger('Please contact administrator.', '#alert');     
         });
-        
     });
 
     // REPORT III
@@ -458,23 +457,23 @@
 
         // alert(repCode+' '+induction_courseiv+' '+induction_test_sts+' '+pnp_course_sts+' '+year_avi);
 
-        if(induction_test_sts == '') {
-            $.alert({
-                title: 'Alert!',
-                content: 'Please select <b>General induction test status</b>',
-                type: 'red',
-            });
-            return;
-        }
+        // if(induction_test_sts == '') {
+        //     $.alert({
+        //         title: 'Alert!',
+        //         content: 'Please select <b>General induction test status</b>',
+        //         type: 'red',
+        //     });
+        //     return;
+        // }
 
-        if(pnp_course_sts == '') {
-            $.alert({
-                title: 'Alert!',
-                content: 'Please select <b>P & P course status</b>',
-                type: 'red',
-            });
-            return;
-        }
+        // if(pnp_course_sts == '') {
+        //     $.alert({
+        //         title: 'Alert!',
+        //         content: 'Please select <b>P & P course status</b>',
+        //         type: 'red',
+        //     });
+        //     return;
+        // }
         
         $.post('<?php echo $this->lib->class_url('setParamiv') ?>', {repCode: repCode, induction_test_sts: induction_test_sts, 
         pnp_course_sts: pnp_course_sts}, function (res) {

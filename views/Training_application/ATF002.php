@@ -533,12 +533,12 @@
 	$('#staff_training_application').on('click', '.sta_appsm_btn', function() {
 		var thisBtn = $(this);
 		var refid = thisBtn.val();
-		var trainingN = $('.sta_appsm_btn').text();
+		var trainingN = $('.sta_appsm_btn').data("tr-name");
 		var staffIDArr = [];
 		var remarkArr = [];
 		var selectedID = 0;
 		
-		//alert(remark+' '+refid);
+		// alert(trainingN+' '+refid);
 
 		$.confirm({
 		    title: 'Approve & Send Email Memo to applicant',
