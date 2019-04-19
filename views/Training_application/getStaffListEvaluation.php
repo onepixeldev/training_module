@@ -59,9 +59,10 @@
 
 <br>
 <div class="row">
-	<div class="col-sm-2">
-			<button type="button" class="btn btn-primary btn-sm proc_eva_id_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-cog"></i> Process Evaluator ID</button>
-		
+	<div class="col-sm-10">
+		<button type="button" class="btn btn-primary btn-sm proc_eva_id_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-cog"></i> Process Evaluator ID</button>
+		<button type="button" class="btn btn-info btn-sm select_all_btn"><i class="fa fa-check-square-o"></i> Select All</button>
+		<button type="button" class="btn btn-info btn-sm unselect_all_btn"><i class="fa fa-square-o"></i> Unselect All</button>
 	</div>
 </div>
 </p>

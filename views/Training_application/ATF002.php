@@ -1066,4 +1066,14 @@
 			}
 		});
 	});
+
+	// Select all record	
+	$('#staff_training_application').on('click','.select_all_btn', function() {
+		$(".checkitem").prop('checked', true);
+	});	
+
+	// Unselect all record	
+	$('#staff_training_application').on('click','.unselect_all_btn', function() {
+		$(".checkitem").prop('checked', false);
+	});
 </script>

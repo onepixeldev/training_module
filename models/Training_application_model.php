@@ -364,9 +364,7 @@ class Training_application_model extends MY_Model
             $q = $this->db->get();
         
             return $q->result();
-        }
-        
-        
+        }  
     }
 
     // GET TARGET GROUP LIST
@@ -1333,10 +1331,110 @@ class Training_application_model extends MY_Model
     // GET TRAINING HEAD BASED ON FILTER
     public function getTrainingList($defIntExt = null, $curUsrDept = null, $defMonth = null, $curYear = null, $defTrSts = null, $evaluation = null, $screRpt = null)
     {
-        $this->db->select('*');
-        $this->db->from('TRAINING_HEAD');
         if($screRpt == '1') {
+            $this->db->select("TH_REF_ID, 
+                                TH_TRAINING_TITLE, 
+                                TH_TRAINING_DESC, 
+                                TH_TYPE, 
+                                TH_STATUS, 
+                                TH_INTERNAL_EXTERNAL,
+                                TH_LEVEL, 
+                                TH_TRAINING_VENUE, 
+                                TH_TRAINING_COUNTRY, 
+                                TH_ORGANIZER_NAME, 
+                                TH_ORGANIZER_LEVEL, 
+                                TH_ORGANIZER_ADDRESS,
+                                TH_ORGANIZER_POSTCODE, 
+                                TH_ORGANIZER_CITY, 
+                                TH_ORGANIZER_STATE, 
+                                TH_ORGANIZER_COUNTRY, 
+                                TH_SPONSOR, 
+                                TO_CHAR_VAL(TH_DATE_FROM, 'DD/MM/YYYY') AS TH_DATE_FROM,
+                                TO_CHAR_VAL(TH_DATE_TO, 'DD/MM/YYYY') AS TH_DATE_TO, 
+                                TH_TOTAL_HOURS, 
+                                TH_TRAINING_FEE, 
+                                TO_CHAR_VAL(TH_APPLY_CLOSING_DATE, 'DD-MM-YYYY') AS TH_APP_CLOSING_DATE, 
+                                TH_CURRENT_PARTICIPANT, 
+                                TH_MAX_PARTICIPANT,
+                                TH_OPEN, 
+                                TH_DEPT_CODE, 
+                                TH_ENTER_BY, 
+                                TH_ENTER_DATE, 
+                                TH_APPROVE_BY, 
+                                TH_APPROVE_DATE, 
+                                TH_TRAINING_STATE, 
+                                TH_ATTENDANCE_TYPE,
+                                TH_PRINT_CERTIFICATE, 
+                                TH_EVALUATION_COMPULSORY, 
+                                TH_SERVICE_GROUP, 
+                                TH_CATEGORY, 
+                                TO_CHAR_VAL(TH_EVALUATION_DATE_FROM, 'DD-MM-YYYY') AS TH_EVA_DATE_FROM,
+                                TO_CHAR_VAL(TH_EVALUATION_DATE_TO, 'DD-MM-YYYY') AS TH_EVA_DATE_TO, 
+                                TH_TRAINING_HISTORY, 
+                                TH_COMPETENCY_CODE, 
+                                TH_TRAINING_CODE, 
+                                TH_OFFER, 
+                                TH_GENERATE_CPD,
+                                TO_CHAR_VAL(TH_TIME_FROM, 'HH:MI AM') AS TIME_FR, 
+                                TO_CHAR_VAL(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
+                                TO_CHAR_VAL(TH_CONFIRM_DATE_FROM, 'DD-MM-YYYY') AS TH_CON_DATE_FROM,
+                                TO_CHAR_VAL(TH_CONFIRM_DATE_TO, 'DD-MM-YYYY') AS TH_CON_DATE_TO, 
+                                TH_FIELD,
+                                TSR_REFID
+                            ");
+            $this->db->from('TRAINING_HEAD');
             $this->db->join("TRAINING_SECRETARIAT_REPORT","TH_REF_ID = TSR_REFID","LEFT");
+        } else {
+            $this->db->select("TH_REF_ID, 
+                                TH_TRAINING_TITLE, 
+                                TH_TRAINING_DESC, 
+                                TH_TYPE, 
+                                TH_STATUS, 
+                                TH_INTERNAL_EXTERNAL,
+                                TH_LEVEL, 
+                                TH_TRAINING_VENUE, 
+                                TH_TRAINING_COUNTRY, 
+                                TH_ORGANIZER_NAME, 
+                                TH_ORGANIZER_LEVEL, 
+                                TH_ORGANIZER_ADDRESS,
+                                TH_ORGANIZER_POSTCODE, 
+                                TH_ORGANIZER_CITY, 
+                                TH_ORGANIZER_STATE, 
+                                TH_ORGANIZER_COUNTRY, 
+                                TH_SPONSOR, 
+                                TO_CHAR_VAL(TH_DATE_FROM, 'DD/MM/YYYY') AS TH_DATE_FROM,
+                                TO_CHAR_VAL(TH_DATE_TO, 'DD/MM/YYYY') AS TH_DATE_TO, 
+                                TH_TOTAL_HOURS, 
+                                TH_TRAINING_FEE, 
+                                TO_CHAR_VAL(TH_APPLY_CLOSING_DATE, 'DD-MM-YYYY') AS TH_APP_CLOSING_DATE, 
+                                TH_CURRENT_PARTICIPANT, 
+                                TH_MAX_PARTICIPANT,
+                                TH_OPEN, 
+                                TH_DEPT_CODE, 
+                                TH_ENTER_BY, 
+                                TH_ENTER_DATE, 
+                                TH_APPROVE_BY, 
+                                TH_APPROVE_DATE, 
+                                TH_TRAINING_STATE, 
+                                TH_ATTENDANCE_TYPE,
+                                TH_PRINT_CERTIFICATE, 
+                                TH_EVALUATION_COMPULSORY, 
+                                TH_SERVICE_GROUP, 
+                                TH_CATEGORY, 
+                                TO_CHAR_VAL(TH_EVALUATION_DATE_FROM, 'DD-MM-YYYY') AS TH_EVA_DATE_FROM,
+                                TO_CHAR_VAL(TH_EVALUATION_DATE_TO, 'DD-MM-YYYY') AS TH_EVA_DATE_TO, 
+                                TH_TRAINING_HISTORY, 
+                                TH_COMPETENCY_CODE, 
+                                TH_TRAINING_CODE, 
+                                TH_OFFER, 
+                                TH_GENERATE_CPD,
+                                TO_CHAR_VAL(TH_TIME_FROM, 'HH:MI AM') AS TIME_FR, 
+                                TO_CHAR_VAL(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
+                                TO_CHAR_VAL(TH_CONFIRM_DATE_FROM, 'DD-MM-YYYY') AS TH_CON_DATE_FROM,
+                                TO_CHAR_VAL(TH_CONFIRM_DATE_TO, 'DD-MM-YYYY') AS TH_CON_DATE_TO, 
+                                TH_FIELD,
+                            ");
+            $this->db->from('TRAINING_HEAD');
         }
 
         if(!empty($curUsrDept)) {
@@ -2483,7 +2581,12 @@ class Training_application_model extends MY_Model
         $this->db->select("STH.STH_STAFF_ID STF_ID, SM1.SM_STAFF_NAME STF_N1, 
                             SM1.SM_DEPT_CODE STF_DEPT1, TO_CHAR_VAL(STH.STH_SUBMIT_DATE, 'DD/MM/YYYY') STH_SB_DT, 
                             STH.STH_EVALUATOR_ID EVA_ID, SM2.SM_STAFF_NAME STF_N2, 
-                            STH.STH_HOD_EVALUATION SHE, TO_CHAR_VAL(STH.STH_EVALUATION_DATE, 'DD/MM/YYYY') SED,
+                            CASE 
+                            WHEN STH.STH_HOD_EVALUATION = 'Y' THEN 'Yes'
+                            WHEN STH.STH_HOD_EVALUATION = 'N' THEN 'No'
+                            END
+                            SHE_DESC, STH.STH_HOD_EVALUATION SHE,
+                            TO_CHAR_VAL(STH.STH_EVALUATION_DATE, 'DD/MM/YYYY') SED,
                             STH.STH_EVALUATOR_ID ||' - '|| SM2.SM_STAFF_NAME EVA_ID_NAME");
         $this->db->from("STAFF_TRAINING_HEAD STH");
         $this->db->join("STAFF_MAIN SM1", "STH.STH_STAFF_ID = SM1.SM_STAFF_ID", "LEFT");

@@ -42,11 +42,57 @@ class Conference_setup extends MY_Controller
     /*===========================================================
        CONFERENCE SETUP - ASF032
     =============================================================*/
+
+    // CONFERENCE CATEGORY LIST
     public function getConferenceCat()
     {
         // get available records
         $data['conference_cat'] = $this->mdl->getConferenceCat();
 
         $this->render($data);
+    }
+
+    // ADD CONFERENCE CATEGORY
+    public function addConferenceCat()
+    {
+        $this->render();
+    }
+
+    // SAVE CONFERENCE CATEGORY
+    public function saveConferenceCat() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'code' => 'required|max_length[10]',
+            'category' => 'required|max_length[100]',
+            'from' => 'required|numeric|max_length[40]',
+            'to' => 'required|numeric|max_length[40]',
+            'head_recommend' => 'max_length[1]',
+            'tnc_approve' => 'max_length[1]',
+            'vc_approve' => 'max_length[1]',
+            'status' => 'max_length[1]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $insert = $this->mdl->saveConferenceCat($form);
+
+            if($insert > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
     }
 }

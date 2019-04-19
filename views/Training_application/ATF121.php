@@ -531,11 +531,11 @@
 								});
 								$('.btn').removeAttr('disabled');	
 							} else {
-								// $.alert({
-								// 	title: 'Alert!',
-								// 	content: res.msg,
-								// 	type: res.color,
-								// });
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: res.color,
+								});
 								$('.btn').removeAttr('disabled');
 							}
 						},

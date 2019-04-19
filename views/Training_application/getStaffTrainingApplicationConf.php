@@ -104,14 +104,11 @@
 
 <br>
 <div class="row">
-	<div class="col-sm-2">
-		<div class="text-left col-xs-8">
-			<button type="button" class="btn btn-danger btn-sm resend_email_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-envelope-o"></i> Resend Email</button>
-		</div>
-
-		<div class="text-left col-xs-2">
-			<button type="button" class="btn btn-primary btn-sm auto_conf_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-check-square"></i> Auto Confirmation</button>
-		</div>
+	<div class="text-left col-sm-10">
+		<button type="button" class="btn btn-danger btn-sm resend_email_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-envelope-o"></i> Resend Email</button>
+		<button type="button" class="btn btn-primary btn-sm auto_conf_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-check-square"></i> Auto Confirmation</button>
+		<button type="button" class="btn btn-info btn-sm select_all_btn"><i class="fa fa-check-square-o"></i> Select All</button>
+		<button type="button" class="btn btn-info btn-sm unselect_all_btn"><i class="fa fa-square-o"></i> Unselect All</button>
 	</div>
 </div>
 </p>

@@ -22,7 +22,7 @@
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group text-left">
-                            <?php echo form_dropdown('form[year_i]', $year_list, NULL, 'class="form-control" id="year_i"') ?>	
+                            <?php echo form_dropdown('form[year_i]', $year_list, $curYear, 'class="form-control" id="year_i"') ?>	
                         </div>
                     </div>
                     <div class="col-sm-4">
@@ -241,7 +241,7 @@
                     </div>
 					<div class="col-sm-3">
 					   	<div class="form-group text-left">
-							<button type="button" repCode="ATR133" class="btn btn-danger btn-sm genReport"><i class="fa fa-file-pdf-o"></i> PDF</button>
+							<button type="button" repCode="ATR133" class="btn btn-danger btn-sm genReportCor"><i class="fa fa-file-pdf-o"></i> PDF</button>
 						</div>
                     </div>
                 </div>
@@ -258,8 +258,8 @@
                     </div>
 					<div class="col-sm-3">
 					   	<div class="form-group text-left">
-							<button type="button" repCode="ATRPDF" class="btn btn-danger btn-sm genReport" id="genRpt"><i class="fa fa-file-pdf-o"></i> PDF</button>
-                            <button type="button" repCode="ATRXLS" class="btn btn-success btn-sm genReport" id="genRpt"><i class="fa fa-file-excel-o "></i> Excel</button>
+							<button type="button" repCode="ATRPDF" class="btn btn-danger btn-sm genReportCor" id="genRpt"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                            <button type="button" repCode="ATRXLS" class="btn btn-success btn-sm genReportCor" id="genRpt"><i class="fa fa-file-excel-o "></i> Excel</button>
 						</div>
                     </div>
                 </div>
@@ -284,20 +284,43 @@
 			var courseDate = $("#courseDate").val(); 
 			var sMonth = $("#sMonth").val(); 
 			var sYear = $("#sYear").val();
-            var corTitle = $("#corTitle").val();
+            //var corTitle = $("#corTitle").val();
 
             //alert(corTitle);
 			
 			$.post('<?php echo $this->lib->class_url('setParam') ?>', {repCode: repCode, year_i: year_i,
              department: department, staffID: staffID, corTitle2: corTitle2, courseDate: courseDate, 
-             sMonth: sMonth, sYear: sYear, corTitle: corTitle}, function (res) {
+             sMonth: sMonth, sYear: sYear}, function (res) {
 				var repURL = '<?php echo $this->lib->class_url('genReport') ?>';
 				//alert(repURL);
 				var mywin = window.open( repURL , 'report');
 			}).fail(function(){
 				msg.danger('Please contact administrator.', '#alert');        
 			});
+		});
+
+        $('.genReportCor').click(function () {
+			var repCode = $(this).attr('repCode');
+            var corTitle = $("#corTitle").val();
+
+            if(corTitle == '') {
+                $.alert({
+                    title: 'Alert!',
+                    content: 'Please select course title.',
+                    type: 'red',
+                });
+                return;
+            }
+
+            //alert(corTitle);
 			
+			$.post('<?php echo $this->lib->class_url('setParam') ?>', {repCode: repCode, corTitle: corTitle}, function (res) {
+				var repURL = '<?php echo $this->lib->class_url('genReport') ?>';
+				//alert(repURL);
+				var mywin = window.open( repURL , 'report');
+			}).fail(function(){
+				msg.danger('Please contact administrator.', '#alert');        
+			});
 		});
     });
 

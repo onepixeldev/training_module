@@ -87,7 +87,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[re_formatvi]', array('PDF'=>'PDF', 'HTML'=>'HTML', 'EXCEL'=>'EXCEL', 'SPREADSHEET'=>'SPREADSHEET'), '', 'class="form-control" id="re_formatvi"') ?>	
+                                    <?php echo form_dropdown('form[re_formatvi]', array('PDF'=>'PDF', 'EXCEL'=>'EXCEL'), '', 'class="form-control" id="re_formatvi"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">

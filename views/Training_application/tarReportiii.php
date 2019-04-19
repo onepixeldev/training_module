@@ -12,7 +12,7 @@
             </div>
             <div class="col-sm-3">
                 <div class="form-group text-left">
-                    <?php echo form_dropdown('form[year_aiii]', $year_list, '', 'class="form-control" id="year_aiii"') ?>	
+                    <?php echo form_dropdown('form[year_aiii]', $year_list, $curYear, 'class="form-control" id="year_aiii"') ?>	
                 </div>
             </div>
             <div class="col-sm-4">

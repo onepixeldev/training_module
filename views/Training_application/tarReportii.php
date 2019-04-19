@@ -22,7 +22,7 @@
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <input name="form[year_aii]" placeholder="YYYY" class="form-control" value="" type="text" id="year_aii">	
+                                    <input name="form[year_aii]" placeholder="YYYY" class="form-control" value="<?php echo $curYear?>" type="text" id="year_aii">	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -62,7 +62,7 @@
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[rep_for_ii]', array('PDF'=>'PDF', 'HTML'=>'HTML'), '', 'class="form-control" id="rep_for_ii"') ?>	
+                                    <?php echo form_dropdown('form[rep_for_ii]', array('PDF'=>'PDF'), '', 'class="form-control" id="rep_for_ii"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -103,7 +103,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR047" class="btn btn-danger btn-sm genReportii"><i class="fa fa-print"></i> PDF / HTML</button>
+                        <button type="button" repCode="ATR047" class="btn btn-danger btn-sm genReportii"><i class="fa fa-file-pdf-o"></i> PDF</button>
                         <button type="button" repCode="ATR047X" class="btn btn-success btn-sm genReportii"><i class="fa fa-file-excel-o"></i> Excel</button>
                     </div>
                 </div>
@@ -134,7 +134,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR087" class="btn btn-danger btn-sm genReportii"><i class="fa fa-print"></i> PDF / HTML</button>
+                        <button type="button" repCode="ATR087" class="btn btn-danger btn-sm genReportii"><i class="fa fa-file-pdf-o"></i> PDF</button>
                     </div>
                 </div>
             </div>
@@ -164,7 +164,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR108" class="btn btn-danger btn-sm genReportii"><i class="fa fa-print"></i> PDF / HTML</button>
+                        <button type="button" repCode="ATR108" class="btn btn-danger btn-sm genReportii"><i class="fa fa-file-pdf-o"></i> PDF</button>
                     </div>
                 </div>
             </div>
@@ -194,7 +194,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR109" class="btn btn-danger btn-sm genReportii"><i class="fa fa-print"></i> PDF / HTML</button>
+                        <button type="button" repCode="ATR109" class="btn btn-danger btn-sm genReportii"><i class="fa fa-file-pdf-o"></i> PDF</button>
                     </div>
                 </div>
             </div>
@@ -224,7 +224,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group text-left">
-                        <button type="button" repCode="ATR113" class="btn btn-danger btn-sm genReportii"><i class="fa fa-print"></i> PDF / HTML</button>
+                        <button type="button" repCode="ATR113" class="btn btn-danger btn-sm genReportii"><i class="fa fa-file-pdf-o"></i> PDF</button>
                     </div>
                 </div>
             </div>
@@ -359,7 +359,7 @@
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR123" class="btn btn-danger btn-sm genReportii"><i class="fa fa-print"></i> PDF / HTML</button>
+                                    <button type="button" repCode="ATR123" class="btn btn-danger btn-sm genReportii"><i class="fa fa-file-pdf-o"></i> PDF</button>
                                     <button type="button" repCode="ATR123X" class="btn btn-success btn-sm genReportii"><i class="fa fa-file-excel-o"></i> Excel</button>
                                 </div>
                             </div>

@@ -60,14 +60,11 @@
 
 <br>
 <div class="row">
-	<div class="col-sm-3">
-		<div class="text-left col-sm-7">
-			<button type="button" class="btn btn-primary btn-sm sta_appsm_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-check-square"></i> Approve & Send Email</button>
-		</div>
-
-		<div class="text-left col-sm-1">
-			<button type="button" class="btn btn-danger btn-sm sta_reject_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-times-circle"></i> Reject</button>
-		</div>
+	<div class="text-left col-sm-10">
+		<button type="button" class="btn btn-primary btn-sm sta_appsm_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-check-square"></i> Approve & Send Email</button>
+		<button type="button" class="btn btn-danger btn-sm sta_reject_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-times-circle"></i> Reject</button>
+		<button type="button" class="btn btn-info btn-sm select_all_btn"><i class="fa fa-check-square-o"></i> Select All</button>
+		<button type="button" class="btn btn-info btn-sm unselect_all_btn"><i class="fa fa-square-o"></i> Unselect All</button>
 	</div>
 </div>
 </p>

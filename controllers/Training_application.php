@@ -3741,12 +3741,12 @@ class Training_application extends MY_Controller
 
             if($getThDate->TH_DATE_TO_FULL > $getThDate->CUR_DATE) {
                 $json = array('sts' => 0, 'msg' => 'Course is not completed', 'alert' => 'red');
-            } elseif($verSvcBook->TT_SERVICE_BOOK == 'N' || empty($verSvcBook->TT_SERVICE_BOOK)) {
-                $json = array('sts' => 0, 'msg' => 'Course is not included in service book', 'alert' => 'red');
             } elseif($getThDate->TH_DATE_TO_YEAR < '2013') {
                 $json = array('sts' => 0, 'msg' => 'Only courses from 2013 and above can be included in the service book.', 'alert' => 'red');
+            } elseif($verSvcBook->TT_SERVICE_BOOK == 'N' || empty($verSvcBook->TT_SERVICE_BOOK)) {
+                $json = array('sts' => 0, 'msg' => 'Course is not included in service book', 'alert' => 'red');
             } else {
-                $json = array('sts' => 1, 'msg' => 'Course can be included in service book', 'alert' => 'green');
+                $json = array('sts' => 1, 'msg' => 'Course is included in service book', 'alert' => 'green');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'red');
@@ -4059,32 +4059,35 @@ class Training_application extends MY_Controller
         $staffID = $this->input->post('stfID', true);
         $evaID = $this->input->post('evaID', true);
 
-        
+        $getMaxSeq = $this->mdl->getMaxSeq();
+        if(!empty($getMaxSeq)) {
+            $maxSeq = $getMaxSeq->HP_PARM_DESC;
+        } else {
+            $maxSeq = '0';
+        }
 
-        if (!empty($refid) && !empty($staffID) && !empty($evaID)) {
-            $getMemoSeq = $this->mdl->getStaffListSendMemo($refid, $staffID);
-            if(!empty($getMemoSeq)) {
-                $seqMemo = $getMemoSeq->SND_MEM;
+        if ($maxSeq > 0) {
+            if (!empty($refid) && !empty($staffID) && !empty($evaID)) {
+                $getMemoSeq = $this->mdl->getStaffListSendMemo($refid, $staffID);
+                if(!empty($getMemoSeq)) {
+                    $seqMemo = $getMemoSeq->SND_MEM;
+                } else {
+                    $seqMemo = '0';
+                }
+    
+                if ($seqMemo > $maxSeq) {
+                    $json = array('sts' => 0, 'msg' => 'Memos can only be sent ' .$maxSeq. ' only.', 'color' => 'red');
+                    
+                } else {
+                    $json = array('sts' => 1, 'msg' => 'Proceeed to send memo', 'color' => 'green');
+                }
             } else {
-                $seqMemo = '0';
-            }
-
-            $getMaxSeq = $this->mdl->getMaxSeq();
-            if(!empty($getMaxSeq)) {
-                $maxSeq = $getMaxSeq->HP_PARM_DESC;
-            } else {
-                $maxSeq = '0';
-            }
-
-            if ($seqMemo > $maxSeq) {
-                $json = array('sts' => 0, 'msg' => 'Memos can only be sent ' .$maxSeq. ' only.', 'color' => 'red');
-                
-            } else {
-                $json = array('sts' => 1, 'msg' => 'Proceeed to send memo', 'color' => 'green');
+                $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'color' => 'red');
             }
         } else {
-            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'color' => 'red');
+            $json = array('sts' => 0, 'msg' => 'This function has been disabled', 'color' => 'red');
         }
+        
          
         echo json_encode($json);
     }
@@ -4238,7 +4241,9 @@ class Training_application extends MY_Controller
                             '-- system generated memo --';
         // DEFAULT CONTENT
         $defContent = $form['content'];
-        
+        // if($maxSeq == 0) {
+        //     $json = array('sts' => 0, 'msg' => 'This function has been disabled.', 'alert' => 'danger', 'color' => 'red');
+        // }
 
         if (!empty($from) && !empty($sendTO) && !empty($memoTitle) && !empty($memoContent) && $memoSeq < $maxSeq) {
             $sendMemo = $this->mdl->createMemo($from, $sendTO, $memoTitle, $memoContent);
@@ -4267,7 +4272,7 @@ class Training_application extends MY_Controller
                 $json = array('sts' => 0, 'msg' => 'Fail to send memo.', 'alert' => 'danger', 'color' => 'red');
             }
         } else {
-            $json = array('sts' => 0, 'msg' => 'Memo cannot be sent.', 'alert' => 'danger', 'color' => 'red');
+            $json = array('sts' => 0, 'msg' => 'Memo can only be sent ' .$maxSeq. ' times.', 'alert' => 'danger', 'color' => 'red');
         }
          
         echo json_encode($json);

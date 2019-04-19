@@ -161,7 +161,7 @@
 	$.ajax({
 		type: 'POST',
 		url: '<?php echo $this->lib->class_url('getConferenceCat')?>',
-		data: '',
+		//data: '',
 		beforeSend: function() {
 			$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		},
@@ -176,5 +176,81 @@
 		},
     });
 
+    // ADD CONFERENCE CATEGORY MODAL
+	$('#conference_category').on('click','.add_cc_btn', function(){
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('addConferenceCat')?>',
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});	
+
+	// SAVE INSERT CONFERENCE CATEGORY
+	$('#myModalis2').on('click', '.ins_cc', function () {
+		var data = $('#addConferenceCat').serialize();
+		msg.wait('#conferenceCatAlert');
+		//alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveConferenceCat')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#conferenceCatAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						//$('#tbl_cc_list tbody').append(res.sp_row);
+					}, 1500);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
+			}
+		});	
+	});
+
+	// EDIT CONFERENCE CATEGORY MODAL
+	$('#conference_category').on('click','.edit_cc_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");;
+		var ccCode = td.find(".cc_code").text();
+		var ccDesc =  td.find(".cc_desc").text();
+		//alert(ccCode);
+		// $.ajax({
+		// 	type: 'POST',
+		// 	url: '<?php echo $this->lib->class_url('addConferenceCat')?>',
+		// 	success: function(res) {
+		// 		$('#myModalis2 .modal-content').html(res);
+		// 	}
+		// });
+	});
+	
+	// DELETE CONFERENCE CATEGORY
+	$('#conference_category').on('click','.del_cc_btn', function(){
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		// $.ajax({
+		// 	type: 'POST',
+		// 	url: '<?php echo $this->lib->class_url('addConferenceCat')?>',
+		// 	success: function(res) {
+		// 		$('#myModalis2 .modal-content').html(res);
+		// 	}
+		// });
+	});
 </script>

@@ -23,7 +23,7 @@
                 </tr>
                 <tr>
                     <td class="text-left col-md-4"><b>Evaluation Status</b></td>
-                    <td class="text-left"><?php echo $staff_eva_detl->SHE?></td>
+                    <td class="text-left"><?php echo $staff_eva_detl->SHE_DESC?></td>
                 </tr>
                 <tr>
                     <td class="text-left col-md-4"><b>Evaluation Date</b></td>

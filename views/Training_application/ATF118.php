@@ -79,10 +79,10 @@
 
 <br>
 <div class="row">
-	<div class="col-sm-3">
-		<div class="text-left col-sm-7">
-			<button type="button" class="btn btn-primary btn-sm sta_appsm_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-book"></i> Service Book</button>
-		</div>
+	<div class="text-left col-sm-10">
+		<button type="button" class="btn btn-primary btn-sm sta_appsm_btn" value="<?php echo $refid?>" data-tr-name="<?php echo $tname?>"><i class="fa fa-book"></i> Service Book</button>
+		<button type="button" class="btn btn-info btn-sm select_all_btn"><i class="fa fa-check-square-o"></i> Select All</button>
+		<button type="button" class="btn btn-info btn-sm unselect_all_btn"><i class="fa fa-square-o"></i> Unselect All</button>
 	</div>
 </div>
 </p>
@@ -319,5 +319,15 @@
 				});
 			}
 		});
+	});
+
+	// Select all record	
+	$('.select_all_btn').click( function() {
+		$(".checkitem").prop('checked', true);
+	});	
+
+	// Unselect all record	
+	$('.unselect_all_btn').click(function() {
+		$(".checkitem").prop('checked', false);
 	});
 </script>
