@@ -32,7 +32,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Email To</label>
             <div class="col-md-9">
-                <input name="form[email_to]" class="form-control" type="text" value="" id="emailTo" readonly>
+                <input name="form[email_to]" class="form-control" type="text" value="" id="emailTo">
             </div>
         </div>
 
@@ -53,7 +53,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Email CC</label>
             <div class="col-md-9">
-                <input name="form[email_cc]" class="form-control" type="text" value="" id="emailCC" readonly>
+                <input name="form[email_cc]" class="form-control" type="text" value="" id="emailCC">
             </div>
         </div>
 
