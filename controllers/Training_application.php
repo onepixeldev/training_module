@@ -722,6 +722,15 @@ class Training_application extends MY_Controller
         // training name
         $trName = $form['training_title'];
 
+        // evaluation period not/required
+        if($evaluationTHD == 'Y') {
+            $evaluationFrReq = 'required|max_length[30]';
+            $evaluationToReq = 'required|max_length[30]';
+        } else {
+            $evaluationFrReq = 'max_length[30]';
+            $evaluationToReq = 'max_length[30]';
+        }
+
         // form / input validation
         $rule = array(
             // 0
@@ -729,7 +738,7 @@ class Training_application extends MY_Controller
             'category' => 'required|max_length[200]',
             'structured_training' => 'max_length[20]',
             'level' => 'required|max_length[10]', 
-            'area' => 'required|max_length[200]', 
+            'area' => 'max_length[200]', 
             'service_group' => 'max_length[10]',
             'training_title' => 'required|max_length[100]', 
             'training_description' => 'max_length[500]', 
@@ -742,14 +751,14 @@ class Training_application extends MY_Controller
             'time_to' => 'required|max_length[11]',
             'total_hours' => 'required|max_length[12]', 
             'internal_external' => 'required|max_length[20]', 
-            'sponsor' => 'required|max_length[100]',
+            'sponsor' => 'max_length[100]',
             'offer' => 'max_length[1]', 
             'participants' => 'max_length[11]', 
             'online_application' => 'max_length[1]',
             'closing_date' => 'max_length[11]', 
             'competency_code' => 'max_length[10]', 
-            'evaluation_period_from' => 'required|max_length[30]',
-            'evaluation_period_to' => 'required|max_length[30]', 
+            'evaluation_period_from' => $evaluationFrReq,
+            'evaluation_period_to' => $evaluationToReq, 
 
             // TRAINING_HEAD_DETL
             'coordinator' => 'max_length[10]', 
@@ -764,7 +773,7 @@ class Training_application extends MY_Controller
             'organizer_level' => 'max_length[10]', 'organizer_name' => 'max_length[100]', 
 
             // completion info
-            'evaluation_compulsary' => 'required|max_length[1]', 'attendance_type' => 'required|max_length[20]', 'print_certificate' => 'required|max_length[1]'
+            'evaluation_compulsary' => 'max_length[1]', 'attendance_type' => 'max_length[20]', 'print_certificate' => 'max_length[1]'
         );
 
         $exclRule = null;
@@ -779,19 +788,18 @@ class Training_application extends MY_Controller
                 $refid = $data['refID']->REF_ID;
                 $insert = $this->mdl->insertTrainingHead($form, $refid);
 
-                if($insert > 0){
+                if($insert > 0 && empty($trCode)){
                     $insTrHeadMsg = 'TRAINING_HEAD success! ';
-                    $insertTHD = 0; // tr head detl
-                    $insTHD = 0; // tr head detl
 
                     // INSERT TRAINING HEAD DETAIL
                     if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD)) {
                         $insertTHD = $this->mdl->insertTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
-                        $insTHD++;
-                    }
-                    
-                    if($insertTHD == $insTHD) {
-                        $insTHDMsg = 'TRAINING_HEAD_DETL success! ';
+
+                        if($insertTHD > 0) {
+                            $insTHDMsg = 'TRAINING_HEAD_DETL (Module Setup) success! ';
+                        } else {
+                            $insTHDMsg = '';
+                        }
                     } else {
                         $insTHDMsg = '';
                     }
@@ -809,10 +817,8 @@ class Training_application extends MY_Controller
                     $data['resultTGS'] = $this->mdl->getResultTGS($trCode);
                     $insCount = 0; // tr grp
                     $insCount2 = 0; // tr grp service
-                    $insertTHD = 0; // tr head detl
-                    $insTHD = 0; // tr head detl
 
-                    // INSERT CPD HEAD
+                    // INSERT CPD HEAD (CPD Setup)
                     if(!empty($data['compt']->TTH_COMPETENCY)){
                         $competency = $data['compt']->TTH_COMPETENCY;
                     } else {
@@ -821,7 +827,7 @@ class Training_application extends MY_Controller
                     $insertCPDHead = $this->mdl->insertCPDHead($refid, $competency); 
 
                     if($insertCPDHead > 0) {
-                        $insCpdHeadMsg = 'CPD_HEAD success! ';
+                        $insCpdHeadMsg = 'CPD_HEAD (CPD Setup) success! ';
                     } 
                     else {
                         $insCpdHeadMsg = '';
@@ -841,7 +847,7 @@ class Training_application extends MY_Controller
                     }
 
                     if($insertTrainingTargetGroup == $insCount) {
-                        $insTTGMsg = 'TRAINING_TARGET_GROUP success! ';
+                        $insTTGMsg = 'TRAINING_TARGET_GROUP (Target Group) success! ';
                     } else {
                         $insTTGMsg = '';
                     }
@@ -876,11 +882,12 @@ class Training_application extends MY_Controller
                     // INSERT TRAINING HEAD DETAIL
                     if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD)) {
                         $insertTHD = $this->mdl->insertTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
-                        $insTHD++;
-                    }
-
-                    if($insertTHD == $insTHD) {
-                        $insTHDMsg = 'TRAINING_HEAD_DETL success! ';
+                        
+                        if($insertTHD > 0) {
+                            $insTHDMsg = 'TRAINING_HEAD_DETL (Module Setup) success! ';
+                        } else {
+                            $insTHDMsg = '';
+                        }
                     } else {
                         $insTHDMsg = '';
                     }
@@ -1397,6 +1404,15 @@ class Training_application extends MY_Controller
         $coorContact = $form['phone_number'];
         $evaluationTHD = $form['evaluation'];
 
+        // evaluation period not/required
+        if($evaluationTHD == 'Y') {
+            $evaluationFrReq = 'required|max_length[30]';
+            $evaluationToReq = 'required|max_length[30]';
+        } else {
+            $evaluationFrReq = 'max_length[30]';
+            $evaluationToReq = 'max_length[30]';
+        }
+
         // form / input validation
         $rule = array(
             // sc code
@@ -1408,7 +1424,7 @@ class Training_application extends MY_Controller
             'category' => 'required|max_length[200]',
             'structured_training' => 'max_length[20]',
             'level' => 'required|max_length[10]', 
-            'area' => 'required|max_length[200]', 
+            'area' => 'max_length[200]', 
             'service_group' => 'max_length[10]',
             'training_title' => 'required|max_length[100]', 
             'training_description' => 'max_length[500]', 
@@ -1421,14 +1437,14 @@ class Training_application extends MY_Controller
             'time_to' => 'required|max_length[11]',
             'total_hours' => 'required|max_length[12]', 
             'internal_external' => 'required|max_length[20]', 
-            'sponsor' => 'required|max_length[100]',
+            'sponsor' => 'max_length[100]',
             'offer' => 'max_length[1]', 
             'participants' => 'max_length[11]', 
             'online_application' => 'max_length[1]',
             'closing_date' => 'max_length[11]', 
             'competency_code' => 'max_length[10]', 
-            'evaluation_period_from' => 'required|max_length[30]',
-            'evaluation_period_to' => 'required|max_length[30]', 
+            'evaluation_period_from' => $evaluationFrReq,
+            'evaluation_period_to' => $evaluationToReq, 
 
             // TRAINING_HEAD_DETL
             'coordinator' => 'max_length[10]', 
@@ -1443,42 +1459,50 @@ class Training_application extends MY_Controller
             'organizer_level' => 'max_length[10]', 'organizer_name' => 'max_length[100]', 
 
             // completion info
-            'evaluation_compulsary' => 'required|max_length[1]', 'attendance_type' => 'required|max_length[20]', 'print_certificate' => 'required|max_length[1]'
+            'evaluation_compulsary' => 'max_length[1]', 'attendance_type' => 'max_length[20]', 'print_certificate' => 'max_length[1]'
         );
 
         $exclRule = null;
         
         list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
 
-        // Begin Insert New Record
+        // Begin update Record
         if ($status == 1) {
 
             if(!empty($refid)){
                 //$refid = $data['refID']->REFID;
                 $update = $this->mdl->updateTrainingHead($form, $refid);
 
-                if($update > 0){
+                if($update > 0 && empty($trCode)){
                     $data['trInfo'] = $this->mdl->getTrainingInfoDetail($refid);
                     $trName = $data['trInfo']->TH_TRAINING_TITLE;
 
                     $updTrHeadMsg = 'TRAINING_HEAD success! ';
 
-                    $insertTHD = 0; // tr head detl
-                    $updTHD = 0; // tr head detl
+                    // check training head detail
+                    $checkTHD = $this->mdl->getTrHeadDetl($refid);
 
-                    // update training head detail
-                    $updateTHD = $this->mdl->updateTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
+                    // update/insert training head detail (module setup)
+                    if(!empty($checkTHD)) {
+                        $updateTHD = $this->mdl->updateTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
 
-                    if($updateTHD > 0) {
-                        $updTHD++;
+                        if($updateTHD > 0) {
+                            $updTHDMsg = 'TRAINING_HEAD_DETL (Module Setup) updated!';
+                        } else {
+                            $updTHDMsg = '';
+                        }
                     } else {
-                        $updateTHD = 0;
-                    }
+                        if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD)) {
+                            $insertTHD = $this->mdl->insertTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
 
-                    if($updateTHD == $updTHD) {
-                        $updTHDMsg = 'TRAINING_HEAD_DETL success! ';
-                    } else {
-                        $updTHDMsg = '';
+                            if($insertTHD > 0) {
+                                $updTHDMsg = 'TRAINING_HEAD_DETL (Module Setup) added! ';
+                            } else {
+                                $updTHDMsg = '';
+                            }
+                        } else {
+                            $updTHDMsg = '';
+                        }
                     }
 
                     $stsMsg = nl2br("\n".$updTrHeadMsg."\n".$updTHDMsg);
@@ -1496,22 +1520,36 @@ class Training_application extends MY_Controller
                     $data['resultTGS'] = $this->mdl->getResultTGS($trCode);
                     $insCount = 0; // tr grp
                     $insCount2 = 0; // tr grp service
-                    // $insertTHD = 0; // tr head detl
-                    // $updTHD = 0; // tr head detl
 
-                    // update CPD head
                     if(!empty($data['compt']->TTH_COMPETENCY)){
                         $competency = $data['compt']->TTH_COMPETENCY;
                     } else {
                         $competency = '';
                     }
-                    $updatetCPDHead = $this->mdl->updateCPDHead($refid, $competency); 
 
-                    if($updatetCPDHead > 0) {
-                        $updCpdHeadMsg = 'CPD_HEAD success! ';
-                    } 
-                    else {
-                        $updCpdHeadMsg = '';
+                    // check cpd
+                    $checkCPD = $this->mdl->getCpdSetup($refid);
+
+                    // update/insert CPD head
+                    if(!empty($checkCPD)) {
+                        // UPDATE CPD HEAD
+                        $updatetCPDHead = $this->mdl->updateCPDHead($refid, $competency);
+
+                        if($updatetCPDHead > 0) {
+                            $updCpdHeadMsg = 'CPD_HEAD (CPD Setup) updated! ';
+                        } 
+                        else {
+                            $updCpdHeadMsg = '';
+                        }
+                    } else {
+                        $inserttCPDHead = $this->mdl->insertCPDHead($refid, $competency);
+
+                        if($inserttCPDHead > 0) {
+                            $updCpdHeadMsg = 'CPD_HEAD (CPD Setup) added! ';
+                        } 
+                        else {
+                            $updCpdHeadMsg = '';
+                        }
                     }
 
                     // insert training group
@@ -1572,21 +1610,31 @@ class Training_application extends MY_Controller
                         $insTGSMsg = '';
                     }
 
-                    // // update training head detail
-                    // $updateTHD = $this->mdl->updateTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
+                    // update training head detail
+                    // check training head detail
+                    $checkTHD = $this->mdl->getTrHeadDetl($refid);
 
-                    // if($updateTHD > 0) {
-                    //     $updTHD++;
-                    // } else {
-                    //     $updateTHD = 0;
-                    // }
+                    if(!empty($checkTHD)) {
+                        $updateTHD = $this->mdl->updateTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
 
-                    // if($updateTHD == $updTHD) {
-                    //     $updTHDMsg = 'TRAINING_HEAD_DETL success! ';
-                    // } else {
-                    //     $updTHDMsg = '';
-                    // }
+                        if($updateTHD > 0) {
+                            $updTHDMsg = 'TRAINING_HEAD_DETL (Module Setup) updated!';
+                        } else {
+                            $updTHDMsg = '';
+                        }
+                    } else {
+                        if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD)) {
+                            $insertTHD = $this->mdl->insertTrainingHeadDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD);
 
+                            if($insertTHD > 0) {
+                                $updTHDMsg = 'TRAINING_HEAD_DETL (Module Setup) added! ';
+                            } else {
+                                $updTHDMsg = '';
+                            }
+                        } else {
+                            $updTHDMsg = '';
+                        }
+                    }
 
                     $stsMsg = nl2br("\n".$updTrHeadMsg."\n".$updCpdHeadMsg."\n".$insTTGMsg."\n".$insTGSMsg."\n".$updTHDMsg);
                     $json = array('sts' => 1, 'msg' => nl2br("Record has been saved \n".$stsMsg), 'alert' => 'success', 'refid' => $refid, 'trName' => $trName);
@@ -2549,7 +2597,7 @@ class Training_application extends MY_Controller
         $refid = $this->input->post('refid', true);
         $staffID = $this->input->post('stfID', true);
         $memo_from = 'bsm.latihan@upsi.edu.my';
-        //$memo_from_cc = ',bsm.latihan@upsi.edu.my';
+        $memo_from_cc = 'bsm.latihan@upsi.edu.my';
 
         $staffNameArr = array();
         $staffEmailArr = array();
@@ -2560,6 +2608,8 @@ class Training_application extends MY_Controller
         // GET TRAINING DETAIL
         $tr_detl = $this->mdl->getTrDetl($refid);
         if (!empty($tr_detl)) {
+            // TRAINING REFID
+            $tr_refid = $tr_detl->TH_REF_ID;
             // TRAINING TITLE
             $tr_title = $tr_detl->TH_TRAINING_TITLE;
             // TRAINING VENUE
@@ -2616,6 +2666,7 @@ class Training_application extends MY_Controller
                                 'Sekian, terima kasih.';
 
         if(!empty($refid) && !empty($staffID)) {
+            $staffEmailCCArr [] = $memo_from_cc;
             foreach ($staffID as $key => $fid) {
                 // GET STAFF EMAIL
                 $staff_app = $this->mdl->getCurUserDept($fid);
@@ -2643,11 +2694,11 @@ class Training_application extends MY_Controller
                 }
 
                 // EMAIL CC
-                if (!empty($eva_email)) {
-                    $email_cc = ''.$eva_email. ', ' .$memo_from;
-                } else {
-                    $email_cc = $memo_from;
-                }
+                // if (!empty($eva_email)) {
+                //     $email_cc = ''.$eva_email. ', ' .$memo_from;
+                // } else {
+                //     $email_cc = $memo_from;
+                // }
 
                 $staffIDCCArr [] = $eva_id;
                 $staffNameCCArr [] = $eva_name;
@@ -2684,7 +2735,7 @@ class Training_application extends MY_Controller
             $filterStaffNameCCArr = array_values(array_filter($staffNameCCArr));
             $filterStaffEmailCCArr = array_values(array_filter($staffEmailCCArr));
 
-            $json = array('sts' => 1, 'msg' => 'All staff details', 'alert' => 'red', 'from' => $memo_from, 'staffNameArr' => $staffNameArr, 'staffEmailArr' => $staffEmailArr, 'staffIDCCArr' => $filterStaffIDCCArr, 'staffNameCCArr' => $filterStaffNameCCArr, 'staffEmailCCArr' => $filterStaffEmailCCArr, 'msg_title' => $msg_title, 'msg_content' => $msg_content);
+            $json = array('sts' => 1, 'msg' => 'All staff details', 'alert' => 'red', 'from' => $memo_from, 'staffNameArr' => $staffNameArr, 'staffEmailArr' => $staffEmailArr, 'staffIDCCArr' => $filterStaffIDCCArr, 'staffNameCCArr' => $filterStaffNameCCArr, 'staffEmailCCArr' => $filterStaffEmailCCArr, 'msg_title' => $msg_title, 'msg_content' => $msg_content, 'refid' => $tr_refid);
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator!', 'alert' => 'danger');
         }
@@ -3390,9 +3441,16 @@ class Training_application extends MY_Controller
         list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
 
         if ($status == 1 && !empty($refid) && !empty($stfID)) {
-            $update = $this->mdl->saveUpdateApplicantDetails($form, $refid, $stfID);
+            $checkStaffCon = $this->mdl->verifyTraining($refid, $stfID);
+            
+            if(!empty($checkStaffCon)) {
+                $updateIns = $this->mdl->saveUpdateApplicantDetails($form, $refid, $stfID);
+            } else {
+                $updateIns = $this->mdl->saveInsertApplicantDetails($form, $refid, $stfID);
+            }
+            
 
-            if($update > 0) {
+            if($updateIns > 0) {
                 $attend_field = $this->mdl->verifyTraining($refid, $stfID);
 
                 if($attend_field->STD_ATTEND == 'A') {
@@ -3577,11 +3635,11 @@ class Training_application extends MY_Controller
 
         // staff email
         $emailForm = $form['email_to'];
-        $staff_app_email = explode(",", $emailForm);
+        //$staff_app_email = explode(",", $emailForm);
 
         // cc email
         $emailCCForm = $form['email_cc'];
-        $email_cc = explode(",", $emailCCForm);
+        //$email_cc = explode(",", $emailCCForm);
 
         // email title
         $msg_title = $form['title'];
@@ -3589,27 +3647,51 @@ class Training_application extends MY_Controller
         // email content 
         $msg_content = $form['content'];
 
+        // staff_id 
+        $staff_id = $form['staff_id_to'];
+        $staff_id_arr = explode(",", $staff_id);
+
+        // refid 
+        $refid = $form['refid'];
+
         $success = 0;
         $successResend = 0;
         
         //var_dump($email_cc);
+        $sendEmailSts = $this->mdl->sendEmail($memo_from, $emailForm, $emailCCForm, $msg_title, $msg_content);
 
-        foreach($staff_app_email as $key => $sae) {
-            $success++;
-
-            //$rem = $remark[$key];
-            $email_cc2 = $email_cc[$key];
-            $sendEmailSts = $this->mdl->sendEmail($memo_from, $sae, $email_cc2, $msg_title, $msg_content);
-
-            if($sendEmailSts > 0) {
-                $successResend++;
-            } else {
-                $successResend = 0;
+        if($sendEmailSts > 0) {
+            
+            // update/insert memo status
+            foreach ($staff_id_arr as $sia) {
+                $success++;
+                
+                $checkEmailSts = $this->mdl->verifyTraining($refid, $sia);
+        
+                if (!empty($checkEmailSts)) {
+                    $updEmailSts = $this->mdl->updateEmailSts($refid, $sia);
+                    if ($updEmailSts > 0) {
+                        $successResend++;
+                        $msgSuccess = "Memo status updated";
+                    } else {
+                        $msgSuccess = "";
+                    }
+                } else {
+                    $insEmailSts = $this->mdl->insertEmailSts($refid, $sia);
+                    if ($insEmailSts > 0) {
+                        $successResend++;
+                        $msgSuccess = "Memo status updated";
+                    } else {
+                        $msgSuccess = "";
+                    }
+                }
             }
+        } else {
+            $successResend = 0;
         }
 
         if($success == $successResend) {
-            $json = array('sts' => 1, 'msg' => 'Email sent', 'alert' => 'green');
+            $json = array('sts' => 1, 'msg' => 'Email sent '.nl2br("\n\r").$msgSuccess, 'alert' => 'green');
         } else {
             $json = array('sts' => 0, 'msg' => 'Fail to send email', 'alert' => 'red');
         }

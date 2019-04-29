@@ -6,6 +6,12 @@
         <div id="resendEmailAlert">
             <b>Note : </b> ( <b><font color="red">*</font></b> ) <b><font color="red">compulsory fields</font></b><br>&nbsp; <span id="note"></span>
         </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label">Refid</label>
+            <div class="col-md-9">
+                <input name="form[refid]" class="form-control" type="text" value="" id="refid" readonly>
+            </div>
+        </div>
 
         <div class="form-group">
             <label class="col-md-2 control-label">From</label>

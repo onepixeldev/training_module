@@ -33,7 +33,7 @@
             <label class="col-md-3 control-label">Evaluator ID</label>
             <div class="col-md-8">
                 <?php
-                    echo form_dropdown('form[evaluator_id]', $eva_list, $staff_eva_detl->EVA_ID, 'class="selectpicker form-control width-50"')
+                    echo form_dropdown('form[evaluator_id]', $eva_list, $staff_eva_detl->EVA_ID, 'class="selectpicker select2-filter form-control"')
                 ?>
             </div>
         </div>
@@ -75,4 +75,11 @@
             format: 'DD/MM/YYYY'
         });
 	});
+
+    $('.select2-filter').select2({
+        tags: true,
+        dropdownParent: $("#myModalis2"),
+        placeholder: 'Select an option',
+        width: 'resolve'
+    });
 </script>

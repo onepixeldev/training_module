@@ -13,7 +13,7 @@
             <label class="col-md-2 control-label">Group Code <b><font color="red">* </font></b></label>
             <div class="col-md-5">
                 <?php
-                    echo form_dropdown('form[group_code]', $tg_list, '', 'class="selectpicker form-control width-50" id="groupCode"')
+                    echo form_dropdown('form[group_code]', $tg_list, '', 'class="selectpicker select2-filter form-control" id="groupCode"')
                 ?>
             </div>
         </div>
@@ -87,3 +87,12 @@
         <button type="submit" class="btn btn-primary ins_tg_btn"><i class="fa fa-save"></i> Save</button>
     </div>
 </form>
+
+<script>
+$('.select2-filter').select2({
+    tags: true,
+    dropdownParent: $("#myModalis"),
+    placeholder: 'Select an option',
+    width: 'resolve'
+});
+</script>

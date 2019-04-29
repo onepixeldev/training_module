@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>Approve Training Application</h2>				
+            <h2>ATF002 - Approve Training Application</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -635,6 +635,7 @@
 													}
 												});
 												
+												$('#myModalis #refid').val(refid);
 												$('#myModalis #from').val(from);
 												$('#myModalis #sit').val(staffIDArr);
 												$('#myModalis #nameTo').val(staffNameArr);

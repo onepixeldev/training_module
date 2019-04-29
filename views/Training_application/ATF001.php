@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>Training Setup</h2>				
+            <h2>ATF001 - Training Setup</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -195,6 +195,27 @@
 		});
 	});
 
+	// evaluation not/required
+	$('#add_edit_tr_info').on('change','#evaluation', function() {
+		var evaluation = $(this).val();
+		$('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+
+		if(evaluation == 'Y') {
+			$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+
+			$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+
+			$('#evaPTo').html('To <b><font color="red">* </font></b>');
+		} else {
+			$('#evaMsg').html('');
+
+			$('#evaPFrom').html('From');
+
+			$('#evaPTo').html('To');
+		}
+		$('#evaLoader').html('');
+	});
+
 	// populate state add new training form
 	$('#add_edit_tr_info').on('change','#country', function() {
 		var countCode = $(this).val();
@@ -290,7 +311,7 @@
 	// save INSERT training info
 	$('#add_edit_tr_info').on('click', '.ins_tr_info', function (e) { 
 		e.preventDefault();
-		var data = $('form').serialize();
+		var data = $('#addNewTraining').serialize();
 		msg.wait('#alert');
 		msg.wait('#alertFooter');
 		//alert('TR INFO');
@@ -322,6 +343,27 @@
 					        success: function(res) {
 					            //$('.nav-tabs li:eq(1) a').tab('show');
 								$('#add_edit_tr_info').html(res);
+								
+								// refresh training info
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('trainingInfo')?>',
+									data: '',
+									beforeSend: function() {
+										$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										//alert(res);
+										$('#trainingInfo').html(res);
+										dt_row = $('#tbl_list_ti').DataTable({
+											"ordering":false,
+											//"lengthMenu": [[4, 8], [4, 8]]
+										});
+									},
+									complete: function(){
+										$('#loader').hide();
+									},
+								});
 								
 								$.ajax({
 									type: 'POST',
@@ -515,6 +557,27 @@
 					        success: function(res) {
 					            $('.nav-tabs li:eq(1) a').tab('show');
 								$('#add_edit_tr_info').html(res);
+
+								// refresh training info
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('trainingInfo')?>',
+									data: '',
+									beforeSend: function() {
+										$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										//alert(res);
+										$('#trainingInfo').html(res);
+										dt_row = $('#tbl_list_ti').DataTable({
+											"ordering":false,
+											//"lengthMenu": [[4, 8], [4, 8]]
+										});
+									},
+									complete: function(){
+										$('#loader').hide();
+									},
+								});
 								
 								$.ajax({
 									type: 'POST',
@@ -1811,7 +1874,7 @@
 		else if(rpSub == 'NO') {
 			rpSub = 'N';
 		}
-		alert(rpSub);
+		// alert(rpSub);
 
 		$('#myModalis2 #mContent2').empty();
 		$('#myModalis2').modal('show');
@@ -1920,8 +1983,4 @@
 			}
 		});	
 	});
-	
-
-
-
 </script>

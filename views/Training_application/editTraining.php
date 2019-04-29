@@ -50,7 +50,7 @@
                 ?>
             </div>
             
-            <label class="col-md-2 control-label">Area <b><font color="red">* </font></b></label>
+            <label class="col-md-2 control-label">Area</label>
             <div class="col-md-4">
                 <?php
                     echo form_dropdown('form[area]', $area, $trInfo->TH_FIELD, 'class="selectpicker form-control field_inpt width-50"')
@@ -144,7 +144,7 @@
         </div>
 
         <div class="form-group">
-            <label class="col-md-2 control-label">Sponsor <b><font color="red">* </font></b></label>
+            <label class="col-md-2 control-label">Sponsor</label>
             <div class="col-md-10">
                 <input name="form[sponsor]" placeholder="Sponsor" class="form-control field_inpt" type="text" value="<?php echo $trInfo->TH_SPONSOR?>">
             </div>
@@ -184,13 +184,19 @@
         <div class="form-group">
             <label class="col-md-4 control-label text-right"><b>Evaluation Period :</b></label>
         </div>
+        
         <div class="form-group">
-            <label class="col-md-2 control-label">From <b><font color="red">* </font></b></label>
+            <label class="col-md-4 control-label text-right" id="evaMsg"></label>
+        </div>
+
+        <div class="form-group">
+            <div id="evaLoader"></div>
+            <label class="col-md-2 control-label" id="evaPFrom">From</label>
             <div class="col-md-4">
                 <input name="form[evaluation_period_from]" placeholder="DD-MM-YYYY" class="form-control field_inpt" type="text" id="datepicker4" value="<?php echo $trInfo->TH_EVA_DATE_FROM?>">
             </div>
 
-            <label class="col-md-2 control-label">To <b><font color="red">* </font></b></label>
+            <label class="col-md-2 control-label" id="evaPTo">To</label>
             <div class="col-md-4">
                 <input name="form[evaluation_period_to]" placeholder="DD-MM-YYYY" class="form-control field_inpt" type="text" id="datepicker5"  value="<?php echo $trInfo->TH_EVA_DATE_TO?>">
             </div>
@@ -203,7 +209,7 @@
             <label class="col-md-2 control-label">Coordinator</label>
             <div class="col-md-5">
                 <?php
-                    echo form_dropdown('form[coordinator]', $coor, $coordinator, 'class="selectpicker form-control field_inpt width-50"')
+                    echo form_dropdown('form[coordinator]', $coor, $coordinator, 'class="selectpicker select2-filter form-control field_inpt" style="width: 100%"')
                 ?>
             </div>
         </div>
@@ -225,7 +231,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Evaluation?</label>
             <div class="col-md-2">
-                <?php echo form_dropdown('form[evaluation]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $evaluation, 'class="selectpicker form-control field_inpt width-50"')?>
+                <?php echo form_dropdown('form[evaluation]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $evaluation, 'class="selectpicker form-control field_inpt width-50" id="evaluation"')?>
             </div>
         </div>
 
@@ -260,7 +266,7 @@
             <label class="col-md-2 control-label">Organizer Name</label>
             <div class="col-md-4">
                 <?php
-                    echo form_dropdown('form[organizer_name]', $org_name, $trInfo->TH_ORGANIZER_NAME, 'class="selectpicker form-control field_inpt width-50" id="orginfo"')
+                    echo form_dropdown('form[organizer_name]', $org_name, $trInfo->TH_ORGANIZER_NAME, 'class="selectpicker select2-filter form-control field_inpt" style="width: 100%" id="orginfo"')
                 ?>
             </div>
         </div>
@@ -306,14 +312,14 @@
         </div>
         <br>
         <div class="form-group">
-            <label class="col-md-2 control-label">Evaluation Compulsory? <b><font color="red">* </font></b></label>
+            <label class="col-md-2 control-label">Evaluation Compulsory?</label>
             <div class="col-md-2">
                 <?php
                     echo form_dropdown('form[evaluation_compulsary]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_EVALUATION_COMPULSORY, 'class="selectpicker form-control field_inpt width-50"')
                 ?>
             </div>
             
-            <label class="col-md-4 control-label">Attendance Type <b><font color="red">* </font></b></label>
+            <label class="col-md-4 control-label">Attendance Type</label>
             <div class="col-md-4">
                 <?php
                     echo form_dropdown('form[attendance_type]', array('NONE'=>'NONE','DAILY'=>'DAILY','ONE-TIME'=>'ONE-TIME'), $trInfo->TH_ATTENDANCE_TYPE, 'class="selectpicker form-control field_inpt width-50"')
@@ -322,7 +328,7 @@
         </div>
 
         <div class="form-group">
-            <label class="col-md-2 control-label">Print Certificate? <b><font color="red">* </font></b></label>
+            <label class="col-md-2 control-label">Print Certificate?</label>
             <div class="col-md-2">
                 <?php
                     echo form_dropdown('form[print_certificate]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $trInfo->TH_PRINT_CERTIFICATE, 'class="selectpicker form-control field_inpt width-50"')
@@ -349,6 +355,10 @@
     //var recc = '';
 
 	$(document).ready(function(){	
+        $('.select2-filter').select2({
+            placeholder: 'Select an option',
+            width: 'resolve'
+        });
         
         $('#datepicker').datetimepicker({
             format: 'L',

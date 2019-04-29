@@ -33,7 +33,7 @@
             </div>
             <div class="col-md-7">
                 <?php
-                    echo form_dropdown('form[course_title]', array(''=>'--- Please select month or year ---'), '', 'class="selectpicker form-control width-50" id="courseTitle"')
+                    echo form_dropdown('form[course_title]', array(''=>'--- Please select month or year ---'), '', 'class="selectpicker select2-filter form-control" style="width: 100%" id="courseTitle"')
                 ?>
             </div>
         </div>
@@ -63,3 +63,12 @@
         <button type="button" class="btn btn-danger print_mem_btn"><i class="fa fa-print"></i> Print Memo</button>
     </div>
 </form>
+
+<script>
+    $('.select2-filter').select2({
+        tags: true,
+        dropdownParent: $("#myModalis"),
+        placeholder: 'Select an option',
+        width: 'resolve'
+    });
+</script>

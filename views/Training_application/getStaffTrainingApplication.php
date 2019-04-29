@@ -19,6 +19,9 @@
 			<th class="text-center">Staff ID</th>
             <th class="text-left">Name</th>
 			<th class="text-center">Email</th>
+			<th class="text-center">Department</th>
+			<th class="text-center">Job Status</th>
+			<th class="text-center">Evaluator ID</th>
             <th class="text-center">Remark</th>
 			<th class="text-center col-md-1">Action</th>
 		</tr>
@@ -37,6 +40,9 @@
 						<td class="text-center col-md-1 sid">' . $stl->SM_STAFF_ID . '</td>
 						<td class="text-left col-md-3">' . $stl->SM_STAFF_NAME . '</td>
 						<td class="text-center col-md-2">' . $stl->SM_EMAIL_ADDR . '</td>
+						<td class="text-center col-md-2">' . $stl->SM_DEPT_CODE . '</td>
+						<td class="text-center col-md-2">' . $stl->SJS_STATUS_DESC . '</td>
+						<td class="text-center col-md-2">evaID</td>
 						<td class="text-center col-md-1">
 						<div class="form-group">
 							<div class="col-md-9">
