@@ -510,6 +510,27 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
+    // check tgs add position
+    public function checkTGS2($gpCode, $svcCode) {
+        $this->db->select("*");
+        $this->db->from("TRAINING_GROUP_SERVICE");
+        $this->db->where("TGS_GRPSERV_CODE", $gpCode);
+        $this->db->where("TGS_SERVICE_CODE", $svcCode);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // get max seq add position
+    public function getMaxTGSSeq($gpCode) {
+        $this->db->select("(MAX(TGS_SEQ)+1) AS MAX_SEQ");
+        $this->db->from("TRAINING_GROUP_SERVICE");
+        $this->db->where("TGS_GRPSERV_CODE", $gpCode);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
     // SELECT TRAINING HEAD DETAIL
     public function getTrHeadDetl($refID) {
         $this->db->select("*");
@@ -673,11 +694,50 @@ class Training_application_model extends MY_Model
     }
 
     // GET SERVICE SCHEME BASED ON GROUP CODE
-    public function getListEgPosition($groupCode) {
+    public function getListEgPosition($groupCode, $svcCode = null) {
         $this->db->select("TGS_GRPSERV_CODE, TGS_SEQ, TGS_SERVICE_CODE, SS_SERVICE_DESC");
         $this->db->from("TRAINING_GROUP_SERVICE");
         $this->db->join('SERVICE_SCHEME', 'TRAINING_GROUP_SERVICE.TGS_SERVICE_CODE = SERVICE_SCHEME.SS_SERVICE_CODE', 'LEFT');
         $this->db->where("TGS_GRPSERV_CODE", $groupCode);
+        if(!empty($svcCode)) {
+            $this->db->where("TGS_SERVICE_CODE", $svcCode);
+
+            $q = $this->db->get();
+            return $q->row();
+        } else {
+            $q = $this->db->get();
+            return $q->result();
+        }
+    }
+
+    // save insert eg position
+    public function saveInsertEgPos($form, $gpCode, $tgs_seq) {
+
+        $data = array(
+            "TGS_GRPSERV_CODE" => $gpCode,
+            "TGS_SEQ" => $tgs_seq,
+            "TGS_SERVICE_CODE" => $form['service']
+        );
+
+        return $this->db->insert("TRAINING_GROUP_SERVICE", $data);
+    }
+
+    public function getServiceList($schemeCode, $gradeTo, $svcGrp, $aca) {
+
+        $this->db->select("SS_SERVICE_CODE, SS_SERVICE_DESC, SS_SERVICE_CODE||' - '||SS_SERVICE_DESC AS SS_SERVICE_DESC");
+        $this->db->from("SERVICE_SCHEME");
+        if(!empty($aca)){
+            $this->db->where("SS_ACADEMIC", $aca);
+        }
+
+        if(!empty($schemeCode)){
+            $this->db->where("SS_CLASS_CODE", $schemeCode);
+        }
+
+        if(!empty($svcGrp)){
+            $this->db->where("SS_SERVICE_GROUP", $svcGrp);
+        }
+        $this->db->where("ltrim(SS_SALARY_GRADE, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') <= '$gradeTo'");
 
         $q = $this->db->get();
         return $q->result();
@@ -1533,32 +1593,61 @@ class Training_application_model extends MY_Model
     } 
 
     // GET STAFF LIST BASED FROM TRAINING
-    // staff training application (sort peserta ikut ptj, tambah column pengawai penyelia, tambah column lantikan dan ptj)
-    // make new function
-    public function getStaffTrainingApplication($refid, $staffID = null)
+    // public function getStaffTrainingApplication($refid, $staffID = null)
+    // {
+    //     $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, 
+    //                        SJS_STATUS_DESC, STH_STATUS, SM_EMAIL_ADDR, 
+    //                        to_char(STH_APPLY_DATE, 'DD/MM/YYYY') AS STHAPPDATE,
+    //                        STH_DEPT_TRAINING_BENEFIT");
+    //     $this->db->from('STAFF_TRAINING_HEAD');
+    //     $this->db->join("STAFF_MAIN", "STH_STAFF_ID = SM_STAFF_ID");
+    //     $this->db->join("STAFF_SERVICE", "STH_STAFF_ID = SS_STAFF_ID");
+    //     $this->db->join("STAFF_JOB_STATUS", "SS_JOB_STATUS = SJS_STATUS_CODE");
+    //     $this->db->where("STH_TRAINING_REFID", $refid);
+    //     $this->db->where("STH_STATUS = 'RECOMMEND'");
+
+    //     if(!empty($staffID)) {
+    //         $this->db->where("SM_STAFF_ID", $staffID);
+
+    //         $q = $this->db->get();
+    //         return $q->row();
+    //     } else {
+    //         $this->db->order_by("SM_STAFF_NAME");
+
+    //         $q = $this->db->get();
+    //         return $q->result();
+    //     }   
+    // }
+
+    // GET STAFF LIST BASED FROM TRAINING
+    public function getStaffTrainingApplication($refid)
     {
-        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, 
-                           SJS_STATUS_DESC, STH_STATUS, SM_EMAIL_ADDR, 
-                           to_char(STH_APPLY_DATE, 'DD/MM/YYYY') AS STHAPPDATE,
-                           STH_DEPT_TRAINING_BENEFIT");
-        $this->db->from('STAFF_TRAINING_HEAD');
-        $this->db->join("STAFF_MAIN", "STH_STAFF_ID = SM_STAFF_ID");
-        $this->db->join("STAFF_SERVICE", "STH_STAFF_ID = SS_STAFF_ID");
-        $this->db->join("STAFF_JOB_STATUS", "SS_JOB_STATUS = SJS_STATUS_CODE");
-        $this->db->where("STH_TRAINING_REFID", $refid);
-        $this->db->where("STH_STATUS = 'RECOMMEND'");
+        $query = "SELECT 
+        SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, 
+        SJS_STATUS_DESC, STH_STATUS, STAFFEVA, SM_EMAIL_ADDR, 
+        to_char(STH_APPLY_DATE, 'DD/MM/YYYY') AS STHAPPDATE,
+        STH_DEPT_TRAINING_BENEFIT
+        FROM (select *
+              from STAFF_TRAINING_HEAD
+              JOIN STAFF_MAIN ON STH_STAFF_ID = SM_STAFF_ID
+              JOIN STAFF_SERVICE ON STH_STAFF_ID = STAFF_SERVICE.SS_STAFF_ID
+              JOIN STAFF_JOB_STATUS ON SS_JOB_STATUS = SJS_STATUS_CODE
+              where STH_TRAINING_REFID = '$refid'
+              and STH_STATUS = 'RECOMMEND'
+              )
+        LEFT JOIN (SELECT SM_STAFF_ID||' - '||SM_STAFF_NAME||' ('||SM_EMAIL_ADDR||')' AS STAFFEVA, LSH_STAFF_ID
+              FROM LEAVE_STAFF_HIERARCHY, STAFF_MAIN, STAFF_TRAINING_HEAD
+              WHERE LEAVE_STAFF_HIERARCHY.LSH_STAFF_ID = STH_STAFF_ID
+              AND STH_TRAINING_REFID = '$refid'
+              AND STH_STATUS = 'RECOMMEND'
+              AND STH_VERIFY_BY IS NULL 
+              AND STH_RECOMMEND_BY IS NULL
+              AND NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY,LSH_APPROVE_BY) = SM_STAFF_ID)
+        ON LSH_STAFF_ID = SM_STAFF_ID
+        ORDER BY SM_DEPT_CODE, SM_STAFF_NAME";
 
-        if(!empty($staffID)) {
-            $this->db->where("SM_STAFF_ID", $staffID);
-
-            $q = $this->db->get();
-            return $q->row();
-        } else {
-            $this->db->order_by("SM_STAFF_NAME");
-
-            $q = $this->db->get();
-            return $q->result();
-        }   
+        $q = $this->db->query($query);
+        return $q->result();
     }
 
     // GET EVALUATOR INFO
@@ -1801,15 +1890,17 @@ class Training_application_model extends MY_Model
     } 
 
     // FILTER STAFF DROPDOWN LIST
-    public function getStaffList($refid, $deptCode)
+    public function getStaffList($refid, $deptCode = null)
     {
-        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID||' - '||SM_STAFF_NAME AS STAFF_ID_NAME");
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID||' - '||SM_STAFF_NAME AS STAFF_ID_NAME, SM_DEPT_CODE");
         $this->db->from('STAFF_MAIN, STAFF_SERVICE, STAFF_STATUS');
         $this->db->where("SS_STAFF_ID = SM_STAFF_ID");
         $this->db->where("SM_STAFF_STATUS = SS_STATUS_CODE");
         $this->db->where("SS_JOB_STATUS IN ('01','03','08','09','10','02','11')");
         $this->db->where("SS_STATUS_STS = 'ACTIVE'");
-        $this->db->where("SM_DEPT_CODE", $deptCode);
+        if(!empty($deptCode)) {
+            $this->db->where("SM_DEPT_CODE", $deptCode);
+        }
         $this->db->where("SM_STAFF_ID NOT IN
         (SELECT STH_STAFF_ID FROM STAFF_TRAINING_HEAD WHERE STH_TRAINING_REFID = '$refid')");
         $this->db->order_by("SM_STAFF_NAME");
@@ -1876,6 +1967,22 @@ class Training_application_model extends MY_Model
         return $this->db->insert("STAFF_TRAINING_HEAD", $data);
     }
 
+    public function saveAssignedStaffBatch($refid, $sid, $role, $sts)
+    {
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "STH_STAFF_ID" => $sid,
+            "STH_TRAINING_REFID" => $refid,
+            "STH_PARTICIPANT_ROLE" => $role,
+            "STH_STATUS" => $sts
+        );
+
+        $this->db->set("STH_APPLY_DATE", $curDate, false);
+
+        return $this->db->insert("STAFF_TRAINING_HEAD", $data);
+    }
+
     /*_____________________
         UPDATE PROCESS
     _______________________*/
@@ -1903,8 +2010,8 @@ class Training_application_model extends MY_Model
 
     // DELETE ASSIGNED STAFF
     public function deleteAssignedStaff($refid, $staffId) {
-        $this->db->where('STH_TRAINING_REFID', $refid);
         $this->db->where('STH_STAFF_ID', $staffId);
+        $this->db->where('STH_TRAINING_REFID', $refid);
 
         return $this->db->delete('STAFF_TRAINING_HEAD');
     }
@@ -3209,6 +3316,21 @@ class Training_application_model extends MY_Model
         $this->db->where("TO_CHAR(TH_DATE_FROM,'YYYY') = NVL('$year',TO_CHAR(SYSDATE,'YYYY'))");
         
         $this->db->order_by("TH_DATE_FROM, TH_TRAINING_TITLE");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+
+    // GET UNIT LIST REPORT VII
+    public function getUnitVii($deptCode) {
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_CODE||' - '||DM_DEPT_DESC DM_DEPT_DESC");
+        $this->db->from("DEPARTMENT_MAIN");
+        $this->db->where("DM_LEVEL >= '3'");
+        $this->db->where("DM_STATUS = 'ACTIVE'");
+        $this->db->where("DM_PARENT_DEPT_CODE", $deptCode);
+        
+        $this->db->order_by("2");
 
         $q = $this->db->get();
         return $q->result();

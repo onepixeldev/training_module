@@ -47,6 +47,9 @@
 								<li class="">
                                     <a style="color:#000 !important" href="#s6" data-toggle="tab" aria-expanded="false">Reports (VI)</a>
                                 </li>
+                                <li class="">
+                                    <a style="color:#000 !important" href="#s7" data-toggle="tab" aria-expanded="false">Reports (VII)</a>
+                                </li>
                             </ul>
 							<!-- myTabContent1 -->
                             <div id="myTabContent1" class="tab-content padding-10">
@@ -78,6 +81,11 @@
 
 								<div class="tab-pane fade" id="s6">
 									<div id="report_vi">
+									</div>
+                                </div>
+
+                                <div class="tab-pane fade" id="s7">
+									<div id="report_vii">
 									</div>
                                 </div>
 
@@ -139,7 +147,9 @@
 				echo "$('.nav-tabs li:eq(4) a').tab('show');";
 			} elseif ($currtab == 's6'){
 				echo "$('.nav-tabs li:eq(5) a').tab('show');";
-			} 
+			} elseif ($currtab == 's7'){
+				echo "$('.nav-tabs li:eq(6) a').tab('show');";
+			}
             else {
                 echo "$('.nav-tabs li:eq(0) a').tab('show');";
             }
@@ -226,6 +236,19 @@
 		},
 		success: function(res) {
             $('#report_vi').html(res);
+		},
+    });
+
+    // REPORT VII
+    $.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('tarReportvii')?>',
+		data: '',
+		beforeSend: function() {
+			$('#report_vii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		},
+		success: function(res) {
+            $('#report_vii').html(res);
 		},
     });
 
@@ -547,4 +570,90 @@
         });
     });
     
+
+    // REPORT VII
+
+    $('#report_vii').on('click', '.genReportvii', function () {
+        var repCode = $(this).attr('repCode');
+        var staffID = $("#staff_id_vii").val(); 
+        var department = $("#departmentvii").val(); 
+        var unit = $("#unitvii").val(); 
+        var statusavii = $("#status_avii").val(); 
+        var year = $("#year_avii").val(); 
+        var courseTitle = $("#course_titleavii").val();
+        var dateFrom = $("#date_course_fromvii").val();
+        var statusbvii = $("#status_bvii").val();
+
+        // alert(month_vi+' '+year_vi+' '+aca_nonaca+' '+orga_vi+' '+re_formatvi+' '+staff_id_vi);
+        
+        $.post('<?php echo $this->lib->class_url('setParamvii') ?>', {repCode: repCode, staffID: staffID, department: department, 
+            unit: unit, statusavii: statusavii, year: year, courseTitle: courseTitle, dateFrom: dateFrom, statusbvii: statusbvii}, function (res) {
+            var repURL = '<?php echo $this->lib->class_url('genReportvii') ?>';
+            //alert(repURL);
+            var mywin = window.open( repURL , 'report');
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
+            });
+            // msg.danger('Please contact administrator.', '#alert');        
+        });
+    });
+
+    // POPULATE COURSE TITLE - REPORT VII
+	$('#report_vii').on('change','#year_avii', function() {
+		var year = $(this).val();
+		$('#crtaviiLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$('#course_titleiii').html('');
+		// alert(year);
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('courseTitleiii')?>',
+			data: {'year' : year},
+			dataType: 'JSON',
+			success: function(res) {
+				$('#crtaviiLoader').html('');
+
+				var resList = '<option value="" selected > ---Please select--- </option>';
+				
+				if (res.sts == 1) {
+					for (var i in res.courseList) {
+						resList += '<option value="'+res.courseList[i]['TH_REF_ID']+'">'+res.courseList[i]['TH_ID_TITLE']+'</option>';
+					}
+				} 
+				
+				$("#course_titleavii").html(resList);
+			}
+		});
+    });
+
+    // POPULATE UNIT - REPORT VII
+	$('#report_vii').on('change','#departmentvii', function() {
+		var deptCode = $(this).val();
+		$('#unitLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$('#unitvii').html('');
+		//alert(deptCode);
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('getUnitVii')?>',
+			data: {'deptCode' : deptCode},
+			dataType: 'JSON',
+			success: function(res) {
+				$('#unitLoader').html('');
+
+				var resList = '<option value="" selected > ---Please select--- </option>';
+				
+				if (res.sts == 1) {
+					for (var i in res.unit_list) {
+						resList += '<option value="'+res.unit_list[i]['DM_DEPT_CODE']+'">'+res.unit_list[i]['DM_DEPT_DESC']+'</option>';
+					}
+				} 
+				
+				$("#unitvii").html(resList);
+			}
+		});
+    });
 </script>

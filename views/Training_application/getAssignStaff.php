@@ -10,8 +10,11 @@
 	</div> 
 </div>
 <p>
-<div class="text-right">
-	<button type="button" class="btn btn-primary btn-sm assign_stf_btn" id="assignStf" value="<?php echo $refid ?>"><i class="fa fa-plus"></i> Assign new staff</button>
+<div class="row">
+	<div class="text-right col-sm-12">
+		<button type="button" class="btn btn-primary btn-sm assign_stf_batch_btn" id="assignStfBatch" value="<?php echo $refid ?>" data-trname="<?php echo $tname;?>"><i class="fa fa-plus"></i> Assign new staff (Batch)</button>
+		<button type="button" class="btn btn-primary btn-sm assign_stf_btn" id="assignStf" value="<?php echo $refid ?>"><i class="fa fa-plus"></i> Assign new staff (Individual)</button>
+	</div>
 </div>
 <p>
 <div class="well">

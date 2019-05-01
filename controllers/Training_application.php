@@ -621,14 +621,116 @@ class Training_application extends MY_Controller
     public function listEgPosition(){
 
         $groupCode = $this->input->post('gpCode', true);
+        $schemeCode = $this->input->post('schemeCode', true);
+        $gradeTo = $this->input->post('gradeTo', true);
+        $svcGrp = $this->input->post('svcGrp', true);
+        $aca = $this->input->post('aca', true);
+
+        if(!empty($aca)) {
+            if($aca == 'NO'){
+                $aca = 'N';
+            } elseif($aca == 'YES') {
+                $aca = 'Y';
+            }
+        } else {
+            $aca = '';
+        }
 
         // get available records
         if(!empty($groupCode)){
             $data['gp_code'] = $groupCode;
+            $data['schemeCode'] = $schemeCode;
+            $data['gradeTo'] = $gradeTo;
+            $data['svcGrp'] = $svcGrp;
+            $data['aca'] = $aca;
+
             $data['list_eg_pos'] = $this->mdl->getListEgPosition($groupCode);
         }
 
         $this->render($data);
+    }
+
+    // edit modal eg position
+    public function addEgPos(){
+
+        $gpCode = $this->input->post('gpCode', true);
+        // $tgsSeq = $this->input->post('tgsSeq', true);
+        // $svcCode = $this->input->post('svcCode', true);
+        $schemeCode = $this->input->post('schemeCode', true);
+        $gradeTo = $this->input->post('gradeTo', true);
+        $svcGrp = $this->input->post('svcGrp', true);
+        $aca = $this->input->post('aca', true);
+
+        // get available records
+        if(!empty($gpCode)){
+            $data['gpCode'] = $gpCode;
+            // $data['tgsSeq'] = $tgsSeq;
+            // $data['svcCode'] = $svcCode;
+            $data['service_list'] = $this->dropdown($this->mdl->getServiceList($schemeCode, $gradeTo, $svcGrp, $aca), 'SS_SERVICE_CODE', 'SS_SERVICE_DESC', ' ---Please select--- ');
+        }
+
+        $this->render($data);
+    }
+
+    // SAVE insert eg position
+    public function saveInsertEgPos() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // GROUP CODE
+        $gpCode = $form['gpcode'];
+        
+        // svc code
+        $svcCode = $form['service'];
+
+        // form / input validation
+        $rule = array(
+            'service' => 'required|max_length[10]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        // Begin update Record
+        if ($status == 1 && !empty($gpCode)) {
+            $checkTGS = $this->mdl->checkTGS2($gpCode, $svcCode);
+
+            if(empty($checkTGS)) {
+                $seq = $this->mdl->getMaxTGSSeq($gpCode);
+                if(!empty($seq->MAX_SEQ)) {
+                    $tgs_seq = $seq->MAX_SEQ;
+                } else {
+                    $tgs_seq = '1';
+                }
+                $insert = $this->mdl->saveInsertEgPos($form, $gpCode, $tgs_seq);
+
+                if($insert > 0) {
+                    $ps_row = $this->PsRow($gpCode, $svcCode);
+
+                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'ps_row' => $ps_row);
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                }
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // training speaker row
+    private function PsRow($gpCode, $svcCode){
+        $data['gpCode'] = $gpCode;
+        $data['svcCode'] = $svcCode;
+        $data['getListEgPosition'] = $this->mdl->getListEgPosition($gpCode, $svcCode);
+		
+		return $this->load->view('Training_application/PsRow', $data, true);	
     }
 
     public function verifyStructuredTrainingSetup()
@@ -2426,25 +2528,25 @@ class Training_application extends MY_Controller
     }
 
     // APPLICANT DETAIL
-    public function detailSTA()
-    {   
-        $refid = $this->input->post('refid', true);
-        $staffID = $this->input->post('staffID', true);
+    // public function detailSTA()
+    // {   
+    //     $refid = $this->input->post('refid', true);
+    //     $staffID = $this->input->post('staffID', true);
 
-        if(!empty($refid) && !empty($staffID)) {
-            $data['refid'] = $refid;
-            $data['staffID'] = $staffID;
-            $data['staff_tr_list'] = $this->mdl->getStaffTrainingApplication($refid, $staffID);
-            $data['eva_tr_info'] = $this->mdl->getEvaluatorInfo($refid, $staffID);
-            if(!empty($data['eva_tr_info'])) {
-                $data['eva_info'] = $data['eva_tr_info']->STAFF;
-            } else {
-                $data['eva_info'] = '';
-            }
-        } 
+    //     if(!empty($refid) && !empty($staffID)) {
+    //         $data['refid'] = $refid;
+    //         $data['staffID'] = $staffID;
+    //         $data['staff_tr_list'] = $this->mdl->getStaffTrainingApplication($refid, $staffID);
+    //         $data['eva_tr_info'] = $this->mdl->getEvaluatorInfo($refid, $staffID);
+    //         if(!empty($data['eva_tr_info'])) {
+    //             $data['eva_info'] = $data['eva_tr_info']->STAFF;
+    //         } else {
+    //             $data['eva_info'] = '';
+    //         }
+    //     } 
 
-        $this->renderAjax($data);
-    }
+    //     $this->renderAjax($data);
+    // }
 
     // VERIFY TRAINING DATE
     public function verifyTrainingDate()
@@ -2805,7 +2907,7 @@ class Training_application extends MY_Controller
 
         if(!empty($refid)){
             $data['refid'] = $refid;
-            $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+            $data['staff_list'] = $this->dropdown($this->mdl->getStaffList($refid), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
             $data['role_list'] = $this->dropdown($this->mdl->getRoleList(), 'TPR_CODE', 'TPR_DESC', ' ---Please select--- ');
             $data['sts_list'] = array('' => ' ---Please select--- ', 'APPLY' => 'APPLY', 'VERIFY' => 'VERIFY', 'RECOMMEND' => 'RECOMMEND', 'APPROVE' => 'APPROVE', 'REJECT' => 'REJECT', 'CANCEL' => 'CANCEL');
         }
@@ -2817,6 +2919,83 @@ class Training_application extends MY_Controller
         // }
 
         $this->renderAjax($data);
+    }
+
+    // ASSIGN STAFF BATCH TO TRAINING
+    public function assignStaffBatch()
+    {
+        $deptCode = $this->input->post('deptCode',true);
+        $refid = $this->input->post('refid', true);
+
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        if(!empty($data['cur_usr_dept'])) {
+            $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+            $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        } else {
+            $curUsrDept = '';
+            $data['curUsrDept'] = '';
+        }
+        
+        if(!empty($deptCode)){
+            $curUsrDept = $deptCode;
+            $data['curUsrDept'] = $deptCode;
+        } 
+
+        if(!empty($refid)){
+            $data['refid'] = $refid;
+            $data['staff_list'] = $this->mdl->getStaffList($refid, $curUsrDept);
+            $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+            $data['role_list'] = $this->dropdown($this->mdl->getRoleList(), 'TPR_CODE', 'TPR_DESC', ' ---Please select--- ');
+            $data['sts_list'] = array('' => ' ---Please select--- ', 'APPLY' => 'APPLY', 'VERIFY' => 'VERIFY', 'RECOMMEND' => 'RECOMMEND', 'APPROVE' => 'APPROVE', 'REJECT' => 'REJECT', 'CANCEL' => 'CANCEL');
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // ASSIGN STAFF BATCH PROCESS
+    public function assignStaffBatchProcess() {
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $stfID = $this->input->post('stfID', true);
+        $roleArr = $this->input->post('roleArr', true);
+        $stsArr = $this->input->post('stsArr', true);
+        
+        $confirm = 0;
+        $successConfirm = 0;
+        
+        if (!empty($refid) && !empty($stfID)) {
+            foreach ($stfID as $key => $sid) {
+                $role = $roleArr[$key];
+                $sts = $stsArr[$key];
+                $confirm++;
+                // CHECK IF STAFF EXIST
+                $check = $this->mdl->checkStaffTr($refid, $sid);
+
+                // ASSIGN STAFF
+                if (empty($check)) {
+                    $insert = $this->mdl->saveAssignedStaffBatch($refid, $sid, $role, $sts);
+                    if($insert > 0 ) {
+                        $successConfirm++;
+                        $msgIns = '';
+                    } else {
+                        $msgIns = 'Some record could not be processed.';
+                    }
+                } else {
+                    $successConfirm++;
+                }
+            }
+
+            if($confirm == $successConfirm) {
+                $json = array('sts' => 1, 'msg' => 'Selected staff successfully assigned.'.nl2br("\r\n".$msgIns), 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to assign selected staff', 'alert' => 'red');
+            }
+
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
     }
 
     // SAVE ASSIGNED STAFF    
@@ -2834,8 +3013,7 @@ class Training_application extends MY_Controller
         $staffId = $form['staff_id'];
 
         // form / input validation
-        $rule = array(
-            'department' => 'required|max_length[100]', 
+        $rule = array( 
             'staff_id' => 'required|max_length[10]',
             'role' => 'required|max_length[100]',
             'status' => 'required|max_length[15]',
@@ -2961,7 +3139,8 @@ class Training_application extends MY_Controller
         $staffId = $this->input->post('staffId', true);
         
         if (!empty($refid) && !empty($staffId)) {
-            $verDel = $this->mdl->checkStaffTr($refid, $staffId);
+            //$verDel = $this->mdl->checkStaffTr($refid, $staffId);
+            $verDel = '';
 
             if(empty($verDel)) {
                 $del = $this->mdl->deleteAssignedStaff($refid, $staffId);
@@ -3622,7 +3801,7 @@ class Training_application extends MY_Controller
         echo json_encode($json);
     }
 
-    // RESEND EMAIL
+    // SEND EMAIL
     public function resendEmail() {
         $this->isAjax();
 
@@ -3692,6 +3871,53 @@ class Training_application extends MY_Controller
 
         if($success == $successResend) {
             $json = array('sts' => 1, 'msg' => 'Email sent '.nl2br("\n\r").$msgSuccess, 'alert' => 'green');
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Fail to send email', 'alert' => 'red');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // RESEND EMAIL
+    public function resendEmail2() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+        $sentMsg = '';
+
+        // staff email
+        $memo_from = $form['from'];
+
+        // staff email
+        $emailForm = $form['email_to'];
+        //$staff_app_email = explode(",", $emailForm);
+
+        // cc email
+        $emailCCForm = $form['email_cc'];
+        //$email_cc = explode(",", $emailCCForm);
+
+        // email title
+        $msg_title = $form['title'];
+
+        // email content 
+        $msg_content = $form['content'];
+
+        // staff_id 
+        $staff_id = $form['staff_id_to'];
+        $staff_id_arr = explode(",", $staff_id);
+
+        // refid 
+        $refid = $form['refid'];
+
+        // $success = 0;
+        // $successResend = 0;
+        
+        //var_dump($email_cc);
+        $sendEmailSts = $this->mdl->sendEmail($memo_from, $emailForm, $emailCCForm, $msg_title, $msg_content);
+
+        if($sendEmailSts > 0) {
+            $json = array('sts' => 1, 'msg' => 'Email sent', 'alert' => 'green');
         } else {
             $json = array('sts' => 0, 'msg' => 'Fail to send email', 'alert' => 'red');
         }
@@ -5019,6 +5245,35 @@ class Training_application extends MY_Controller
         $this->render($data);
     }
 
+    // REPORT VII
+    public function tarReportvii()
+    { 
+        // clear filter for report
+        $this->session->set_userdata('repCodevi','');
+        $this->session->set_userdata('month_vi','');
+        $this->session->set_userdata('year_vi','');
+        $this->session->set_userdata('month_to_av','');
+        $this->session->set_userdata('aca_nonaca','');
+        $this->session->set_userdata('orga_vi','');
+        $this->session->set_userdata('re_formatvi','');
+        $this->session->set_userdata('staff_id_vi','');
+
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptListAppRpt(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get staff list
+        $data['staff_list'] = $this->dropdown($this->mdl->getCoordinator(), 'SM_STAFF_ID', 'SM_STAFF_ID_NAME', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
     // REPORT PARAM I
     public function setParami() {
 		// clear filter for report
@@ -5661,5 +5916,96 @@ class Training_application extends MY_Controller
         $this->lib->report($repCode, $param, $re_formatvi);
     }
 
-    
+    // UNIT LIST - REPORT VII
+    public function getUnitVii(){
+        $this->isAjax();
+        
+        $deptCode = $this->input->post('deptCode', true);
+        
+        // get available records
+        $unitList = $this->mdl->getUnitVii($deptCode);
+               
+        if (!empty($unitList)) {
+            $success = 1;
+        } else {
+            $success = 0;
+            $unitList = '';
+        }
+        
+        $json = array('sts' => $success, 'unit_list' => $unitList);
+        
+        echo json_encode($json);
+    }
+
+    // REPORT PARAM VII
+    public function setParamvii() {
+		// clear filter for report
+        $this->session->set_userdata('repCodeVii','');
+        $this->session->set_userdata('staffID', '');
+        $this->session->set_userdata('department', '');
+        $this->session->set_userdata('unit', '');
+        $this->session->set_userdata('statusavii', '');
+        $this->session->set_userdata('year', '');
+        $this->session->set_userdata('courseTitle', '');
+        $this->session->set_userdata('dateFrom', '');
+        $this->session->set_userdata('statusbvii', '');
+		
+    	// get current value 
+    	$repCode = $this->input->post('repCode');
+    	$staffID = $this->input->post('staffID');
+    	$department = $this->input->post('department');
+        $unit = $this->input->post('unit');
+        $statusavii = $this->input->post('statusavii');
+        $year = $this->input->post('year');
+        $courseTitle = $this->input->post('courseTitle');
+        $dateFrom = $this->input->post('dateFrom');
+        $statusbvii = $this->input->post('statusbvii');
+
+		// set session value
+        $this->session->set_userdata('repCodeVii', $repCode);
+        $this->session->set_userdata('staffID', $staffID);
+        $this->session->set_userdata('department', $department);
+        $this->session->set_userdata('unit', $unit);
+        $this->session->set_userdata('statusavii', $statusavii);
+        $this->session->set_userdata('year', $year);
+        $this->session->set_userdata('courseTitle', $courseTitle);
+        $this->session->set_userdata('dateFrom', $dateFrom);
+        $this->session->set_userdata('statusbvii', $statusbvii);
+    }
+
+    // GENERATE REPORT VII
+    public function genReportvii() {
+        $repCode = $this->session->userdata('repCodeVii');
+        $staffID = $this->session->userdata('staffID');
+        $department = $this->session->userdata('department');
+        $unit = $this->session->userdata('unit');
+        $statusavii = $this->session->userdata('statusavii');
+        $year = $this->session->userdata('year');
+        $courseTitle = $this->session->userdata('courseTitle');
+        $dateFrom = $this->session->userdata('dateFrom');
+        $statusbvii = $this->session->userdata('statusbvii');
+        
+        $desformat = 'PDF';
+
+		if($repCode == 'ATR044') {
+            $param = array('PARAMFORM' => 'NO', 'P_STH_STAFF_ID' => $staffID);
+        }
+        elseif($repCode == 'ATR045') {
+            $param = array('PARAMFORM' => 'NO', 'P_SM_DEPT_CODE' => $department, 'P_SM_UNIT' => $unit, 'P_STH_STATUS' => $statusavii);
+        }
+        elseif($repCode == 'ATR037') {
+            $param = array('PARAMFORM' => 'NO', 'P_YEAR' => $year, 'P_TH_REF_ID' => $courseTitle, 'P_TH_DATE_FROM' => $dateFrom, 'P_STH_STATUS' => $statusbvii);
+        } 
+        elseif($repCode == 'ATR038') {
+            $param = array('PARAMFORM' => 'NO', 'DESFORMAT' => $desformat, 'P_YEAR' => $year, 'P_TH_REF_ID' => $courseTitle, 'P_TH_DATE_FROM' => $dateFrom, 'P_STH_STATUS' => $statusbvii);
+        }
+        elseif($repCode == 'ATR080') {
+            $param = array('PARAMFORM' => 'NO', 'DESFORMAT' => $desformat, 'P_YEAR' => $year, 'P_TH_REF_ID' => $courseTitle, 'P_TH_DATE_FROM' => $dateFrom, 'P_STH_STATUS' => $statusbvii);
+        }
+        elseif($repCode == 'ATR249') {
+            $param = array('PARAMFORM' => 'NO', 'DESFORMAT' => $desformat, 'P_YEAR' => $year, 'P_TH_REF_ID' => $courseTitle, 'P_TH_DATE_FROM' => $dateFrom, 'P_STH_STATUS' => $statusbvii);
+        }
+
+        $this->lib->report($repCode, $param, 'PDF');
+    }
 }

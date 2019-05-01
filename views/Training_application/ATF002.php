@@ -525,6 +525,7 @@
 				$('#myModalis .modal-content').html(res);	
 				$('#postAction').hide();
 				$('#tbl_list_eg_pos tbody #postAction').hide();
+				$('.add_eg_position_btn').hide();
 			}
 		});
 	});
@@ -613,27 +614,27 @@
 											success: function(res) {
 												$('#myModalis .modal-content').html(res);
 
-												$.ajax({
-													type: 'POST',
-													url: '<?php echo $this->lib->class_url('approveStf')?>',
-													data: {'refid' : refid, 'staffIDArr' : staffIDArr, 'remarkArr' : remarkArr},
-													dataType: 'JSON',
-													success: function(res) {
-														if (res.sts==1) {
-															$.alert({
-																title: 'Success!',
-																content: res.msg,
-																type: res.alert,
-															});
-														} else {
-															$.alert({
-																title: 'Alert!',
-																content: res.msg,
-																type: res.alert,
-															});
-														}
-													}
-												});
+												// $.ajax({
+												// 	type: 'POST',
+												// 	url: '<?php echo $this->lib->class_url('approveStf')?>',
+												// 	data: {'refid' : refid, 'staffIDArr' : staffIDArr, 'remarkArr' : remarkArr},
+												// 	dataType: 'JSON',
+												// 	success: function(res) {
+												// 		if (res.sts==1) {
+												// 			$.alert({
+												// 				title: 'Success!',
+												// 				content: res.msg,
+												// 				type: res.alert,
+												// 			});
+												// 		} else {
+												// 			$.alert({
+												// 				title: 'Alert!',
+												// 				content: res.msg,
+												// 				type: res.alert,
+												// 			});
+												// 		}
+												// 	}
+												// });
 												
 												$('#myModalis #refid').val(refid);
 												$('#myModalis #from').val(from);
@@ -727,9 +728,23 @@
 		var emailContent = $('#emailContent').val();
 		refid = $('.sta_appsm_btn').val();
 		trainingN = $('.sta_appsm_btn').data("tr-name");
+		var staffIDArr = [];
+		var remarkArr = [];
+		var selectedID = 0;
 		msg.wait('#resendEmailAlert');
 		msg.wait('#resendEmailAlertFooter');
 		// alert(trainingN);
+
+		$('.checkitem:checked').each(function() {
+			// check the checked property 
+			var currentID = $(this).val();
+			staffID = $(this).closest("tr").find(".sid").text();
+			remark = $(this).closest('tr').find('[name="remark"]').val();
+			++selectedID;
+
+			staffIDArr.push(staffID);
+			remarkArr.push(remark);
+		});
 		
 		
 		if(emailTo == '') {
@@ -767,6 +782,28 @@
 					msg.success('Email has been sent', '#resendEmailAlertFooter');
 					$('.btn').removeAttr('disabled');
 					$('#myModalis').modal('hide');
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('approveStf')?>',
+						data: {'refid' : refid, 'staffIDArr' : staffIDArr, 'remarkArr' : remarkArr},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: res.alert,
+								});
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: res.alert,
+								});
+							}
+						}
+					});
 
 					$.ajax({
 						type: 'POST',

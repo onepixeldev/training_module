@@ -9,21 +9,21 @@
 
         <input name="form[refid]" class="form-control" value="<?php echo $refid ?>" type="hidden" id="refid" readonly>
 
-        <div class="form-group">
+        <!--<div class="form-group">
             <label class="col-md-2 control-label">Department <b><font color="red">* </font></b></label>
             <div class="col-md-7"> 
                 <?php
-                    echo form_dropdown('form[department]', $dept_list, '', 'class="selectpicker form-control width-50" id="deptList"')
+                   // echo form_dropdown('form[department]', $dept_list, '', 'class="selectpicker form-control width-50" id="deptList"')
                 ?>
             </div>
-        </div>
+        </div>-->
 
         <div class="form-group">
             <label class="col-md-2 control-label">Staff ID <b><font color="red">* </font></b></label>
             <div class="col-md-7"> 
                 <div id="faspinner"></div>
                 <?php
-                    echo form_dropdown('form[staff_id]', '', '', 'class="selectpicker form-control width-50" id="stfList"')
+                    echo form_dropdown('form[staff_id]', $staff_list, '', 'class="selectpicker select2-filter form-control" id="stfList"')
                 ?>
             </div>
         </div>
@@ -73,3 +73,12 @@
         <button type="button" class="btn btn-primary asgn_nstf"><i class="fa fa-save"></i> Save</button>
     </div>
 </form>
+
+<script>
+$('.select2-filter').select2({
+	dropdownParent: $('#myModalis'),
+	tags: 'true',
+	// placeholder: 'Select an option',
+	width: 'resolve'
+});
+</script>

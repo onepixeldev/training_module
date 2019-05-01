@@ -1218,6 +1218,7 @@
 			data: {'gpCode' : gpCode},
 			success: function(res) {
 				$('#myModalis .modal-content').html(res);
+				$('.add_eg_position_btn').hide();
 			}
 		});
 	});

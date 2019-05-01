@@ -541,6 +541,7 @@
 				$('#myModalis .modal-content').html(res);	
 				$('#postAction').hide();
 				$('#tbl_list_eg_pos tbody #postAction').hide();
+				$('.add_eg_position_btn').hide();
 			}
 		});
 	});
@@ -817,7 +818,7 @@
 							complete: function(){
 								$('.btn').removeAttr('disabled');
 								$('#loader').hide();
-							},
+							}
 					});		
 		        },
 		        cancel: function () {
@@ -1040,7 +1041,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('resendEmail')?>',
+			url: '<?php echo $this->lib->class_url('resendEmail2')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {

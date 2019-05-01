@@ -485,6 +485,7 @@
 				$('#myModalis .modal-content').html(res);	
 				$('#postAction').hide();
 				$('#tbl_list_eg_pos tbody #postAction').hide();
+				$('.add_eg_position_btn').hide();
 			}
 		});
 	});

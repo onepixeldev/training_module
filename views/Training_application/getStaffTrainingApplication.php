@@ -42,7 +42,7 @@
 						<td class="text-center col-md-2">' . $stl->SM_EMAIL_ADDR . '</td>
 						<td class="text-center col-md-2">' . $stl->SM_DEPT_CODE . '</td>
 						<td class="text-center col-md-2">' . $stl->SJS_STATUS_DESC . '</td>
-						<td class="text-center col-md-2">evaID</td>
+						<td class="text-center col-md-2">' . $stl->STAFFEVA . '</td>
 						<td class="text-center col-md-1">
 						<div class="form-group">
 							<div class="col-md-9">
@@ -51,7 +51,6 @@
 						</div>
 						</td>
 						<td class="text-center col-md-2">
-							<button type="button" class="btn btn-success btn-xs sta_detl_btn" value='.$refid.'><i class="fa fa-info-circle"></i> Detail</button>
 							<button type="button" class="btn btn-info btn-xs sta_history_btn"><i class="fa fa-history"></i> History</button>
 						</td>
 					</tr>

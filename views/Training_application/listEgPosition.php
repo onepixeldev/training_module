@@ -1,7 +1,13 @@
 <div class="modal-header btn-primary">
 	<h4 class="modal-title" id="myModalLabel"><b>List of Eligible Position</b></h4>
 </div>
+
 <div class="well">
+	<p>
+	<div class="text-right">
+		<button type="button" class="btn btn-primary btn-sm add_eg_position_btn" data-gc="<?php echo $gp_code?>" data-sc="<?php echo $schemeCode?>" data-gt="<?php echo $gradeTo?>" data-sg="<?php echo $svcGrp?>" data-aca="<?php echo $aca?>"><i class="fa fa-plus"></i> Add Position</button>
+	</div>
+	<p>
 	<table class="table table-bordered table-hover" id="tbl_list_eg_pos">
 		<thead>
 			<tr>
@@ -28,7 +34,7 @@
 						';
 					}
 				} else {
-					echo '<tr><td colspan="8" class="text-center">No record found.</td></tr>';
+					echo '<tr id="trNrecord"><td colspan="8" class="text-center">No record found.</td></tr>';
 				}
 			?>
 		</tbody>
@@ -38,4 +44,5 @@
 		<button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-hand-o-left"></i> Close</button>
 	</div>
 </div>
+
 

@@ -392,30 +392,6 @@
 			}
 		});
     });
-
-	// LIST OF ELIGIBLE POSITION 
-	$('#training_list_detl2').on('click', '.pos_tg_btn', function() {
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		//var refid = thisBtn.val();
-		var gpCode = td.eq(0).html().trim();
-		//alert(gpCode);
-
-		$('#myModalis .modal-content').empty();
-		$('#myModalis').modal('show');
-		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('listEgPosition')?>',
-			data: {'gpCode' : gpCode},
-			success: function(res) {
-				$('#myModalis .modal-content').html(res);	
-				$('#postAction').hide();
-				$('#tbl_list_eg_pos tbody #postAction').hide();
-			}
-		});
-    });
     
     // structured training setup - verify structured training
 	$('#training_list_detl').on('click','#search_str_tr_ver', function(){
@@ -507,6 +483,41 @@
 					        success: function(res) {
 					            $('.nav-tabs li:eq(1) a').tab('show');
 								$('#training_list_detl').html(res);
+
+								// POPULATE TRAINING LIST
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('getTrainingList')?>',
+									data: {'intExt' : intExt, 'disDept' : disDept, 'disYear' : disYear, 'tSts' : tSts},
+									beforeSend: function() {
+										$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										$('#training_list').html(res);
+										tr_row = $('#tbl_tr_list').DataTable({
+											"ordering":false,
+											drawCallback: function(){
+												$(function() {
+													$('#tbl_tr_list').each(function() {
+													var Cell = $(this).find('td:eq(5)');
+													//debugger;
+														if (Cell.text() !== 'error') {
+															//$(this).find('btn').hide();
+															$('#tbl_tr_list tbody .approve_training_btn').replaceWith('<button type="button" class="btn btn-primary btn-xs file_attach_btn"><i class="fa fa-upload"></i> File Attachment</button>');
+															$('#tbl_tr_list tbody .postpone_training_btn').hide();
+															$('#tbl_tr_list tbody .reject_training_btn').hide();
+															$('#tbl_tr_list tbody .amend_training_btn').hide();
+														}
+													});
+												});
+											}
+										});
+										$('#tbl_tr_list thead #trListAct').replaceWith('<th class="text-center col-md-3">Action</th>');
+									},
+									complete: function(){
+										$('#loader').hide();
+									},
+								});
 								
 								$.ajax({
 									type: 'POST',
@@ -1101,6 +1112,10 @@
 		var td = thisBtn.parent().siblings();
 		//var refid = thisBtn.val();
 		var gpCode = td.eq(0).html().trim();
+		var schemeCode = td.eq(2).html().trim();
+		var gradeTo = td.eq(4).html().trim();
+		var svcGrp = td.eq(7).html().trim();
+		var aca = td.eq(8).html().trim();
 		//alert(gpCode);
 
 		$('#myModalis .modal-content').empty();
@@ -1110,11 +1125,76 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('listEgPosition')?>',
-			data: {'gpCode' : gpCode},
+			data: {'gpCode' : gpCode, 'schemeCode' : schemeCode, 'gradeTo' : gradeTo, 'svcGrp' : svcGrp, 'aca' : aca},
 			success: function(res) {
 				$('#myModalis .modal-content').html(res);
 			}
 		});
+	});
+
+	// ADD ELIGIBLE POSITION 
+	$('#myModalis').on('click','.add_eg_position_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		// var tgsSeq = td.eq(0).html().trim();
+		// var svcCode = td.eq(1).html().trim();
+		var gpCode = thisBtn.data("gc");
+		var schemeCode = thisBtn.data("sc");
+		var gradeTo = thisBtn.data("gt");
+		var svcGrp = thisBtn.data("sg");
+		var aca = thisBtn.data("aca");
+		
+		//var svcDesc = td.eq(2).html().trim();
+		//alert(schemeCode+gradeTo+svcGrp+aca);
+
+		$('#myModalis2 #mContent2').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('addEgPos')?>',
+			data: {'gpCode' : gpCode, 'schemeCode' : schemeCode, 'gradeTo' : gradeTo, 'svcGrp' : svcGrp, 'aca' : aca},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE INSERT EG POSITION
+	$('#myModalis2').on('click', '.add_eg_pos', function () {
+		var data = $('#formAddEGPos').serialize();
+		msg.wait('#alertAddEGPos');
+		//msg.wait('#alertFooter');
+		//alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveInsertEgPos')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertAddEGPos');
+				//msg.show(res.msg, res.alert, '#alertFooter');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						$('#tbl_list_eg_pos tbody #trNrecord').remove();
+						$('#tbl_list_eg_pos tbody').append(res.ps_row);
+						// $('#spObj').html(res.ms1_row.THD_TRAINING_OBJECTIVE2);
+					}, 1500);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
+			}
+		});	
 	});
 
 	// DELETE ELIGIBLE POSITION //

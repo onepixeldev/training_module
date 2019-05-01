@@ -498,6 +498,7 @@
 				$('#myModalis .modal-content').html(res);	
 				$('#postAction').hide();
 				$('#tbl_list_eg_pos tbody #postAction').hide();
+				$('.add_eg_position_btn').hide();
 			}
 		});
 	});
@@ -523,31 +524,154 @@
 		});
 	});
 
-	// FILTER STAFF DROPDOWN
-	$('#myModalis').on('change', '#deptList',function() {
-		var refid = $('#myModalis #refid').val();
-		var deptCode = $('#deptList').val();
+	// ASSIGN NEW STAFF BATCH
+	$('#assign_training').on('click', '.assign_stf_batch_btn', function() {
+		var thisBtn = $(this);
+		var refid = thisBtn.val();
+		
 		//alert(refid);
 
-		$('#myModalis #faspinner').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('getStaffList')?>',
-			data: {'deptCode' : deptCode, 'refid' : refid},
-			dataType: 'JSON',
+			url: '<?php echo $this->lib->class_url('assignStaffBatch')?>',
+			data: {'refid' : refid},
 			success: function(res) {
-				$('#myModalis #faspinner').html('');
-				var resList = '<option value="" selected > ---Please select--- </option>';
-				
-				if (res.sts == 1) {
-					for (var i in res.staffList) {
-						resList += '<option value="'+res.staffList[i]['SM_STAFF_ID']+'">'+res.staffList[i]['STAFF_ID_NAME']+'</option>';
-					}
-				}
-
-				$("#myModalis #stfList").html(resList);
+				$('#myModalis .modal-content').html(res);
+				tr_row = $('#staff_list_tbl').DataTable({
+					"ordering":false,
+				});
 			}
+		});
+	});
+
+	// ASSIGN NEW STAFF BATCH DEPT FILTER
+	$('#myModalis').on('change', '#deptList', function() {
+		var thisBtn = $(this);
+		var refid = thisBtn.data('refid');
+		var deptCode = thisBtn.val();
+		
+		//alert(deptCode);
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('assignStaffBatch')?>',
+			data: {'refid' : refid, 'deptCode' : deptCode},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+				tr_row = $('#staff_list_tbl').DataTable({
+					"ordering":false,
+				});
+			}
+		});
+	});
+
+	$('#myModalis').on('click', '.assign_staff_batch', function() {
+		var thisBtn = $(this);
+		var refid = thisBtn.val();
+		var trainingN = $('#assignStfBatch').data("trname");
+		var td = thisBtn.closest("tr");
+		var staffIDArr = []; 
+		var roleArr = [];
+		var stsArr = [];
+		var selectedID = 0;
+		var EmptyText = 0;
+		// alert(trainingN);
+
+		$.confirm({
+		    title: 'Assign Staff',
+		    content: 'Assign selected staff to training.<br><br>Press YES to confirm',
+			type: 'blue',
+		    buttons: {
+		        yes: function () {
+					$('.checkitem:checked').each(function() {
+						// check the checked property 
+						var currentID = $(this).val();
+						stfID = $(this).closest("tr").find(".sid").text();
+						role = $(this).closest("tr").find("#roleList").val();
+						status = $(this).closest("tr").find("#stsList").val();
+						++selectedID;
+						
+						//alert(role);
+						staffIDArr.push(stfID);
+						roleArr.push(role);
+						stsArr.push(status);
+					});
+					
+					//alert(staffIDArr);
+
+					if (selectedID == 0) {
+						$.alert({
+							title: 'Alert!',
+							content: 'You must select at least one record to continue.',
+							type: 'red'
+						});
+						return;
+					}
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('assignStaffBatchProcess')?>',
+						data: {'stfID' : staffIDArr, 'roleArr' : roleArr, 'stsArr' : stsArr, 'refid' : refid},
+						dataType: 'JSON',
+						beforeSend: function() {
+							//$('.nav-tabs li:eq(1) a').tab('show');
+							$('.btn').attr('disabled', 'disabled');
+							$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						},
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: res.alert,
+								});
+								$('.btn').removeAttr('disabled');
+								// refresh staff
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('getAssignStaff')?>',
+									data: {'refid' : refid, 'tName' : trainingN},
+									beforeSend: function() {
+										$('.nav-tabs li:eq(1) a').tab('show');
+										$('#assign_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										$('#assign_training').html(res);
+										$('#training_list_staff').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff History from Assign Training To Staff</th></tr></thead></table></p>');
+										
+										tr_row = $('#tbl_list_sass').DataTable({
+											"ordering":false,
+										});
+									}
+								});
+								$('#myModalis').modal('hide');
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+								$('.btn').removeAttr('disabled');
+							}
+					},
+					complete: function(){
+						$('.btn').removeAttr('disabled');
+						$('#loader').hide();
+					}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Assign staff has been cancelled');
+		        }
+		    }
 		});
 	});
 
@@ -885,4 +1009,14 @@
 			}
 		});
 	});
+
+	// Select all record	
+	$('#myModalis').on('click','.select_all_btn', function() {
+		$(".checkitem").prop('checked', true);
+	});	
+
+	// Unselect all record	
+	$('#myModalis').on('click','.unselect_all_btn', function() {
+		$(".checkitem").prop('checked', false);
+	});	
 </script>
