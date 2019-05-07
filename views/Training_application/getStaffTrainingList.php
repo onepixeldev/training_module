@@ -1,6 +1,6 @@
 <p>
 <div class="well">
-	<div class="row">
+	<div class="row table-condensed table-responsive">
 		<table class="table table-bordered table-hover" id="stf_tr_list">
 		<thead>
 		<tr>

@@ -699,13 +699,7 @@ class Training_application extends MY_Controller
             $checkTGS = $this->mdl->checkTGS2($gpCode, $svcCode);
 
             if(empty($checkTGS)) {
-                $seq = $this->mdl->getMaxTGSSeq($gpCode);
-                if(!empty($seq->MAX_SEQ)) {
-                    $tgs_seq = $seq->MAX_SEQ;
-                } else {
-                    $tgs_seq = '1';
-                }
-                $insert = $this->mdl->saveInsertEgPos($form, $gpCode, $tgs_seq);
+                $insert = $this->mdl->saveInsertEgPos($form, $gpCode);
 
                 if($insert > 0) {
                     $ps_row = $this->PsRow($gpCode, $svcCode);
@@ -3139,8 +3133,8 @@ class Training_application extends MY_Controller
         $staffId = $this->input->post('staffId', true);
         
         if (!empty($refid) && !empty($staffId)) {
-            //$verDel = $this->mdl->checkStaffTr($refid, $staffId);
-            $verDel = '';
+            $verDel = $this->mdl->checkStaffTr($refid, $staffId);
+            //$verDel = '';
 
             if(empty($verDel)) {
                 $del = $this->mdl->deleteAssignedStaff($refid, $staffId);
@@ -3151,7 +3145,7 @@ class Training_application extends MY_Controller
                     $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
                 }
             } else {
-                $json = array('sts' => 0, 'msg' => 'Cannot delete master record when matching detail records exist', 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => 'Cannot delete master record when matching detail records exist.' .nl2br("\r\n Please remove child record from <b>STAFF_TRAINING_COST_MAIN</b>"), 'alert' => 'danger');
             } 
                 
         } else {

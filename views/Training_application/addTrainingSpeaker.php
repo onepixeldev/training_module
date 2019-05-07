@@ -23,7 +23,7 @@
             <div class="col-md-9">
                 <div id="faspinner3"></div>
                 <?php
-                    echo form_dropdown('form[speaker]', $speaker_list, '', 'class="selectpicker form-control width-50" id="trSpeaker"')
+                    echo form_dropdown('form[speaker]', array(''=>'---Please Select ---'), '', 'class="selectpicker select2-filter form-control" style="width: 100%" id="trSpeaker"')
                 ?>
             </div>
         </div>
@@ -48,3 +48,12 @@
         <button type="submit" class="btn btn-primary ins_sp_info"><i class="fa fa-save"></i> Save</button>
     </div>
 </form>
+
+<script>
+    $('.select2-filter').select2({
+        dropdownParent: $('#myModalis2'),
+        tags: 'true',
+        placeholder: 'Select an option',
+        width: 'resolve'
+    });
+</script>

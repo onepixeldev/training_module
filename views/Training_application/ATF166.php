@@ -58,7 +58,7 @@
                     </div>
 					<div class="col-sm-5">
 					   	<div class="form-group text-left">
-							<?php echo form_dropdown('form[staff_id]', $staff_list, NULL, 'class="form-control" id="staffID"') ?>	
+							<?php echo form_dropdown('form[staff_id]', $staff_list, NULL, 'class="select2-filter form-control" style="width: 100%" id="staffID"') ?>	
 						</div>
 					</div>
                     <div class="col-sm-4">
@@ -274,6 +274,13 @@
             format: 'L',
             format: 'DD/MM/YYYY'
         });	
+
+        $('.select2-filter').select2({
+            // dropdownParent: $('#myModalis2'),
+            // tags: 'true',
+            // placeholder: 'Select an option',
+            width: 'resolve'
+        });
 	
 		$('.genReport').click(function () {
 			var repCode = $(this).attr('repCode');

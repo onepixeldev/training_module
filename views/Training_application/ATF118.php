@@ -1,7 +1,7 @@
 <p>
 <h4 class="panel-heading bg-color-blueDark txt-color-white">Training</h4>
 <div class="well">
-	<div class="row">
+	<div class="row table-condensed table-responsive">
 		<table class="table table-bordered table-hover" id="tbl_training_row">
 		<thead>
 		<tr>
@@ -35,7 +35,7 @@
 <br>
 <h4 class="panel-heading bg-color-blueDark txt-color-white">List of Staff</h4>
 <div class="well">
-	<div class="row">
+	<div class="row table-condensed table-responsive">
 		<table class="table table-bordered table-hover" id="tbl_list_sta_svc_book">
 		<thead>
 		<tr>

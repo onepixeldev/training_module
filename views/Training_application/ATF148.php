@@ -549,7 +549,7 @@
 	// TRAINING LIST - HISTORY
 	$('#staff_training_application').on('click','.sta_history_btn', function(){
 		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");;
+		var td = thisBtn.closest("tr");
 		var stfID = td.find(".sid").text();
 		var stfName =  td.find(".sname").text();
 		// alert(stfID);

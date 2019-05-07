@@ -10,7 +10,7 @@
 </div>
 <p>
 <div class="well">
-	<div class="row">
+	<div class="row table-condensed table-responsive">
 		<table class="table table-bordered table-hover" id="tr_list_stf">
 		<thead>
 		<tr>

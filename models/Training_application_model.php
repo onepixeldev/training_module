@@ -711,13 +711,21 @@ class Training_application_model extends MY_Model
     }
 
     // save insert eg position
-    public function saveInsertEgPos($form, $gpCode, $tgs_seq) {
+    public function saveInsertEgPos($form, $gpCode) {
+        $tgs_seq = "(SELECT CASE 
+        WHEN MAX_SEQ IS NULL THEN 1
+        WHEN MAX_SEQ IS NOT NULL THEN MAX_SEQ
+        END AS MAX_SEQ
+        FROM(SELECT (MAX(TGS_SEQ)+1) AS MAX_SEQ
+        FROM TRAINING_GROUP_SERVICE
+        WHERE TGS_GRPSERV_CODE = '$gpCode'))";
 
         $data = array(
             "TGS_GRPSERV_CODE" => $gpCode,
-            "TGS_SEQ" => $tgs_seq,
             "TGS_SERVICE_CODE" => $form['service']
         );
+
+        $this->db->set("TGS_SEQ", $tgs_seq, false);
 
         return $this->db->insert("TRAINING_GROUP_SERVICE", $data);
     }
@@ -1931,13 +1939,13 @@ class Training_application_model extends MY_Model
         return $q->result();
     }
 
-    // CHECK STAFF IN TRAINING HEAD
+    // CHECK STAFF IN STAFF_TRAINING_COST_MAIN
     public function checkStaffTr($refid, $staffId)
     {
         $this->db->select("*");
-        $this->db->from('STAFF_TRAINING_HEAD');
-        $this->db->where("STH_TRAINING_REFID", $refid);
-        $this->db->where("STH_STAFF_ID", $staffId);
+        $this->db->from('STAFF_TRAINING_COST_MAIN');
+        $this->db->where("STCM_TRAINING_REFID", $refid);
+        $this->db->where("STCM_STAFF_ID", $staffId);
 
         $q = $this->db->get();
         return $q->row();
@@ -3222,9 +3230,14 @@ class Training_application_model extends MY_Model
     // INSERT SECRET REPORT
     public function insertSecretDuty($form, $refid)
     {
-        $tsi_seq = "(SELECT MAX(TSI_SEQ)+1 AS TSI_SEQ
+        $tsi_seq = "(SELECT CASE 
+        WHEN TSI_SEQ IS NULL THEN 1
+        WHEN TSI_SEQ IS NOT NULL THEN TSI_SEQ
+        END AS TSI_SEQ
+        FROM(
+        SELECT MAX(TSI_SEQ)+1 AS TSI_SEQ
         FROM TRAINING_SECRET_INCHARGE
-        WHERE TSI_REFID = '$refid')";
+        WHERE TSI_REFID = '$refid'))";
 
         $curDate = "SYSDATE";
 

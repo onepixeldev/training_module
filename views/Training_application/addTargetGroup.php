@@ -13,7 +13,7 @@
             <label class="col-md-2 control-label">Group Code <b><font color="red">* </font></b></label>
             <div class="col-md-5">
                 <?php
-                    echo form_dropdown('form[group_code]', $tg_list, '', 'class="selectpicker select2-filter form-control" id="groupCode"')
+                    echo form_dropdown('form[group_code]', $tg_list, '', 'class="selectpicker select2-filter form-control" style="width: 100%" id="groupCode"')
                 ?>
             </div>
         </div>

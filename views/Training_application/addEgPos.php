@@ -13,7 +13,7 @@
             <label class="col-md-2 control-label">Service <b><font color="red">* </font></b></label>
             <div class="col-md-9">
                 <?php
-                    echo form_dropdown('form[service]', $service_list, '', 'class="selectpicker select2-filter form-control" id="service"')
+                    echo form_dropdown('form[service]', $service_list, '', 'class="selectpicker select2-filter form-control" style="width: 100%" id="service"')
                 ?>
             </div>
         </div>

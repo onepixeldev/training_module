@@ -17,7 +17,7 @@
 <br>
 <div class="well">
 	<div id="loader"></div>
-	<div class="row">
+	<div class="row table-condensed table-responsive">
 		<table class="table table-bordered table-hover" id="tbl_list_sta_eva">
 		<thead>
 		<tr>

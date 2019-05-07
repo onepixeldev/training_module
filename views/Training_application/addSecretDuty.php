@@ -12,7 +12,7 @@
             <label class="col-md-3 control-label">Secretariat ID <b><font color="red">* </font></b></label>
             <div class="col-md-9">
                 <?php
-                    echo form_dropdown('form[secretariat_id]', $staff_list, '', 'class="selectpicker form-control width-50" id="secretariat_id"')
+                    echo form_dropdown('form[secretariat_id]', $staff_list, '', 'class="selectpicker select2-filter form-control" style="width: 100%" id="secretariat_id"')
                 ?>
             </div>
         </div>
@@ -49,4 +49,11 @@
             format: 'DD-MM-YYYY'
         }); 
 	});
+
+    $('.select2-filter').select2({
+        dropdownParent: $('#myModalis2'),
+        tags: 'true',
+        // placeholder: 'Select an option',
+        width: 'resolve'
+    });
 </script>

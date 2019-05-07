@@ -11,8 +11,8 @@
 	</div> 
 </div>
 <div class="well">
-	<div class="row">
-		<table class="table table-bordered table-hover" id="tbl_list_sta">
+	<div class="row table-responsive">
+		<table class="table table-bordered table-hover table-condensed" id="tbl_list_sta" style="white-space: nowrap, width: 1%;">
 		<thead>
 		<tr>
 			<th class="text-center">Select</th>

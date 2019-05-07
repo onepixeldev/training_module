@@ -193,7 +193,7 @@
     </div>
     <br>
     <div class="well">
-        <div class="row">
+        <div class="row table-condensed table-responsive">
             <table class="table table-bordered table-hover" id="scr_duty_list">
             <thead>
             <tr>

@@ -13,7 +13,7 @@
             <label class="col-md-2 control-label">Type <b><font color="red">* </font></b></label>
             <div class="col-md-4">
                 <?php
-                    echo form_dropdown('form[type]', array(''=>'---Please Select---', 'STAFF'=>'STAFF', 'EXTERNAL'=>'EXTERNAL'), '', 'class="selectpicker form-control width-50" id="typeFacilitator"')
+                    echo form_dropdown('form[type]', array(''=>'---Please Select---', 'STAFF'=>'STAFF', 'EXTERNAL'=>'EXTERNAL'), '', 'class="selectpicker form-control" id="typeFacilitator"')
                 ?>
             </div>
         </div>
@@ -23,7 +23,7 @@
             <div class="col-md-9">
                 <div id="faspinner3"></div>
                 <?php
-                    echo form_dropdown('form[facilitator]', '', '', 'class="selectpicker form-control width-50" id="trFacilitator"')
+                    echo form_dropdown('form[facilitator]', array(''=>'---Please Select---'), '', 'class="selectpicker select2-filter form-control" style="width: 100%" id="trFacilitator"')
                 ?>
             </div>
         </div>
@@ -34,3 +34,12 @@
         <button type="submit" class="btn btn-primary ins_fi_info"><i class="fa fa-save"></i> Save</button>
     </div>
 </form>
+
+<script>
+    $('.select2-filter').select2({
+        dropdownParent: $('#myModalis2'),
+        tags: 'true',
+        placeholder: 'Select an option',
+        width: 'resolve'
+    });
+</script>

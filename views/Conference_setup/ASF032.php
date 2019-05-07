@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>Conference Setup</h2>				
+            <h2>ASF032 - Conference Setup</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -176,6 +176,19 @@
 		},
     });
 
+	// POPULATE CONFERENCE SETUP
+	$('#conference_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+	
+	$.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('conferenceSetup')?>',
+		data: '',
+		success: function(res) {
+			//alert(res);
+			$('#conference_setup').html(res);
+		}
+	});	
+
     // ADD CONFERENCE CATEGORY MODAL
 	$('#conference_category').on('click','.add_cc_btn', function(){
 		$('#myModalis2 .modal-content').empty();
@@ -210,7 +223,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						//$('#tbl_cc_list tbody').append(res.sp_row);
+						$('#tbl_cc_list tbody').append(res.cc_row);
 					}, 1500);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -226,31 +239,105 @@
 	// EDIT CONFERENCE CATEGORY MODAL
 	$('#conference_category').on('click','.edit_cc_btn', function(){
 		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");;
+		var td = thisBtn.closest("tr");
 		var ccCode = td.find(".cc_code").text();
 		var ccDesc =  td.find(".cc_desc").text();
 		//alert(ccCode);
-		// $.ajax({
-		// 	type: 'POST',
-		// 	url: '<?php echo $this->lib->class_url('addConferenceCat')?>',
-		// 	success: function(res) {
-		// 		$('#myModalis2 .modal-content').html(res);
-		// 	}
-		// });
-	});
-	
-	// DELETE CONFERENCE CATEGORY
-	$('#conference_category').on('click','.del_cc_btn', function(){
+
+		srow = $(this).closest("tr");
 		$('#myModalis2 .modal-content').empty();
 		$('#myModalis2').modal('show');
 		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		// $.ajax({
-		// 	type: 'POST',
-		// 	url: '<?php echo $this->lib->class_url('addConferenceCat')?>',
-		// 	success: function(res) {
-		// 		$('#myModalis2 .modal-content').html(res);
-		// 	}
-		// });
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editConferenceCat')?>',
+			data: {'ccCode':ccCode, 'ccDesc':ccDesc},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE UPDATE CONFERENCE CATEGORY
+	$('#myModalis2').on('click', '.save_edit_cc_btn', function () {
+		var data = $('#editConferenceCat').serialize();
+		msg.wait('#editConferenceCatAlert');
+		//alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveEditConferenceCat')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#editConferenceCatAlert');
+				
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						srow.find('.cc_desc').text(res.cc_col.CC_DESC);
+						srow.find('.cc_from').text(res.cc_amt_from);
+						srow.find('.cc_to').text(res.cc_amt_to);
+						srow.find('.cc_head_rec').text(res.cc_col.CC_HEAD_RECOMMEND);
+						srow.find('.cc_tnca_app').text(res.cc_col.CC_TNCA_APPROVE);
+						srow.find('.cc_vc_app').text(res.cc_col.CC_VC_APPROVE);
+						srow.find('.cc_sts').html(res.cc_col.CC_STATUS);
+					}, 1500);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
+			}
+		});	
+	});
+
+	// DELETE CONFERENCE CATEGORY
+	$('#conference_category').on('click','.del_cc_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var ccCode = td.find(".cc_code").text();
+		var ccDesc =  td.find(".cc_desc").text();
+		//alert(refid);
+		
+		$.confirm({
+		    title: 'Delete Conference Category',
+		    content: 'Are you sure to delete this record? <br> <b>'+ccCode+' - '+ccDesc+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteConferenceCategory')?>',
+						data: {'ccCode' : ccCode},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+		
 	});
 </script>
