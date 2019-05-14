@@ -115,19 +115,117 @@ class Conference_setup_model extends MY_Model
     }
 
     // DELETE CONFERENCE CATEGORY
-    public function deleteConferenceCategory($ccCode) {
+    public function deleteConferenceCategory($ccCode) 
+    {
         $this->db->where('CC_CODE', $ccCode);
         return $this->db->delete("CONFERENCE_CATEGORY");
     }
     
-    // GET HRADMIN_PARMS conference_temp_open_appl
-    public function getHpParmConTemOpAppl($parmCode)
+    // GET HRADMIN_PARMS
+    public function getHpParmConSet($parmCode)
     {
         $this->db->select("*");
         $this->db->from("HRADMIN_PARMS");
         $this->db->where("HP_PARM_CODE", $parmCode);
         $q = $this->db->get();
         
-        return $q->row();
+        if($parmCode == 'CONFERENCE_ADMIN_EMAIL' || $parmCode == 'CONFERENCE_ADMIN_EXT') {
+            return $q->result();
+        } else {
+            return $q->row();
+        }
+    }
+
+    // SAVE UPDATE CONFERENCE SETUP
+    public function saveConferenceSet($parmCode, $parmDesc)
+    {
+        $data = array(
+            "HP_PARM_DESC" => $parmDesc,
+        );
+
+        $this->db->where("HP_PARM_CODE", $parmCode);
+
+        return $this->db->update("HRADMIN_PARMS", $data);
+    }
+
+    // SAVE INSERT CONFERENCE SETUP / STAFF CONTACT INFO
+    public function saveInsConSet($parmCode, $parmDesc)
+    {
+        if ($parmCode == 'CONFERENCE_ADMIN_EMAIL') {
+            $parmNo = "(SELECT CASE 
+                        WHEN HP_PARM_NO IS NULL THEN 1
+                        WHEN HP_PARM_NO IS NOT NULL THEN HP_PARM_NO
+                        END AS HP_PARM_NO
+                        FROM(
+                        SELECT MAX(HP_PARM_NO)+1 AS HP_PARM_NO
+                        FROM HRADMIN_PARMS
+                        WHERE HP_PARM_CODE = 'CONFERENCE_ADMIN_EMAIL'))";
+        } 
+        elseif ($parmCode == 'CONFERENCE_ADMIN_EXT') {
+            $parmNo = "(SELECT CASE 
+                        WHEN HP_PARM_NO IS NULL THEN 1
+                        WHEN HP_PARM_NO IS NOT NULL THEN HP_PARM_NO
+                        END AS HP_PARM_NO
+                        FROM(
+                        SELECT MAX(HP_PARM_NO)+1 AS HP_PARM_NO
+                        FROM HRADMIN_PARMS
+                        WHERE HP_PARM_CODE = 'CONFERENCE_ADMIN_EXT'))";
+        }
+        
+        $data = array(
+            "HP_PARM_CODE" => $parmCode,
+            "HP_PARM_DESC" => $parmDesc
+        );
+
+        $this->db->set("HP_PARM_NO", $parmNo, false);
+
+        return $this->db->insert("HRADMIN_PARMS", $data);
+    }
+
+    // DELETE CONFERENCE SETUP OVERSEA / STAFF CONTACT INFO
+    public function deleteConSet($parmCode, $parmNo) 
+    {
+        $this->db->where('HP_PARM_CODE', $parmCode);
+        $this->db->where('HP_PARM_NO', $parmNo);
+        return $this->db->delete("HRADMIN_PARMS");
+    }
+
+    // STAFF ADMIN HIERARCHY LIST
+    public function getStfAdminHier()
+    {
+        $this->db->select("CAH_ADMIN_CODE, APM_DESC, 
+                            CASE 
+                                WHEN CAH_APPROVE_TNCA = 'Y' THEN 'Yes'
+                                WHEN CAH_APPROVE_TNCA = 'N' THEN 'No'
+                            END
+                            CAH_APPROVE_TNCA, 
+                            CASE 
+                                WHEN CAH_APPROVE_VC = 'Y' THEN 'Yes'
+                                WHEN CAH_APPROVE_VC = 'N' THEN 'No'
+                            END
+                            CAH_APPROVE_VC, 
+                            CASE 
+                                WHEN CAH_STATUS = 'Y' THEN 'Yes'
+                                WHEN CAH_STATUS = 'N' THEN 'No'
+                            END
+                            CAH_STATUS");
+        $this->db->from("CONFERENCE_ADMIN_HIERARCHY");
+        $this->db->join("ADMIN_POST_MAIN", "APM_CODE = CAH_ADMIN_CODE");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // CERTIFIED OFFICER FOR HEAD OF PTJ LIST
+    public function getCerOfficer()
+    {
+        $this->db->select("CDH_DEPT_CODE, DM1.DM_DEPT_DESC AS DM_DEPT_DESC1,
+                            CDH_PARENT_DEPT_CODE, DM2.DM_DEPT_DESC AS DM_DEPT_DESC2");
+        $this->db->from("CONFERENCE_DEPT_HIERARCHY");
+        $this->db->join("DEPARTMENT_MAIN DM1", "DM1.DM_DEPT_CODE = CDH_DEPT_CODE");
+        $this->db->join("DEPARTMENT_MAIN DM2", "DM2.DM_DEPT_CODE = CDH_PARENT_DEPT_CODE");
+        $q = $this->db->get();
+        
+        return $q->result();
     }
 }

@@ -404,7 +404,7 @@
 		
 		$.confirm({
 		    title: 'Approve Training',
-		    content: 'Press OK to confirm approval <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
+		    content: 'Press <b>YES</b> to confirm approval <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
 			type: 'blue',
 		    buttons: {
 		        yes: function () {
@@ -448,7 +448,7 @@
 		
 		$.confirm({
 		    title: 'Postpone Training',
-		    content: 'Press OK to proceed <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
+		    content: 'Press <b>YES</b> to proceed <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
 			type: 'green',
 		    buttons: {
 		        yes: function () {
@@ -492,7 +492,7 @@
 		
 		$.confirm({
 		    title: 'Reject Training',
-		    content: 'Press OK to confirm rejection <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
+		    content: 'Press <b>YES</b> to confirm rejection <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
 			type: 'red',
 		    buttons: {
 		        yes: function () {
@@ -536,7 +536,7 @@
 		
 		$.confirm({
 		    title: 'Amend Training',
-		    content: 'Press OK to confirm amend <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
+		    content: 'Press <b>YES</b> to confirm amend <br> Training ID: <br><b>'+refid+' - '+trName+'</b>',
 			type: 'orange',
 		    buttons: {
 		        yes: function () {
