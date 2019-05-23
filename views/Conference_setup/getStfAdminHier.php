@@ -22,19 +22,14 @@
 				foreach ($staff_admin_hier as $sah) {
 					echo '
                     <tr>
-						<td class="text-center col-md-1 cc_code">' . $sah->CAH_ADMIN_CODE . '</td>
-						<td class="text-left col-md-3 cc_desc">' . $sah->APM_DESC . '</td>
-                        <td class="text-center col-md-1 cc_tnca_app">'.$sah->CAH_APPROVE_TNCA.'</td>
-                        <td class="text-center col-md-1 cc_vc_app">'.$sah->CAH_APPROVE_VC.'</td>
-                        <td class="text-center col-md-1 cc_sts">'.$sah->CAH_STATUS.'</td>
-						<td class="text-center col-md-1">
-						<div class="btn-group">
-							<button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button>
-								<div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn">
-									<button type="button" class="btn btn-success text-left btn-block btn-xs edit_sah_btn"><i class="fa fa-pencil-square-o"></i> Edit</button>
-									<button type="button" class="btn btn-danger text-left btn-block btn-xs del_sah_btn"><i class="fa fa-trash"></i> Delete</button>
-								</div>
-							</div>
+						<td class="text-center col-md-1">' . $sah->CAH_ADMIN_CODE . '</td>
+						<td class="text-left col-md-3">' . $sah->APM_DESC . '</td>
+                        <td class="text-center col-md-1">'.$sah->CAH_APPROVE_TNCA.'</td>
+                        <td class="text-center col-md-1">'.$sah->CAH_APPROVE_VC.'</td>
+                        <td class="text-center col-md-1">'.$sah->CAH_STATUS.'</td>
+						<td class="text-center col-md-2">
+							<button type="button" class="btn btn-success btn-xs edit_sah_btn"><i class="fa fa-edit"></i> Edit</button>
+							<button type="button" class="btn btn-danger btn-xs del_sah_btn"><i class="fa fa-trash"></i> Delete</button>
 						</td>
 					</tr>
                     ';

@@ -196,25 +196,24 @@
 <div class="alert alert-info fade in">
     <b>Reminder Setup</b>
 </div>
-<div style="max-height:500px;overflow-y:auto;overflow-x:hidden">
-    <table class="table table-bordered table-hover">
-    <tbody> 
-        <tr>
-            <td class="text-left col-md-4"><b>LMP Reminder</b></td>
-            <td class="text-center col-md-1"></td>
-            <td class="text-left">
-                <!--<button type="button" class="btn btn-success btn-xs edit_hod_mem" value="" title="Edit Record"><i class="fa fa-edit"></i> Update</button>--->
-            </td>
-        </tr>
-        <tr>
-            <td class="text-left col-md-4"><b>Due Date for Staff To Submit LMP After Reminder</b></td>
-            <td class="text-center col-md-1"></td>
-            <td class="text-left">
-                <!--<button type="button" class="btn btn-success btn-xs edit_hod_mem" data-parm-id="" value="" title="Edit Record"><i class="fa fa-edit"></i> Update</button>-->
-            </td>
-        </tr>
-    </tbody>
-    </table>
+<form id="saveRemSet" class="form-horizontal" method="post">
+    <div id="remSetAlert"></div>
+    <div style="max-height:500px;overflow-y:auto;overflow-x:hidden">
+        <table class="table table-bordered table-hover">
+        <tbody> 
+            <tr>
+                <td class="text-left col-md-4"><b>LMP Reminder</b></td>
+                <td class="text-center col-md-1"><input name="form[conf_rpt_max_days_b4_reminder]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $conf_rpt_max_days_b4_reminder->HP_PARM_DESC?>"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="text-left col-md-4"><b>Due Date for Staff To Submit LMP After Reminder</b></td>
+                <td class="text-center col-md-1"><input name="form[conf_rpt_due_days_reminder]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $conf_rpt_due_days_reminder->HP_PARM_DESC?>"></td>
+                <td></td>
+            </tr>
+        </tbody>
+        </table>
 
-    <div class="text-right"><button type="button" class="btn btn-primary btn-md save_con_setup" value=""><i class="fa fa-save"></i> Save</button></div>
-</div>
+        <div class="text-right"><button type="button" class="btn btn-primary btn-md save_reminder_setup" value=""><i class="fa fa-save"></i> Save</button></div>
+    </div>
+</form>

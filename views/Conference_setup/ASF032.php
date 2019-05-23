@@ -234,7 +234,7 @@
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
+				msg.danger('Please contact administrator.', '#conferenceCatAlert');
 			}
 		});	
 	});
@@ -294,7 +294,7 @@
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
+				msg.danger('Please contact administrator.', '#editConferenceCatAlert');
 			}
 		});	
 	});
@@ -388,7 +388,7 @@
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
+				msg.danger('Please contact administrator.', '#conSetAlertFoot');
 			}
 		});	
 	});
@@ -419,38 +419,7 @@
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
-			}
-		});	
-	});
-
-	// SAVE UPDATE GUIDELINE URL
-	$('#conference_setup').on('click', '.save_gui_url', function () {
-		var data = $('#saveGuidelineURL').serialize();
-		msg.wait('#conURLAlert');
-		// alert(data);
-		
-		$('.btn').attr('disabled', 'disabled');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveConURL')?>',
-			data: data,
-			dataType: 'JSON',
-			success: function(res) {
-				msg.show(res.msg, res.alert, '#conURLAlert');
-
-				if (res.sts == 1) {
-					setTimeout(function () {
-						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s2')?>';
-					}, 1000);
-				} else {
-					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
+				msg.danger('Please contact administrator.', '#conURLAlert');
 			}
 		});	
 	});
@@ -497,7 +466,7 @@
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
+				msg.danger('Please contact administrator.', '#addConSetOverseaAlert');
 			}
 		});	
 	});
@@ -588,7 +557,7 @@
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
+				msg.danger('Please contact administrator.', '#addStfConInfoAlert');
 			}
 		});	
 	});
@@ -637,6 +606,37 @@
 		});
 	});
 
+	// SAVE UPDATE REMINDER SETUP
+	$('#conference_setup').on('click', '.save_reminder_setup', function () {
+		var data = $('#saveRemSet').serialize();
+		msg.wait('#remSetAlert');
+		//alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveRemSet')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#remSetAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s2')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#remSetAlert');
+			}
+		});	
+	});
+
 	/*-----------------------------
 	TAB 3 - CONFERENCE SETUP
 	-----------------------------*/
@@ -672,7 +672,7 @@
 		}
 	});	
 
-	// ADD STAFF CONTACT INFO
+	// ADD STAFF ADMIN HIER
 	$('#staff_admin_hierarchy').on('click','.add_sah_btn', function(){
 		$('#myModalis2 .modal-content').empty();
 		$('#myModalis2').modal('show');
@@ -686,4 +686,831 @@
 			}
 		});
 	});	
+
+	// SAVE STAFF ADMIN HIER
+	$('#myModalis2').on('click', '.ins_sah', function () {
+		var data = $('#addStfAdminHier').serialize();
+		msg.wait('#addStfAdminHierAlert');
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveStfAdminHier')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#addStfAdminHierAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s3')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#addStfAdminHierAlert');
+			}
+		});	
+	});
+
+	// DELETE STAFF ADMIN HIER
+	$('#staff_admin_hierarchy').on('click','.del_sah_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var apmCode = td.eq(0).html().trim();
+		var apmDesc = td.eq(1).html().trim();
+		// alert(email);
+		
+		$.confirm({
+		    title: 'Delete Staff Admin Hierarchy',
+		    content: 'Are you sure to delete this record? <br> <b>'+apmCode+' - '+apmDesc+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteStfAdminHier')?>',
+						data: {'apmCode' : apmCode},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+	});
+
+	// UPDATE STAFF ADMIN HIER
+	$('#staff_admin_hierarchy').on('click','.edit_sah_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var apmCode = td.eq(0).html().trim();
+
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editStfAdminHier')?>',
+			data: {'apmCode':apmCode},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE UPDATE STAFF ADMIN HIER
+	$('#myModalis2').on('click', '.upd_sah', function () {
+		var data = $('#editStfAdminHier').serialize();
+		msg.wait('#editStfAdminHierAlert');
+		//alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('updateStfAdminHier')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#editStfAdminHierAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s3')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#editStfAdminHierAlert');
+			}
+		});	
+	});
+
+	// ADD CERTIFIED OFFICER FOR HEAD OF PTJ
+	$('#certified_officer').on('click','.add_cohp_btn', function(){
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('addCerOfficer')?>',
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});	
+
+	// SAVE CERTIFIED OFFICER FOR HEAD OF PTJ
+	$('#myModalis2').on('click', '.ins_cohp', function () {
+		var data = $('#addCerOfficer').serialize();
+		msg.wait('#addCerOfficerAlert');
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveCerOfficer')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#addCerOfficerAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s3')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#addCerOfficerAlert');
+			}
+		});	
+	});
+
+	// DELETE CERTIFIED OFFICER FOR HEAD OF PTJ
+	$('#certified_officer').on('click','.del_cohp_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var cdhCode = td.eq(0).html().trim();
+		var cdhDesc = td.eq(1).html().trim();
+		// alert(email);
+		
+		$.confirm({
+		    title: 'Delete Certified Officer',
+		    content: 'Are you sure to delete this record? <br> <b>'+cdhCode+' - '+cdhDesc+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteCerOfficer')?>',
+						data: {'cdhCode' : cdhCode},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+	});
+
+	// UPDATE CERTIFIED OFFICER FOR HEAD OF PTJ
+	$('#certified_officer').on('click','.edit_cohp_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var cdhCode = td.eq(0).html().trim();
+		var cdhDesc = td.eq(1).html().trim();
+
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editCerOfficer')?>',
+			data: {'cdhCode':cdhCode, 'cdhDesc':cdhDesc},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE UPDATE CERTIFIED OFFICER FOR HEAD OF PTJ
+	$('#myModalis2').on('click', '.upd_cohp', function () {
+		var data = $('#editCerOfficer').serialize();
+		msg.wait('#editCerOfficerAlert');
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('updateCerOfficer')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#editCerOfficerAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s3')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#editCerOfficerAlert');
+			}
+		});	
+	});
+
+	/*-----------------------------
+	TAB 4 - NOTIFICATION SETUP
+	-----------------------------*/
+
+	// NOTIFICATION SETUP
+	$('#notification_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+	
+	$.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('notificationSetup')?>',
+		data: '',
+		success: function(res) {
+			$('#notification_setup').html(res);
+		}
+	});
+
+	// STAFF REMINDER (TNC A&A STAFF ONLY)
+	$('#notification_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+	
+	$.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('notificationSetup')?>',
+		data: '',
+		success: function(res) {
+			$('#notification_setup').html(res);
+		}
+	});		
+
+	// SAVE UPDATE NOTIFICATION SETUP
+	$('#notification_setup').on('click', '.save_noti_setup', function () {
+		var data = $('#saveNotiSet').serialize();
+		msg.wait('#notiSetAlert');
+		msg.wait('#notiSetAlertFoot');
+		//alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveNotiSet')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#notiSetAlert');
+				msg.show(res.msg, res.alert, '#notiSetAlertFoot');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s4')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#notiSetAlertFoot');
+			}
+		});	
+	});
+
+	// ADD STAFF REMINDER
+	$('#notification_setup').on('click','.add_stf_rem_btn', function(){
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('addStaffReminder')?>',
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});	
+
+	// SAVE STAFF REMINDER
+	$('#myModalis2').on('click', '.save_stf_rem_btn', function () {
+		var data = $('#addStaffReminder').serialize();
+		msg.wait('#addStaffReminderAlert');
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveStaffReminder')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#addStaffReminderAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s4')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#addStaffReminderAlert');
+			}
+		});	
+	});
+
+	// DELETE STAFF REMINDER
+	$('#notification_setup').on('click','.del_sr_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var stfID = td.eq(0).html().trim();
+		var stfName = td.eq(1).html().trim();
+		// alert(email);
+		
+		$.confirm({
+		    title: 'Delete Staff Reminder',
+		    content: 'Are you sure to delete this record? <br> <b>'+stfID+' - '+stfName+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteStaffReminder')?>',
+						data: {'stfID' : stfID},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+	});
+
+	/*-----------------------------
+	TAB 5 - CONFERENCE ALLOWANCE
+	-----------------------------*/
+
+	// POPULATE CONFERENCE ALLOWANCE
+	$('#conference_allowance').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+	
+	$.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('conferenceAllowance')?>',
+		data: '',
+		success: function(res) {
+			$('#conference_allowance').html(res);
+			cf_row = $('#tbl_ca_list').DataTable({
+				"ordering":false,
+			});
+		}
+	});
+
+	// ADD CONFERENCE ALLOWANCE
+	$('#conference_allowance').on('click','.add_ca_btn', function(){
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('addConAllow')?>',
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});	
+
+	// SAVE CONFERENCE ALLOWANCE
+	$('#myModalis2').on('click', '.ins_ca', function () {
+		var data = $('#addConAllow').serialize();
+		msg.wait('#addConAllowAlert');
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveConAllow')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#addConAllowAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s5')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#addConAllowAlert');
+			}
+		});	
+	});
+
+	// DELETE CONFERENCE ALLOWANCE
+	$('#conference_allowance').on('click','.del_ca_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var caCode = td.eq(0).html().trim();
+		var caDesc = td.eq(1).html().trim();
+		// alert(caCode);
+		
+		$.confirm({
+		    title: 'Delete Conference Allowance',
+		    content: 'Are you sure to delete this record? <br> <b>'+caCode+' - '+caDesc+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteConAllow')?>',
+						data: {'caCode' : caCode},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+	});
+
+	// UPDATE CONFERENCE ALLOWANCE
+	$('#conference_allowance').on('click','.edit_ca_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var caCode = td.eq(0).html().trim();
+
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editConAllow')?>',
+			data: {'caCode':caCode},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE UPDATE CONFERENCE ALLOWANCE
+	$('#myModalis2').on('click', '.upd_ca', function () {
+		var data = $('#editConAllow').serialize();
+		msg.wait('#editConAllowAlert');
+		//alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('updateConAllow')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#editConAllowAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s5')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#editConAllowAlert');
+			}
+		});	
+	});
+
+	/*-----------------------------
+	TAB 6 - COUNTRY SETUP
+	-----------------------------*/
+
+	// POPULATE COUNTRY SETUP
+	$('#country_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+	
+	$.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('conCountrySetup')?>',
+		data: '',
+		success: function(res) {
+			$('#country_setup').html(res);
+			cf_row = $('#tbl_ccs_list').DataTable({
+				"ordering":false,
+			});
+		}
+	});
+
+	// ADD COUNTRY SETUP
+	$('#country_setup').on('click','.add_ccs_btn', function(){
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('addConCountry')?>',
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});	
+
+	// SAVE COUNTRY SETUP
+	$('#myModalis2').on('click', '.ins_ccs', function () {
+		var data = $('#addConCountry').serialize();
+		msg.wait('#addConCountryAlert');
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveConCountry')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#addConCountryAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s6')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#addConAllowAlert');
+			}
+		});	
+	});
+
+	// DELETE COUNTRY SETUP
+	$('#country_setup').on('click','.del_ccs_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var cCode = td.eq(0).html().trim();
+		var cDesc = td.eq(1).html().trim();
+		// alert(caCode);
+		
+		$.confirm({
+		    title: 'Delete Country',
+		    content: 'Are you sure to delete this record? <br> <b>'+cCode+' - '+cDesc+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteConCountry')?>',
+						data: {'cCode' : cCode},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+	});
+
+	/*-----------------------------
+	TAB 7 - PARTICIPANT ROLE
+	-----------------------------*/
+
+	// POPULATE PARTICIPANT ROLE
+	$('#participant_role').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+	
+	$.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('conParticipantRole')?>',
+		data: '',
+		success: function(res) {
+			$('#participant_role').html(res);
+			cf_row = $('#tbl_pr_list').DataTable({
+				"ordering":false,
+			});
+		}
+	});
+
+	// ADD PARTICIPANT ROLE
+	$('#participant_role').on('click','.add_pr_btn', function(){
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('addConPartRole')?>',
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});	
+
+	// SAVE PARTICIPANT ROLE
+	$('#myModalis2').on('click', '.ins_pr', function () {
+		var data = $('#addConCountry').serialize();
+		msg.wait('#addConCountryAlert');
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveConCountry')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#addConCountryAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s6')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#addConAllowAlert');
+			}
+		});	
+	});
+
+	// DETL PARTICIPANT ROLE
+	$('#participant_role').on('click','.detl_pr_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var cprCode = td.find(".cpr_code").text();
+		var cprDesc =  td.find(".cpr_desc").text();
+		//alert(cprCode+cprDesc);
+
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('conDetlPartRole')?>',
+			data: {'cprCode':cprCode, 'cprDesc':cprDesc},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});	
+
+	// DELETE PARTICIPANT ROLE
+	$('#participant_role').on('click','.del_pr_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var cCode = td.eq(0).html().trim();
+		var cDesc = td.eq(1).html().trim();
+		// alert(caCode);
+		
+		$.confirm({
+		    title: 'Delete Country',
+		    content: 'Are you sure to delete this record? <br> <b>'+cCode+' - '+cDesc+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteConCountry')?>',
+						data: {'cCode' : cCode},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+	});
 </script>

@@ -24,14 +24,14 @@
         <div class="form-group">
             <label class="col-md-3 control-label">From (RM) <b><font color="red">* </font></b></label>
             <div class="col-md-4">
-                <input name="form[from]" placeholder="From (RM)" class="form-control" value="<?php echo number_format($cc_detl->CC_RM_AMOUNT_FROM,2)?>" type="text">
+                <input name="form[from]" placeholder="From (RM)" class="form-control" value="<?php echo /*number_format(*/$cc_detl->CC_RM_AMOUNT_FROM/*,2)*/?>" type="text">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-md-3 control-label">To (RM) <b><font color="red">* </font></b></label>
             <div class="col-md-4">
-                <input name="form[to]" placeholder="To (RM)" class="form-control" value="<?php echo number_format($cc_detl->CC_RM_AMOUNT_TO,2)?>" type="text">
+                <input name="form[to]" placeholder="To (RM)" class="form-control" value="<?php echo /*number_format(*/$cc_detl->CC_RM_AMOUNT_TO/*,2)*/?>" type="text">
             </div>
         </div>
 

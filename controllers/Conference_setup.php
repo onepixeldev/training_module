@@ -218,6 +218,8 @@ class Conference_setup extends MY_Controller
         $parmCode10 = "CONFERENCE_URL";
         $parmCode11 = "CONFERENCE_ADMIN_EMAIL";
         $parmCode12 = "CONFERENCE_ADMIN_EXT";
+        $parmCode13 = "CONF_RPT_MAX_DAYS_B4_REMINDER";
+        $parmCode14 = "CONF_RPT_DUE_DAYS_REMINDER";
         
         // get available records
         $data['conference_temp_open_appl'] = $this->mdl->getHpParmConSet($parmCode1);
@@ -232,6 +234,8 @@ class Conference_setup extends MY_Controller
         $data['conference_url'] = $this->mdl->getHpParmConSet($parmCode10);
         $data['conference_admin_email'] = $this->mdl->getHpParmConSet($parmCode11);
         $data['conference_admin_ext'] = $this->mdl->getHpParmConSet($parmCode12);
+        $data['conf_rpt_max_days_b4_reminder'] = $this->mdl->getHpParmConSet($parmCode13);
+        $data['conf_rpt_due_days_reminder'] = $this->mdl->getHpParmConSet($parmCode14);
 
         $this->render($data);
     }
@@ -459,6 +463,45 @@ class Conference_setup extends MY_Controller
         echo json_encode($json);
     }
 
+    // SAVE REMINDER SETUP
+    public function saveRemSet() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $parmCode1 = "CONF_RPT_MAX_DAYS_B4_REMINDER";
+        $parmCode2 = "CONF_RPT_DUE_DAYS_REMINDER";
+
+        // form / input validation
+        $rule = array(
+            'conf_rpt_max_days_b4_reminder' => 'is_natural|max_length[3]',
+            'conf_rpt_due_days_reminder' => 'is_natural|max_length[3]',
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $lmpRem = $form['conf_rpt_max_days_b4_reminder'];
+            $dueDateLmpRem = $form['conf_rpt_due_days_reminder'];
+
+            $updateLmpRem= $this->mdl->saveConferenceSet($parmCode1, $lmpRem);
+            $updateDueDateLmpRem = $this->mdl->saveConferenceSet($parmCode2, $dueDateLmpRem);
+
+            if($updateLmpRem > 0 && $updateDueDateLmpRem > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
     // STAFF ADMIN HIERARCHY LIST
     public function getStfAdminHier()
     {
@@ -480,7 +523,612 @@ class Conference_setup extends MY_Controller
     // ADD STAFF ADMIN HIER
     public function addStfAdminHier()
     {
-        // $data['staff_list'] = $this->dropdown($this->mdl->getDept(), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
+        $data['admin_list'] = $this->dropdown($this->mdl->getAdmin(), 'APM_CODE', 'APM_CODE_DESC', ' ---Please select--- ');
+        $this->render($data);
+    }
+
+    // SAVE STAFF ADMIN HIER
+    public function saveStfAdminHier() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'admin_code' => 'required|max_length[10]',
+            'tnc_approve' => 'max_length[1]',
+            'vc_approve' => 'max_length[1]',
+            'status' => 'max_length[1]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $checkExist = $this->mdl->getStfAdminHierDetl($form['admin_code']);
+
+            if(empty($checkExist)) {
+                $insert = $this->mdl->saveStfAdminHier($form);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist', 'alert' => 'danger');
+            }
+                
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // DELETE STAFF ADMIN HIER
+    public function  deleteStfAdminHier() 
+    {
+        $this->isAjax();
+        
+        $apmCode = $this->input->post('apmCode', true);
+
+        if (!empty($apmCode)) {
+            $del = $this->mdl->deleteStfAdminHier($apmCode);
+                
+            if ($del > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // EDIT STAFF ADMIN HIER
+    public function editStfAdminHier()
+    {
+        $apmCode = $this->input->post('apmCode', true);
+        
+        $data['admin_detl'] = $this->mdl->getStfAdminHierDetl($apmCode);
+        $data['admin_list'] = $this->dropdown($this->mdl->getAdmin(), 'APM_CODE', 'APM_CODE_DESC', ' ---Please select--- ');
+        $this->render($data);
+    }
+
+    // SAVE UPDATE STAFF ADMIN HIER
+    public function updateStfAdminHier() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'tnc_approve' => 'max_length[1]',
+            'vc_approve' => 'max_length[1]',
+            'status' => 'max_length[1]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $update = $this->mdl->saveUpdStfAdminHier($form);
+
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
+                
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // ADD CERTIFIED OFFICER FOR HEAD OF PTJ
+    public function addCerOfficer()
+    {
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptCon(), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
+        $data['parent_dept_list'] = $this->dropdown($this->mdl->getParDeptCon(), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
+        $this->render($data);
+    }
+
+    // SAVE CERTIFIED OFFICER FOR HEAD OF PTJ
+    public function saveCerOfficer() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'department' => 'required|max_length[10]',
+            'parent_department' => 'required|max_length[10]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $checkExist = $this->mdl->getCerOfficerDetl($form['department']);
+
+            if(empty($checkExist)) {
+                $insert = $this->mdl->saveCerOfficer($form);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist', 'alert' => 'danger');
+            }
+                
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // DELETE CERTIFIED OFFICER FOR HEAD OF PTJ
+    public function  deleteCerOfficer() 
+    {
+        $this->isAjax();
+        
+        $cdhCode = $this->input->post('cdhCode', true);
+
+        if (!empty($cdhCode)) {
+            $del = $this->mdl->deleteCerOfficer($cdhCode);
+                
+            if ($del > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // EDIT CERTIFIED OFFICER FOR HEAD OF PTJ
+    public function editCerOfficer()
+    {
+        $cdhCode = $this->input->post('cdhCode', true);
+        $cdhDesc = $this->input->post('cdhDesc', true);
+        if(!empty($cdhCode) && !empty($cdhDesc)) {
+            $data['cdh_code'] = $cdhCode;
+            $data['cdh_desc'] = $cdhCode.' - '.$cdhDesc;
+        } else {
+            $data['cdh_code'] = '';
+            $data['cdh_desc'] = '';
+        }   
+
+        $data['cdh_detl'] = $this->mdl->getCerOfficerDetl($cdhCode);
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptCon(), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
+        $data['parent_dept_list'] = $this->dropdown($this->mdl->getParDeptCon(), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // SAVE UPDATE CERTIFIED OFFICER FOR HEAD OF PTJ
+    public function updateCerOfficer() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'parent_department' => 'required|max_length[10]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $update = $this->mdl->updateCerOfficer($form);
+
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
+                
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // NOTIFICATION SETUP
+    public function notificationSetup()
+    {
+        $data['staff_list'] = $this->dropdown($this->mdl->getStaffList(), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
+        
+        $data['noti_setup'] = $this->mdl->getNotificationSetup();
+
+        if (!empty($data['noti_setup'])) {
+            $data['code'] = $data['noti_setup']->TMC_CODE;
+            $data['address'] = $data['noti_setup']->TMC_ADDRESS;
+            $data['url_link'] = $data['noti_setup']->TMC_LINK;
+            $data['phone_no'] = $data['noti_setup']->TMC_TELNO;
+            $data['fax_no'] = $data['noti_setup']->TMC_FAXNO;
+            $data['send_by'] = $data['noti_setup']->TMC_SEND_BY;
+            $data['status'] = $data['noti_setup']->TMC_STATUS;
+        } else {
+            $data['code'] = '';
+            $data['address'] = '';
+            $data['url_link'] = '';
+            $data['phone_no'] = '';
+            $data['fax_no'] = '';
+            $data['send_by'] = '';
+            $data['status'] = '';
+        }
+
+        $data['staff_reminder'] = $this->mdl->getStaffReminder();
+        
+        $this->render($data);
+    }
+
+    // SAVE UPDATE NOTIFICATION SETUP
+    public function saveNotiSet() {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'address' => 'max_length[200]',
+            'url_link' => 'valid_url|max_length[80]',
+            'phone_no' => 'max_length[15]',
+            'fax_no' => 'max_length[15]',
+            'send_by' => 'required|max_length[10]',
+            'status' => 'max_length[2]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $update = $this->mdl->saveNotiSet($form);
+
+            if($update > 0 ) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // ADD STAFF REMINDER
+    public function addStaffReminder()
+    {
+        $data['staff_tnca'] = $this->dropdown($this->mdl->getStaffTnca(), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // SAVE INSERT STAFF REMINDER
+    public function saveStaffReminder() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'staff_id' => 'required|max_length[10]',
+            'status' => 'max_length[10]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $checkExist = $this->mdl->getStfRemDetl($form['staff_id']);
+
+            if(empty($checkExist)) {
+                $insert = $this->mdl->saveStaffReminder($form);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist', 'alert' => 'danger');
+            }
+                
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // DELETE STAFF REMINDER
+    public function  deleteStaffReminder() 
+    {
+        $this->isAjax();
+        
+        $stfID = $this->input->post('stfID', true);
+
+        if (!empty($stfID)) {
+            $del = $this->mdl->deleteStaffReminder($stfID);
+                
+            if ($del > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // CONFERENCE ALLOWANCE
+    public function conferenceAllowance()
+    {
+        // $data['staff_tnca'] = $this->dropdown($this->mdl->getStaffTnca(), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
+        $data['con_allow'] = $this->mdl->getConAllow();
+
+        $this->render($data);
+    }
+
+    // ADD CONFERENCE ALLOWANCE
+    public function addConAllow()
+    {
+        // $data['admin_list'] = $this->dropdown($this->mdl->getAdmin(), 'APM_CODE', 'APM_CODE_DESC', ' ---Please select--- ');
+        $this->render();
+    }
+
+    // SAVE CONFERENCE ALLOWANCE
+    public function saveConAllow() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'code' => 'required|max_length[20]',
+            'description' => 'required|max_length[100]',
+            'max_amount' => 'numeric|max_length[40]',
+            'budget_origin_local' => 'max_length[20]',
+            'budget_origin_oversea' => 'max_length[20]',
+            'status' => 'max_length[10]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $checkExist = $this->mdl->getConAllow($form['code']);
+
+            if(empty($checkExist)) {
+                $insert = $this->mdl->saveConAllow($form);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist', 'alert' => 'danger');
+            }
+                
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // DELETE CONFERENCE ALLOWANCE
+    public function  deleteConAllow() 
+    {
+        $this->isAjax();
+        
+        $caCode = $this->input->post('caCode', true);
+
+        if (!empty($caCode)) {
+            $del = $this->mdl->deleteConAllow($caCode);
+                
+            if ($del > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // EDIT CONFERENCE ALLOWANCE
+    public function editConAllow()
+    {
+        $caCode = $this->input->post('caCode', true);
+        
+        if(!empty($caCode)) {
+            $data['ca_detl'] = $this->mdl->getConAllow($caCode);
+        } else {
+            $data['ca_detl'] = '';
+        }
+
+        $this->render($data);
+    }
+
+    // SAVE UPDATE CONFERENCE ALLOWANCE
+    public function updateConAllow() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'description' => 'required|max_length[100]',
+            'max_amount' => 'numeric|max_length[40]',
+            'budget_origin_local' => 'max_length[20]',
+            'budget_origin_oversea' => 'max_length[20]',
+            'status' => 'max_length[10]'
+        );
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $update = $this->mdl->updateConAllow($form);
+
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
+                
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // COUNTRY SETUP
+    public function conCountrySetup()
+    {
+        $data['con_Country'] = $this->mdl->getConCountrySetup();
+
+        $this->render($data);
+    }
+
+    // ADD COUNTRY SETUP
+    public function addConCountry()
+    {
+        $data['country_list'] = $this->dropdown($this->mdl->getCountry(), 'CM_COUNTRY_CODE', 'CM_CODE_DESC', ' ---Please select--- ');
+        $this->render($data);
+    }
+
+    // SAVE COUNTRY SETUP
+    public function saveConCountry() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'country_code' => 'required|max_length[10]',
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $checkExist = $this->mdl->getConCountrySetup($form['country_code']);
+
+            if(empty($checkExist)) {
+                $insert = $this->mdl->saveConCountry($form);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist', 'alert' => 'danger');
+            }
+                
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // DELETE COUNTRY SETUP
+    public function  deleteConCountry() 
+    {
+        $this->isAjax();
+        
+        $cCode = $this->input->post('cCode', true);
+
+        if (!empty($cCode)) {
+            $del = $this->mdl->deleteConCountry($cCode);
+                
+            if ($del > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // PARTICIPANT ROLE LIST
+    public function conParticipantRole()
+    {
+        $data['part_role'] = $this->mdl->getConParticipantRole();
+
+        $this->render($data);
+    }
+
+    // PARTICIPANT ROLE DETL
+    public function conDetlPartRole()
+    {
+        $cprCode = $this->input->post('cprCode', true);
+        $cprDesc = $this->input->post('cprDesc', true);
+
+        if(!empty($cprCode)) {
+            $data['cpr_code'] = $cprCode;
+            $data['cpr_desc'] = $cprDesc;
+            $data['part_role_detl'] = $this->mdl->getConParticipantRoleDetl($cprCode);
+        } else {
+            $data['cpr_code'] = null;
+            $data['cpr_desc'] = null;
+            $data['part_role_detl'] = null;
+        }
+    
+        $this->render($data);
+    }
+
+    // ADD PARTICIPANT ROLE
+    public function addConPartRole()
+    {
+        // $data['country_list'] = $this->dropdown($this->mdl->getCountry(), 'CM_COUNTRY_CODE', 'CM_CODE_DESC', ' ---Please select--- ');
         $this->render();
     }
 }
