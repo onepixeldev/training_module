@@ -468,57 +468,6 @@ class Conference_setup extends MY_Controller
         echo json_encode($json);
     }
 
-    // EDIT STAFF CONTACT INFO
-    public function editStfConInfo()
-    {
-        $parmCode = "CONFERENCE_ADMIN_EXT";
-        $parmNo = $this->input->post('parmNo', true);
-        $ext = $this->input->post('ext', true);
-
-        if(!empty($parmNo)) {
-            $data['parm_no'] = $parmNo;
-            $data['ext'] = $ext;
-        }
-
-        $this->render($data);
-    }
-
-    // SAVE UPDATE STAFF CONTACT INFO
-    public function saveUpdStfConInfo() {
-        $this->isAjax();
-
-        // get parameter values
-        $form = $this->input->post('form', true);
-
-        $parmCode11 = "CONFERENCE_ADMIN_EXT";
-
-        $parmNo = $form['parm_no'];
-
-        // form / input validation
-        $rule = array(
-            'ext' => 'required|max_length[200]'
-        );
-
-        $exclRule = null;
-        
-        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
-
-        if ($status == 1) {
-            $ext = $form['ext'];
-            $insertStfConInfo = $this->mdl->saveUpdConSet($parmCode11, $parmNo, $ext);
-
-            if($insertStfConInfo > 0) {
-                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
-            } else {
-                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
-            } 
-        } else {
-            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
-        }
-         
-        echo json_encode($json);
-    }
-
     // DELETE STAFF CONTACT INFO
     public function  deleteStfConInfo() {
         $this->isAjax();

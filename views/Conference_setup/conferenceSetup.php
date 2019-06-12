@@ -23,13 +23,13 @@
                 <td class="text-left col-md-4"><b>Maximum interval for staff to apply for conference</b></td>
                 <td class="text-left col-md-1">Local: </td>
                 <td class="text-left col-md-1"><input name="form[min_days_submit_local]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $min_days_submit_local->HP_PARM_DESC?>"></td>
-                <td class="text-left"></td>
+                <td class="text-left">day(s)</td>
             </tr>
             <tr>
                 <td class="text-left col-md-4"></td>
                 <td class="text-left col-md-1">Oversea :</td>
                 <td class="text-left col-md-1"><input name="form[min_days_submit_oversea]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $min_days_submit_oversea->HP_PARM_DESC?>"></td>
-                <td class="text-left"></td>
+                <td class="text-left">day(s)</td>
             </tr>
         </tbody>
         </table>
@@ -44,7 +44,7 @@
             <tr>
                 <td class="text-left col-md-4"><b>Maximum interval for staff to update conference report application ('REJECT' status only)</b></td>
                 <td class="text-center col-md-1"><input name="form[max_days_edit_lmp]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $max_days_edit_lmp->HP_PARM_DESC?>"></td>
-                <td class="text-left"></td>
+                <td class="text-left">day(s)</td>
             </tr>
         </tbody>
         </table>
@@ -70,13 +70,13 @@
                 <td class="text-left col-md-4"><b>Maximum interval for HOD to approve for conference</b></td>
                 <td class="text-left col-md-1">Local :</td>
                 <td class="text-left col-md-1"><input name="form[conf_max_days_rec_local]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $conf_max_days_rec_local->HP_PARM_DESC?>"></td>
-                <td class="text-left"></td>
+                <td class="text-left">day(s)</td>
             </tr>
             <tr>
                 <td class="text-left col-md-4"></td>
                 <td class="text-left col-md-1">Oversea :</td>
                 <td class="text-left col-md-1"><input name="form[conf_max_days_rec_oversea]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $conf_max_days_rec_oversea->HP_PARM_DESC?>"></td>
-                <td class="text-left"></td>
+                <td class="text-left">day(s)</td>
             </tr>
         </tbody>
         </table>
@@ -166,7 +166,7 @@
 		<tr>
 			<th class="text-center col-md-1">No</th>
             <th class="text-left">Ext</th>
-			<th class="text-center col-md-1">Action</th>
+			<th class="text-center col-md-3">Action</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -178,6 +178,7 @@
 						<td class="text-center">' . $cae->HP_PARM_NO . '</td>
 						<td class="text-left">' . $cae->HP_PARM_DESC . '</td>
                         <td class="text-center">
+                            <button type="button" class="btn btn-success btn-xs edit_sci_btn"><i class="fa fa-pencil-square-o"></i> Edit</button>
                             <button type="button" class="btn btn-danger btn-xs del_sci_btn"><i class="fa fa-trash"></i> Delete</button>
 						</td>
 					</tr>
@@ -204,12 +205,12 @@
             <tr>
                 <td class="text-left col-md-4"><b>LMP Reminder</b></td>
                 <td class="text-center col-md-1"><input name="form[conf_rpt_max_days_b4_reminder]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $conf_rpt_max_days_b4_reminder->HP_PARM_DESC?>"></td>
-                <td></td>
+                <td>day(s)</td>
             </tr>
             <tr>
                 <td class="text-left col-md-4"><b>Due Date for Staff To Submit LMP After Reminder</b></td>
                 <td class="text-center col-md-1"><input name="form[conf_rpt_due_days_reminder]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $conf_rpt_due_days_reminder->HP_PARM_DESC?>"></td>
-                <td></td>
+                <td>day(s)</td>
             </tr>
         </tbody>
         </table>

@@ -182,19 +182,6 @@ class Conference_setup_model extends MY_Model
         return $this->db->insert("HRADMIN_PARMS", $data);
     }
 
-    // SAVE UPDATE STAFF CONTACT INFO
-    public function saveUpdConSet($parmCode, $parmNo, $parmDesc)
-    {
-        $data = array(
-            "HP_PARM_DESC" => $parmDesc
-        );
-
-        $this->db->where("HP_PARM_CODE", $parmCode);
-        $this->db->where("HP_PARM_NO", $parmNo);
-
-        return $this->db->update("HRADMIN_PARMS", $data);
-    }
-
     // DELETE CONFERENCE SETUP OVERSEA / STAFF CONTACT INFO
     public function deleteConSet($parmCode, $parmNo) 
     {

@@ -749,9 +749,7 @@ class Training_application extends MY_Controller
     // SELECT TABLE MODAL STRUCTURED TRAINING
     public function setupStructuredTraining()
     {
-
         $data['str_tr'] = $this->mdl->getStructuredTraining();
-
 
         $this->renderAjax($data);
     }

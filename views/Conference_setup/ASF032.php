@@ -562,6 +562,59 @@
 		});	
 	});
 
+	// EDIT STAFF CONTACT INFO
+	$('#conference_setup').on('click','.edit_sci_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var parmNo = td.eq(0).html().trim();
+		var ext = td.eq(1).html().trim();
+		
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editStfConInfo')?>',
+			data: {'parmNo' : parmNo, 'ext' : ext},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});	
+
+	// SAVE UPDATE STAFF CONTACT INFO
+	$('#myModalis2').on('click', '.save_upd_staff_contact_info', function () {
+		var data = $('#editStfConInfo').serialize();
+		msg.wait('#editStfConInfoAlert');
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveUpdStfConInfo')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#editStfConInfoAlert');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s2')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#editStfConInfoAlert');
+			}
+		});	
+	});
+
 	// DELETE STAFF CONTACT INFO
 	$('#conference_setup').on('click','.del_sci_btn', function() {
 		var thisBtn = $(this);
@@ -638,7 +691,7 @@
 	});
 
 	/*-----------------------------
-	TAB 3 - CONFERENCE SETUP
+	TAB 3 - ADMIN HIERARCHY
 	-----------------------------*/
 	// POPULATE STAFF ADMIN HIERARCHY (MPE ONLY)
 	$('#staff_admin_hierarchy').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -1419,24 +1472,26 @@
 
 	// SAVE PARTICIPANT ROLE
 	$('#myModalis2').on('click', '.ins_pr', function () {
-		var data = $('#addConCountry').serialize();
-		msg.wait('#addConCountryAlert');
+		var data = $('#addConPartRole').serialize();
+		msg.wait('#addConPartRoleAlert');
+		msg.wait('#addConPartRoleAlertFoot');
 		// alert(data);
 		
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveConCountry')?>',
+			url: '<?php echo $this->lib->class_url('saveConPartRole')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
-				msg.show(res.msg, res.alert, '#addConCountryAlert');
+				msg.show(res.msg, res.alert, '#addConPartRoleAlert');
+				msg.show(res.msg, res.alert, '#addConPartRoleAlertFoot');
 
 				if (res.sts == 1) {
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s6')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s7')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1470,24 +1525,78 @@
 		});
 	});	
 
-	// DELETE PARTICIPANT ROLE
+	// UPDATE PARTICIPANT ROLE
+	$('#participant_role').on('click','.edit_pr_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var cprCode = td.find(".cpr_code").text();
+
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('updateConPartRole')?>',
+			data: {'cprCode':cprCode},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
+			}
+		});
+	});
+
+	// SAVE UPDATE CONFERENCE ALLOWANCE
+	$('#myModalis2').on('click', '.upd_pr', function () {
+		var data = $('#updConPartRole').serialize();
+		msg.wait('#updConPartRoleAlert');
+		msg.wait('#updConPartRoleAlertFoot');
+		//alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveUpdConPartRole')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#updConPartRoleAlert');
+				msg.show(res.msg, res.alert, '#updConPartRoleAlertFoot');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis2').modal('hide');
+						$('.btn').removeAttr('disabled');
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s7')?>';
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#editConAllowAlert');
+			}
+		});	
+	});
+
+	// DELETE CONFERENCE CATEGORY
 	$('#participant_role').on('click','.del_pr_btn', function() {
 		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var cCode = td.eq(0).html().trim();
-		var cDesc = td.eq(1).html().trim();
-		// alert(caCode);
+		var td = thisBtn.closest("tr");
+		var cprCode = td.find(".cpr_code").text();
+		var cprDesc =  td.find(".cpr_desc").text();
+		//alert(refid);
 		
 		$.confirm({
-		    title: 'Delete Country',
-		    content: 'Are you sure to delete this record? <br> <b>'+cCode+' - '+cDesc+'</b>',
+		    title: 'Delete Conference Participant Role',
+		    content: 'Are you sure to delete this record? <br> <b>'+cprCode+' - '+cprDesc+'</b>',
 			type: 'red',
 		    buttons: {
 		        yes: function () {
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo $this->lib->class_url('deleteConCountry')?>',
-						data: {'cCode' : cCode},
+						url: '<?php echo $this->lib->class_url('deleteConPartRole')?>',
+						data: {'cprCode' : cprCode},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
@@ -1512,5 +1621,6 @@
 		        }
 		    }
 		});
+		
 	});
 </script>
