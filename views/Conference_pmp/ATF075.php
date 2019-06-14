@@ -104,11 +104,15 @@
 
 								<div class="tab-pane fade" id="s3">
 									<div id="conference_application">
-										<div class="alert alert-info fade in">
-											<b>Staff Conference Details</b>
-										</div>
-										<div id="staff_conference_details">
-										</div>	
+										<p>
+											<table class="table table-bordered table-hover">
+												<thead>
+												<tr>
+													<th class="text-center">Please click Add New Staff or Edit from Staff List</th>
+												</tr>
+												</thead>
+											</table>
+										</p>
 									</div>
                                 </div> 
 
@@ -247,6 +251,7 @@
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
 				$('#staff_list_conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+				$('#conference_application').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click Add New Staff or Edit from Staff List</th></tr></thead></table></p>').show();
 			},
 			success: function(res) {
 				$('#staff_list_conference').html(res);
@@ -260,15 +265,20 @@
 
 	// ADD STAFF TO CONFERENCE
 	$('#staff_list_conference').on('click','.con_app_add_btn', function(){
-		$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		var thisBtn = $(this);
+		var crRefID = thisBtn.val();
+		var crName = thisBtn.data("crname");
+		// alert(crRefID+crName);
+
+		$('#conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('addStaffConference')?>',
+			data: {'refid' : crRefID, 'crName' : crName},
 			success: function(res) {
-				$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').hide();
 				$('.nav-tabs li:eq(2) a').tab('show');
-				$('#staff_conference_details').html(res);
+				$('#conference_application').html(res);
 			}
 		});
 	});

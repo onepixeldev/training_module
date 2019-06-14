@@ -98,7 +98,44 @@ class Conference_pmp extends MY_Controller
     
     // ADD STAFF CONFERENCE
     public function addStaffConference() {
-        $this->render();
+        $refid = $this->input->post('refid', true);
+        $crName = $this->input->post('crName', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $data['crName'] = $crName;
+
+            $data['cr_detl'] = $this->mdl->getConferenceDetl($refid);
+            if(!empty($data['cr_detl'])) {
+                $data['venue'] = $data['cr_detl']->CM_ADDRESS;
+                $data['city'] = $data['cr_detl']->CM_CITY;
+                $data['postcode'] = $data['cr_detl']->CM_POSTCODE;
+                $data['state'] = $data['cr_detl']->SM_STATE_DESC;
+                $data['country'] = $data['cr_detl']->CM_COUNTRY_DESC;
+                $data['date_from'] = $data['cr_detl']->CM_DATE_FROM;
+                $data['date_to'] = $data['cr_detl']->CM_DATE_TO;
+                $data['organizer'] = $data['cr_detl']->CM_ORGANIZER_NAME;
+            } else {
+                $data['venue'] = '';
+                $data['city'] = '';
+                $data['postcode'] = '';
+                $data['state'] = '';
+                $data['country'] = '';
+                $data['date_from'] = '';
+                $data['date_to'] = '';
+                $data['organizer'] = '';
+            }
+
+            $data['staff_list'] = $this->dropdown($this->mdl->getStaffList(), 'SM_STAFF_ID', 'SM_STAFF_ID_NAME', ' ---Please select--- ');
+            $data['cr_role_list'] = $this->dropdown($this->mdl->getConferenceRoleList(), 'CPR_CODE', 'CPR_CODE', ' ---Please select--- ');
+            $data['cr_cat_list'] = $this->dropdown($this->mdl->getCrCategoryList(), 'CC_CODE', 'CC_CODE_DESC_CC_FROM_TO', ' ---Please select--- ');
+            $data['cr_spon_list'] = array(''=>' ---Please select--- ', 'Y'=>'Yes', 'N'=>'No', 'H'=>'Half Sponsorship');
+            $data['cr_budget_spon_list'] = array(''=>' ---Please select--- ', 'GRANTS'=>'Grants', 'EXTERNAL'=>'External Organization', 'SELF'=>'Self');
+            $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS');
+            $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_HOD'=>'VERIFY_HOD', 'VERIFY_TNCA'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
+        }
+
+        $this->render($data);
     }
 
     // ADD CONFERENCE INFORMATION

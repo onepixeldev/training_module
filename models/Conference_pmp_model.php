@@ -68,6 +68,7 @@ class Conference_pmp_model extends MY_Model
         return $q->result();
     } 
 
+    // CONFERENCE APPLICANT LIST
     public function getStaffConferenceApplication($refid) {		
         $this->db->select("SCM_STAFF_ID, SM_STAFF_NAME, CC_DESC, CPR_DESC,
         CASE SCM_STATUS
@@ -85,6 +86,7 @@ class Conference_pmp_model extends MY_Model
         return $q->result();
     } 
 
+    /*
     // GET STATE DROPDOWN
     public function getStateList() {
         $this->db->select("SM_STATE_CODE, SM_STATE_DESC, SM_STATE_CODE||' - '||SM_STATE_DESC AS SM_STATE_CODE_DESC");
@@ -113,6 +115,57 @@ class Conference_pmp_model extends MY_Model
         $q = $this->db->get();
                 
         return $q->result();
+    } 
+    */
+
+    // GET STAFF LIST DROPDOWN
+    public function getStaffList()
+    {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID ||' - '||SM_STAFF_NAME AS SM_STAFF_ID_NAME");
+        $this->db->from("STAFF_MAIN, STAFF_STATUS");
+        $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS AND SS_STATUS_STS = 'ACTIVE' AND SM_STAFF_TYPE = 'STAFF'");
+        $this->db->order_by("2");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // GET CONFERENCE ROLE LIST
+    public function getConferenceRoleList()
+    {
+        $this->db->select("UPPER(CPR_CODE) CPR_CODE");
+        $this->db->from("CONFERENCE_PARTICIPANT_ROLE");
+        $this->db->where("NVL(CPR_DISPLAY,'N')='Y'");
+
+        $q = $this->db->get();
+        return $q->result();
+    } 
+
+    // GET CONFERENCE CATEGORY LIST
+    public function getCrCategoryList()
+    {
+        $this->db->select("CC_CODE, CC_DESC, CC_RM_AMOUNT_FROM, CC_RM_AMOUNT_TO, CC_CODE||' - '||CC_DESC||' (RM'||CC_RM_AMOUNT_FROM||' - RM'||CC_RM_AMOUNT_TO||')' AS CC_CODE_DESC_CC_FROM_TO");
+        $this->db->from("CONFERENCE_CATEGORY");
+        $this->db->where("CC_STATUS='Y'");
+        $this->db->order_by("CC_RM_AMOUNT_FROM");
+
+        $q = $this->db->get();
+        return $q->result();
+    } 
+
+    // GET CONFERENCE DETAILS
+    public function getConferenceDetl($refid)
+    {
+        $this->db->select("CM_REFID, CM_NAME, CM_ADDRESS, CM_CITY, CM_POSTCODE, 
+        CM_STATE, SM_STATE_DESC, CONFERENCE_MAIN.CM_COUNTRY_CODE AS CM_COUNTRY_CODE, COUNTRY_MAIN.CM_COUNTRY_DESC AS CM_COUNTRY_DESC, 
+        TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FROM, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME");
+        $this->db->from("CONFERENCE_MAIN");
+        $this->db->join("STATE_MAIN", "CM_STATE = STATE_MAIN.SM_STATE_CODE", "LEFT");
+        $this->db->join("COUNTRY_MAIN", "CONFERENCE_MAIN.CM_COUNTRY_CODE = COUNTRY_MAIN.CM_COUNTRY_CODE", "LEFT");
+        $this->db->where("CM_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
     } 
 
     // SAVE INSERT CONFERENCE INFORMATION

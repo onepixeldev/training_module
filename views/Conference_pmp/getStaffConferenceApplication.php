@@ -7,12 +7,11 @@
 	</div> 
 	<div class="col-sm-10">
 		<div class="form-group text-left"><?php echo $refid. " - " .$crName?></div>
-		<div class="form-group text-left app_stf_tr_name" style="display:none"><?php echo $tname?></div>
 	</div> 
 </div>
 
 <div class="text-right">
-	<button type="button" class="btn btn-primary btn-sm con_app_add_btn"><i class="fa fa-plus"></i> Add New Staff</button>
+	<button type="button" class="btn btn-primary btn-sm con_app_add_btn" value="<?php echo $refid?>" data-crname="<?php echo $crName?>"><i class="fa fa-plus"></i> Add New Staff</button>
 </div>
 <br>
 <div class="well">

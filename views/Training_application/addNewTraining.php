@@ -182,6 +182,13 @@
     </div>
 
     <div class="form-group">
+        <label class="col-md-2 control-label">Evaluation?</label>
+        <div class="col-md-2">
+            <?php echo form_dropdown('form[evaluation]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), '', 'class="selectpicker form-control width-50" id="evaluation"')?>
+        </div>
+    </div>
+
+    <div class="form-group">
         <div id="evaLoader"></div>
         <label class="col-md-2 control-label" id="evaPFrom">From</label>
         <div class="col-md-4">
@@ -218,13 +225,6 @@
         <label class="col-md-2 control-label">Phone Number</label>
         <div class="col-md-4">
             <input name="form[phone_number]" placeholder="Coordinator contact / phone number" class="form-control" type="text"">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-md-2 control-label">Evaluation?</label>
-        <div class="col-md-2">
-            <?php echo form_dropdown('form[evaluation]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), '', 'class="selectpicker form-control width-50" id="evaluation"')?>
         </div>
     </div>
 
