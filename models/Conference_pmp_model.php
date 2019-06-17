@@ -84,39 +84,7 @@ class Conference_pmp_model extends MY_Model
         $q = $this->db->get();
                 
         return $q->result();
-    } 
-
-    /*
-    // GET STATE DROPDOWN
-    public function getStateList() {
-        $this->db->select("SM_STATE_CODE, SM_STATE_DESC, SM_STATE_CODE||' - '||SM_STATE_DESC AS SM_STATE_CODE_DESC");
-        $this->db->from("STATE_MAIN");
-        $this->db->order_by("SM_STATE_DESC");
-        $q = $this->db->get();
-                
-        return $q->result();
-    } 
-
-    // GET COUNTRY DROPDOWN
-    public function getCountryList() {
-        $this->db->select("CM_COUNTRY_CODE, CM_COUNTRY_DESC, CM_COUNTRY_CODE||' - '||CM_COUNTRY_DESC AS CM_COUNTRY_CODE_DESC");
-        $this->db->from("COUNTRY_MAIN");
-        $this->db->order_by("CM_COUNTRY_DESC");
-        $q = $this->db->get();
-                
-        return $q->result();
-    } 
-
-    // GET LEVEL DROPDOWN
-    public function getLevelList() {
-        $this->db->select("TL_CODE, TL_DESC, TL_CODE||' - '||TL_DESC AS TL_CODE_DESC");
-        $this->db->from("TRAINING_LEVEL");
-        $this->db->order_by("TL_CODE");
-        $q = $this->db->get();
-                
-        return $q->result();
-    } 
-    */
+    }
 
     // GET STAFF LIST DROPDOWN
     public function getStaffList()
@@ -168,52 +136,48 @@ class Conference_pmp_model extends MY_Model
         return $q->row();
     } 
 
-    // SAVE INSERT CONFERENCE INFORMATION
-    public function saveConInfo($form)
+    // GET STAFF CONFERENCE DETAILS
+    public function getStaffConferenceDetl($refid, $staff_id)
+    {
+        $this->db->select("*");
+        $this->db->from("STAFF_CONFERENCE_MAIN");
+        $this->db->where("SCM_REFID", $refid);
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    } 
+
+    // SAVE INSERT NEW STAFF CONFERENCE
+    public function saveNewStfCr($form, $refid)
     {
         $curDate = 'SYSDATE';
         $curUsr = $this->staff_id;
-        $refid = "TO_CHAR(SYSDATE,'YYYY')||'-'||TRIM(TO_CHAR(CONFERENCE_MAIN_SEQ.NEXTVAL,'00000000'))";
-
-        if($form['country'] != 'MYS' && empty($form['total_participant']) && $form['total_participant'] != '0') {
-            $totalParticipant = "(SELECT HP_PARM_DESC FROM HRADMIN_PARMS WHERE HP_PARM_CODE = 'CONFERENCE_MAX_PARTICIPANT_OVERSEA')";
-        } 
-        elseif($form['country'] == 'MYS' && empty($form['total_participant']) && $form['total_participant'] != '0') {
-            $totalParticipant = 0;
-        } 
-        else {
-            $totalParticipant = $form['total_participant'];
-        }
 
         $data = array(
-            "CM_NAME" => $form['title'],
-            "CM_DESC" => $form['description'],
-            "CM_ADDRESS" => $form['address'],
-            "CM_CITY" => $form['city'],
-            "CM_POSTCODE" => $form['postcode'],
-            "CM_STATE" => $form['state'],
-            "CM_COUNTRY_CODE" => $form['country'],
-            "CM_ORGANIZER_NAME" => $form['organizer_name'],
-            "CM_LEVEL" => $form['level'],
-            "CM_TEMP_OPEN" => $form['temporary_open'],
-            "CM_ENTER_BY" => $curUsr
+            "SCM_STAFF_ID" => $form['staff_id'],
+            "SCM_REFID" => $refid,
+            "SCM_PARTICIPANT_ROLE" => $form['role'],
+            "SCM_PAPER_TITLE" => $form['paper_title1'],
+            "SCM_PAPER_TITLE2" => $form['paper_title2'],
+            "SCM_CATEGORY_CODE" => $form['category'],
+            "SCM_SPONSOR" => $form['sponsor'],
+            "SCM_SPONSOR_NAME" => $form['sponsor_name'],
+            "SCM_SPONSOR_BUDGET_ORIGIN" => $form['budget_origin_for_sponsor'],
+            "SCM_RM_SPONSOR_TOTAL_AMT" => $form['total'],
+            "SCM_BUDGET_ORIGIN" => $form['budget_origin'],
+            "SCM_STATUS" => $form['status'],
+            "SCM_APPLY_BY" => $curUsr
         );
 
-        $this->db->set("CM_REFID", $refid, false);
-        $this->db->set("CM_ENTER_DATE", $curDate, false);
-        $this->db->set("CM_PARTICIPANT", $totalParticipant, false);
-
-        if(!empty($form['date_from'])) {
-            $date_from = "to_date('".$form['date_from']."', 'DD/MM/YYYY')";
-            $this->db->set("CM_DATE_FROM", $curDate, false);
-        }
-
-        if(!empty($form['date_to'])) {
-            $date_to = "to_date('".$form['date_to']."', 'DD/MM/YYYY')";
-            $this->db->set("CM_DATE_TO", $curDate, false);
+        if(!empty($form['apply_date'])) {
+            $apply_date = "to_date('".$form['apply_date']."', 'DD/MM/YYYY')";
+            $this->db->set("SCM_APPLY_DATE", $apply_date, false);
+        } else {
+            $this->db->set("SCM_APPLY_DATE", $curDate, false);
         }
         
-        return $this->db->insert("CONFERENCE_MAIN", $data);
+        return $this->db->insert("STAFF_CONFERENCE_MAIN", $data);
     }
 
     // GET CONFERENCE INFO DETL

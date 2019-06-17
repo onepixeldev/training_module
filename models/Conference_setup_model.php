@@ -829,12 +829,12 @@ class Conference_setup_model extends MY_Model
 
         if(!empty($form['date_from'])) {
             $date_from = "to_date('".$form['date_from']."', 'DD/MM/YYYY')";
-            $this->db->set("CM_DATE_FROM", $curDate, false);
+            $this->db->set("CM_DATE_FROM", $date_from, false);
         }
 
         if(!empty($form['date_to'])) {
             $date_to = "to_date('".$form['date_to']."', 'DD/MM/YYYY')";
-            $this->db->set("CM_DATE_TO", $curDate, false);
+            $this->db->set("CM_DATE_TO", $date_to, false);
         }
         
         return $this->db->insert("CONFERENCE_MAIN", $data);
@@ -907,12 +907,12 @@ class Conference_setup_model extends MY_Model
 
         if(!empty($form['date_from'])) {
             $date_from = "to_date('".$form['date_from']."', 'DD/MM/YYYY')";
-            $this->db->set("CM_DATE_FROM", $curDate, false);
+            $this->db->set("CM_DATE_FROM", $date_from, false);
         }
 
         if(!empty($form['date_to'])) {
             $date_to = "to_date('".$form['date_to']."', 'DD/MM/YYYY')";
-            $this->db->set("CM_DATE_TO", $curDate, false);
+            $this->db->set("CM_DATE_TO", $date_to, false);
         }
 
         $this->db->where("CM_REFID", $refid);

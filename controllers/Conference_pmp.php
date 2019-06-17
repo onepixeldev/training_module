@@ -138,66 +138,142 @@ class Conference_pmp extends MY_Controller
         $this->render($data);
     }
 
-    // ADD CONFERENCE INFORMATION
-    public function addConferenceInfo()
-    {
-        // get state dd list
-        $data['state_list'] = $this->dropdown($this->mdl->getStateList(), 'SM_STATE_CODE', 'SM_STATE_CODE_DESC', ' ---Please select--- ');
-
-        // get country dd list
-        $data['country_list'] = $this->dropdown($this->mdl->getCountryList(), 'CM_COUNTRY_CODE', 'CM_COUNTRY_CODE_DESC', ' ---Please select--- ');
-
-        // get level dd list
-        $data['lvl_list'] = $this->dropdown($this->mdl->getLevelList(), 'TL_CODE', 'TL_CODE_DESC', ' ---Please select--- ');
-
-        $data['con_Country'] = $this->mdl->getConCountrySetup();
-
-        $this->render($data);
-    }
-
-    // SAVE INSERT CONFERENCE INFORMATION
-    public function saveConInfo() 
+    // SAVE INSERT NEW STAFF FOR CONFERENCE 
+    public function saveNewStfCr() 
     {
         $this->isAjax();
 
         // get parameter values
         $form = $this->input->post('form', true);
 
-        // form / input validation
-        $rule = array(
-            'title' => 'required|max_length[200]',
-            'date_from' => 'max_length[11]',
-            'date_to' => 'max_length[11]',
-            'description' => 'max_length[500]',
-            'address' => 'required|max_length[200]',
-            'city' => 'max_length[100]',
-            'postcode' => 'max_length[20]',
-            'state' => 'required|max_length[10]',
-            'country' => 'required|max_length[10]',
-            'organizer_name' => 'required|max_length[100]',
-            'level' => 'required|max_length[10]',
-            'temporary_open' => 'max_length[1]',
-            'total_participant' => 'max_length[10]'
-        );
+        // sponsor field
+        $sponsor = $form['sponsor'];
+
+        // refid 
+        $refid = $form['conference_title'];
+        $staff_id = $form['staff_id'];
+
+        if(!empty($sponsor) && ($sponsor == 'Y' || $sponsor == 'H')) {
+            // form / input validation
+            $rule = array(
+                'staff_id' => 'required|max_length[10]',
+                'role' => 'required|max_length[100]',
+                'paper_title1' => 'max_length[500]',
+                'paper_title2' => 'max_length[500]',
+                'category' => 'required|max_length[10]',
+                'sponsor' => 'required|max_length[1]',
+                'sponsor_name' => 'required|max_length[200]',
+                'budget_origin_for_sponsor' => 'required|max_length[20]',
+                'total' => 'required|numeric|max_length[40]',
+                'budget_origin' => 'required|max_length[20]',
+                'apply_date' => 'max_length[11]',
+                'status' => 'required|max_length[20]'
+            );
+        } else {
+            // form / input validation
+            $rule = array(
+                'staff_id' => 'required|max_length[10]',
+                'role' => 'required|max_length[100]',
+                'paper_title1' => 'max_length[500]',
+                'paper_title2' => 'max_length[500]',
+                'category' => 'required|max_length[10]',
+                'sponsor' => 'required|max_length[1]',
+                'sponsor_name' => 'max_length[200]',
+                'budget_origin_for_sponsor' => 'max_length[20]',
+                'total' => 'max_length[40]',
+                'budget_origin' => 'required|max_length[20]',
+                'apply_date' => 'max_length[11]',
+                'status' => 'required|max_length[20]'
+            );
+        }
+
+        
 
         $exclRule = null;
         
         list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
 
         if ($status == 1) {
-            $insert = $this->mdl->saveConInfo($form);
+            $check = $this->mdl->getStaffConferenceDetl($refid, $staff_id);
 
-            if($insert > 0) {
-                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+            if(empty($check)) {
+                $insert = $this->mdl->saveNewStfCr($form, $refid);
+                //$insert = 1;
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
             } else {
-                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
-            } 
+                $json = array('sts' => 0, 'msg' => 'Record already exist.', 'alert' => 'danger');
+            }
         } else {
             $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
         }
          
         echo json_encode($json);
     }
+
+    // EDIT STAFF CONFERENCE
+    public function editStaffConference() {
+        $refid = $this->input->post('refid', true);
+        $crName = $this->input->post('crName', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $data['crName'] = $crName;
+
+            $data['cr_detl'] = $this->mdl->getConferenceDetl($refid);
+            if(!empty($data['cr_detl'])) {
+                $data['venue'] = $data['cr_detl']->CM_ADDRESS;
+                $data['city'] = $data['cr_detl']->CM_CITY;
+                $data['postcode'] = $data['cr_detl']->CM_POSTCODE;
+                $data['state'] = $data['cr_detl']->SM_STATE_DESC;
+                $data['country'] = $data['cr_detl']->CM_COUNTRY_DESC;
+                $data['date_from'] = $data['cr_detl']->CM_DATE_FROM;
+                $data['date_to'] = $data['cr_detl']->CM_DATE_TO;
+                $data['organizer'] = $data['cr_detl']->CM_ORGANIZER_NAME;
+            } else {
+                $data['venue'] = '';
+                $data['city'] = '';
+                $data['postcode'] = '';
+                $data['state'] = '';
+                $data['country'] = '';
+                $data['date_from'] = '';
+                $data['date_to'] = '';
+                $data['organizer'] = '';
+            }
+
+            $data['staff_list'] = $this->dropdown($this->mdl->getStaffList(), 'SM_STAFF_ID', 'SM_STAFF_ID_NAME', ' ---Please select--- ');
+            $data['cr_role_list'] = $this->dropdown($this->mdl->getConferenceRoleList(), 'CPR_CODE', 'CPR_CODE', ' ---Please select--- ');
+            $data['cr_cat_list'] = $this->dropdown($this->mdl->getCrCategoryList(), 'CC_CODE', 'CC_CODE_DESC_CC_FROM_TO', ' ---Please select--- ');
+            $data['cr_spon_list'] = array(''=>' ---Please select--- ', 'Y'=>'Yes', 'N'=>'No', 'H'=>'Half Sponsorship');
+            $data['cr_budget_spon_list'] = array(''=>' ---Please select--- ', 'GRANTS'=>'Grants', 'EXTERNAL'=>'External Organization', 'SELF'=>'Self');
+            $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS');
+            $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_HOD'=>'VERIFY_HOD', 'VERIFY_TNCA'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
+        }
+
+        $this->render($data);
+    }
+
+
+    // // ADD CONFERENCE INFORMATION
+    // public function addConferenceInfo()
+    // {
+    //     // get state dd list
+    //     $data['state_list'] = $this->dropdown($this->mdl->getStateList(), 'SM_STATE_CODE', 'SM_STATE_CODE_DESC', ' ---Please select--- ');
+
+    //     // get country dd list
+    //     $data['country_list'] = $this->dropdown($this->mdl->getCountryList(), 'CM_COUNTRY_CODE', 'CM_COUNTRY_CODE_DESC', ' ---Please select--- ');
+
+    //     // get level dd list
+    //     $data['lvl_list'] = $this->dropdown($this->mdl->getLevelList(), 'TL_CODE', 'TL_CODE_DESC', ' ---Please select--- ');
+
+    //     $data['con_Country'] = $this->mdl->getConCountrySetup();
+
+    //     $this->render($data);
+    // }
 
     // CONFERENCE INFORMATION DETL
     public function conInfoSetupDetl()

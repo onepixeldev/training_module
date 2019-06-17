@@ -1,5 +1,5 @@
-<div class="modal-header btn-primary">
-    <h4 class="modal-title txt-color-white" id="myModalLabel">New Staff</h4>
+<div class="modal-header btn-success">
+    <h4 class="modal-title txt-color-white" id="myModalLabel">Edit Staff</h4>
 </div>
 <br>
 <div class="alert alert-info fade in">
@@ -14,7 +14,7 @@
         <label class="col-md-2 control-label">Staff ID <b><font color="red">*</font></b></label>
         <div class="col-md-10">
             <?php
-                echo form_dropdown('form[staff_id]', $staff_list, '', 'class="select2-filter form-control" style = "width: 100%" id="staffID"')
+                echo form_dropdown('form[staff_id]', $staff_list, '', 'class="select2-filter form-control" style = "width: 100%"')
             ?>
         </div>
     </div>

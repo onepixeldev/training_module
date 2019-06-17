@@ -237,6 +237,9 @@
         });
 	});
 
+	/*-----------------------------
+	TAB 2 - STAFF LIST
+	-----------------------------*/
 	// CONFERENCE STAFF LIST
 	$('#conference_list').on('click','.con_app_detl_btn', function(){
 		var thisBtn = $(this);
@@ -263,6 +266,9 @@
 		});
 	});	
 
+	/*-----------------------------
+	TAB 3 - CONFERENCE APPLICATION
+	-----------------------------*/
 	// ADD STAFF TO CONFERENCE
 	$('#staff_list_conference').on('click','.con_app_add_btn', function(){
 		var thisBtn = $(this);
@@ -283,43 +289,69 @@
 		});
 	});
 
-    // ADD CONFERENCE INFORMATION MODAL
-	$('#conference_info_list').on('click','.con_inf_add_btn', function(){
-		$('#myModalis .modal-content').empty();
-		$('#myModalis').modal('show');
-		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('addConferenceInfo')?>',
-			success: function(res) {
-				$('#myModalis .modal-content').html(res);
-			}
-		});
-	});	
-
 	// SAVE INSERT CONFERENCE INFORMATION
-	$('#myModalis').on('click', '.ins_con_info', function () {
-		var data = $('#addConInfo').serialize();
-		msg.wait('#addConInfoAlert');
-        msg.wait('#addConInfoAlertFoot');
+	$('#conference_application').on('click', '.ins_stf_cr', function () {
+		var data = $('#addStaffConference').serialize();
+		msg.wait('#alertStaffConference');
+        msg.wait('#alertStaffConferenceFooter');
 		//alert(data);
+		crRefID = $('#crRefid').val();
+		crName = $('#crName').val();
+
+		sponsor = $('#sponsor').val();
+		//alert(sponsor);
+		if(sponsor != "" && (sponsor == 'Y' || sponsor == 'H')) {
+			$('#spName').html('Sponsor Name <b><font color="red">* </font></b>').show();
+			$('#budSp').html('Budget Origin for Sponsor <b><font color="red">* </font></b>').show();
+			$('#totalAmt').html('Total (RM) <b><font color="red">* </font></b>').show();
+		} else {
+			$('#spName').html('Sponsor Name').show();
+			$('#budSp').html('Budget Origin for Sponsor').show();
+			$('#totalAmt').html('Total (RM)').show();
+		}
 		
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveConInfo')?>',
+			url: '<?php echo $this->lib->class_url('saveNewStfCr')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
-				msg.show(res.msg, res.alert, '#addConInfoAlert');
-                msg.show(res.msg, res.alert, '#addConInfoAlertFoot');
+				msg.show(res.msg, res.alert, '#alertStaffConference');
+                msg.show(res.msg, res.alert, '#alertStaffConferenceFooter');
 
 				if (res.sts == 1) {
 					setTimeout(function () {
-						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-                        location = '<?php echo $this->lib->class_url('viewTabFilterATF093','s1')?>';
+
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('getStaffConferenceApplication')?>',
+							data: {'refid' : crRefID, 'crName' : crName},
+							beforeSend: function() {
+								$('#staff_list_conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#staff_list_conference').html(res);
+								
+								ca_row = $('#tbl_list_sta_cr').DataTable({
+									"ordering":false,
+								});
+							}
+						});
+
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editStaffConference')?>',
+							data: {'refid' : crRefID, 'crName' : crName},
+							beforeSend: function() {
+								$('#conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('.nav-tabs li:eq(2) a').tab('show');
+								$('#conference_application').html(res);
+							}
+						});
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -327,7 +359,8 @@
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#conferenceCatAlert');
+				msg.danger('Please contact administrator.', '#alertStaffConference');
+				msg.danger('Please contact administrator.', '#alertStaffConferenceFooter');
 			}
 		});	
 	});
