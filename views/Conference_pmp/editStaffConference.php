@@ -2,11 +2,19 @@
     <h4 class="modal-title txt-color-white" id="myModalLabel">Edit Staff</h4>
 </div>
 <br>
+<div class="text-right">
+	<button type="button" class="btn btn-warning btn-sm file_att_btn"><i class="fa fa-upload"></i> File Attachment</button>
+
+    <button type="button" repCode="ATR020" class="btn btn-danger btn-sm print_pmp_btn"><i class="fa fa-print"></i> Print PMP</button>
+
+    <button type="button" repCode="ATRATT" class="btn btn-danger btn-sm print_att_btn"><i class="fa fa-print"></i> Print Appendix A/B</button>
+</div>
+<br>
 <div class="alert alert-info fade in">
     <b>Staff Conference Details</b>
 </div>
-<form id="addStaffConference" class="form-horizontal" method="post">
-    <div id="alertStaffConference">
+<form id="editStaffConference" class="form-horizontal" method="post">
+    <div id="alertEditStaffConference">
         <b>Note : </b> ( <b><font color="red">*</font></b> ) <b><font color="red">compulsory fields</font></b><br>&nbsp; <span id="note"></span>
     </div>
     <br>
@@ -14,8 +22,11 @@
         <label class="col-md-2 control-label">Staff ID <b><font color="red">*</font></b></label>
         <div class="col-md-10">
             <?php
-                echo form_dropdown('form[staff_id]', $staff_list, '', 'class="select2-filter form-control" style = "width: 100%"')
+                echo form_dropdown('form[staff_id_dummy]', $staff_list, $staffID, 'class="form-control" style = "width: 100%" id="staffID" disabled')
             ?>
+        </div>
+        <div class="col-md-2">
+            <input name="form[staff_id]" class="form-control" type="hidden" value="<?php echo $staffID?>" readonly>
         </div>
     </div>
 
@@ -85,7 +96,7 @@
         <label class="col-md-2 control-label">Role <b><font color="red">* </font></b></label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[role]', $cr_role_list, '', 'class="form-control width-50"')
+                echo form_dropdown('form[role]', $cr_role_list, $stf_detl->SCM_PARTICIPANT_ROLE, 'class="form-control width-50"')
             ?>
         </div>
     </div>
@@ -93,14 +104,14 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Paper Title (1)</label>
         <div class="col-md-10">
-            <input name="form[paper_title1]" placeholder="Paper Title 1" class="form-control" type="text">
+            <input name="form[paper_title1]" placeholder="Paper Title 1" class="form-control" type="text" value="<?php echo $stf_detl->SCM_PAPER_TITLE?>">
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-md-2 control-label">Paper Title (2)</label>
         <div class="col-md-10">
-            <input name="form[paper_title2]" placeholder="Paper Title 2" class="form-control" type="text">
+            <input name="form[paper_title2]" placeholder="Paper Title 2" class="form-control" type="text" value="<?php echo $stf_detl->SCM_PAPER_TITLE2?>">
         </div>
     </div>
 
@@ -108,7 +119,7 @@
         <label class="col-md-2 control-label">Category <b><font color="red">* </font></b></label>
         <div class="col-md-6">
             <?php
-                echo form_dropdown('form[category]', $cr_cat_list, '', 'class="form-control width-50"')
+                echo form_dropdown('form[category]', $cr_cat_list, $stf_detl->SCM_CATEGORY_CODE, 'class="form-control width-50"')
             ?>
         </div>
     </div>
@@ -117,14 +128,14 @@
         <label class="col-md-2 control-label">Sponsor ? <b><font color="red">* </font></b></label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[sponsor]', $cr_spon_list, '', 'class="form-control width-50" id="sponsor"')
+                echo form_dropdown('form[sponsor]', $cr_spon_list, $stf_detl->SCM_SPONSOR, 'class="form-control width-50" id="sponsor"')
             ?>
         </div>
 
 
         <label class="col-md-2 control-label" id="spName">Sponsor Name</label>
         <div class="col-md-4">
-            <input name="form[sponsor_name]" placeholder="Sponsor Name" class="form-control" type="text">
+            <input name="form[sponsor_name]" placeholder="Sponsor Name" class="form-control" type="text" value="<?php echo $stf_detl->SCM_SPONSOR_NAME?>" id="spNameInput">
         </div>
     </div>
 
@@ -132,13 +143,14 @@
         <label class="col-md-2 control-label" id="budSp">Budget Origin for Sponsor</label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[budget_origin_for_sponsor]', $cr_budget_spon_list, '', 'class="form-control width-50"')
+                echo form_dropdown('form[budget_origin_for_sponsor]', $cr_budget_spon_list, $stf_detl->SCM_SPONSOR_BUDGET_ORIGIN, 'class="form-control width-50 budSpInput"')
             ?>
+            <input name="form[budget_origin_for_sponsor]" class="form-control" type="hidden" id="spNameInputDummy" readonly>
         </div>
 
         <label class="col-md-2 control-label" id="totalAmt">Total (RM)</label>
         <div class="col-md-4">
-            <input name="form[total]" placeholder="Total (RM)" class="form-control" value=".00" type="text">
+            <input name="form[total]" placeholder="Total (RM)" class="form-control" type="text" value="<?php echo $stf_detl->SCM_RM_SPONSOR_TOTAL_AMT?>" id="totalAmtInput">
         </div>
     </div>
 
@@ -146,14 +158,14 @@
         <label class="col-md-2 control-label">Budget Origin <b><font color="red">* </font></b></label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[budget_origin]', $cr_budget_origin_list, '', 'class="form-control width-50"')
+                echo form_dropdown('form[budget_origin]', $cr_budget_origin_list, $stf_detl->SCM_BUDGET_ORIGIN, 'class="form-control width-50"')
             ?>
         </div>
 
 
         <label class="col-md-2 control-label">Apply Date</label>
         <div class="col-md-4">
-            <input name="form[apply_date]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text">
+            <input name="form[apply_date]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $stf_detl->SCM_APPLY_DATE?>">
         </div>
     </div>
 
@@ -161,15 +173,210 @@
         <label class="col-md-2 control-label">Status <b><font color="red">* </font></b></label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[status]', $cr_status_list, '', 'class="form-control width-50"')
+                echo form_dropdown('form[status]', $cr_status_list, $stf_detl->SCM_STATUS, 'class="form-control width-50"')
             ?>
         </div>
     </div>
 
-    <div id="alertStaffConferenceFooter"></div>
+     <br>
+    <div class="alert alert-info fade in">
+        <b>Head of Department Approval/Verification</b>
+    </div>
+
+    <div class="row">
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="form-group text-right">
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="form-group text-left">
+                    <label><b>1. Relevance of application with applicant's specialization / task field :</b></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="form-group text-right">
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="form-group text-right">
+                    <textarea name="form[remark1]" placeholder="Remark" class="form-control" type="text" rows="4" cols="50"><?php echo $stf_detl->SCM_APPROVER_REMARK1?></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="form-group text-right">
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="form-group text-left">
+                    <label><b>2. Stability and suitability reviews of paper work content for presentation :</b></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="form-group text-right">
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="form-group text-right">
+                    <textarea name="form[remark2]" placeholder="Remark" class="form-control" type="text" rows="4" cols="50"><?php echo $stf_detl->SCM_APPROVER_REMARK2?></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="form-group text-right">
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="form-group text-left">
+                    <label><b>3. How are the P&P tasks / tasks in the department (if the applicant is an administration staff) can be replaced when the applicant attends the conference / seminar / workshop?</b></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="form-group text-right">
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="form-group text-right">
+                    <textarea name="form[remark3]" placeholder="Remark" class="form-control" type="text" rows="4" cols="50"><?php echo $stf_detl->SCM_APPROVER_REMARK3?></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="form-group text-right">
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="form-group text-left">
+                    <label><b>4. Application is supported / not supported. Please provide a review.</b></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="form-group text-right">
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="form-group text-right">
+                    <textarea name="form[remark4]" placeholder="Remark" class="form-control" type="text" rows="4" cols="50"><?php echo $stf_detl->SCM_APPROVER_REMARK4?></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-3 control-label">Approved By (HOD)</label>
+        <div class="col-md-8">
+            <?php
+                echo form_dropdown('form[approved_by_hod]', $staff_list, $stf_detl->SCM_RECOMMEND_BY, 'class="select2-filter form-control" style = "width: 100%" id="approveByHod"')
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-3 control-label">Approved Date (HOD)</label>
+        <div class="col-md-2">
+            <input name="form[approved_date_hod]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" id="approveDateHod" value="<?php echo $stf_detl->SCM_RECOMMEND_DATE?>">
+        </div>
+    </div>
+
+    <br>
+    <div class="alert alert-info fade in">
+        <b>TNC (A&A) Approval/Verification</b>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Remark (TNCA)</label>
+        <div class="col-md-8">
+            <textarea name="form[remark_tnc]" placeholder="Remark" class="form-control" type="text" rows="4" cols="50" id="tncaRemark"><?php echo $stf_detl->SCM_TNCA_REMARK?></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Approved By (TNCA)</label>
+        <div class="col-md-8">
+            <?php
+                echo form_dropdown('form[approved_by_tnc]', $staff_list, $stf_detl->SCM_TNCA_APPROVE_BY, 'class="select2-filter form-control" style = "width: 100%" id="approveByTnca"')
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Approved Date (TNCA)</label>
+        <div class="col-md-2">
+            <input name="form[approved_date_tnc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" id="approveDateTnca" value="<?php echo $stf_detl->SCM_TNCA_APPROVE_DATE?>">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Received Date (TNCA)</label>
+        <div class="col-md-2">
+            <input name="form[received_date_tnc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $stf_detl->SCM_TNCA_RECEIVE_DATE?>">
+        </div>
+    </div>
+
+    <br>
+    <div class="alert alert-info fade in">
+        <b>VC Approval</b>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Remark (VC)</label>
+        <div class="col-md-8">
+            <textarea name="form[remark_vc]" placeholder="Remark" class="form-control" type="text" rows="4" cols="50"><?php echo $stf_detl->SCM_VC_REMARK?></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Approved By (VC)</label>
+        <div class="col-md-8">
+            <?php
+                echo form_dropdown('form[approved_by_vc]', $staff_list, $stf_detl->SCM_VC_APPROVE_BY, 'class="select2-filter form-control" style = "width: 100%" id="approveByVc"')
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Approved Date (VC)</label>
+        <div class="col-md-2">
+            <input name="form[approved_date_vc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $stf_detl->SCM_VC_APPROVE_DATE?>">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Received Date (TNCA)</label>
+        <div class="col-md-2">
+            <input name="form[received_date_vc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $stf_detl->SCM_VC_RECEIVE_DATE?>">
+        </div>
+    </div>
+
+    <div id="alertEditStaffConferenceFooter"></div>
     
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary ins_stf_cr"><i class="fa fa-save"></i> Save</button>
+        <button type="button" class="btn btn-primary edit_stf_cr"><i class="fa fa-save"></i> Save</button>
     </div>
 </form>
 
@@ -183,11 +390,6 @@
         $('.datepicker').datetimepicker({
             format: 'L',
             format: 'DD/MM/YYYY'
-        });
-
-        $('#timepicker').datetimepicker({
-            format: 'LT',
-            format: 'hh:mm A'
         });
 	});
 </script>
