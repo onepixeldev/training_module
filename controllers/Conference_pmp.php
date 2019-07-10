@@ -52,8 +52,27 @@ class Conference_pmp extends MY_Controller
         $this->render($data);
     }
 
+    // APPROVE / VERIFY CONFERENCE APPLICATION (TNC/A&A)
+    public function ATF035()
+    {
+
+        $data['month'] = $this->mdl->getCurDate();
+        $data['year'] = $this->mdl->getCurDate();
+
+        $data['cur_month'] = $data['month']->SYSDATE_MM;  
+        $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
+
+        // DEPARTMENT LIST
+        $data['dept_list'] = $this->dropdown($this->mdl->populateDept(), 'DM_DEPT_CODE', 'DM_DEPT_CODE', ' ---Please select--- ');
+        
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
     /*===========================================================
-       CONFERENCE APPLICATION - MANUAL ENTRY (ASF032)
+       CONFERENCE APPLICATION - MANUAL ENTRY (ATF075)
     =============================================================*/
 
     // CONFERENCE LIST
@@ -297,7 +316,7 @@ class Conference_pmp extends MY_Controller
             $data['cr_spon_list'] = array(''=>' ---Please select--- ', 'Y'=>'Yes', 'N'=>'No', 'H'=>'Half Sponsorship');
             $data['cr_budget_spon_list'] = array(''=>' ---Please select--- ', 'GRANTS'=>'Grants', 'EXTERNAL'=>'External Organization', 'SELF'=>'Self');
             $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS');
-            $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_HOD'=>'VERIFY_HOD', 'VERIFY_TNCA'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
+            $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_TNCA'=>'VERIFY_HOD', 'VERIFY_VC'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
 
             $data['stf_detl'] = $this->mdl->getStaffConferenceDetl($refid, $staffID);
         }
@@ -305,7 +324,7 @@ class Conference_pmp extends MY_Controller
         $this->render($data);
     }
 
-    // GET CONFERENCE MAIN SPONSOR DETAIL
+    // GET STAFF CONFERENCE MAIN SPONSOR DETAIL
     public function checkSponsor() 
     {
         $this->isAjax();
@@ -325,6 +344,31 @@ class Conference_pmp extends MY_Controller
             $json = array('sts' => 1, 'msg' => 'SCM_SPONSOR value', 'alert' => 'success', 'sponsor' => $sponsor); 
         } else {
             $json = array('sts' => 0, 'msg' => 'Failed to get SCM_SPONSOR value', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // GET STAFF CONFERENCE MAIN STATUS DETAIL
+    public function getStaffConStatus() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $staffID = $this->input->post('staffID', true);
+        $refid = $this->input->post('refid', true);
+
+        if (!empty($staffID) && !empty($refid)) {
+            $check = $this->mdl->getStaffConferenceDetl($refid, $staffID);
+            if(!empty($check)) {
+                $status = $check->SCM_STATUS;
+            } else {
+                $status = '';
+            }
+
+            $json = array('sts' => 1, 'msg' => 'SCM_STATUS value', 'alert' => 'success', 'status' => $status); 
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Failed to get SCM_STATUS value', 'alert' => 'danger');
         }
          
         echo json_encode($json);
@@ -483,6 +527,53 @@ class Conference_pmp extends MY_Controller
         echo json_encode($json);
     }
 
+    // DELETE STAFF CONFERENCE
+    public function delStfConference() {
+		$this->isAjax();
+		
+        $staffId = $this->input->post('staffId', true);
+        $crRefID = $this->input->post('crRefID', true);
+        $msgCheckDel1 = '';
+        $msgCheckDel2 = '';
+        $msgCheckDel3 = '';
+        
+        if (!empty($staffId) && !empty($crRefID)) {
+            // CHECK STAFF_CONFERENCE_ALLOWANCE RECORD
+            $checkDel1 = $this->mdl->checkDelStfConAllw($staffId, $crRefID);
+            if(!empty($checkDel1)) {
+                $msgCheckDel1 = '<b>STAFF_CONREFENCE_ALLOWANCE</b>'.nl2br("\r\n");
+            }
+
+            // CHECK STAFF_APPL_ATTACH RECORD
+            $checkDel2 = $this->mdl->checkDelStfApplAtt($staffId, $crRefID);
+            if(!empty($checkDel2)) {
+                $msgCheckDel2 = '<b>STAFF_APPL_ATTACH</b>'.nl2br("\r\n");
+            }
+            
+            // CHECK STAFF_LEAVE_DETL RECORD
+            $checkDel3 = $this->mdl->checkDelStfLevDetl($staffId);
+            if(!empty($checkDel3)) {
+                $msgCheckDel3 = '<b>STAFF_LEAVE_DETL</b>'.nl2br("\r\n");
+            }
+
+            if(empty($checkDel1) && empty($checkDel2) && empty($checkDel3)) {
+                $del = $this->mdl->delStfConference($staffId, $crRefID);
+            
+                if ($del > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+                }
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record'.nl2br("\r\n").'Please remove related record from'.nl2br("\r\n").$msgCheckDel1.$msgCheckDel2.$msgCheckDel3, 'alert' => 'danger');
+            }
+        	
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
     // FILE ATTACHMENT PARAM
     public function fileAttParam() {
         $staffID = $this->input->post('staffID', true);
@@ -574,18 +665,44 @@ class Conference_pmp extends MY_Controller
         $this->lib->report($repCode, $param);
     } 
 
-    // ADD STAFF CONFERENCE
+    // ADD STAFF CONFERENCE LEAVE
     public function addConferenceLeave() {
         $staffID = $this->input->post('staffID', true);
         $refid = $this->input->post('refid', true);
         $crName = $this->input->post('crName', true);
         $crStaffName = $this->input->post('crStaffName', true);
 
-        if(!empty($refid)) {
+        if(empty($crStaffName) && !empty($staffID)) {
+            // get staff name
+            $data['stf_detl'] = $this->mdl->getStaffList($staffID);
+
+            if(!empty($data['stf_detl'])) {
+                $data['crStaffName'] = $data['stf_detl']->SM_STAFF_NAME;
+            } else {
+                $data['crStaffName'] = '';
+            }
+        } else {
+            $data['crStaffName'] = $crStaffName;
+        }
+
+        if(empty($crName) && !empty($refid)) {
+
+            // CONFERENCE DETAILS
+            $data['cr_detl'] = $this->mdl->getConferenceDetl($refid);
+            if(!empty($data['cr_detl'])) {
+                $data['crName'] = $data['cr_detl']->CM_NAME;
+            } else {
+                $data['crName'] = '';
+            }
+        } else {
+            $data['crName'] = $crName;
+        }
+
+        if(!empty($refid) && !empty($staffID)) {
             $data['staff_id'] = $staffID;
             $data['refid'] = $refid;
-            $data['crName'] = $crName;
-            $data['crStaffName'] = $crStaffName;
+            
+            // $data['crStaffName'] = $crStaffName;
 
             // CONFERENCE DETAILS
             $data['cr_detl'] = $this->mdl->getConferenceDetl($refid);
@@ -593,6 +710,7 @@ class Conference_pmp extends MY_Controller
                 $data['date_from'] = $data['cr_detl']->CM_DATE_FROM;
                 $data['date_to'] = $data['cr_detl']->CM_DATE_TO;
             } else {
+                $data['date_from'] = '';
                 $data['date_to'] = '';
             }
 
@@ -612,6 +730,7 @@ class Conference_pmp extends MY_Controller
 
                 // TOTAL DAY APPLIED
                 $data['day_applied'] = $this->mdl->countTotalDayApplied($data['scm_leave_date_from'], $data['scm_leave_date_to']);
+
                 if(!empty($data['day_applied']->TOTAL_DAY_APPLIED)) {
                     $data['total_day_applied'] = $data['day_applied']->TOTAL_DAY_APPLIED;
                 } else {
@@ -623,6 +742,35 @@ class Conference_pmp extends MY_Controller
                 $data['total_day_applied'] = '';
             }
 
+            // STAFF LEAVE DETL
+            $data['leave_detl'] = $this->mdl->getLeaveDetl($data['leave_refid'], $staffID);
+            if(!empty($data['leave_detl'])) {
+                $data['sld_date_from'] = $data['leave_detl']->SLD_DATE_FROM;
+                $data['sld_date_to'] = $data['leave_detl']->SLD_DATE_TO;
+
+                // TOTAL DAY APPROVED
+                $data['day_approve'] = $this->mdl->countTotalDayApprove($data['sld_date_from'], $data['sld_date_to']);
+                
+                if(!empty($data['day_approve']->TOTAL_DAY_APPROVE)) {
+                    $data['total_day_approve'] = $data['day_approve']->TOTAL_DAY_APPROVE;
+                } else {
+                    $data['total_day_approve'] = '';
+                }
+            } else {
+                $data['sld_date_from'] = '';
+                $data['sld_date_to'] = '';
+                $data['total_day_approve'] = '';
+            }
+
+            if(!empty($data['leave_detl']->SLD_DATE_FROM_YEAR)) {
+                // CURRENT YEAR
+                $data['curr_year'] = $data['leave_detl']->SLD_DATE_FROM_YEAR;
+            } elseif(!empty($data['cr_detl']->CM_DATE_FROM_YEAR)) {
+                $data['curr_year'] = $data['cr_detl']->CM_DATE_FROM_YEAR;
+            } else {
+                $data['curr_year'] = '';
+            }
+
             // CHECK ACADEMIC OR NON-ACADEMIC STAFF
             $data['cr_detl'] = $this->mdl->getStaffDetlAca($staffID);
             if(!empty($data['cr_detl'])) {
@@ -632,30 +780,17 @@ class Conference_pmp extends MY_Controller
                 } else {
                     $data['entitled'] = '7';
                 }
-
-                // CURRENT YEAR
-                $data['curr_year'] = $data['cr_detl']->CURR_YEAR;
-
-                // CHECK STAFF LEAVE RECORD
-                $data['lv_rec'] = $this->mdl->getTotalLeave($staffID);
-                if(!empty($data['lv_rec'])) {
-                    $data['balance'] = $data['lv_rec']->SLR_BALANCE_DAYS;
-                } else {
-                    $data['balance'] = $data['entitled'];
-                }
             } else {
                 $data['entitled'] = '';
-                $data['balance'] = '';
+                // $data['balance'] = '';
             }
 
-            // STAFF LEAVE DETL
-            $data['leave_detl'] = $this->mdl->getLeaveDetl($data['leave_refid'], $staffID);
-            if(!empty($data['leave_detl'])) {
-                $data['sld_date_from'] = $data['leave_detl']->SLD_DATE_FROM;
-                $data['sld_date_to'] = $data['leave_detl']->SLD_DATE_TO;
+            // CHECK STAFF LEAVE RECORD (BALANCE)
+            $data['lv_rec'] = $this->mdl->getTotalLeave($staffID, $data['curr_year']);
+            if(!empty($data['lv_rec'])) {
+                $data['balance'] = $data['lv_rec']->SLR_BALANCE_DAYS;
             } else {
-                $data['sld_date_from'] = '';
-                $data['sld_date_to'] = '';
+                $data['balance'] = $data['entitled'];
             }
 
             // STAFF STUDY LEAVE
@@ -677,121 +812,141 @@ class Conference_pmp extends MY_Controller
         $this->render($data);
     }
 
-    // CHECK CONFERENCE LEAVE
-    // public function checkConferenceLeave() {
-    //     $staffID = $this->input->post('staffID', true);
-    //     $refid = $this->input->post('refid', true);
-    //     $crName = $this->input->post('crName', true);
+    // COUNT TOTAL DAY APPLIED
+    public function countTotalDayApplied() {
+        $app_date_fr = $this->input->post('app_date_fr', true);
+        $app_date_to = $this->input->post('app_date_to', true);
+        $app_date_fr_arr = explode('/', $app_date_fr);
+        $app_date_to_arr = explode('/', $app_date_to);
 
-    //     if(!empty($staffID) && !empty($refid)) {
-    //         $cl_detl = $this->mdl->checkConferenceLeave($staffID, $refid);
-
-    //         if(!empty($cl_detl)) {
-    //             $json = array('sts' => 1, 'msg' => 'Conference Leave Record Found', 'alert' => 'success');
-    //         } else {
-    //             $json = array('sts' => 0, 'msg' => 'Conference Leave Record Not Found', 'alert' => 'danger');
-    //         }
-    //     } else {
-    //         $json = array('sts' => 0, 'msg' => 'Failed', 'alert' => 'danger');
-    //     }
-        
-    //     echo json_encode($json);
-    // }
-
-
-
-    // // ADD CONFERENCE INFORMATION
-    // public function addConferenceInfo()
-    // {
-    //     // get state dd list
-    //     $data['state_list'] = $this->dropdown($this->mdl->getStateList(), 'SM_STATE_CODE', 'SM_STATE_CODE_DESC', ' ---Please select--- ');
-
-    //     // get country dd list
-    //     $data['country_list'] = $this->dropdown($this->mdl->getCountryList(), 'CM_COUNTRY_CODE', 'CM_COUNTRY_CODE_DESC', ' ---Please select--- ');
-
-    //     // get level dd list
-    //     $data['lvl_list'] = $this->dropdown($this->mdl->getLevelList(), 'TL_CODE', 'TL_CODE_DESC', ' ---Please select--- ');
-
-    //     $data['con_Country'] = $this->mdl->getConCountrySetup();
-
-    //     $this->render($data);
-    // }
-
-    // CONFERENCE INFORMATION DETL
-    public function conInfoSetupDetl()
-    {
-        $refid = $this->input->post('refid', true);
-        $title = $this->input->post('title', true);
-
-        if(!empty($refid)) {
-            $data['refid'] = $refid;
-            $data['title'] = $title;
-            $data['detl'] = $this->mdl->conInfoSetupDetl($refid);
-        } else {
-            $data['refid'] = null;
-            $data['title'] = null;
-            $data['detl'] = null;
-        }
+        // var_dump($app_date_fr_split);
+        // var_dump(checkdate($app_date_fr_split[1], $app_date_fr_split[0], $app_date_fr_split[2]));
+        if(checkdate($app_date_fr_arr[1], $app_date_fr_arr[0], $app_date_fr_arr[2]) && checkdate($app_date_to_arr[1], $app_date_to_arr[0], $app_date_to_arr[2])) {
+            if(!empty($app_date_fr) && !empty($app_date_to)) {
+                $countTdayApplied = $this->mdl->countTotalDayApplied($app_date_fr, $app_date_to);
     
-        $this->render($data);
+                if(!empty($countTdayApplied)) {
+                    $countTdayApplied = $countTdayApplied->TOTAL_DAY_APPLIED;
+                } else {
+                    $countTdayApplied = '';
+                }
+    
+                $json = array('sts' => 1, 'msg' => 'Total day applied counted', 'alert' => 'success', 'total_day_applied' => $countTdayApplied);
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to count total day applied', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid Date', 'alert' => 'danger');
+        }
+        
+        
+        echo json_encode($json);
     }
 
-    // ADD CONFERENCE INFORMATION
-    public function editConferenceInfo()
-    {
-        $refid = $this->input->post('refid', true);
-        $title = $this->input->post('title', true);
+    // GET LEAVE BALANCE
+    public function getLeaveBalance() {
+        $total_day_applied = $this->input->post('total_day_applied', true);
+        $crRefid = $this->input->post('crRefid', true);
+        $staffID = $this->input->post('staffID', true);
+        $app_date_fr_year = $this->input->post('app_date_fr', true);
+        // var_dump($app_date_fr_year);
 
-        if(!empty($refid)) {
-            $data['refid'] = $refid;
-            $data['title'] = $title;
-            $data['detl'] = $this->mdl->conInfoSetupDetl($refid);
+        if(!empty($app_date_fr_year)) {
+            $app_date_fr_year = explode('/', $app_date_fr_year);
+            $app_date_fr_year = $app_date_fr_year[2];
         } else {
-            $data['refid'] = null;
-            $data['title'] = null;
-            $data['detl'] = null;
+            $app_date_fr_year = '';
         }
 
-        // get state dd list
-        $data['state_list'] = $this->dropdown($this->mdl->getStateList(), 'SM_STATE_CODE', 'SM_STATE_CODE_DESC', ' ---Please select--- ');
+        // var_dump($app_date_fr_year);
 
-        // get country dd list
-        $data['country_list'] = $this->dropdown($this->mdl->getCountryList(), 'CM_COUNTRY_CODE', 'CM_COUNTRY_CODE_DESC', ' ---Please select--- ');
+        if(!empty($staffID)) {
+            $leaveDetl = $this->mdl->getTotalLeave($staffID, $app_date_fr_year);
+            $stf_detl = $this->mdl->getStaffDetlAca($staffID);
+            $con_detl = $this->mdl->getStaffConferenceDetl($crRefid, $staffID);
+            
 
-        // get level dd list
-        $data['lvl_list'] = $this->dropdown($this->mdl->getLevelList(), 'TL_CODE', 'TL_CODE_DESC', ' ---Please select--- ');
+            // LEAVE REFID & SLD_TOTAL_DAY
+            if(!empty($con_detl->SCM_LEAVE_REFID)) {
+                $leave_refid = $con_detl->SCM_LEAVE_REFID;
+                $stf_leave_detl = $this->mdl->getLeaveDetlLeaveDate($leave_refid, $staffID, $app_date_fr_year);
 
-        $data['con_Country'] = $this->mdl->getConCountrySetup();
+                if(!empty($stf_leave_detl)) {
+                    $sld_total_day_db = $stf_leave_detl->SLD_TOTAL_DAY;
+                } 
+                else {
+                    $sld_total_day_db = '';
+                }
+            } else {
+                $leave_refid = '';
+                $sld_total_day_db = '';
+            }
 
-        $this->render($data);
+            // ENTITLED LEAVE
+            if(!empty($stf_detl)) {
+                // ENTITLED LEAVE
+                if($stf_detl->SS_ACADEMIC == 'Y') {
+                    $entitled_leave = '10';
+                } else {
+                    $entitled_leave = '7';
+                }
+            }
+
+            // BALANCE LEAVE
+            if(!empty($leaveDetl)) {
+                $leave_balance = $leaveDetl->SLR_BALANCE_DAYS;
+            } else {
+                $leave_balance = $entitled_leave;
+            }
+
+            // IF TOTAL DAY APPLIED == SLD_TOTAL_DAY then sts == 2
+            // to prevent current leave balance from being subtracted by Total Day (Approve) if Total Day (Approve) value == to SLD_TOTAL_DAY
+            if(($sld_total_day_db == $total_day_applied) && !empty($sld_total_day_db)) {
+                $json = array('sts' => 2, 'msg' => 'Total day approve == to SLD_TOTAL_DAY', 'alert' => 'success', 'leave_balance' => $leave_balance, 'sld_total_day_db' => $sld_total_day_db, 'app_date_fr_year' => $app_date_fr_year, 'entitled_leave' => $entitled_leave);
+            } elseif(($total_day_applied > $sld_total_day_db) && !empty($sld_total_day_db)) {
+                $json = array('sts' => 4, 'msg' => 'Total day approve == to SLD_TOTAL_DAY', 'alert' => 'success', 'leave_balance' => $leave_balance, 'sld_total_day_db' => $sld_total_day_db, 'app_date_fr_year' => $app_date_fr_year, 'entitled_leave' => $entitled_leave);
+            } elseif(($total_day_applied < $sld_total_day_db) && !empty($sld_total_day_db)) {
+                $json = array('sts' => 3, 'msg' => 'Total day approve == to SLD_TOTAL_DAY', 'alert' => 'success', 'leave_balance' => $leave_balance, 'sld_total_day_db' => $sld_total_day_db, 'app_date_fr_year' => $app_date_fr_year, 'entitled_leave' => $entitled_leave);
+            }  else {
+                $json = array('sts' => 1, 'msg' => 'Leave balance', 'alert' => 'success', 'leave_balance' => $leave_balance, 'sld_total_day_db' => $sld_total_day_db, 'app_date_fr_year' => $app_date_fr_year, 'entitled_leave' => $entitled_leave);
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Fail to get leave balance', 'alert' => 'danger');
+        }
+        
+        echo json_encode($json);
     }
 
-    // SAVE EDIT CONFERENCE INFORMATION
-    public function saveEditConInfo() 
+    // SAVE ADD/EDIT CONFERENCE LEAVE
+    public function saveInsEditConLeave() 
     {
         $this->isAjax();
 
-        // get parameter values
+        // parameter values
         $form = $this->input->post('form', true);
+        $staff_id = $form['staff_id'];
+        $cr_refid = $form['conference_title'];
+        $sld_refid = '';
+        $successUpdStfLvDetl = 0;
+        $successInsStfLvDetl = 0;
+        $successUpdStfLvRec = 0;
+        $successUpdStfConMain = 0;
+        $successInsStfLvRec = 0;
+        $msg_staff_leave_detl = '';
+        $msg_staff_leave_rec = '';
+        $msg_staff_con_main = '';
 
-        // REFID
-        $refid = $form['refid'];
-
-        // form / input validation
         $rule = array(
-            'title' => 'required|max_length[200]',
-            'date_from' => 'max_length[11]',
-            'date_to' => 'max_length[11]',
-            'description' => 'max_length[500]',
-            'address' => 'required|max_length[200]',
-            'city' => 'max_length[100]',
-            'postcode' => 'max_length[20]',
-            'state' => 'required|max_length[10]',
-            'country' => 'required|max_length[10]',
-            'organizer_name' => 'required|max_length[100]',
-            'level' => 'required|max_length[10]',
-            'temporary_open' => 'max_length[1]',
-            'total_participant' => 'max_length[10]'
+            'applied_date_from' => 'required|max_length[11]',
+            'applied_date_to' => 'required|max_length[11]',
+            'approve_date_from' => 'required|max_length[11]',
+            'approve_date_to' => 'required|max_length[11]',
+            'total_day_applied' => 'required|max_length[11]',
+            'total_day_approve' => 'required|max_length[11]',
+            'entitled' => 'required|max_length[11]',
+            'balance' => 'required|max_length[11]',
+            'year' => 'required|max_length[11]',
+            'study_leave' => 'required|max_length[30]'
         );
 
         $exclRule = null;
@@ -799,10 +954,162 @@ class Conference_pmp extends MY_Controller
         list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
 
         if ($status == 1) {
-            $update = $this->mdl->saveEditConInfo($form, $refid);
 
-            if($update > 0) {
-                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+            $cr_detl = $this->mdl->getStaffConferenceDetl($cr_refid, $staff_id);
+
+            // leave refid
+            $cr_leave_refid = $cr_detl->SCM_LEAVE_REFID;
+
+            // apply date
+            $apply_date = $cr_detl->SCM_APPLY_DATE;
+
+            // approver & approve date
+            $approve_by = $cr_detl->SCM_APPROVE_BY;
+            $approve_date_hod = $cr_detl->SCM_APPROVE_DATE;
+            
+            $tnca_approve_by = $cr_detl->SCM_TNCA_APPROVE_BY;
+            $approve_date_tnca = $cr_detl->SCM_TNCA_APPROVE_DATE;
+
+            $vc_approve_by = $cr_detl->SCM_VC_APPROVE_BY;
+            $approve_date_vc = $cr_detl->SCM_VC_APPROVE_DATE;
+
+            // assign sld_status 
+            $scm_status = $cr_detl->SCM_STATUS;
+
+            $leave_approver = '';
+            $approve_date = '';
+            $leave_approver_tnca = '';
+            $approve_date_tnca  = '';
+            $leave_approver_vc = '';
+            $approve_date_vc = '';
+
+            if($scm_status == 'APPROVE') {
+                $sld_status = 'APPROVE';
+
+                // SLD_APPROVE_BY
+                // SLD_APPROVE_DATE
+                if(!empty($approve_by) && empty($tnca_approve_by) && empty($vc_approve_by)) {
+                    $leave_approver = $approve_by;
+                    $approve_date = $approve_date_hod;
+                } else if(!empty($approve_by) && !empty($tnca_approve_by) && empty($vc_approve_by)) {
+                    $leave_approver_tnca = $tnca_approve_by;
+                    $approve_date_tnca = $approve_date_tnca;
+                } else if(!empty($approve_by) && !empty($tnca_approve_by) && !empty($vc_approve_by)) {
+                    $leave_approver_vc = $vc_approve_by;
+                    $approve_date_vc = $approve_date_vc;
+                }
+                
+            } elseif($scm_status == 'REJECT') {
+                $sld_status = 'REJECT';
+                
+                // SLD_APPROVE_BY
+                // SLD_APPROVE_DATE
+                if(!empty($approve_by) && empty($tnca_approve_by) && empty($vc_approve_by)) {
+                    $leave_approver = $approve_by;
+                    $approve_date = $approve_date_hod;
+                } else if(!empty($approve_by) && !empty($tnca_approve_by) && empty($vc_approve_by)) {
+                    $leave_approver_tnca = $tnca_approve_by;
+                    $approve_date_tnca = $approve_date_tnca;
+                } else if(!empty($approve_by) && !empty($tnca_approve_by) && !empty($vc_approve_by)) {
+                    $leave_approver_vc = $vc_approve_by;
+                    $approve_date_vc = $approve_date_vc;
+                }
+            } else {
+                $sld_status = 'APPLY';
+            }
+
+            // if staff_leave_detl(sld_refid) !empty then update else insert
+            if(!empty($cr_leave_refid)) {
+                
+                $upd_staff_leave_detl = $this->mdl->updStaffLeaveDetl($form, $cr_leave_refid, $staff_id);
+
+                if($upd_staff_leave_detl > 0) {
+                    $successUpdStfLvDetl++;
+                    $msg_staff_leave_detl = 'Record succesfully updated (STAFF_LEAVE_DETL)';
+
+                    $upd_stf_con_main = $this->mdl->updStaffConMain($form, $cr_refid, $staff_id);
+                    if($upd_stf_con_main > 0) {
+                        $successUpdStfConMain++;
+                        $msg_staff_con_main = 'Record succesfully updated (STAFF_CONFERENCE_MAIN)';
+                    } 
+                } 
+            } else {
+                
+                // generate sld_refid    
+                $sld_refid_gen = $this->mdl->getStaffLeaveDetlRefid();
+                if(!empty($sld_refid_gen)) {
+                    $sld_refid = $sld_refid_gen->SLD_GEN_REFID;
+                }
+                // var_dump($sld_refid);
+
+                $ins_staff_leave_detl = $this->mdl->insStaffLeaveDetl($form, $sld_refid, $staff_id, $apply_date, $sld_status, $leave_approver, $approve_date, $leave_approver_tnca, $approve_date_tnca, $leave_approver_vc, $approve_date_vc);
+
+                if($ins_staff_leave_detl > 0) {
+                    $successInsStfLvDetl++;
+                    $msg_staff_leave_detl = 'Record succesfully saved (STAFF_LEAVE_DETL)';
+
+                    $upd_stf_con_main = $this->mdl->updStaffConMainLvRefid($form, $cr_refid, $staff_id, $sld_refid);
+                    if($upd_stf_con_main > 0) {
+                        $successUpdStfConMain++;
+                        $msg_staff_con_main = 'Record succesfully updated (STAFF_CONFERENCE_MAIN)';
+                    }
+                } 
+            }
+
+            // split to YYYY
+            $approve_date_from = $form['approve_date_from'];
+            $approve_date_from = explode('/', $approve_date_from);
+            $approve_date_from_year = $approve_date_from[2];
+            // var_dump($approve_date_from_year);
+
+            $stf_lv_rec = $this->mdl->getTotalLeave($staff_id, $approve_date_from_year);
+
+            if(!empty($stf_lv_rec) && ($successUpdStfLvDetl > 0 || $successInsStfLvDetl > 0)) {
+
+                $sum_total_day_taken = $this->mdl->sumTotalDayTaken($staff_id, $approve_date_from_year);
+                if(!empty($sum_total_day_taken->SLD_TOTAL_DAY) && $sum_total_day_taken->SLD_STAFF_ID_COUNT > 1) {
+                    $day_taken = $sum_total_day_taken->SLD_TOTAL_DAY;
+                } else {
+                    $day_taken = $form['total_day_approve'];
+                }
+
+                $upd_staff_leave_rec = $this->mdl->updStaffLeaveRec($form, $staff_id, $day_taken, $approve_date_from_year);
+
+                if($upd_staff_leave_rec > 0) {
+                    $successUpdStfLvRec++;
+                    $msg_staff_leave_rec = 'Record succesfully updated (STAFF_LEAVE_RECORD)';
+                }
+            } else {
+
+                $sum_total_day_taken = $this->mdl->sumTotalDayTaken($staff_id, $approve_date_from_year);
+                if(!empty($sum_total_day_taken->SLD_TOTAL_DAY)) {
+                    $day_taken = $sum_total_day_taken->SLD_TOTAL_DAY;
+                } else {
+                    $day_taken = $form['total_day_approve'];
+                }
+
+                $ins_staff_leave_rec = $this->mdl->insStaffLeaveRec($form, $staff_id, $day_taken);
+
+                if($ins_staff_leave_rec > 0) {
+                    $successInsStfLvRec++;
+                    $msg_staff_leave_rec = 'Record succesfully saved (STAFF_LEAVE_RECORD)';
+                }
+            }
+
+            /*update staff_conference_main
+                set scm_update_by = RES2,
+                scm_update_date = sysdate
+                where scm_refid = :SCM_REFID
+                and scm_staff_id = :SCM_STAFF_ID;*/
+
+                // $successUpdStfLvDetl = 0;
+                // $successInsStfLvDetl = 0;
+                // $successUpdStfConMain = 0;
+                // $successUpdStfLvRec = 0;
+                // $successInsStfLvRec = 0;
+
+            if(($successUpdStfLvDetl > 0 && $successUpdStfConMain > 0 && $successUpdStfLvRec > 0) || ($successInsStfLvDetl > 0 && $successUpdStfConMain > 0 && $successInsStfLvRec > 0) || ($successUpdStfLvDetl > 0 && $successUpdStfConMain > 0 && $successUpdStfLvRec > 0) || ($successInsStfLvDetl > 0 && $successUpdStfConMain > 0 && $successInsStfLvRec > 0)) {
+                $json = array('sts' => 1, 'msg' => nl2br("\r\n").$msg_staff_leave_detl.nl2br("\r\n").$msg_staff_con_main.nl2br("\r\n").$msg_staff_leave_rec, 'alert' => 'success', 'balance' => $form['balance'], 'day_taken' => $day_taken);
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
             } 
@@ -813,24 +1120,725 @@ class Conference_pmp extends MY_Controller
         echo json_encode($json);
     }
 
-    // DELETE CONFERENCE INFORMATION
-    public function  deleteConInfo() 
+    // STAFF CONFERENCE ALLOWANCE
+    public function staffConferenceAllowance() {
+        $staffID = $this->input->post('staffID', true);
+        $refid = $this->input->post('refid', true);
+        $crName = $this->input->post('crName', true);
+        $crStaffName = $this->input->post('crStaffName', true);
+        $data['total_apply'] = 0;
+        $data['total_apply_foreign'] = 0;
+        $data['total_hod'] = 0;
+        $data['total_hod_foreign'] = 0;
+        $data['total_tnca'] = 0;
+        $data['total_tnca_foreign'] = 0;
+        $data['total_vc'] = 0;
+        $data['total_vc_foreign'] = 0;
+
+        if(empty($crStaffName) && !empty($staffID)) {
+            // get staff name
+            $data['stf_detl'] = $this->mdl->getStaffList($staffID);
+
+            if(!empty($data['stf_detl'])) {
+                $data['crStaffName'] = $data['stf_detl']->SM_STAFF_NAME;
+            } else {
+                $data['crStaffName'] = '';
+            }
+        } else {
+            $data['crStaffName'] = $crStaffName;
+        }
+
+        if(!empty($refid) && !empty($staffID)) {
+            $data['staff_id'] = $staffID;
+            $data['refid'] = $refid;
+            $data['crName'] = $crName;
+            // $data['crStaffName'] = $crStaffName;
+
+            // CONFERENCE DETAILS
+            $data['cr_detl'] = $this->mdl->getConferenceDetl($refid);
+            if(!empty($data['cr_detl'])) {
+                $data['date_from'] = $data['cr_detl']->CM_DATE_FROM;
+                $data['date_to'] = $data['cr_detl']->CM_DATE_TO;
+            } else {
+                $data['date_from'] = '';
+                $data['date_to'] = '';
+            }
+
+            // STAFF CONFERENCE DETAILS
+            $data['stf_cr_detl'] = $this->mdl->getStaffConferenceDetl($refid, $staffID);
+            if(!empty($data['stf_cr_detl'])) {
+                $data['budget_origin'] = $data['stf_cr_detl']->SCM_SPONSOR_BUDGET_ORIGIN;
+                $data['appl_con_ptnca'] = number_format($data['stf_cr_detl']->SCM_RM_TOTAL_AMT, 2);
+                $data['appr_hod_con_ptnca'] = number_format($data['stf_cr_detl']->SCM_RM_TOTAL_AMT_APPROVE_HOD, 2);
+                $data['appr_tnca'] = number_format($data['stf_cr_detl']->SCM_RM_TOTAL_AMT_APPROVE_TNCA, 2);
+                $data['appr_vc'] = number_format($data['stf_cr_detl']->SCM_RM_TOTAL_AMT_APPROVE_VC, 2);
+                $data['appl_dept'] = number_format($data['stf_cr_detl']->SCM_RM_TOTAL_AMT_DEPT, 2);
+                $data['appl_dept_hod'] = number_format($data['stf_cr_detl']->SCM_TOTAL_AMT_DEPT_APPRV_HOD, 2);
+                $data['budget_origin'] = $data['stf_cr_detl']->SCM_BUDGET_ORIGIN;
+            } else {
+                $data['budget_origin'] = '';
+                $data['appl_con_ptnca'] = '';
+                $data['appr_hod_con_ptnca'] = '';
+                $data['appr_tnca'] = '';
+                $data['appr_vc'] = '';
+                $data['appl_dept'] = '';
+                $data['appl_dept_hod'] = '';
+                $data['budget_origin'] = '';
+            }
+
+            // STAFF CONFERENCE ALLOWANCE
+            $data['stf_cr_allw'] = $this->mdl->getStaffConAllowance($refid, $staffID);
+            $stf_cr_allw = $data['stf_cr_allw'];
+            foreach($stf_cr_allw as $key=>$sca) {
+                $data['total_apply'] += $sca->SCA_AMOUNT_RM;
+                $data['total_apply_foreign'] += $sca->SCA_AMOUNT_FOREIGN;
+                $data['total_hod'] += $sca->SCA_AMT_RM_APPROVE_HOD;
+                $data['total_hod_foreign'] += $sca->SCA_AMT_FOREIGN_APPROVE_HOD;
+                $data['total_tnca'] += $sca->SCA_AMT_RM_APPROVE_TNCA;
+                $data['total_tnca_foreign'] += $sca->SCA_AMT_FOREIGN_APPROVE_TNCA;
+                $data['total_vc'] += $sca->SCA_AMT_RM_APPROVE_VC;
+                $data['total_vc_foreign'] += $sca->SCA_AMT_FOREIGN_APPROVE_VC;
+            }
+        }
+
+        $this->render($data);
+    }
+
+    // ADD STAFF CONFERENCE ALLOWANCE
+    public function addStaffConferenceAllowance() {
+        $staffID = $this->input->post('staffId', true);
+        $crStaffName = $this->input->post('staffName', true);
+        $refid = $this->input->post('refid', true);
+        $crName = $this->input->post('crName', true);
+
+        if(!empty($refid) && !empty($staffID)) {
+            $data['staff_id'] = $staffID;
+            $data['staff_name'] = $crStaffName;
+            $data['refid'] = $refid;
+            $data['cr_name'] = $crName;
+
+            $data['cr_allowance_dd'] = $this->dropdown($this->mdl->getConferenceAllowanceList(), 'CA_CODE', 'CA_CODE_DESC', ' ---Please select--- ');
+        } else {
+            $data['staff_id'] = '';
+            $data['staff_name'] = '';
+            $data['refid'] = '';
+            $data['cr_name'] = '';
+        }
+       
+        $this->render($data);
+    }
+
+    // SAVE INSERT NEW STAFF CONFERENCE ALLOWANCE
+    public function saveNewStfConAllowance() 
     {
         $this->isAjax();
-        
-        $refid = $this->input->post('refid', true);
 
-        if (!empty($refid)) {
-            $del = $this->mdl->deleteConInfo($refid);
-                
-            if ($del > 0) {
-                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+        // get parameter values
+        $form = $this->input->post('form', true);
+        $refid = $form['conference_title'];
+        $staff_id = $form['staff_id'];
+        $allowance_code = $form['allowance_code'];
+        $insertMsg = '';
+        $update1Msg = '';
+
+        // form / input validation
+        $rule = array(
+            'staff_id' => 'required|max_length[20]',
+            'apply' => 'required|numeric|max_length[40]',
+            'apply_foreign' => 'numeric|max_length[40]',
+            'approved_hod' => 'numeric|max_length[40]',
+            'approved_hod_foreign' => 'numeric|max_length[40]',
+            'approved_tnca' => 'numeric|max_length[40]',
+            'approved_tnca_foreign' => 'numeric|max_length[40]',
+            'approved_vc' => 'numeric|max_length[40]',
+            'approved_vc_foreign' => 'numeric|max_length[40]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $check = $this->mdl->getStaffConAllowance($refid, $staff_id, $allowance_code);
+
+            if(empty($check)) {
+                $insert = $this->mdl->saveNewStfConAllowance($form, $refid, $staff_id, $allowance_code);
+
+                if($insert > 0) {
+                    $insertMsg = 'Record successfully saved (STAFF_CONFERENCE_ALLOWANCE)';
+
+                    // GET STAFF CONFERENCE DETL
+                    $staff_detl = $this->mdl->getStaffConferenceDetl($refid, $staff_id);
+                    if(!empty($staff_detl)) {
+                        $budget_origin = $staff_detl->SCM_BUDGET_ORIGIN;
+                    } else {
+                        $budget_origin = '';
+                    }
+                    // var_dump($budget_origin);
+
+                    // GET SUM ALLOWANCE
+                    if($budget_origin == 'CONFERENCE') {
+                        $sum_allw_con = $this->mdl->getSumAllowanceConference($refid, $staff_id);
+                        if(!empty($sum_allw_con)) {
+                            $scm_rm_total_amt = $sum_allw_con->SCA_AMOUNT_RM;
+                            $scm_foreign_total_amt = $sum_allw_con->SCA_AMOUNT_FOREIGN;
+                            $scm_rm_total_amt_dept = 0;
+                            $scm_foreign_total_amt_dept = 0;
+                            $scm_rm_total_amt_approve_hod = $sum_allw_con->SCA_AMT_RM_APPROVE_HOD;
+                            $scm_total_amt_dept_apprv_hod = 0;
+                            $scm_rm_total_amt_approve_tnca = $sum_allw_con->SCA_AMT_RM_APPROVE_TNCA;
+                            $scm_rm_total_amt_approve_vc = $sum_allw_con->SCA_AMT_RM_APPROVE_VC;
+                        } else {
+                            $scm_rm_total_amt = 0;
+                            $scm_foreign_total_amt = 0;
+                            $scm_rm_total_amt_dept = 0;
+                            $scm_foreign_total_amt_dept = 0;
+                            $scm_rm_total_amt_approve_hod = 0;
+                            $scm_total_amt_dept_apprv_hod = 0;
+                            $scm_rm_total_amt_approve_tnca = 0;
+                            $scm_rm_total_amt_approve_vc = 0;
+                        }
+                    } elseif($budget_origin == 'DEPARTMENT') {
+                        $sum_allw_dept_local = $this->mdl->getSumAllowanceDepartmentCon($refid, $staff_id);
+                        $sum_allw_dept = $this->mdl->getSumAllowanceDepartment($refid, $staff_id);
+
+                        if(!empty($sum_allw_dept_local) && !empty($sum_allw_dept)) {
+                            $scm_rm_total_amt = $sum_allw_dept_local->SCA_AMOUNT_RM;
+                            $scm_foreign_total_amt = $sum_allw_dept_local->SCA_AMOUNT_FOREIGN;
+                            $scm_rm_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_RM;
+                            $scm_foreign_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_FOREIGN;
+                            $scm_rm_total_amt_approve_hod = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_HOD;
+                            $scm_total_amt_dept_apprv_hod = $sum_allw_dept->SCA_AMT_RM_APPROVE_HOD;
+                            $scm_rm_total_amt_approve_tnca = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_TNCA;
+                            $scm_rm_total_amt_approve_vc = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_VC;
+                        } else {
+                            $scm_rm_total_amt = 0;
+                            $scm_foreign_total_amt = 0;
+                            $scm_rm_total_amt_dept = 0;
+                            $scm_foreign_total_amt_dept = 0;
+                            $scm_rm_total_amt_approve_hod = 0;
+                            $scm_total_amt_dept_apprv_hod = 0;
+                            $scm_rm_total_amt_approve_tnca = 0;
+                            $scm_rm_total_amt_approve_vc = 0;
+                        }
+                    }
+                    
+                    // UPDATE SUM ALLOWANCE TO STAFF_CONFERENCE_MAIN
+                    if($budget_origin == 'CONFERENCE' || $budget_origin == 'DEPARTMENT') {
+                        $update1 = $this->mdl->updSumScm($refid, $staff_id, $budget_origin, $scm_rm_total_amt, $scm_foreign_total_amt, $scm_rm_total_amt_dept, $scm_foreign_total_amt_dept, $scm_rm_total_amt_approve_hod, $scm_total_amt_dept_apprv_hod, $scm_rm_total_amt_approve_tnca, $scm_rm_total_amt_approve_vc);
+                        if($update1 > 0) { 
+                            $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
+                        } else {
+                            $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
+                        }
+                    } 
+
+                    $json = array('sts' => 1, 'msg' => nl2br("\r\n").$insertMsg.nl2br("\r\n").$update1Msg, 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
             } else {
-                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => 'Record already exist.', 'alert' => 'danger');
             }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // EDIT STAFF CONFERENCE ALLOWANCE
+    public function editStaffConferenceAllowance() {
+        $staffID = $this->input->post('staffId', true);
+        $crStaffName = $this->input->post('staffName', true);
+        $refid = $this->input->post('refid', true);
+        $crName = $this->input->post('crName', true);
+        $sca_code = $this->input->post('sca_code', true);
+
+        if(!empty($refid) && !empty($staffID) && !empty($sca_code)) {
+            $data['staff_id'] = $staffID;
+            $data['staff_name'] = $crStaffName;
+            $data['refid'] = $refid;
+            $data['cr_name'] = $crName;
+
+            $data['cr_allowance_dd'] = $this->dropdown($this->mdl->getConferenceAllowanceList(), 'CA_CODE', 'CA_CODE_DESC', ' ---Please select--- ');
+
+            $data['stf_cr_allw'] = $this->mdl->getStaffConAllowance($refid, $staffID, $sca_code);
+            if(!empty($data['stf_cr_allw'])) {
+                $data['allw_code'] = $data['stf_cr_allw']->SCA_ALLOWANCE_CODE;
+                $data['apply'] = $data['stf_cr_allw']->SCA_AMOUNT_RM;
+                $data['apply_foreign'] = $data['stf_cr_allw']->SCA_AMOUNT_FOREIGN;
+                $data['apprv_hod'] = $data['stf_cr_allw']->SCA_AMT_RM_APPROVE_HOD;
+                $data['apprv_hod_foreign'] = $data['stf_cr_allw']->SCA_AMT_FOREIGN_APPROVE_HOD;
+                $data['apprv_tnca'] = $data['stf_cr_allw']->SCA_AMT_RM_APPROVE_TNCA;
+                $data['apprv_tnca_foreign'] = $data['stf_cr_allw']->SCA_AMT_FOREIGN_APPROVE_TNCA;
+                $data['apprv_vc'] = $data['stf_cr_allw']->SCA_AMT_RM_APPROVE_VC;
+                $data['apprv_vc_foreign'] = $data['stf_cr_allw']->SCA_AMT_FOREIGN_APPROVE_VC;
+            } else {
+                $data['allw_code'] = '';
+                $data['apply'] = '';
+                $data['apply_foreign'] = '';
+                $data['apprv_hod'] = '';
+                $data['apprv_hod_foreign'] = '';
+                $data['apprv_tnca'] = '';
+                $data['apprv_tnca_foreign'] = '';
+                $data['apprv_vc'] = '';
+                $data['apprv_vc_foreign'] = '';
+            }
+        } else {
+            $data['staff_id'] = '';
+            $data['staff_name'] = '';
+            $data['refid'] = '';
+            $data['cr_name'] = '';
+        }
+       
+        $this->render($data);
+    }
+
+    // SAVE UPsDATE STAFF CONFERENCE ALLOWANCE
+    public function saveUpdStfConAllowance() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+        $refid = $form['conference_title'];
+        $staff_id = $form['staff_id'];
+        $allowance_code = $form['allowance_code'];
+        $updateMsg = '';
+        $update1Msg = '';
+
+        // form / input validation
+        $rule = array(
+            // 'staff_id' => 'required|max_length[20]',
+            'apply' => 'required|numeric|max_length[40]',
+            'apply_foreign' => 'numeric|max_length[40]',
+            'approved_hod' => 'numeric|max_length[40]',
+            'approved_hod_foreign' => 'numeric|max_length[40]',
+            'approved_tnca' => 'numeric|max_length[40]',
+            'approved_tnca_foreign' => 'numeric|max_length[40]',
+            'approved_vc' => 'numeric|max_length[40]',
+            'approved_vc_foreign' => 'numeric|max_length[40]'
+        );
+
+        $exclRule = array('staff_id');
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            // $check = $this->mdl->getStaffConAllowance($refid, $staff_id, $allowance_code);
+
+           
+            $update = $this->mdl->saveUpdStfConAllowance($form, $refid, $staff_id, $allowance_code);
+
+            if($update > 0) {
+                $updateMsg = 'Record successfully saved (STAFF_CONFERENCE_ALLOWANCE)';
+
+                // GET STAFF CONFERENCE DETL
+                $staff_detl = $this->mdl->getStaffConferenceDetl($refid, $staff_id);
+                if(!empty($staff_detl)) {
+                    $budget_origin = $staff_detl->SCM_BUDGET_ORIGIN;
+                } else {
+                    $budget_origin = '';
+                }
+                // var_dump($budget_origin);
+
+                // GET SUM ALLOWANCE
+                if($budget_origin == 'CONFERENCE') {
+                    $sum_allw_con = $this->mdl->getSumAllowanceConference($refid, $staff_id);
+                    $sum_allw_con_tnca_vc = $this->mdl->getSumAllowanceTncaVc($refid, $staff_id);
+                    if(!empty($sum_allw_con) && !empty($sum_allw_con_tnca_vc)) {
+                        $scm_rm_total_amt = $sum_allw_con->SCA_AMOUNT_RM;
+                        $scm_foreign_total_amt = $sum_allw_con->SCA_AMOUNT_FOREIGN;
+                        $scm_rm_total_amt_dept = 0;
+                        $scm_foreign_total_amt_dept = 0;
+                        $scm_rm_total_amt_approve_hod = $sum_allw_con->SCA_AMT_RM_APPROVE_HOD;
+                        $scm_total_amt_dept_apprv_hod = 0;
+                        $scm_rm_total_amt_approve_tnca = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_TNCA;
+                        $scm_rm_total_amt_approve_vc = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_VC;
+                    } else {
+                        $scm_rm_total_amt = 0;
+                        $scm_foreign_total_amt = 0;
+                        $scm_rm_total_amt_dept = 0;
+                        $scm_foreign_total_amt_dept = 0;
+                        $scm_rm_total_amt_approve_hod = 0;
+                        $scm_total_amt_dept_apprv_hod = 0;
+                        $scm_rm_total_amt_approve_tnca = 0;
+                        $scm_rm_total_amt_approve_vc = 0;
+                    }
+                } elseif($budget_origin == 'DEPARTMENT') {
+                    $sum_allw_dept_local = $this->mdl->getSumAllowanceDepartmentCon($refid, $staff_id);
+                    $sum_allw_dept = $this->mdl->getSumAllowanceDepartment($refid, $staff_id);
+                    $sum_allw_con_tnca_vc = $this->mdl->getSumAllowanceTncaVc($refid, $staff_id);
+
+                    if(!empty($sum_allw_dept_local) && !empty($sum_allw_dept) && !empty($sum_allw_con_tnca_vc)) {
+                        $scm_rm_total_amt = $sum_allw_dept_local->SCA_AMOUNT_RM;
+                        $scm_foreign_total_amt = $sum_allw_dept_local->SCA_AMOUNT_FOREIGN;
+                        $scm_rm_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_RM;
+                        $scm_foreign_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_FOREIGN;
+                        $scm_rm_total_amt_approve_hod = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_HOD;
+                        $scm_total_amt_dept_apprv_hod = $sum_allw_dept->SCA_AMT_RM_APPROVE_HOD;
+                        $scm_rm_total_amt_approve_tnca = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_TNCA;
+                        $scm_rm_total_amt_approve_vc = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_VC;
+                    } else {
+                        $scm_rm_total_amt = 0;
+                        $scm_foreign_total_amt = 0;
+                        $scm_rm_total_amt_dept = 0;
+                        $scm_foreign_total_amt_dept = 0;
+                        $scm_rm_total_amt_approve_hod = 0;
+                        $scm_total_amt_dept_apprv_hod = 0;
+                        $scm_rm_total_amt_approve_tnca = 0;
+                        $scm_rm_total_amt_approve_vc = 0;
+                    }
+                }
+                
+                // UPDATE SUM ALLOWANCE TO STAFF_CONFERENCE_MAIN
+                if($budget_origin == 'CONFERENCE' || $budget_origin == 'DEPARTMENT') {
+                    $update1 = $this->mdl->updSumScm($refid, $staff_id, $budget_origin, $scm_rm_total_amt, $scm_foreign_total_amt, $scm_rm_total_amt_dept, $scm_foreign_total_amt_dept, $scm_rm_total_amt_approve_hod, $scm_total_amt_dept_apprv_hod, $scm_rm_total_amt_approve_tnca, $scm_rm_total_amt_approve_vc);
+                    if($update1 > 0) { 
+                        $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
+                    } else {
+                        $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
+                    }
+                } 
+
+                $json = array('sts' => 1, 'msg' => nl2br("\r\n").$updateMsg.nl2br("\r\n").$update1Msg, 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
+             
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // DELETE STAFF CONFERENCE ALLOWANCE
+    public function delStfConAllowance() {
+		$this->isAjax();
+		
+        $staffId = $this->input->post('staffId', true);
+        $crRefID = $this->input->post('crRefID', true);
+        $sca_code = $this->input->post('sca_code', true);
+        
+        if (!empty($staffId) && !empty($crRefID) && !empty($sca_code)) {
+        	$del = $this->mdl->delStfConAllowance($staffId, $crRefID, $sca_code);
+            
+        	if ($del > 0) {
+          		$json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+        	} else {
+          		$json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+        	}
         } else {
             $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
         }
         echo json_encode($json);
     }
+
+    /*===============================================================
+       Approve / Verify Conference Application (TNC A&A) (ATF035)
+    ================================================================*/
+
+    // CONFERENCE APLICATION TNCAA LIST
+    public function getConferenceApplicationTncaa()
+    {
+        $deptCode = $this->input->post('deptCode', true);
+
+        // get available records
+        $data['con_app_tncaa'] = $this->mdl->getConferenceApplicationTncaa($deptCode);
+
+        $this->render($data);
+    }
+
+    // GET DEPARTMENT DESC
+    public function getDepartmentDesc() {
+		$this->isAjax();
+		
+        $deptCode = $this->input->post('deptCode', true);
+        
+        if (!empty($deptCode)) {
+            $getDept = $this->mdl->getDeptDetl($deptCode);
+            if(!empty($getDept)) {
+                $dept_desc = $getDept->DM_DEPT_DESC;
+            } else {
+                $dept_desc = '';
+            }
+            
+        	if (!empty($getDept)) {
+          		$json = array('sts' => 1, 'msg' => 'Success', 'alert' => 'success', 'dept_desc' => $dept_desc);
+        	} else {
+          		$json = array('sts' => 0, 'msg' => 'Fail', 'alert' => 'danger');
+        	}
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // GET FILE ATTACHMENT
+    public function getFileAttachment()
+    {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+
+        // get available records
+        if(!empty($staff_id) && !empty($refid)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;
+
+            // GET STAFF NAME
+            $data['stf_detl'] = $this->mdl->getStaffList($staff_id);
+            if(!empty($data['stf_detl'])) {
+                $data['staff_name'] = $data['stf_detl']->SM_STAFF_NAME;
+            } else {
+                $data['staff_name'] = '';
+            }
+
+            // GET CONFERENCE NAME
+            $data['con_detl'] = $this->mdl->getConferenceDetl($refid);
+            if(!empty($data['con_detl'])) {
+                $data['con_name'] = $data['con_detl']->CM_NAME;
+            } else {
+                $data['con_name'] = '';
+            }
+
+            // FILE ATTACHMENT LIST
+            $data['file_att'] = $this->mdl->getFileAttachment($staff_id, $refid);
+        } else {
+            $data['staff_id'] = '';
+            $data['refid'] = '';
+            $data['file_att'] = '';
+        }
+
+        $this->render($data);
+    }
+
+    // DOWNLAOD FILE ATTACHMENT PARAM
+    public function dloadFileAttParam() {
+        $staff_id = $this->input->post('staff_id', true);
+        $cr_refid = $this->input->post('cr_refid', true);
+        $file_name = $this->input->post('file_name', true);
+
+        if(!empty($staff_id) && !empty($cr_refid) && !empty($file_name)) {
+            $file_name = str_replace(" ","_", $file_name);
+            $this->session->set_userdata('staff_id', $staff_id);
+            $this->session->set_userdata('cr_refid', $cr_refid);
+            $this->session->set_userdata('file_name', $file_name);
+
+            $json = array('sts' => 1, 'msg' => 'Param assigned.', 'alert' => 'success');
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Param not assigned', 'alert' => 'danger');
+        }
+        
+        echo json_encode($json);
+    }
+
+    // DOWNLOAD FILE ATTACHMENT URL
+    public function fileAttachmentDload() {
+        $staff_id = $this->session->userdata('staff_id');
+        $cr_refid = $this->session->userdata('cr_refid');
+        $file_name = $this->session->userdata('file_name');
+
+        if(!empty($staff_id) && !empty($cr_refid) && !empty($file_name)) {
+            $selUrl = $this->mdl->getEcommUrl();
+            if(!empty($selUrl)) {
+                $ecomm_url = $selUrl->HP_PARM_DESC;
+            } else {
+                $ecomm_url = '';
+            }
+
+            echo header('Location: '.$ecomm_url.'sites/default/docManager/Conference/'.$staff_id.'/'.$cr_refid.'/'.$file_name);
+            exit;
+        } 
+    }
+
+    // STAFF CONFERENCE DETAILS APPROVE / VERIFY
+    public function staffConferenceDetlAppVer() {
+        $staffID = $this->input->post('staffID', true);
+        $refid = $this->input->post('refid', true);
+        $crName = $this->input->post('crName', true);
+
+        if(!empty($staffID) && !empty($refid)) {
+            $data['staffID'] = $staffID;
+            $data['refid'] = $refid;
+            $data['crName'] = $crName;
+
+            // $data['cr_detl'] = $this->mdl->getConferenceDetl($refid);
+            // if(!empty($data['cr_detl'])) {
+            //     $data['venue'] = $data['cr_detl']->CM_ADDRESS;
+            //     $data['city'] = $data['cr_detl']->CM_CITY;
+            //     $data['postcode'] = $data['cr_detl']->CM_POSTCODE;
+            //     $data['state'] = $data['cr_detl']->SM_STATE_DESC;
+            //     $data['country'] = $data['cr_detl']->CM_COUNTRY_DESC;
+            //     $data['date_from'] = $data['cr_detl']->CM_DATE_FROM;
+            //     $data['date_to'] = $data['cr_detl']->CM_DATE_TO;
+            //     $data['organizer'] = $data['cr_detl']->CM_ORGANIZER_NAME;
+            // } else {
+            //     $data['venue'] = '';
+            //     $data['city'] = '';
+            //     $data['postcode'] = '';
+            //     $data['state'] = '';
+            //     $data['country'] = '';
+            //     $data['date_from'] = '';
+            //     $data['date_to'] = '';
+            //     $data['organizer'] = '';
+            // }
+
+            $data['staff_list'] = $this->dropdown($this->mdl->getStaffList(), 'SM_STAFF_ID', 'SM_STAFF_ID_NAME', ' ---Please select--- ');
+            // $data['cr_role_list'] = $this->dropdown($this->mdl->getConferenceRoleList(), 'CPR_CODE', 'CPR_CODE', ' ---Please select--- ');
+            $data['cr_cat_list'] = $this->dropdown($this->mdl->getCrCategoryList(), 'CC_CODE', 'CC_CODE_DESC_CC_FROM_TO', ' ---Please select--- ');
+            // $data['cr_spon_list'] = array(''=>' ---Please select--- ', 'Y'=>'Yes', 'N'=>'No', 'H'=>'Half Sponsorship');
+            // $data['cr_budget_spon_list'] = array(''=>' ---Please select--- ', 'GRANTS'=>'Grants', 'EXTERNAL'=>'External Organization', 'SELF'=>'Self');
+            $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS');
+            // $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_TNCA'=>'VERIFY_HOD', 'VERIFY_VC'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
+            
+            $data['stf_detl'] = $this->mdl->getStaffConferenceDetl($refid, $staffID);
+            
+
+            if(!empty($data['stf_detl'])) {
+                $budget_origin = $data['stf_detl']->SCM_BUDGET_ORIGIN;
+                $budget_origin_prev = $data['stf_detl']->SCM_BUDGET_ORIGIN_PREV;
+                $recommend_date = $data['stf_detl']->SCM_RECOMMEND_DATE;
+                $apply_date = $data['stf_detl']->SCM_APPLY_DATE;
+                $tncpi_approve_date = $data['stf_detl']->SCM_TNCPI_APPROVE_DATE;
+                $rmic_approve_date = $data['stf_detl']->SCM_RMIC_APPROVE_DATE;
+
+                // receive date
+                if(($budget_origin != 'RESEARCH' || $budget_origin != 'RESEARCH_CONFERENCE') && empty($budget_origin_prev)) {
+                    if(!empty($recommend_date)) {
+                        $data['receive_date'] = $recommend_date;
+                    } else {
+                        $data['receive_date'] = $apply_date;
+                    }
+
+                } elseif(($budget_origin != 'RESEARCH' || $budget_origin != 'RESEARCH_CONFERENCE') && !empty($budget_origin_prev)) {
+                    if(!empty($tncpi_approve_date)) {
+                        $data['receive_date'] = $tncpi_approve_date;
+                    } else {
+                        $data['receive_date'] = $rmic_approve_date;
+                    }
+                } elseif(($budget_origin == 'RESEARCH' || $budget_origin == 'RESEARCH_CONFERENCE') && empty($budget_origin_prev)) {
+                    if(!empty($tncpi_approve_date)) {
+                        $data['receive_date'] = $tncpi_approve_date;
+                    } else {
+                        $data['receive_date'] = $rmic_approve_date;
+                    }
+                } elseif(($budget_origin == 'RESEARCH' || $budget_origin == 'RESEARCH_CONFERENCE') && !empty($budget_origin_prev)) {
+                    if(!empty($tncpi_approve_date)) {
+                        $data['receive_date'] = $tncpi_approve_date;
+                    } else {
+                        $data['receive_date'] = $rmic_approve_date;
+                    }
+                }
+            }
+
+
+            $data['app_rejc'] = $this->mdl->getAppRejcStaff();
+            if(!empty($data['app_rejc'])) {
+                $data['app_rejc_id'] = $data['app_rejc']->SM_STAFF_ID;
+                $data['curr_date'] = $data['app_rejc']->CURR_DATE;
+            } else {
+                $data['app_rejc'] = '';
+                $data['curr_date'] = '';
+            }
+        }
+
+        $this->render($data);
+    }
+
+    // RESEARCH INFO
+    public function researchInfo() {
+        $research_refid = $this->input->post('research_refid', true);
+        
+        if(!empty($research_refid)) {
+            $data['research_refid'] = $research_refid;
+            $data['research_detl'] = $this->mdl->researchInfo($research_refid);
+
+            if(!empty($data['research_detl'])) {
+                $data['research_desc'] = $data['research_detl']->SR_RESEARCH_TITLE;
+                $data['project_id'] = $data['research_detl']->SR_PROJECT_ID;
+                $data['grant_amt'] = number_format($data['research_detl']->SR_GRANT_AMT, 2);
+                $data['rsh_date_from'] = $data['research_detl']->SR_DATE_FROM;
+                $data['rsh_date_to'] = $data['research_detl']->SR_DATE_TO;
+            }
+        }
+
+        $this->render($data);
+    }
+
+    // ALLOWANCE DETAIL RESEARCH / RESEARCH_CONFERENCE
+    public function allowanceDetlResearch() {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $data['total_sca_amount_rm'] = 0;
+        $data['total_sca_amount_foreign'] = 0;
+        $data['total_sca_amt_rm_approve_hod'] = 0;
+        $data['total_sca_amt_foreign_approve_hod'] = 0;
+        $data['total_sca_amt_rm_approve_rmic'] = 0;
+        $data['total_sca_amt_foreign_approve_rmic'] = 0;
+        $data['total_sca_amt_rm_approve_tncpi'] = 0;
+        $data['total_sca_amt_foreign_approve_tncpi'] = 0;
+        $data['total_sca_amt_rm_approve_tnca'] = 0;
+        $data['total_sca_amt_foreign_approve_tnca'] = 0;
+        
+        if(!empty($staff_id) && !empty($refid)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;  
+            $data['research_allw_detl'] = $this->mdl->getStaffConAllowance($refid, $staff_id);
+
+            if(!empty($data['research_allw_detl'])) {
+                $research_allw_detl = $data['research_allw_detl'];
+
+                foreach($research_allw_detl as $rad) {
+                    $data['total_sca_amount_rm'] += $rad->SCA_AMOUNT_RM;
+                    $data['total_sca_amount_foreign'] += $rad->SCA_AMOUNT_FOREIGN;
+                    $data['total_sca_amt_rm_approve_hod'] += $rad->SCA_AMT_RM_APPROVE_HOD;
+                    $data['total_sca_amt_foreign_approve_hod'] += $rad->SCA_AMT_FOREIGN_APPROVE_HOD;
+                    $data['total_sca_amt_rm_approve_rmic'] += $rad->SCA_AMT_RM_APPROVE_RMIC;
+                    $data['total_sca_amt_foreign_approve_rmic'] += $rad->SCA_AMT_FOREIGN_APPROVE_RMIC;
+                    $data['total_sca_amt_rm_approve_tncpi'] += $rad->SCA_AMT_RM_APPROVE_TNCPI;
+                    $data['total_sca_amt_foreign_approve_tncpi'] += $rad->SCA_AMT_FOREIGN_APPROVE_TNCPI;
+                    $data['total_sca_amt_rm_approve_tnca'] += $rad->SCA_AMT_RM_APPROVE_TNCA;
+                    $data['total_sca_amt_foreign_approve_tnca'] += $rad->SCA_AMT_FOREIGN_APPROVE_TNCA;
+                }
+            }
+        }
+
+        $this->render($data);
+    }
+
+    // ALLOWANCE DETAIL OTHERS
+    public function allowanceDetlOthers() {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $data['total_sca_amount_rm'] = 0;
+        $data['total_sca_amount_foreign'] = 0;
+        $data['total_sca_amt_rm_approve_hod'] = 0;
+        $data['total_sca_amt_foreign_approve_hod'] = 0;
+        $data['total_sca_amt_rm_approve_tnca'] = 0;
+        $data['total_sca_amt_foreign_approve_tnca'] = 0;
+        
+        if(!empty($staff_id) && !empty($refid)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;  
+            $data['other_allw_detl'] = $this->mdl->getStaffConAllowance($refid, $staff_id);
+
+            if(!empty($data['other_allw_detl'])) {
+                $other_allw_detl = $data['other_allw_detl'];
+
+                foreach($other_allw_detl as $oad) {
+                    $data['total_sca_amount_rm'] += $oad->SCA_AMOUNT_RM;
+                    $data['total_sca_amount_foreign'] += $oad->SCA_AMOUNT_FOREIGN;
+                    $data['total_sca_amt_rm_approve_hod'] += $oad->SCA_AMT_RM_APPROVE_HOD;
+                    $data['total_sca_amt_foreign_approve_hod'] += $oad->SCA_AMT_FOREIGN_APPROVE_HOD;
+                    $data['total_sca_amt_rm_approve_tnca'] += $oad->SCA_AMT_RM_APPROVE_TNCA;
+                    $data['total_sca_amt_foreign_approve_tnca'] += $oad->SCA_AMT_FOREIGN_APPROVE_TNCA;
+                }
+            }
+        }
+
+        $this->render($data);
+    }
+
 }

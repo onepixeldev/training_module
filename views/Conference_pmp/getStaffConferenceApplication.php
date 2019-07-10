@@ -38,7 +38,7 @@
 						<td class="text-center col-md-1">' . $scl->SCM_STATUS . '</td>
 						<td class="text-center col-md-2">
 							<button type="button" class="btn btn-success btn-xs stacr_edit_btn" value="'.$refid.'" data-crname="'.$crName.'"><i class="fa fa-edit"></i> Edit</button>
-							<button type="button" class="btn btn-danger btn-xs stacr_del_btn"><i class="fa fa-trash"></i> Delete</button>
+							<button type="button" class="btn btn-danger btn-xs stacr_del_btn" value="'.$refid.'" data-crname="'.$crName.'"><i class="fa fa-trash"></i> Delete</button>
 						</td>
 					</tr>
                     ';

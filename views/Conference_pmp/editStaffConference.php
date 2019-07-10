@@ -173,7 +173,7 @@
         <label class="col-md-2 control-label">Status <b><font color="red">* </font></b></label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[status]', $cr_status_list, $stf_detl->SCM_STATUS, 'class="form-control width-50"')
+                echo form_dropdown('form[status]', $cr_status_list, $stf_detl->SCM_STATUS, 'class="form-control width-50" id="statusUpd"')
             ?>
         </div>
     </div>

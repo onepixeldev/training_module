@@ -1,7 +1,3 @@
-<!--<div class="modal-header btn-primary">
-    <h4 class="modal-title txt-color-white" id="myModalLabel">Add Conference Leave</h4>
-</div>
-<br>-->
 <form id="addConferenceLeave" class="form-horizontal" method="post">
     <br>
     <div class="form-group">
@@ -44,7 +40,7 @@
         <b>Staff Conference Leave</b>
     </div>
 
-    <div id="alertStaffConference">
+    <div id="alertConferenceLeave">
         <b>Note : </b> ( <b><font color="red">*</font></b> ) <b><font color="red">compulsory fields</font></b><br>&nbsp; <span id="note"></span>
     </div>
     <div class="row">
@@ -59,40 +55,49 @@
                 <div class="panel-body" id="summary">
 
                     <div class="form-group">
-                        <label class="col-md-2 control-label" id="applied_date">Applied Date (From)</label>
-                        <div class="col-md-4">
-                            <input name="form[applied_date_from]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $scm_leave_date_from?>">
+                        <div class="appliedDateFromRmv">
+                            <label class="col-md-2 control-label">Applied Date (From) <b><font color="red">*</font></b></label>
+                            <div class="col-md-4">
+                                <input name="form[applied_date_from]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $scm_leave_date_from?>" id="appliedDateFrom">
+                            </div>
                         </div>
 
-                        <label class="col-md-2 control-label" id="approve_date">Approve Date (From)</label>
+                        <label class="col-md-2 control-label">Approve Date (From) <b><font color="red">*</font></b></label>
                         <div class="col-md-4">
-                            <input name="form[approve_date_from]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $sld_date_from?>">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-md-2 control-label" id="budSp">Applied Date (To)</label>
-                        <div class="col-md-4">
-                            <input name="form[applied_date_to]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $scm_leave_date_to?>">
-                        </div>
-
-                        <label class="col-md-2 control-label" id="totalAmt">Approve Date (To)</label>
-                        <div class="col-md-4">
-                            <input name="form[approve_date_to]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $sld_date_to?>">
+                            <input name="form[approve_date_from]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $sld_date_from?>" id="approveDateFrom">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="col-md-2 control-label">Total Day (Applied)</label>
-                        <div class="col-md-4">
-                            <input name="form[total_day_applied]" placeholder="day(s)" class="form-control" type="text" readonly value="<?php echo $total_day_applied?>">
+                        <div class="appliedDateToRmv">
+                            <label class="col-md-2 control-label" id="appliedDateToLabel">Applied Date (To) <b><font color="red">*</font></b></label>
+                            <div class="col-md-4">
+                                <input name="form[applied_date_to]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $scm_leave_date_to?>" id="appliedDateTo">
+                            </div>
                         </div>
 
+                        <label class="col-md-2 control-label">Approve Date (To) <b><font color="red">*</font></b></label>
+                        <div class="col-md-4">
+                            <input name="form[approve_date_to]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $sld_date_to?>" id="approveDateTo">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="totalDayAppliedRmv">
+                            <label class="col-md-2 control-label" id="totalDayAppliedLabel">Total Day (Applied)</label>
+                            <div class="col-md-4">
+                                <input name="form[total_day_applied]" placeholder="day(s)" class="form-control" type="text" readonly value="<?php echo $total_day_applied?>" id="totalDayApplied">
+                            </div>
+                        </div>
 
                         <label class="col-md-2 control-label">Total Day (Approve)</label>
                         <div class="col-md-4">
-                            <input name="form[total_day_approve]" placeholder="day(s)" class="form-control" type="text" readonly>
+                            <input name="form[total_day_approve]" placeholder="day(s)" class="form-control" type="text" readonly value="<?php echo $total_day_approve?>" id="totalDayApprove">
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div id="loaderTDayApp"></div>
                     </div>
 
                     <br>
@@ -100,20 +105,20 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label">Entitled</label>
                         <div class="col-md-2">
-                            <input name="form[entitled]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $entitled?>" readonly>
+                            <input name="form[entitled]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $entitled?>" readonly id="entitledLeave">
                         </div>
                         <label class="col-md-1 control-label text-left">day(s)</label>
 
                         <label class="col-md-1 control-label text-left">Year</label>
                         <div class="col-md-2 text-left">
-                            <input name="form[year]" placeholder="YYYY" class="form-control" type="text" value="<?php echo $curr_year?>" readonly>
+                            <input name="form[year]" placeholder="YYYY" class="form-control" type="text" value="<?php echo $curr_year?>" readonly id="entitledYear">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="col-md-2 control-label">Balance</label>
                         <div class="col-md-2">
-                            <input name="form[balance]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $balance?>" readonly>
+                            <input name="form[balance]" placeholder="day(s)" class="form-control" type="text" value="<?php echo $balance?>" readonly id="balanceLeave">
                         </div>
                         <label class="col-md-2 control-label text-left">day(s)</label>
                     </div>
@@ -123,7 +128,7 @@
                     <div class="form-group">
                         <label class="col-md-3 control-label">Staff On Study/Sabbatical leave?</label>
                         <div class="col-md-4">
-                            <input name="form[apply_date]" placeholder="" class="form-control" type="text" value="<?php echo $sb_leave?>" readonly>
+                            <input name="form[study_leave]" placeholder="" class="form-control" type="text" value="<?php echo $sb_leave?>" readonly>
                         </div>
                     </div>
 
@@ -132,10 +137,10 @@
         </div>
     </div>
 
-    <div id="alertStaffConferenceFooter"></div>
+    <div id="alertConferenceLeaveFooter"></div>
     
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary ins_stf_cr"><i class="fa fa-save"></i> Save</button>
+        <button type="button" class="btn btn-primary ins_con_leave"><i class="fa fa-save"></i> Save</button>
     </div>
 </form>
 
