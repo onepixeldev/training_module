@@ -628,7 +628,7 @@ class Conference_pmp extends MY_Controller
         $this->session->set_userdata('crRefID',$crRefID);
         
         // PRINT APPENDIX A/B PARAM
-        if(!empty($crRefID) && $repCode == 'ATRATT') {
+        if(!empty($crRefID) && !empty($crStaffID) && $repCode == 'ATRATT') {
             $cr_detl = $this->mdl->getConferenceDetl($crRefID);
             $cr_detl2 = $this->mdl->getConDuration($crRefID);
             $cr_country = $cr_detl->CM_COUNTRY_CODE;
@@ -644,6 +644,23 @@ class Conference_pmp extends MY_Controller
             } else {
                 $msg = 'Appendix A/B is not required for this application.';
                 $json = array('sts' => 0, 'msg' => $msg, 'alert' => 'danger');
+            }
+        } elseif(!empty($crRefID) && !empty($crStaffID) && $repCode == 'ATRAPPVER') {
+            $cr_detl = $this->mdl->getConferenceDetl($crRefID);
+            $cr_detl2 = $this->mdl->getConDuration($crRefID);
+            $cr_country = $cr_detl->CM_COUNTRY_CODE;
+            $cr_duration = $cr_detl2->CM_DURATION;
+
+            if($cr_country != 'MYS') {
+                if($cr_duration <= '13') {
+                    $repCode = 'ATR031';
+                } else {
+                    $repCode = 'ATR075';
+                }
+                $json = array('sts' => 1, 'msg' => 'Print Appendix', 'alert' => 'danger');
+            } else {
+                $repCode = 'ATR020';
+                $json = array('sts' => 0, 'msg' => 'Print ATR020', 'alert' => 'danger');
             }
         } else {
             $json = array('sts' => 2, 'msg' => 'Print PMP', 'alert' => 'danger');
@@ -1658,39 +1675,44 @@ class Conference_pmp extends MY_Controller
         $staffID = $this->input->post('staffID', true);
         $refid = $this->input->post('refid', true);
         $crName = $this->input->post('crName', true);
+        $crStaffName = $this->input->post('crStaffName', true);
+
+        if(empty($crStaffName) && !empty($staffID)) {
+            // get staff name
+            $data['stf_detl'] = $this->mdl->getStaffList($staffID);
+
+            if(!empty($data['stf_detl'])) {
+                $data['crStaffName'] = $data['stf_detl']->SM_STAFF_NAME;
+            } else {
+                $data['crStaffName'] = '';
+            }
+        } else {
+            $data['crStaffName'] = $crStaffName;
+        }
+
+        if(empty($crName) && !empty($refid)) {
+
+            // CONFERENCE DETAILS
+            $data['cr_detl'] = $this->mdl->getConferenceDetl($refid);
+            if(!empty($data['cr_detl'])) {
+                $data['crName'] = $data['cr_detl']->CM_NAME;
+            } else {
+                $data['crName'] = '';
+            }
+        } else {
+            $data['crName'] = $crName;
+        }
 
         if(!empty($staffID) && !empty($refid)) {
             $data['staffID'] = $staffID;
             $data['refid'] = $refid;
-            $data['crName'] = $crName;
-
-            // $data['cr_detl'] = $this->mdl->getConferenceDetl($refid);
-            // if(!empty($data['cr_detl'])) {
-            //     $data['venue'] = $data['cr_detl']->CM_ADDRESS;
-            //     $data['city'] = $data['cr_detl']->CM_CITY;
-            //     $data['postcode'] = $data['cr_detl']->CM_POSTCODE;
-            //     $data['state'] = $data['cr_detl']->SM_STATE_DESC;
-            //     $data['country'] = $data['cr_detl']->CM_COUNTRY_DESC;
-            //     $data['date_from'] = $data['cr_detl']->CM_DATE_FROM;
-            //     $data['date_to'] = $data['cr_detl']->CM_DATE_TO;
-            //     $data['organizer'] = $data['cr_detl']->CM_ORGANIZER_NAME;
-            // } else {
-            //     $data['venue'] = '';
-            //     $data['city'] = '';
-            //     $data['postcode'] = '';
-            //     $data['state'] = '';
-            //     $data['country'] = '';
-            //     $data['date_from'] = '';
-            //     $data['date_to'] = '';
-            //     $data['organizer'] = '';
-            // }
 
             $data['staff_list'] = $this->dropdown($this->mdl->getStaffList(), 'SM_STAFF_ID', 'SM_STAFF_ID_NAME', ' ---Please select--- ');
             // $data['cr_role_list'] = $this->dropdown($this->mdl->getConferenceRoleList(), 'CPR_CODE', 'CPR_CODE', ' ---Please select--- ');
             $data['cr_cat_list'] = $this->dropdown($this->mdl->getCrCategoryList(), 'CC_CODE', 'CC_CODE_DESC_CC_FROM_TO', ' ---Please select--- ');
             // $data['cr_spon_list'] = array(''=>' ---Please select--- ', 'Y'=>'Yes', 'N'=>'No', 'H'=>'Half Sponsorship');
             // $data['cr_budget_spon_list'] = array(''=>' ---Please select--- ', 'GRANTS'=>'Grants', 'EXTERNAL'=>'External Organization', 'SELF'=>'Self');
-            $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS');
+            $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS', 'RESEARCH'=>'RESEARCH', 'RESEARCH_CONFERENCE'=>'RESEARCH_CONFERENCE');
             // $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_TNCA'=>'VERIFY_HOD', 'VERIFY_VC'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
             
             $data['stf_detl'] = $this->mdl->getStaffConferenceDetl($refid, $staffID);
@@ -1841,4 +1863,89 @@ class Conference_pmp extends MY_Controller
         $this->render($data);
     }
 
+    // SAVE ALLOWANCE DETAIL OTHERS
+    public function saveAllwDetlOthers()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $allwCodeArr = $this->input->post('allwCodeArr', true);
+        $amountArr = $this->input->post('amountArr', true);
+        $amountForArr = $this->input->post('amountForArr', true);
+        $appHodArr = $this->input->post('appHodArr', true);
+        $appHodForArr = $this->input->post('appHodForArr', true);
+        $appTncaArr = $this->input->post('appTncaArr', true);
+        $appTncaForArr = $this->input->post('appTncaForArr', true);
+
+        $success = 0;
+        $successSave = 0;
+
+        if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
+            foreach ($allwCodeArr as $key => $aca) {
+                $success++;
+                $amt = $amountArr[$key];
+                $amtFor = $amountForArr[$key];
+                $appHod = $appHodArr[$key];
+                $appHodFor = $appHodForArr[$key];
+                $appTnca = $appTncaArr[$key];
+                $appTncaFor = $appTncaForArr[$key];
+
+                $save = $this->mdl->saveAllwDetlOthers($refid, $staff_id, $aca, $amt, $amtFor, $appHod, $appHodFor, $appTnca, $appTncaFor);
+
+                if ($save > 0) {
+                    $successSave++;
+                } else {
+                    $successSave = 0;
+                }
+            }
+
+            if($success = $successSave) {
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // CLEAR VALUE APPROVED TNCA
+    public function clearValAppTnca()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $allwCodeArr = $this->input->post('allwCodeArr', true);
+
+        $success = 0;
+        $successClear = 0;
+
+        if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
+            foreach ($allwCodeArr as $key => $aca) {
+                $success++;
+
+                $clear = $this->mdl->clearValAppTnca($refid, $staff_id, $aca);
+
+                if ($clear > 0) {
+                    $successClear++;
+                } else {
+                    $successClear = 0;
+                }
+            }
+
+            if($success = $successClear) {
+                $json = array('sts' => 1, 'msg' => 'Selected Approved TNCA value has been cleared', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Failed to clear Approved TNCA value', 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
 }

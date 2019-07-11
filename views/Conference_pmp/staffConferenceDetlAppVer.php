@@ -1,15 +1,44 @@
 <form id="staffConDetlAppVer" class="form-horizontal" method="post">
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Staff ID</label>
+        <div class="col-md-2">
+            <input name="form[staff_id]" class="form-control" type="text" value="<?php echo $staffID?>" id="staff_id" readonly>
+        </div>
+
+        <div class="col-md-8">
+            <input name="form[staff_name]" class="form-control" type="text" value="<?php echo $crStaffName?>" id="staff_name" readonly>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Conference Title</label>
+        <div class="col-md-2">
+            <input name="form[conference_title]" class="form-control" type="text" value="<?php echo $refid?>" id="crRefid" readonly>
+        </div>
+
+        <div class="col-md-8">
+            <input name="form[conference_name]" class="form-control" type="text" value="<?php echo $crName?>" id="crName" readonly>
+        </div>
+    </div>
+
+    <div class="alert alert-info fade in">
+        <b>Details</b>
+    </div>
+
     <div class="form-group">
         <label class="col-md-2 control-label">Remark</label>
         <div class="col-md-8">
-            <textarea name="form[remark]" placeholder="" class="form-control" type="text" rows="4" cols="50" readonly><?php echo $stf_detl->SCM_TNCA_REMARK?></textarea>
+            <textarea name="form[remark]" placeholder="" class="form-control" type="text" rows="4" cols="50" id="remark"><?php echo $stf_detl->SCM_TNCA_REMARK?></textarea>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-md-2 control-label">Budget Origin</label>
         <div class="col-md-4">
-            <input name="form[budget_origin]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_BUDGET_ORIGIN?>" readonly>
+            <?php
+                echo form_dropdown('form[budget_origin]', $cr_budget_origin_list, $stf_detl->SCM_BUDGET_ORIGIN, 'class="form-control width-50"')
+            ?>
         </div>
 
         <div class="col-md-2 hidden" id="rsh_btn">
@@ -28,7 +57,7 @@
         <label class="col-md-2 control-label">Category</label>
         <div class="col-md-6">
             <?php
-                echo form_dropdown('form[category]', $cr_cat_list, $stf_detl->SCM_CATEGORY_CODE, 'class="form-control width-50" disabled')
+                echo form_dropdown('form[category]', $cr_cat_list, $stf_detl->SCM_CATEGORY_CODE, 'class="form-control width-50"')
             ?>
         </div>
     </div>
@@ -87,7 +116,7 @@
         <label class="col-md-2 control-label">Approved / Rejected By</label>
         <div class="col-md-8">
             <?php
-                echo form_dropdown('form[approved_by_tnc]', $staff_list, $app_rejc_id, 'class="select2-filter form-control" style = "width: 100%" disabled')
+                echo form_dropdown('form[approved_rjc_by_tnc]', $staff_list, $app_rejc_id, 'class="select2-filter form-control" style = "width: 100%" id="approved_rjc_by_tnc"')
             ?>
         </div>
     </div>
@@ -95,22 +124,30 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Approved / Rejected Date</label>
         <div class="col-md-2">
-            <input name="form[approved_date_tnc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $curr_date?>" readonly>
+            <input name="form[approved_rjc_date_tnc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $curr_date?>" id="approved_rjc_date_tnc">
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-md-2 control-label">Receive Date</label>
         <div class="col-md-2">
-            <input name="form[received_date_tnc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $receive_date?>" readonly>
+            <input name="form[received_date_tnc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $receive_date?>">
         </div>
     </div>
 
-    <!--<div id="alertEditStaffConferenceFooter"></div>
+    <div id="alertStaffConDetlAppVerFooter"></div>
     
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary save_staff_con_detl_app_ver"><i class="fa fa-save"></i> Save</button>
-    </div>-->
+        <!--<button type="button" class="btn btn-success save_staff_con_detl_app_ver"><i class="fa fa-save"></i> Save</button>-->
+        <div class="btn-group">
+            <button type="button" class="btn btn-md btn-primary" data-toggle="dropdown"><i class="fa fa-cog"></i> Option</button>
+            <div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn">
+                <button type="button" class="btn btn-warning text-left btn-block btn-md amend_stf_app_ver" value=""><i class="fa fa-share-square-o"></i> Amend</button>
+                <button type="button" class="btn btn-primary text-left btn-block btn-md approve_stf_app_ver" value=""><i class="fa fa-check-square-o"></i> Approve</button>
+                <button type="button" class="btn btn-danger text-left btn-block btn-md reject_stf_app_ver" value=""><i class="fa fa-times-circle"></i> Reject</button>
+            </div>
+        </div>
+    </div>
 </form>
 
 <div id="allowance_detl">

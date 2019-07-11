@@ -27,8 +27,8 @@
 				foreach ($research_allw_detl as $rad) {
 					echo '
                     <tr>
-                        <td class="text-center staff_id col-md-1">' . $rad->SCA_ALLOWANCE_CODE . '</td>
-						<td class="text-left staff_id">' . $rad->CA_DESC . '</td>
+                        <td class="text-center col-md-1">' . $rad->SCA_ALLOWANCE_CODE . '</td>
+						<td class="text-left">' . $rad->CA_DESC . '</td>
                         <td class="text-center col-md-1">' . number_format($rad->SCA_AMOUNT_RM, 2) . '</td>
                         <td class="text-center col-md-1">' . number_format($rad->SCA_AMOUNT_FOREIGN, 2) . '</td>
                         <td class="text-center col-md-1">' . number_format($rad->SCA_AMT_RM_APPROVE_HOD, 2) . '</td>
@@ -44,7 +44,7 @@
                 }
                 echo '
                     <tr>
-                        <td class="text-right col-md-1" colspan="2"><b>Total</b></td>
+                        <td class="text-right col-md-1" colspan="2"><b>Total (RM)</b></td>
                         <td class="text-center col-md-1"><b>' . number_format($total_sca_amount_rm, 2) . '</b></td>
                         <td class="text-center col-md-1"><b>' . number_format($total_sca_amount_foreign, 2) . '</b></td>
                         <td class="text-center col-md-1"><b>' . number_format($total_sca_amt_rm_approve_hod, 2) . '</b></td>

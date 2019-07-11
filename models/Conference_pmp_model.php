@@ -956,4 +956,38 @@ class Conference_pmp_model extends MY_Model
         $q = $this->db->get();
         return $q->row();
     }
+
+    // SAVE ALLOWANCE DETAIL OTHERS
+    public function saveAllwDetlOthers($refid, $staff_id, $aca, $amt, $amtFor, $appHod, $appHodFor, $appTnca, $appTncaFor)
+    {
+        $data = array(
+            "SCA_AMOUNT_RM" => $amt,
+            "SCA_AMOUNT_FOREIGN" => $amtFor,
+            "SCA_AMT_RM_APPROVE_HOD" => $appHod,
+            "SCA_AMT_FOREIGN_APPROVE_HOD" => $appHodFor,
+            "SCA_AMT_RM_APPROVE_TNCA" => $appTnca,
+            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $appTncaFor
+        );
+
+        $this->db->where('SCA_REFID', $refid);
+        $this->db->where('SCA_STAFF_ID', $staff_id);
+        $this->db->where('SCA_ALLOWANCE_CODE', $aca);
+
+        return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
+    }
+    
+    // CLEAR VALUE APPROVED TNCA
+    public function clearValAppTnca($refid, $staff_id, $aca)
+    {
+        $data = array(
+            "SCA_AMT_RM_APPROVE_TNCA" => 0,
+            "SCA_AMT_FOREIGN_APPROVE_TNCA" => 0
+        );
+
+        $this->db->where('SCA_REFID', $refid);
+        $this->db->where('SCA_STAFF_ID', $staff_id);
+        $this->db->where('SCA_ALLOWANCE_CODE', $aca);
+
+        return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
+    }
 }

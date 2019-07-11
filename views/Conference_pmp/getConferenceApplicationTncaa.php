@@ -34,10 +34,7 @@
                                     <button type="button" class="btn btn-info text-left btn-block btn-xs select_stf_app_ver" value=""><i class="fa fa-chevron-right"></i> Select</button>
                                     <button type="button" class="btn btn-info text-left btn-block btn-xs query_stf_app_ver" value=""><i class="fa fa-info-circle"></i> Detail</button>
                                     <button type="button" class="btn btn-success text-left btn-block btn-xs history_stf_app_ver" value=""><i class="fa fa-history"></i> History</button>
-                                    <button type="button" class="btn btn-danger text-left btn-block btn-xs print_stf_app_ver" value=""><i class="fa fa-print"></i> Print</button>
-                                    <button type="button" class="btn btn-warning text-left btn-block btn-xs amend_stf_app_ver" value=""><i class="fa fa-trash"></i> Amend</button>
-                                    <button type="button" class="btn btn-primary text-left btn-block btn-xs approve_stf_app_ver" value=""><i class="fa fa-trash"></i> Approve</button>
-                                    <button type="button" class="btn btn-danger text-left btn-block btn-xs reject_stf_app_ver" value=""><i class="fa fa-trash"></i> Reject</button>
+                                    <button type="button" class="btn btn-danger text-left btn-block btn-xs print_stf_app_ver" repcode="ATRAPPVER"><i class="fa fa-print"></i> Print</button>
                                 </div>
                             </div>
                         </td>

@@ -255,6 +255,10 @@
                 ca_row = $('#tbl_ca_list').DataTable({
                     "ordering":false,
                 });
+
+				$('#file_attachment').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) List</th></tr></thead></table></p>').show();
+				$('#conference_leave').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) List</th></tr></thead></table></p>').show();
+				$('#details').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) List</th></tr></thead></table></p>').show();
             }
         });
 	});
@@ -330,7 +334,7 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
-			data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName},
+			data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName},
 			beforeSend: function() {
 				$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 			},
@@ -355,6 +359,23 @@
 		});
 	});	
 
+	// PRINT
+	$('#conference_list').on('click','.print_stf_app_ver', function () {
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var crStaffID = td.find(".staff_id").text();
+		var crRefID = td.find(".refid").text();
+		var repCode = thisBtn.attr('repCode');
+		// alert(repCode+' '+crStaffID+' '+crRefID);
+		
+		$.post('<?php echo $this->lib->class_url('setParamPmpAtt') ?>', {repCode: repCode, crStaffID: crStaffID, crRefID: crRefID}, function (res) {
+			var repURL = '<?php echo $this->lib->class_url('genReportPmpAtt') ?>';
+			var mywin = window.open( repURL , 'report');
+		}).fail(function(){
+			msg.danger('Please contact administrator.', '#alertEditStaffConference');        
+		});
+	});
+	
 	/*-----------------------------
 	TAB 2 - FILE ATTACHMENT
 	-----------------------------*/
@@ -600,6 +621,88 @@
 	TAB 4 - DETAILS
 	-----------------------------*/
 
+	// AMEND
+	$('#details').on('click','.amend_stf_app_ver', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		staff_id = $('#staff_id').val();
+		refid = $('#crRefid').val();
+		staff_name = $('#staff_name').val();
+		remark = $('#remark').val();
+		appr_rej_by = $('#approved_rjc_by_tnc').val();
+		appr_rej_date = $('#approved_rjc_date_tnc').val();
+		// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
+
+		$.confirm({
+		    title: 'Amend staff conference?',
+		    content: 'Press <b>YES</b> to continue <br> Staff ID: <br><b>'+staff_id+' - '+staff_name+'</b>',
+			type: 'orange',
+		    buttons: {
+		        yes: function () {
+					$('.btn').attr('disabled', 'disabled');
+
+					if (remark == '') {
+						$('.btn').removeAttr('disabled');
+						$.alert({
+							title: 'Alert!',
+							content: 'Please fill in <b>Remark</b> field.',
+							type: 'red'
+						});
+						return;
+					}
+
+					if (appr_rej_by == '') {
+						$('.btn').removeAttr('disabled');
+						$.alert({
+							title: 'Alert!',
+							content: 'Please fill in <b>Approved / Rejected By</b> field.',
+							type: 'red'
+						});
+						return;
+					}
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('ammendConferenceTncaa')?>',
+						data: {'staff_id' : staff_id, 'refid' : refid, 'remark' : remark, 'appr_rej_by' : appr_rej_by, 'appr_rej_date' : appr_rej_date},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('.btn').removeAttr('disabled');
+								
+								// REFRESH
+								$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>'); 
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
+									data: {'staff_id' : staff_id, 'refid' : refid},
+									success: function(res) {
+										$('#details #allowance_detl').html(res);
+									}
+								});
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+								$('.btn').removeAttr('disabled');
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Amendment cancelled!');
+		        }
+		    }
+		});
+	});
+
 	// RESEARCH INFO
 	$('#details').on('click','.research_info', function(){
 		var research_refid = $('.research_info').val();
@@ -670,6 +773,212 @@
 			}
 		});
 	});	
-	
 
+	// REFRESH TOTAL
+	$('#details').on('click','.refresh_total', function(){
+		// alert('ALLOWANCE DETL RESEARCH / RESEARCH_CONFERENCE');
+		var staff_id = $('.allowance_detl').data('staff-id');
+		var refid = $('.allowance_detl').data('refid');
+		// alert(refid+' '+staff_id);
+
+		$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
+			data: {'staff_id' : staff_id, 'refid' : refid},
+			success: function(res) {
+				$('#details #allowance_detl').html(res);
+			}
+		});
+	});
+
+	// SAVE ALLOWANCE DETAIL OTHERS
+	$('#details').on('click','.save_allw_detl', function(){
+		var thisBtn = $(this);
+		var refid = $('.save_allw_detl').data("refid");
+		var staff_id = $('.save_allw_detl').data("staff-id");
+
+		var allwCodeArr = [];
+		var amountArr = [];
+		var amountForArr = [];
+		var appHodArr = [];
+		var appHodForArr = [];
+		var appTncaArr = [];
+		var appTncaForArr = [];
+		var selectedID = 0;
+		//alert(remark+' '+refid);
+
+		$.confirm({
+		    title: 'Save changes?',
+		    content: 'Press <b>YES</b> to continue',
+			type: 'blue',
+		    buttons: {
+		        yes: function () {
+					$('.btn').attr('disabled', 'disabled');
+					$('.checkitem:checked').each(function() {
+						// check the checked property 
+						var allwCode = $(this).val();
+						// staffID = $(this).closest("tr").find(".sid").text();
+						amount = $(this).closest('tr').find('[name="sca_amount_rm"]').val();
+						++selectedID;
+						amountFor = $(this).closest('tr').find('[name="sca_amount_foreign"]').val();
+						++selectedID;
+						appHod = $(this).closest('tr').find('[name="sca_amt_rm_approve_hod"]').val();
+						++selectedID;
+						appHodFor = $(this).closest('tr').find('[name="sca_amt_foreign_approve_hod"]').val();
+						++selectedID;
+						appTnca = $(this).closest('tr').find('[name="sca_amt_rm_approve_tnca"]').val();
+						++selectedID;
+						appTncaFor = $(this).closest('tr').find('[name="sca_amt_foreign_approve_tnca"]').val();
+						++selectedID;
+						
+						// alert(currentID);
+						allwCodeArr.push(allwCode);
+						amountArr.push(amount);
+						amountForArr.push(amountFor);
+						appHodArr.push(appHod);
+						appHodForArr.push(appHodFor);
+						appTncaArr.push(appTnca);
+						appTncaForArr.push(appTncaFor);
+					});
+					//alert(staffIDArr);
+					//alert(amountArr);
+
+					if (selectedID == 0) {
+						$('.btn').removeAttr('disabled');
+						$.alert({
+							title: 'Alert!',
+							content: 'You must select at least one record to continue.',
+							type: 'red'
+						});
+						return;
+					}
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('saveAllwDetlOthers')?>',
+						data: {'refid' : refid, 'staff_id' : staff_id, 'allwCodeArr' : allwCodeArr, 'amountArr' : amountArr, 'amountForArr' : amountForArr, 'appHodArr' : appHodArr, 'appHodForArr' : appHodForArr, 'appTncaArr' : appTncaArr, 'appTncaForArr' : appTncaForArr},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('.btn').removeAttr('disabled');
+
+								// REFRESH 
+								$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
+									data: {'staff_id' : staff_id, 'refid' : refid},
+									success: function(res) {
+										$('#details #allowance_detl').html(res);
+									}
+								});
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+								$('.btn').removeAttr('disabled');
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Saving changes cancelled!');
+		        }
+		    }
+		});
+	});
+
+	// CLEAR VALUE APPROVED TNCA
+	$('#details').on('click','.clear_val_tnca', function(){
+		var refid = $('.save_allw_detl').data("refid");
+		var staff_id = $('.save_allw_detl').data("staff-id");
+		
+		var allwCodeArr = [];
+		var selectedID = 0;
+
+		$.confirm({
+		    title: 'Clear value for Approved TNCA?',
+		    content: 'Press <b>YES</b> to continue',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$('.btn').attr('disabled', 'disabled');
+					$('.checkitem:checked').each(function() {
+						// check the checked property 
+						var allwCode = $(this).val();
+						++selectedID;
+
+						allwCodeArr.push(allwCode);
+					});
+
+					if (selectedID == 0) {
+						$.alert({
+							title: 'Alert!',
+							content: 'You must select at least one record to continue.',
+							type: 'red'
+						});
+						$('.btn').removeAttr('disabled');
+						return;
+					}
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('clearValAppTnca')?>',
+						data: {'refid' : refid, 'staff_id' : staff_id, 'allwCodeArr' : allwCodeArr},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('.btn').removeAttr('disabled');
+								
+								// REFRESH
+								$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>'); 
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
+									data: {'staff_id' : staff_id, 'refid' : refid},
+									success: function(res) {
+										$('#details #allowance_detl').html(res);
+									}
+								});
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+								$('.btn').removeAttr('disabled');
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Process cancelled!');
+		        }
+		    }
+		});
+	});
+	
+	// Select all record	
+	$('#details').on('click','.select_all_btn', function() {
+		$(".checkitem").prop('checked', true);
+	});	
+
+	// Unselect all record	
+	$('#details').on('click','.unselect_all_btn', function() {
+		$(".checkitem").prop('checked', false);
+	});
 </script>
