@@ -675,16 +675,87 @@
 								});
 								$('.btn').removeAttr('disabled');
 								
-								// REFRESH
-								$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>'); 
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
-									data: {'staff_id' : staff_id, 'refid' : refid},
-									success: function(res) {
-										$('#details #allowance_detl').html(res);
-									}
+								setTimeout(function () {
+									location = '<?php echo $this->lib->class_url('viewTabFilter','s1','ATF035')?>';
+								}, 1500);
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
 								});
+								$('.btn').removeAttr('disabled');
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Amendment cancelled!');
+		        }
+		    }
+		});
+	});
+
+	// APPROVE
+	$('#details').on('click','.approve_stf_app_ver', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		staff_id = $('#staff_id').val();
+		refid = $('#crRefid').val();
+		staff_name = $('#staff_name').val();
+		remark = $('#remark').val();
+		appr_rej_by = $('#approved_rjc_by_tnc').val();
+		appr_rej_date = $('#approved_rjc_date_tnc').val();
+		rec_date = $('#received_date_tnc').val();
+		total_amt_app_tncaa = $('#approved_tnc_aa').val();
+		// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
+		// alert(total_amt_app_tncaa);
+
+		$.confirm({
+		    title: 'Approve staff conference?',
+		    content: 'Press <b>YES</b> to continue <br> Staff ID: <br><b>'+staff_id+' - '+staff_name+'</b>',
+			type: 'blue',
+		    buttons: {
+		        yes: function () {
+					$('.btn').attr('disabled', 'disabled');
+
+					if (remark == '') {
+						$('.btn').removeAttr('disabled');
+						$.alert({
+							title: 'Alert!',
+							content: 'Please fill in <b>Remark</b> field.',
+							type: 'red'
+						});
+						return;
+					}
+
+					if (appr_rej_by == '') {
+						$('.btn').removeAttr('disabled');
+						$.alert({
+							title: 'Alert!',
+							content: 'Please fill in <b>Approved / Rejected By</b> field.',
+							type: 'red'
+						});
+						return;
+					}
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('ammendConferenceTncaa')?>',
+						data: {'staff_id' : staff_id, 'refid' : refid, 'remark' : remark, 'appr_rej_by' : appr_rej_by, 'appr_rej_date' : appr_rej_date},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('.btn').removeAttr('disabled');
+								
+								setTimeout(function () {
+									location = '<?php echo $this->lib->class_url('viewTabFilter','s1','ATF035')?>';
+								}, 1500);
 							} else {
 								$.alert({
 									title: 'Alert!',

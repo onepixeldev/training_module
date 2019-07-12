@@ -101,7 +101,7 @@
     <div class="form-group">
         <label class="col-md-3 control-label">Approved TNC A&A (RM)</label>
         <div class="col-md-2">
-            <input name="form[approved_tnc_aa]" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOTAL_AMT_APPROVE_TNCA, 2)?>" readonly>
+            <input name="form[approved_tnc_aa]" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOTAL_AMT_APPROVE_TNCA, 2)?>" readonly id="approved_tnc_aa">
         </div>
 
         <div class="col-md-2 hidden" id="allw_detl">
@@ -131,7 +131,7 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Receive Date</label>
         <div class="col-md-2">
-            <input name="form[received_date_tnc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $receive_date?>">
+            <input name="form[received_date_tnc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $receive_date?>" id="received_date_tnc">>
         </div>
     </div>
 

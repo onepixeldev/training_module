@@ -990,4 +990,76 @@ class Conference_pmp_model extends MY_Model
 
         return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
     }
+
+    // AMEND STAFF CONFERENCE TNCAA
+    public function ammendConferenceTncaa($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date)
+    {
+        $data = array(
+            "SCM_TNCA_APPROVE_BY" => $appr_rej_by,
+            "SCM_STATUS" => 'ENTRY'
+        );
+
+        if(!empty($appr_rej_date)) {
+            $appr_rej_date = "to_date('".$appr_rej_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCM_TNCA_APPROVE_DATE", $appr_rej_date, false);
+        }
+
+        $this->db->where('SCM_REFID', $refid);
+        $this->db->where('SCM_STAFF_ID', $staff_id);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // CONFERENCE DETAILS DISTINCT
+    public function conDetlDis($refid, $staff_id) {
+        $this->db->select("CM_NAME, TO_CHAR(CM_DATE_FROM,'DD/MM/YYYY') CM_DATE_FROM2, 
+        TO_CHAR(CM_DATE_TO,'DD/MM/YYYY') CM_DATE_TO2, SCM_BUDGET_ORIGIN");
+        $this->db->from("STAFF_CONFERENCE_MAIN, CONFERENCE_MAIN");
+        $this->db->where("SCM_REFID = CM_REFID");
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("CM_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET STAFF REMINDER
+    public function getStaffReminder($refid, $staff_id) {
+        $this->db->select("SR_STAFF_ID");
+        $this->db->from("STAFF_REMINDER");
+        $this->db->where("SR_MODULE = 'CONFERENCE_RMIC'");
+        $this->db->where("NVL(SR_STATUS,'N') = 'Y'");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // CREATE MEMO
+    public function createMemo($from, $sendTO, $rmic_staff = null, $memoTitle, $memoContent, $memoID) {
+        if($memoID == 1) {
+            $sql = oci_parse($this->db->conn_id, "begin create_memo(:bind1,:bind2,null,:bind3,:bind4); end;");
+            oci_bind_by_name($sql, ":bind1", $from);				//IN
+            oci_bind_by_name($sql, ":bind2", $sendTO);				//IN
+            oci_bind_by_name($sql, ":bind3", $memoTitle, 255);		//IN
+            oci_bind_by_name($sql, ":bind4", $memoContent, 4000);	//IN
+            $q = oci_execute($sql, OCI_DEFAULT); 
+        }
+
+        if($memoID == 2) {
+            $sql = oci_parse($this->db->conn_id, "begin create_memo(:bind1,:bind2,:bind3,:bind4,:bind5); end;");
+            oci_bind_by_name($sql, ":bind1", $from);				//IN
+            oci_bind_by_name($sql, ":bind2", $sendTO);				//IN
+            oci_bind_by_name($sql, ":bind3", $rmic_staff);				//IN
+            oci_bind_by_name($sql, ":bind4", $memoTitle, 255);		//IN
+            oci_bind_by_name($sql, ":bind5", $memoContent, 4000);	//IN
+            $q = oci_execute($sql, OCI_DEFAULT); 
+        }
+		
+		
+        if ($q === FALSE) {
+			return 0;
+		}
+		
+		return 1;	
+    } 
 }

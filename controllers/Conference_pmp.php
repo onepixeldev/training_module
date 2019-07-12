@@ -25,12 +25,19 @@ class Conference_pmp extends MY_Controller
     }
 
     // View Page Filter
-    public function viewTabFilter($tabID)
+    public function viewTabFilter($tabID, $scID)
     {
         // set session
         $this->session->set_userdata('tabID', $tabID);
+
+        // $scID = $scID;
         
-        redirect($this->class_uri('ASF032'));
+        if($scID == 'ATF075') {
+            redirect($this->class_uri('ATF075')); 
+        } elseif($scID == 'ATF035') {
+            redirect($this->class_uri('ATF035'));
+        }
+        
     }
 
     // CONFERENCE APPLICATION - MANUAL ENTRY
@@ -1941,6 +1948,226 @@ class Conference_pmp extends MY_Controller
                 $json = array('sts' => 1, 'msg' => 'Selected Approved TNCA value has been cleared', 'alert' => 'green');
             } else {
                 $json = array('sts' => 0, 'msg' => 'Failed to clear Approved TNCA value', 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // AMEND STAFF CONFERENCE TNCAA
+    public function ammendConferenceTncaa()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $remark = $this->input->post('remark', true);
+        $appr_rej_by = $this->input->post('appr_rej_by', true);
+        $appr_rej_date = $this->input->post('appr_rej_date', true);
+        $remIDArr = array();
+        $memoID = 0;
+        $successAmend = 0;
+        $successMemo = 0;
+        $rmic_staff = '';
+
+
+        if (!empty($refid) && !empty($staff_id)) {
+
+            $amend = $this->mdl->ammendConferenceTncaa($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date);
+
+            if($amend > 0) {
+                $successAmend++;
+                $amendMsg = 'Amendment success';
+
+                // SENDER
+                $from = $appr_rej_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl->getStaffList($staff_id);
+
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+
+                // CONFERENCE DETAILS DISTINCT
+                $conDetl = $this->mdl->conDetlDis($refid, $staff_id);
+                if(!empty($conDetl)) {
+                    $cm_name = $conDetl->CM_NAME;
+                    $cm_date_from = $conDetl->CM_DATE_FROM2;
+                    $cm_date_to = $conDetl->CM_DATE_TO2;
+                    $cm_budget_origin = $conDetl->SCM_BUDGET_ORIGIN;
+                } else {
+                    $cm_name = '';
+                    $cm_date_from = '';
+                    $cm_date_to = '';
+                    $cm_budget_origin = '';
+                }
+                
+                // MEMO TITLE
+                $memoTitle = 'Conference Application : Notification of Amendment';
+
+                // MEMO CONTENT
+                $memoContent = 'Please resubmit conference application by fulfill the information needed :<br><br>'.
+                                'Staff ID : '.$staff_id.'<br>'.
+                                'Name : '.$staff_name.'<br>'.
+                                'Conference Title : '.$cm_name.' ('.$cm_date_from.'-'.$cm_date_to.')'.'<br><br>'.
+                                'Amendment Remark  : '.$remark.'<br>'.
+                                'Click here to proceed  : '.'<a href="training.jsp?action=view_conference&TrainingMenu=CONFERENCE&conference_status=ENTRY">Amend</a> '.'<br><br>'.
+                                '<br> -- system generated memo --';
+
+                if($cm_budget_origin == 'RESEARCH' || $cm_budget_origin == 'RESEARCH_CONFERENCE') {
+                    $memoID = 2;
+                    // GET STAFF REMINDER
+                    $stfRem = $this->mdl->getStaffReminder();
+                    if(!empty($stfRem)) {
+                        foreach($stfRem as $key => $sr) {
+                            $remID = $sr->SR_STAFF_ID;
+                            $remIDArr [] = $remID;
+                        }
+                        $filterRemIDArr = array_values(array_filter($remIDArr));
+                        $rmic_staff = $filterRemIDArr;
+                    }
+                    $sendMemo = $this->mdl->createMemo($from, $sendTO, $rmic_staff, $memoTitle, $memoContent, $memoID);
+                } else {
+                    $rmic_staff = '';
+                    $memoID = 1;
+                    $sendMemo = $this->mdl->createMemo($from, $sendTO, $rmic_staff, $memoTitle, $memoContent, $memoID);
+                }
+
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = 'Amendment memo sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = 'Failed to send amendment memo';
+                }
+
+            } else {
+                $successAmend = 0;
+                $amendMsg = 'Amendment failed';
+            }
+
+            if($successAmend == $successMemo) {
+                $json = array('sts' => 1, 'msg' => $amendMsg.nl2br("\r\n").$memoMsg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' => $amendMsg.nl2br("\r\n").$memoMsg, 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // APPROVE STAFF CONFERENCE TNCAA
+    public function approveConferenceTncaa()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $remark = $this->input->post('remark', true);
+        $appr_rej_by = $this->input->post('appr_rej_by', true);
+        $appr_rej_date = $this->input->post('appr_rej_date', true);
+        $remIDArr = array();
+        $memoID = 0;
+        $successAmend = 0;
+        $successMemo = 0;
+        $rmic_staff = '';
+
+
+        if (!empty($refid) && !empty($staff_id)) {
+
+            $approve = $this->mdl->approveConferenceTncaa($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date);
+
+            if($amend > 0) {
+                $successAmend++;
+                $amendMsg = 'Amendment success';
+
+                // SENDER
+                $from = $appr_rej_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl->getStaffList($staff_id);
+
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+
+                // CONFERENCE DETAILS DISTINCT
+                $conDetl = $this->mdl->conDetlDis($refid, $staff_id);
+                if(!empty($conDetl)) {
+                    $cm_name = $conDetl->CM_NAME;
+                    $cm_date_from = $conDetl->CM_DATE_FROM2;
+                    $cm_date_to = $conDetl->CM_DATE_TO2;
+                    $cm_budget_origin = $conDetl->SCM_BUDGET_ORIGIN;
+                } else {
+                    $cm_name = '';
+                    $cm_date_from = '';
+                    $cm_date_to = '';
+                    $cm_budget_origin = '';
+                }
+                
+                // MEMO TITLE
+                $memoTitle = 'Conference Application : Notification of Amendment';
+
+                // MEMO CONTENT
+                $memoContent = 'Please resubmit conference application by fulfill the information needed :<br><br>'.
+                                'Staff ID : '.$staff_id.'<br>'.
+                                'Name : '.$staff_name.'<br>'.
+                                'Conference Title : '.$cm_name.' ('.$cm_date_from.'-'.$cm_date_to.')'.'<br><br>'.
+                                'Amendment Remark  : '.$remark.'<br>'.
+                                'Click here to proceed  : '.'<a href="training.jsp?action=view_conference&TrainingMenu=CONFERENCE&conference_status=ENTRY">Amend</a> '.'<br><br>'.
+                                '<br> -- system generated memo --';
+
+                if($cm_budget_origin == 'RESEARCH' || $cm_budget_origin == 'RESEARCH_CONFERENCE') {
+                    $memoID = 2;
+                    // GET STAFF REMINDER
+                    $stfRem = $this->mdl->getStaffReminder();
+                    if(!empty($stfRem)) {
+                        foreach($stfRem as $key => $sr) {
+                            $remID = $sr->SR_STAFF_ID;
+                            $remIDArr [] = $remID;
+                        }
+                        $filterRemIDArr = array_values(array_filter($remIDArr));
+                        $rmic_staff = $filterRemIDArr;
+                    }
+                    $sendMemo = $this->mdl->createMemo($from, $sendTO, $rmic_staff, $memoTitle, $memoContent, $memoID);
+                } else {
+                    $rmic_staff = '';
+                    $memoID = 1;
+                    $sendMemo = $this->mdl->createMemo($from, $sendTO, $rmic_staff, $memoTitle, $memoContent, $memoID);
+                }
+
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = 'Amendment memo sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = 'Failed to send amendment memo';
+                }
+
+            } else {
+                $successAmend = 0;
+                $amendMsg = 'Amendment failed';
+            }
+
+            if($successAmend == $successMemo) {
+                $json = array('sts' => 1, 'msg' => $amendMsg.nl2br("\r\n").$memoMsg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' => $amendMsg.nl2br("\r\n").$memoMsg, 'alert' => 'danger');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
