@@ -960,20 +960,48 @@ class Conference_pmp_model extends MY_Model
     // SAVE ALLOWANCE DETAIL OTHERS
     public function saveAllwDetlOthers($refid, $staff_id, $aca, $amt, $amtFor, $appHod, $appHodFor, $appTnca, $appTncaFor)
     {
+        $curDate = 'SYSDATE';
+        $curUsr = $this->staff_id;
+
         $data = array(
             "SCA_AMOUNT_RM" => $amt,
             "SCA_AMOUNT_FOREIGN" => $amtFor,
             "SCA_AMT_RM_APPROVE_HOD" => $appHod,
             "SCA_AMT_FOREIGN_APPROVE_HOD" => $appHodFor,
             "SCA_AMT_RM_APPROVE_TNCA" => $appTnca,
-            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $appTncaFor
+            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $appTncaFor,
+            "SCA_UPDATE_BY" => $curUsr
         );
+        $this->db->set("SCA_UPDATE_DATE", $curDate, false);
 
         $this->db->where('SCA_REFID', $refid);
         $this->db->where('SCA_STAFF_ID', $staff_id);
         $this->db->where('SCA_ALLOWANCE_CODE', $aca);
 
         return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
+    }
+
+    // SUM STAFF CONFERENCE ALLOWANCE
+    public function sumStaffConAllw($refid, $staff_id) {
+        $this->db->select("SUM(SCA_AMT_RM_APPROVE_TNCA) SCA_AMT_RM_APPROVE_TNCA");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    public function updApprvAmtTnca($refid, $staff_id, $newSumAppTnca)
+    {
+        $data = array(
+            "SCM_RM_TOTAL_AMT_APPROVE_TNCA" => $newSumAppTnca,
+        );
+        
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
     }
     
     // CLEAR VALUE APPROVED TNCA
@@ -996,6 +1024,7 @@ class Conference_pmp_model extends MY_Model
     {
         $data = array(
             "SCM_TNCA_APPROVE_BY" => $appr_rej_by,
+            "SCM_TNCA_REMARK" => $remark,
             "SCM_STATUS" => 'ENTRY'
         );
 
@@ -1062,4 +1091,123 @@ class Conference_pmp_model extends MY_Model
 		
 		return 1;	
     } 
+
+    // STAFF TNCPI
+    public function getTncpi() {
+        $this->db->select("SM_STAFF_ID");
+        $this->db->from("STAFF_MAIN");
+        $this->db->where("SM_ADMIN_JOBCODE = '14'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // CONFERENCE CATEGORY DETL
+    public function getConCatDetl($cat_code) {
+        $this->db->select("*");
+        $this->db->from("CONFERENCE_CATEGORY");
+        $this->db->where("CC_CODE", $cat_code);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // CONFERENCE ADMIN HIER
+    public function getConAdmHier($staff_id) {
+        $this->db->select("*");
+        $this->db->from("CONFERENCE_ADMIN_HIERARCHY, STAFF_MAIN");
+        $this->db->where("SM_ADMIN_JOBCODE = CAH_ADMIN_CODE");
+        $this->db->where("SM_STAFF_ID", $staff_id);
+        $this->db->where("CAH_STATUS = 'Y'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // APPROVE STAFF CONFERENCE TNCAA
+    public function approveConferenceTncaa($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date, $rec_date, $scm_sts)
+    {
+        $data = array(
+            "SCM_TNCA_APPROVE_BY" => $appr_rej_by,
+            "SCM_TNCA_REMARK" => $remark,
+            "SCM_STATUS" => $scm_sts
+        );
+
+        if(!empty($appr_rej_date)) {
+            $appr_rej_date = "to_date('".$appr_rej_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCM_TNCA_APPROVE_DATE", $appr_rej_date, false);
+        }
+
+        if(!empty($rec_date)) {
+            $rec_date = "to_date('".$rec_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCM_TNCA_RECEIVE_DATE", $rec_date, false);
+        }
+
+        $this->db->where('SCM_REFID', $refid);
+        $this->db->where('SCM_STAFF_ID', $staff_id);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // UPDATE APPROVE STAFF_LEAVE_DETL
+    public function updateAppSLD($staff_id, $leave_ref, $sld_sts, $appr_rej_by)
+    {
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "SLD_STATUS" => $sld_sts,
+            "SLD_APPROVE_BY" => $appr_rej_by,
+        );
+
+        $this->db->set("SLD_APPROVE_DATE", $curDate, false);
+
+        $this->db->where('SLD_REF_ID', $leave_ref);
+        $this->db->where('SLD_STAFF_ID', $staff_id);
+
+        return $this->db->update("STAFF_LEAVE_DETL", $data);
+    }
+
+    // CONFERENCE DETAILS APPROVE TNCAA
+    public function getConferenceDetlAppTncaa($appr_rej_by, $staff_id, $refid) {
+        $query = "SELECT DISTINCT SCM_REFID,CM_NAME,CM_ADDRESS,CM_POSTCODE,CM_CITY,
+        CM_STATE,SM_STATE_DESC, CONFERENCE_MAIN.CM_COUNTRY_CODE CM_COUNTRY_CODE,CM_COUNTRY_DESC,
+        TO_CHAR(CM_DATE_FROM,'dd/mm/yyyy') CM_DATE_FROM2,TO_CHAR(CM_DATE_TO,'dd/mm/yyyy') CM_DATE_TO2,
+        SM_STAFF_ID,SM_STAFF_NAME,TO_CHAR(SYSDATE,'dd/mm/yyyy') APPROVE_DATE,
+        TO_CHAR(CM_DATE_TO+14,'dd/mm/yyyy') CM_SUBMIT_LMP,TO_CHAR(CM_DATE_FROM,'yyyy') CM_YEAR,SCM_BUDGET_ORIGIN
+        FROM STAFF_CONFERENCE_MAIN,CONFERENCE_MAIN,COUNTRY_MAIN,STATE_MAIN,STAFF_MAIN APPROVER
+        WHERE SCM_REFID = CM_REFID
+        AND APPROVER.SM_STAFF_ID = '$appr_rej_by'
+        AND SCM_STAFF_ID = '$staff_id'
+        AND SM_STATE_CODE(+) = CM_STATE
+        AND COUNTRY_MAIN.CM_COUNTRY_CODE(+) = CONFERENCE_MAIN.CM_COUNTRY_CODE
+        AND CM_REFID = '$refid'";
+
+        $q = $this->db->query($query);
+        return $q->row();
+    }
+
+    // REJECT STAFF CONFERENCE TNCAA
+    public function rejectConferenceTncaa($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date, $rec_date)
+    {
+        $data = array(
+            "SCM_TNCA_APPROVE_BY" => $appr_rej_by,
+            "SCM_TNCA_REMARK" => $remark,
+            "SCM_STATUS" => 'REJECT'
+        );
+
+        if(!empty($appr_rej_date)) {
+            $appr_rej_date = "to_date('".$appr_rej_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCM_TNCA_APPROVE_DATE", $appr_rej_date, false);
+        }
+
+        if(!empty($rec_date)) {
+            $rec_date = "to_date('".$rec_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCM_TNCA_RECEIVE_DATE", $rec_date, false);
+        }
+
+        $this->db->where('SCM_REFID', $refid);
+        $this->db->where('SCM_STAFF_ID', $staff_id);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
 }

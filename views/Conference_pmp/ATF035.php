@@ -634,7 +634,7 @@
 		// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
 
 		$.confirm({
-		    title: 'Amend staff conference?',
+		    title: 'Please enter the reason (Remark) for amendment the application',
 		    content: 'Press <b>YES</b> to continue <br> Staff ID: <br><b>'+staff_id+' - '+staff_name+'</b>',
 			type: 'orange',
 		    buttons: {
@@ -704,12 +704,17 @@
 		refid = $('#crRefid').val();
 		staff_name = $('#staff_name').val();
 		remark = $('#remark').val();
+		bud_org = $('#budOrg').val();
+		cat_code = $('#catCode').val();
 		appr_rej_by = $('#approved_rjc_by_tnc').val();
 		appr_rej_date = $('#approved_rjc_date_tnc').val();
 		rec_date = $('#received_date_tnc').val();
 		total_amt_app_tncaa = $('#approved_tnc_aa').val();
+		hod_amount = $('#hod_amount').val();
+		rmic_amount = $('#rmic_amount').val();
+		tncpi_amount = $('#tncpi_amount').val();
 		// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
-		// alert(total_amt_app_tncaa);
+		// alert(cat_code);
 
 		$.confirm({
 		    title: 'Approve staff conference?',
@@ -739,10 +744,20 @@
 						return;
 					}
 
+					if (total_amt_app_tncaa == '') {
+						$('.btn').removeAttr('disabled');
+						$.alert({
+							title: 'Alert!',
+							content: 'Please click on button <b>Allowance Detail</b> to enter total amount approved by TNCA',
+							type: 'red'
+						});
+						return;
+					}
+
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo $this->lib->class_url('ammendConferenceTncaa')?>',
-						data: {'staff_id' : staff_id, 'refid' : refid, 'remark' : remark, 'appr_rej_by' : appr_rej_by, 'appr_rej_date' : appr_rej_date},
+						url: '<?php echo $this->lib->class_url('approveConferenceTncaa')?>',
+						data: {'staff_id' : staff_id, 'refid' : refid, 'remark' : remark, 'appr_rej_by' : appr_rej_by, 'appr_rej_date' : appr_rej_date, 'rec_date' : rec_date, 'total_amt_app_tncaa' : total_amt_app_tncaa, 'cat_code' : cat_code , 'bud_org' : bud_org, 'hod_amount' : hod_amount, 'rmic_amount' : rmic_amount, 'tncpi_amount' : tncpi_amount},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
@@ -768,7 +783,84 @@
 					});			
 		        },
 		        cancel: function () {
-		            $.alert('Amendment cancelled!');
+		            $.alert('Approval cancelled!');
+		        }
+		    }
+		});
+	});
+
+	// REJECT
+	$('#details').on('click','.reject_stf_app_ver', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		staff_id = $('#staff_id').val();
+		refid = $('#crRefid').val();
+		staff_name = $('#staff_name').val();
+		remark = $('#remark').val();
+		appr_rej_by = $('#approved_rjc_by_tnc').val();
+		appr_rej_date = $('#approved_rjc_date_tnc').val();
+		rec_date = $('#received_date_tnc').val();
+		bud_org = $('#budOrg').val();
+		// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
+
+		$.confirm({
+		    title: 'Reject staff conference?',
+		    content: 'Press <b>YES</b> to continue <br> Staff ID: <br><b>'+staff_id+' - '+staff_name+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$('.btn').attr('disabled', 'disabled');
+
+					if (remark == '') {
+						$('.btn').removeAttr('disabled');
+						$.alert({
+							title: 'Alert!',
+							content: 'Please enter the reason (Remark) for rejecting the application',
+							type: 'red'
+						});
+						return;
+					}
+
+					if (appr_rej_by == '') {
+						$('.btn').removeAttr('disabled');
+						$.alert({
+							title: 'Alert!',
+							content: 'Please fill in <b>Approved / Rejected By</b> field.',
+							type: 'red'
+						});
+						return;
+					}
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('rejectConferenceTncaa')?>',
+						data: {'staff_id' : staff_id, 'refid' : refid, 'remark' : remark, 'appr_rej_by' : appr_rej_by, 'appr_rej_date' : appr_rej_date, 'rec_date' : rec_date, 'bud_org' : bud_org},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('.btn').removeAttr('disabled');
+								
+								setTimeout(function () {
+									location = '<?php echo $this->lib->class_url('viewTabFilter','s1','ATF035')?>';
+								}, 1500);
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+								$('.btn').removeAttr('disabled');
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Process cancelled!');
 		        }
 		    }
 		});
@@ -941,13 +1033,50 @@
 								$('.btn').removeAttr('disabled');
 
 								// REFRESH 
-								$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 								$.ajax({
 									type: 'POST',
-									url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
-									data: {'staff_id' : staff_id, 'refid' : refid},
+									url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
+									data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName},
+									beforeSend: function() {
+										$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
 									success: function(res) {
-										$('#details #allowance_detl').html(res);
+										$('#details').html(res);
+										var budget = $('.research_info').data();
+										// console.log(budget.budgetOrigin);
+										if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
+											// alert('show');
+											$('#details #rsh_btn').removeClass('hidden');
+											
+											$('#details #allw_detl').removeClass('hidden');
+											$('#details #allw_detl2').addClass('hidden');
+										} else {
+											$('#details #rsh_btn').addClass('hidden');
+											
+											$('#details #allw_detl2').removeClass('hidden');
+											$('#details #allw_detl').addClass('hidden');
+											// alert('hide');
+										}
+
+										// REFRESH ALOWANCE DETAIL
+										$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+										$.ajax({
+											type: 'POST',
+											url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
+											data: {'staff_id' : staff_id, 'refid' : refid},
+											success: function(res) {
+												$('#details #allowance_detl').html(res);
+											}
+										});
+										
+										// SCROLL DOWN TO #details
+										$('html, body').animate(
+											{
+											scrollTop: $('#details #allowance_detl').offset().top,
+											},
+											500,
+											'linear'
+										)
 									}
 								});
 							} else {
@@ -972,6 +1101,8 @@
 	$('#details').on('click','.clear_val_tnca', function(){
 		var refid = $('.save_allw_detl').data("refid");
 		var staff_id = $('.save_allw_detl').data("staff-id");
+		crName = '';
+		crStaffName = '';
 		
 		var allwCodeArr = [];
 		var selectedID = 0;
@@ -1014,15 +1145,52 @@
 									type: 'green',
 								});
 								$('.btn').removeAttr('disabled');
-								
-								// REFRESH
-								$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>'); 
+
+								// REFRESH STAFF CONFERENCE DETL
 								$.ajax({
 									type: 'POST',
-									url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
-									data: {'staff_id' : staff_id, 'refid' : refid},
+									url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
+									data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName},
+									beforeSend: function() {
+										$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
 									success: function(res) {
-										$('#details #allowance_detl').html(res);
+										$('#details').html(res);
+										var budget = $('.research_info').data();
+										// console.log(budget.budgetOrigin);
+										if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
+											// alert('show');
+											$('#details #rsh_btn').removeClass('hidden');
+											
+											$('#details #allw_detl').removeClass('hidden');
+											$('#details #allw_detl2').addClass('hidden');
+										} else {
+											$('#details #rsh_btn').addClass('hidden');
+											
+											$('#details #allw_detl2').removeClass('hidden');
+											$('#details #allw_detl').addClass('hidden');
+											// alert('hide');
+										}
+
+										// REFRESH ALOWANCE DETAIL
+										$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>'); 
+										$.ajax({
+											type: 'POST',
+											url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
+											data: {'staff_id' : staff_id, 'refid' : refid},
+											success: function(res) {
+												$('#details #allowance_detl').html(res);
+											}
+										});
+										
+										// SCROLL DOWN TO #details
+										$('html, body').animate(
+											{
+											scrollTop: $('#details #allowance_detl').offset().top,
+											},
+											500,
+											'linear'
+										)
 									}
 								});
 							} else {

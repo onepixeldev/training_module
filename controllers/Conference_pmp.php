@@ -1132,7 +1132,7 @@ class Conference_pmp extends MY_Controller
                 // $successUpdStfLvRec = 0;
                 // $successInsStfLvRec = 0;
 
-            if(($successUpdStfLvDetl > 0 && $successUpdStfConMain > 0 && $successUpdStfLvRec > 0) || ($successInsStfLvDetl > 0 && $successUpdStfConMain > 0 && $successInsStfLvRec > 0) || ($successUpdStfLvDetl > 0 && $successUpdStfConMain > 0 && $successUpdStfLvRec > 0) || ($successInsStfLvDetl > 0 && $successUpdStfConMain > 0 && $successInsStfLvRec > 0)) {
+            if(($successUpdStfLvDetl > 0 && $successUpdStfConMain > 0 && $successUpdStfLvRec > 0) || ($successInsStfLvDetl > 0 && $successUpdStfConMain > 0 && $successInsStfLvRec > 0) || ($successUpdStfLvDetl > 0 && $successUpdStfConMain > 0 && $successUpdStfLvRec > 0) || ($successInsStfLvDetl > 0 && $successUpdStfConMain > 0 && $successUpdStfLvRec > 0)) {
                 $json = array('sts' => 1, 'msg' => nl2br("\r\n").$msg_staff_leave_detl.nl2br("\r\n").$msg_staff_con_main.nl2br("\r\n").$msg_staff_leave_rec, 'alert' => 'success', 'balance' => $form['balance'], 'day_taken' => $day_taken);
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
@@ -1419,7 +1419,7 @@ class Conference_pmp extends MY_Controller
         $this->render($data);
     }
 
-    // SAVE UPsDATE STAFF CONFERENCE ALLOWANCE
+    // SAVE UPDATE STAFF CONFERENCE ALLOWANCE
     public function saveUpdStfConAllowance() 
     {
         $this->isAjax();
@@ -1887,6 +1887,10 @@ class Conference_pmp extends MY_Controller
 
         $success = 0;
         $successSave = 0;
+        $successUpdSum = 0;
+
+        $saveMsg = '';
+        $successUpdSumMsg = '';
 
         if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
             foreach ($allwCodeArr as $key => $aca) {
@@ -1902,15 +1906,31 @@ class Conference_pmp extends MY_Controller
 
                 if ($save > 0) {
                     $successSave++;
+                    $saveMsg = 'Record has been saved (STAFF_CONFERENCE_ALLOWANCE)';
                 } else {
                     $successSave = 0;
+                    $saveMsg = 'Fail to save record (STAFF_CONFERENCE_ALLOWANCE)';
+                }
+
+                $sum = $this->mdl->sumStaffConAllw($refid, $staff_id);
+                if(!empty($sum)) {
+                    $newSumAppTnca = $sum->SCA_AMT_RM_APPROVE_TNCA;
+                    $updateSum = $this->mdl->updApprvAmtTnca($refid, $staff_id, $newSumAppTnca);
+
+                    if ($updateSum > 0) {
+                        $successUpdSum++;
+                        $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN)';
+                    } else {
+                        $successUpdSum = 0;
+                        $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN)';
+                    }
                 }
             }
 
-            if($success = $successSave) {
-                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'green');
+            if($success == $successSave && $success == $successUpdSum) {
+                $json = array('sts' => 1, 'msg' => $saveMsg.$successUpdSumMsg, 'alert' => 'green');
             } else {
-                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'red');
+                $json = array('sts' => 0, 'msg' => $saveMsg.$successUpdSumMsg, 'alert' => 'red');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
@@ -1930,6 +1950,8 @@ class Conference_pmp extends MY_Controller
 
         $success = 0;
         $successClear = 0;
+        $successClearSum = 0;
+        $successClearSumMsg = 0;
 
         if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
             foreach ($allwCodeArr as $key => $aca) {
@@ -1939,15 +1961,28 @@ class Conference_pmp extends MY_Controller
 
                 if ($clear > 0) {
                     $successClear++;
+                    $clearMsg = 'Record has been cleared (STAFF_CONFERENCE_ALLOWANCE)';
                 } else {
                     $successClear = 0;
+                    $clearMsg = 'Fail to clear record (STAFF_CONFERENCE_ALLOWANCE)';
+                }
+
+                $newSumAppTnca = '';
+                $clearSum = $this->mdl->updApprvAmtTnca($refid, $staff_id, $newSumAppTnca);
+
+                if ($clearSum > 0) {
+                    $successClearSum++;
+                    $successClearSumMsg = nl2br("\r\n").'Record has been cleared (STAFF_CONFERENCE_MAIN)';
+                } else {
+                    $successClearSum = 0;
+                    $successClearSumMsg = nl2br("\r\n").'Fail to clear record (STAFF_CONFERENCE_MAIN)';
                 }
             }
 
-            if($success = $successClear) {
-                $json = array('sts' => 1, 'msg' => 'Selected Approved TNCA value has been cleared', 'alert' => 'green');
+            if($success == $successClear && $success == $successClearSum) {
+                $json = array('sts' => 1, 'msg' => $clearMsg.$successClearSumMsg, 'alert' => 'green');
             } else {
-                $json = array('sts' => 0, 'msg' => 'Failed to clear Approved TNCA value', 'alert' => 'red');
+                $json = array('sts' => 0, 'msg' => $clearMsg.$successClearSumMsg, 'alert' => 'red');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
@@ -2074,23 +2109,105 @@ class Conference_pmp extends MY_Controller
         $refid = $this->input->post('refid', true);
         $staff_id = $this->input->post('staff_id', true);
         $remark = $this->input->post('remark', true);
+        $bud_org = $this->input->post('bud_org', true);
+        $cat_code = $this->input->post('cat_code', true);
         $appr_rej_by = $this->input->post('appr_rej_by', true);
         $appr_rej_date = $this->input->post('appr_rej_date', true);
+        $rec_date = $this->input->post('rec_date', true);
+
+        $total_amt_app_tncaa = $this->input->post('total_amt_app_tncaa', true);
+        $hod_amount = $this->input->post('hod_amount', true);
+        $rmic_amount = $this->input->post('rmic_amount', true);
+        $tncpi_amount = $this->input->post('tncpi_amount', true);
+
         $remIDArr = array();
         $memoID = 0;
-        $successAmend = 0;
+        $successAppr = 0;
+        $successUpdSLD = 0;
         $successMemo = 0;
+        
         $rmic_staff = '';
+        $apprMsg = '';
+        $updSLDMsg = '';
+        $memoMsg = '';
+        
 
 
         if (!empty($refid) && !empty($staff_id)) {
 
-            $approve = $this->mdl->approveConferenceTncaa($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date);
+            // STAFF CONFERENCE MAIN DETL
+            $stf_con_detl= $this->mdl->getStaffConferenceDetl($refid, $staff_id);
+            if(!empty($stf_con_detl->SCM_LEAVE_REFID)) {
+                $leave_ref = $stf_con_detl->SCM_LEAVE_REFID;
+            } else {
+                $leave_ref = '';
+            }
 
-            if($amend > 0) {
-                $successAmend++;
-                $amendMsg = 'Amendment success';
+            // GET STAFF TNCPI
+            $tncpi = $this->mdl->getTncpi();
 
+            // CONFERENCE CATEGORY DETL
+            $cc = $this->mdl->getConCatDetl($cat_code);
+
+            // CONFERENCE ADMIN HIER
+            $cah = $this->mdl->getConAdmHier($staff_id);
+
+            // SET SCM_STATUS
+            if (($bud_org != 'RESEARCH' || $bud_org != 'RESEARCH_CONFERENCE') || ($bud_org == 'RESEARCH' || $bud_org == 'RESEARCH_CONFERENCE') && $staff_id != $tncpi->SM_STAFF_ID) {
+                if($cc->CC_VC_APPROVE == 'Y') {
+                    if(!empty($cah)) {
+                        if($cah->cah_approve_vc = 'Y') {
+                            $scm_sts = 'VERIFY_VC';
+                        } else {
+                            $scm_sts = 'APPROVE';
+                        }
+                    } else {
+                        $scm_sts = 'VERIFY_VC';
+                    }
+                } else {
+                    $scm_sts = 'APPROVE';
+                }
+            } elseif(($bud_org == 'RESEARCH' || $bud_org == 'RESEARCH_CONFERENCE') && $staff_id == $tncpi->SM_STAFF_ID) {
+                if(!empty($cah)) {
+                    if($cah->cah_approve_vc = 'Y') {
+                        $scm_sts = 'VERIFY_VC';
+                    } else {
+                        $scm_sts = 'APPROVE';
+                    }
+                } 
+                
+                // else {
+                //     $scm_sts = 'VERIFY_VC';
+                // }
+            }
+
+            // APPROVE STAFF
+            $approve = $this->mdl->approveConferenceTncaa($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date, $rec_date, $scm_sts);
+
+            if($approve > 0) {
+                $successAppr++;
+                $apprMsg = 'Approve success';
+            } else {
+                $successAppr = 0;
+                $apprMsg = 'Approve failed';
+            }
+
+            if($scm_sts == 'APPROVE') {
+                $sld_sts = 'APPROVE';
+                if(!empty($leave_ref)) {
+                    $updSLD = $this->mdl->updateAppSLD($staff_id, $leave_ref, $sld_sts, $appr_rej_by);
+                    if($updSLD > 0) {
+                        $successUpdSLD++;
+                        $updSLDMsg = nl2br("\r\n").'Staff Leave Detail updated';
+                    } else {
+                        $successUpdSLD = 0;
+                        $updSLDMsg = nl2br("\r\n").'Fail to update Staff Leave Detail';
+                    }
+                } else {
+                    $successUpdSLD = 3;
+                    $updSLDMsg = '';
+                }
+                
                 // SENDER
                 $from = $appr_rej_by;
 
@@ -2106,33 +2223,80 @@ class Conference_pmp extends MY_Controller
                     $staff_name = '';
                 }
 
-                // CONFERENCE DETAILS DISTINCT
-                $conDetl = $this->mdl->conDetlDis($refid, $staff_id);
-                if(!empty($conDetl)) {
-                    $cm_name = $conDetl->CM_NAME;
-                    $cm_date_from = $conDetl->CM_DATE_FROM2;
-                    $cm_date_to = $conDetl->CM_DATE_TO2;
-                    $cm_budget_origin = $conDetl->SCM_BUDGET_ORIGIN;
-                } else {
-                    $cm_name = '';
-                    $cm_date_from = '';
-                    $cm_date_to = '';
-                    $cm_budget_origin = '';
+                // CONFERENCE DETAILS APPROVE TNCAA
+                $conDetl = $this->mdl->getConferenceDetlAppTncaa($appr_rej_by, $staff_id, $refid);
+
+                if($cat_code == '006' || $cat_code == '007') {
+                    // MEMO TITLE
+                    $memoTitle = 'Conference Application Has Been Approved By TNC(A&A)';
+
+                    if($conDetl->CM_COUNTRY_CODE == 'MYS' && ($bud_org != 'RESEARCH' || $bud_org != 'RESEARCH_CONFERENCE')) {
+                        // MEMO CONTENT
+                        $memoContent = 'Please take note that your conference application has been approved. Details :<br><br>'.
+                        'Staff ID : '.$staff_id.'<br>'.
+                        'Name : '.$staff_name.'<br>'.
+                        'Conference Title : '.$conDetl->CM_NAME.' ('.$conDetl->CM_DATE_FROM2.'-'.$conDetl->CM_DATE_TO2.')'.'<br><br>'.
+                        'Approval Remark  : '.$remark.'<br>'.
+                        'Total Amount Approved TNC(A&A) : (RM) '.number_format($total_amt_app_tncaa, 2).'<br>'.
+                        'Total Amount Approved PTJ      : (RM) '.number_format($hod_amount, 2).'<br>'.
+                        '<br> --System Generated Memo--';
+                    } elseif($conDetl->CM_COUNTRY_CODE != 'MYS' && ($bud_org != 'RESEARCH' || $bud_org != 'RESEARCH_CONFERENCE')) {
+                        // MEMO CONTENT
+                        $memoContent = 'Please take note that your conference application has been approved. Details :<br><br>'.
+                        'Staff ID : '.$staff_id.'<br>'.
+                        'Name : '.$staff_name.'<br>'.
+                        'Conference Title : '.$conDetl->CM_NAME.' ('.$conDetl->CM_DATE_FROM2.'-'.$conDetl->CM_DATE_TO2.')'.'<br><br>'.
+                        'Approval Remark  : '.$remark.'<br>'.
+                        'Total Amount Approved TNC(A&A) : (RM) '.number_format($total_amt_app_tncaa, 2).'<br>'.
+                        '<br> --System Generated Memo--';
+                    } elseif($bud_org == 'RESEARCH' || $bud_org == 'RESEARCH_CONFERENCE') {
+                        // MEMO CONTENT
+                        $memoContent = 'Please take note that your conference application has been approved. Details :<br><br>'.
+                        'Staff ID : '.$staff_id.'<br>'.
+                        'Name : '.$staff_name.'<br>'.
+                        'Conference Title : '.$conDetl->CM_NAME.' ('.$conDetl->CM_DATE_FROM2.'-'.$conDetl->CM_DATE_TO2.')'.'<br><br>'.
+                        'Approval Remark  : '.$remark.'<br>'.
+                        'Total Amount Approved TNC(A&A) : (RM) '.number_format($total_amt_app_tncaa, 2).'<br>'.
+                        'Total Amount Approved TNC(P&I) : (RM) '.number_format($tncpi_amount, 2).'<br>'.
+                        '<br> --System Generated Memo--';
+                    }
+                } elseif($cat_code == '005' || $cat_code == '008') {
+                    // MEMO TITLE
+                    $memoTitle = 'Conference Application Has Been Recommended By TNC(A&A)';
+
+                    if($conDetl->CM_COUNTRY_CODE == 'MYS') {
+                        // MEMO CONTENT
+                        $memoContent = 'Please take note that your conference application has been recommended. Details :<br><br>'.
+                        'Staff ID : '.$staff_id.'<br>'.
+                        'Name : '.$staff_name.'<br>'.
+                        'Conference Title : '.$conDetl->CM_NAME.' ('.$conDetl->CM_DATE_FROM2.'-'.$conDetl->CM_DATE_TO2.')'.'<br><br>'.
+                        'Recommended Remark  : '.$remark.'<br>'.
+                        'Total Amount Approved TNC(A&A) : (RM) '.number_format($total_amt_app_tncaa, 2).'<br>'.
+                        'Total Amount Approved PTJ      : (RM) '.number_format($hod_amount, 2).'<br>'.
+                        '<br> --System Generated Memo--';
+                    } elseif($conDetl->CM_COUNTRY_CODE != 'MYS') {
+                        // MEMO CONTENT
+                        $memoContent = 'Please take note that your conference application has been recommended. Details :<br><br>'.
+                        'Staff ID : '.$staff_id.'<br>'.
+                        'Name : '.$staff_name.'<br>'.
+                        'Conference Title : '.$conDetl->CM_NAME.' ('.$conDetl->CM_DATE_FROM2.'-'.$conDetl->CM_DATE_TO2.')'.'<br><br>'.
+                        'Recommended Remark  : '.$remark.'<br>'.
+                        'Total Amount Approved TNC(A&A) : (RM) '.number_format($total_amt_app_tncaa, 2).'<br>'.
+                        '<br> --System Generated Memo--';
+                    } elseif($bud_org == 'RESEARCH' || $bud_org == 'RESEARCH_CONFERENCE') {
+                        // MEMO CONTENT
+                        $memoContent = 'Please take note that your conference application has been recommended. Details :<br><br>'.
+                        'Staff ID : '.$staff_id.'<br>'.
+                        'Name : '.$staff_name.'<br>'.
+                        'Conference Title : '.$conDetl->CM_NAME.' ('.$conDetl->CM_DATE_FROM2.'-'.$conDetl->CM_DATE_TO2.')'.'<br><br>'.
+                        'Recommended Remark  : '.$remark.'<br>'.
+                        'Total Amount Approved TNC(A&A) : (RM) '.number_format($total_amt_app_tncaa, 2).'<br>'.
+                        'Total Amount Approved TNC(P&I) : (RM) '.number_format($tncpi_amount, 2).'<br>'.
+                        '<br> --System Generated Memo--';
+                    }
                 }
-                
-                // MEMO TITLE
-                $memoTitle = 'Conference Application : Notification of Amendment';
 
-                // MEMO CONTENT
-                $memoContent = 'Please resubmit conference application by fulfill the information needed :<br><br>'.
-                                'Staff ID : '.$staff_id.'<br>'.
-                                'Name : '.$staff_name.'<br>'.
-                                'Conference Title : '.$cm_name.' ('.$cm_date_from.'-'.$cm_date_to.')'.'<br><br>'.
-                                'Amendment Remark  : '.$remark.'<br>'.
-                                'Click here to proceed  : '.'<a href="training.jsp?action=view_conference&TrainingMenu=CONFERENCE&conference_status=ENTRY">Amend</a> '.'<br><br>'.
-                                '<br> -- system generated memo --';
-
-                if($cm_budget_origin == 'RESEARCH' || $cm_budget_origin == 'RESEARCH_CONFERENCE') {
+                if($bud_org == 'RESEARCH' || $bud_org == 'RESEARCH_CONFERENCE') {
                     $memoID = 2;
                     // GET STAFF REMINDER
                     $stfRem = $this->mdl->getStaffReminder();
@@ -2153,21 +2317,117 @@ class Conference_pmp extends MY_Controller
 
                 if ($sendMemo > 0) {
                     $successMemo++;
-                    $memoMsg = 'Amendment memo sent';
+                    $memoMsg = nl2br("\r\n").'Approval memo sent';
                 } else {
                     $successMemo = 0;
-                    $memoMsg = 'Failed to send amendment memo';
+                    $memoMsg = nl2br("\r\n").'Failed to send approval memo';
+                }
+            }
+
+            if($successAppr > 0 && (($successUpdSLD > 0 && $successMemo > 0) || ($successUpdSLD == 0 && $successMemo == 0) || ($successUpdSLD == 3 && $successMemo == 0))) {
+                $json = array('sts' => 1, 'msg' => $apprMsg.$updSLDMsg.$memoMsg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' =>  $apprMsg.$updSLDMsg.$memoMsg, 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // REJECT STAFF CONFERENCE TNCAA
+    public function rejectConferenceTncaa()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $remark = $this->input->post('remark', true);
+        $appr_rej_by = $this->input->post('appr_rej_by', true);
+        $appr_rej_date = $this->input->post('appr_rej_date', true);
+        $rec_date = $this->input->post('rec_date', true);
+        $bud_org = $this->input->post('bud_org', true);
+        $remIDArr = array();
+        $memoID = 0;
+        $successReject = 0;
+        $successMemo = 0;
+        $rmic_staff = '';
+
+
+        if (!empty($refid) && !empty($staff_id)) {
+
+            $reject = $this->mdl->rejectConferenceTncaa($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date, $rec_date);
+
+            if($reject > 0) {
+                $successReject++;
+                $rejectMsg = 'Staff has been rejected';
+
+                // SENDER
+                $from = $appr_rej_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl->getStaffList($staff_id);
+
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+
+                // CONFERENCE DETAILS APPROVE TNCAA
+                $conDetl = $this->mdl->getConferenceDetlAppTncaa($appr_rej_by, $staff_id, $refid);
+                
+                // MEMO TITLE
+                $memoTitle = 'Your Conference Application Has Been Rejected By TNC (A&A)';
+
+                // MEMO CONTENT
+                $memoContent = 'Please take note that your conference application has been rejected. Details :<br><br>'.
+                                'Staff ID : '.$staff_id.'<br>'.
+                                'Name : '.$staff_name.'<br>'.
+                                'Conference Title : '.$conDetl->CM_NAME.' ('.$conDetl->CM_DATE_FROM2.'-'.$conDetl->CM_DATE_TO2.')'.'<br><br>'.
+                                'Rejected Remark  : '.$remark.'<br><br>'.
+                                '<br> --System Generated Memo--';
+
+                if($bud_org == 'RESEARCH' || $bud_org == 'RESEARCH_CONFERENCE') {
+                    $memoID = 2;
+                    // GET STAFF REMINDER
+                    $stfRem = $this->mdl->getStaffReminder();
+                    if(!empty($stfRem)) {
+                        foreach($stfRem as $key => $sr) {
+                            $remID = $sr->SR_STAFF_ID;
+                            $remIDArr [] = $remID;
+                        }
+                        $filterRemIDArr = array_values(array_filter($remIDArr));
+                        $rmic_staff = $filterRemIDArr;
+                    }
+                    $sendMemo = $this->mdl->createMemo($from, $sendTO, $rmic_staff, $memoTitle, $memoContent, $memoID);
+                } else {
+                    $rmic_staff = '';
+                    $memoID = 1;
+                    $sendMemo = $this->mdl->createMemo($from, $sendTO, $rmic_staff, $memoTitle, $memoContent, $memoID);
+                }
+
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = nl2br("\r\n").'Rejected staff memo has been sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = nl2br("\r\n").'Failed to send memo to rejected staff';
                 }
 
             } else {
-                $successAmend = 0;
-                $amendMsg = 'Amendment failed';
+                $successReject = 0;
+                $rejectMsg = 'Faill to reject staff';
             }
 
-            if($successAmend == $successMemo) {
-                $json = array('sts' => 1, 'msg' => $amendMsg.nl2br("\r\n").$memoMsg, 'alert' => 'danger');
+            if($successReject == $successMemo) {
+                $json = array('sts' => 1, 'msg' => $rejectMsg.$memoMsg, 'alert' => 'danger');
             } else {
-                $json = array('sts' => 0, 'msg' => $amendMsg.nl2br("\r\n").$memoMsg, 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => $rejectMsg.$memoMsg, 'alert' => 'danger');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
