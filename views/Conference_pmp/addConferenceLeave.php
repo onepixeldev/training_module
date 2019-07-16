@@ -62,7 +62,7 @@
                             </div>
                         </div>
 
-                        <label class="col-md-2 control-label">Approve Date (From) <b><font color="red">*</font></b></label>
+                        <label class="col-md-2 control-label" id="appDateFromLabel">Approve Date (From) <b><font color="red">*</font></b></label>
                         <div class="col-md-4">
                             <input name="form[approve_date_from]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $sld_date_from?>" id="approveDateFrom">
                         </div>
@@ -76,7 +76,7 @@
                             </div>
                         </div>
 
-                        <label class="col-md-2 control-label">Approve Date (To) <b><font color="red">*</font></b></label>
+                        <label class="col-md-2 control-label" id="appDateToLabel">Approve Date (To) <b><font color="red">*</font></b></label>
                         <div class="col-md-4">
                             <input name="form[approve_date_to]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $sld_date_to?>" id="approveDateTo">
                         </div>
@@ -90,7 +90,7 @@
                             </div>
                         </div>
 
-                        <label class="col-md-2 control-label">Total Day (Approve)</label>
+                        <label class="col-md-2 control-label" id="totalDayApproveLabel">Total Day (Approve)</label>
                         <div class="col-md-4">
                             <input name="form[total_day_approve]" placeholder="day(s)" class="form-control" type="text" readonly value="<?php echo $total_day_approve?>" id="totalDayApprove">
                         </div>

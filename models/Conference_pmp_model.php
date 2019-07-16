@@ -370,6 +370,9 @@ class Conference_pmp_model extends MY_Model
     // COUNT TOTAL LEAVE
     public function getTotalLeave($staffID, $pYear)
     {
+        if(empty($pYear)) {
+            $pYear = 'SYSDATE';
+        }
         $this->db->select("SLR_ENTITLED_DAYS, SLR_TAKEN_DAYS, SLR_BALANCE_DAYS");
         $this->db->from("STAFF_LEAVE_RECORD");
         $this->db->where("SLR_STAFF_ID", $staffID);
@@ -870,14 +873,20 @@ class Conference_pmp_model extends MY_Model
     ================================================================*/
 
     // POPULATE DEPARTMENT
-    public function populateDept() {
+    public function populateDept($mod) {
+        if($mod == 'TNCA') {
+            $scm_status = 'VERIFY_TNCA';
+        } elseif($mod == 'VC') {
+            $scm_status = 'VERIFY_VC';
+        }   
+
         $query = "SELECT 'All' DM_DEPT_CODE, '' SS_DESC_SHORT FROM DUAL
         UNION    
         SELECT DM_DEPT_CODE, DM_DEPT_DESC
         FROM DEPARTMENT_MAIN
         WHERE NVL(DM_STATUS,'INACTIVE') = 'ACTIVE'
         AND DM_DEPT_CODE IN (SELECT SM_DEPT_CODE FROM STAFF_CONFERENCE_MAIN,STAFF_MAIN
-        WHERE SM_STAFF_ID = SCM_STAFF_ID AND SCM_STATUS='VERIFY_TNCA')
+        WHERE SM_STAFF_ID = SCM_STAFF_ID AND SCM_STATUS='$scm_status')
         ORDER BY DM_DEPT_CODE";
 
         $q = $this->db->query($query);
@@ -896,7 +905,7 @@ class Conference_pmp_model extends MY_Model
     }
 
     // GET CONFERENCE INFO LIST
-    public function getConferenceApplicationTncaa($deptCode = null) {		
+    public function getConferenceApplicationTncaVc($deptCode = null, $mod) {	
         $this->db->select("SCM_STAFF_ID, SM_STAFF_NAME, SCM_REFID, CM_NAME, TO_CHAR(SCM_APPLY_DATE, 'DD-MM-YYYY') AS SCM_APPLY_DATE, 
         TM_TITLE_DESC, NVL(SS_ACADEMIC,'N') AS SS_ACADEMIC, SS_DESC_SHORT,
         CASE SS_ACADEMIC
@@ -904,12 +913,18 @@ class Conference_pmp_model extends MY_Model
             ELSE 'No'
         END AS SS_ACADEMIC_DESC, TM_TITLE_DESC||' '||SM_STAFF_NAME AS TITLE_NAME");
         $this->db->from("STAFF_CONFERENCE_MAIN, STAFF_MAIN, CONFERENCE_MAIN,TITLE_MAIN, SERVICE_SCHEME");
-        if($deptCode != 'All') {
+        if($deptCode != 'All' && $mod == 'TNCA') {
             $this->db->where("(SCM_STATUS='VERIFY_TNCA' 
             AND SCM_STAFF_ID IN
             (SELECT SM_STAFF_ID FROM STAFF_MAIN WHERE SM_DEPT_CODE = '$deptCode'))");
-        } else {
+        } elseif($deptCode != 'All' && $mod == 'VC') {
+            $this->db->where("(SCM_STATUS='VERIFY_VC' 
+            AND SCM_STAFF_ID IN
+            (SELECT SM_STAFF_ID FROM STAFF_MAIN WHERE SM_DEPT_CODE = '$deptCode'))");
+        } elseif($mod == 'TNCA') {
             $this->db->where("SCM_STATUS='VERIFY_TNCA'");
+        } elseif($mod == 'VC') {
+            $this->db->where("SCM_STATUS='VERIFY_VC'");
         }
         
         $this->db->where("SCM_STAFF_ID = SM_STAFF_ID");
@@ -992,6 +1007,7 @@ class Conference_pmp_model extends MY_Model
         return $q->row();
     }
 
+    // SAVE ALLOWANCE DETAIL OTHERS
     public function updApprvAmtTnca($refid, $staff_id, $newSumAppTnca)
     {
         $data = array(
@@ -1008,9 +1024,91 @@ class Conference_pmp_model extends MY_Model
     public function clearValAppTnca($refid, $staff_id, $aca)
     {
         $data = array(
-            "SCA_AMT_RM_APPROVE_TNCA" => 0,
-            "SCA_AMT_FOREIGN_APPROVE_TNCA" => 0
+            "SCA_AMT_RM_APPROVE_TNCA" => '',
+            "SCA_AMT_FOREIGN_APPROVE_TNCA" => ''
         );
+
+        $this->db->where('SCA_REFID', $refid);
+        $this->db->where('SCA_STAFF_ID', $staff_id);
+        $this->db->where('SCA_ALLOWANCE_CODE', $aca);
+
+        return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
+    }
+
+    // amount approve tnca (local)
+    public function amtApprTnca($refid, $staff_id, $aca) {
+        $this->db->select("NVL(SCA_AMT_RM_APPROVE_HOD, SCA_AMOUNT_RM) AMT_APPR_TNCA");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("CA_BUDGET_ORIGIN_LOCAL IN ('CONFERENCE','PTNCA')");
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_ALLOWANCE_CODE", $aca);
+        $this->db->where("CA_STATUS = 'ACTIVE'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // amount foreign approve tnca (overseas)
+    public function amtApprForTnca($refid, $staff_id, $aca) {
+        $this->db->select("NVL(SCA_AMT_FOREIGN_APPROVE_HOD, SCA_AMOUNT_FOREIGN) AMT_APPR_FOR_TNCA");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("(CA_BUDGET_ORIGIN_LOCAL in ('CONFERENCE','PTNCA') OR CA_BUDGET_ORIGIN_OVERSEAS in ('CONFERENCE','PTNCA'))");
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_ALLOWANCE_CODE", $aca);
+        $this->db->where("CA_STATUS = 'ACTIVE'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // amount RM approve tnca (overseas)
+    public function amtApprTncaOversea($refid, $staff_id, $aca) {
+        $this->db->select("NVL(SCA_AMT_RM_APPROVE_HOD, SCA_AMOUNT_RM) AMT_APPR_TNCA_OS");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE, CONFERENCE_MAIN");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_ALLOWANCE_CODE", $aca);
+        $this->db->where("CA_STATUS = 'ACTIVE'");
+        $this->db->where("CM_REFID = SCA_REFID");
+        $this->db->where("CM_COUNTRY_CODE <> 'MYS'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // amount foreign approve tnca (overseas)
+    public function amtApprForTncaOversea($refid, $staff_id, $aca) {
+        $this->db->select("NVL(SCA_AMT_FOREIGN_APPROVE_HOD, SCA_AMOUNT_FOREIGN) AMT_APPR_FOR_TNCA_OS");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE, CONFERENCE_MAIN");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_ALLOWANCE_CODE", $aca);
+        $this->db->where("CA_STATUS = 'ACTIVE'");
+        $this->db->where("CM_REFID = SCA_REFID");
+        $this->db->where("CM_COUNTRY_CODE <> 'MYS'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // SAVE ALLOWANCE CALCULATION TNCA
+    public function saveCalcAllwTnca($refid, $staff_id, $aca, $appTnca, $appTncaFor)
+    {
+        $curDate = 'SYSDATE';
+        $curUsr = $this->staff_id;
+
+        $data = array(
+            "SCA_AMT_RM_APPROVE_TNCA" => $appTnca,
+            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $appTncaFor,
+            "SCA_UPDATE_BY" => $curUsr
+        );
+        $this->db->set("SCA_UPDATE_DATE", $curDate, false);
 
         $this->db->where('SCA_REFID', $refid);
         $this->db->where('SCA_STAFF_ID', $staff_id);
@@ -1209,5 +1307,28 @@ class Conference_pmp_model extends MY_Model
         $this->db->where('SCM_STAFF_ID', $staff_id);
 
         return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // RETURN BALANCE STAFF_LEAVE_RECORD (REJECT CONFERENCE TNCAA)
+    public function updateRejSLR($ldTotalDay, $staff_id, $sld_date_from_year)
+    {
+        $this->db->set("SLR_TAKEN_DAYS", "SLR_TAKEN_DAYS - $ldTotalDay", false);
+        $this->db->set("SLR_BALANCE_DAYS", "SLR_BALANCE_DAYS + $ldTotalDay", false);
+
+        $this->db->where("SLR_STAFF_ID", $staff_id);
+        $this->db->where("SLR_LEAVE_CODE = '014'");
+        $this->db->where("SLR_YEAR", $sld_date_from_year);
+
+        return $this->db->update("STAFF_LEAVE_RECORD");
+    }
+
+    // REJECT STAFF_LEAVE_DETL (REJECT CONFERENCE TNCAA)
+    public function updateRejSLD($leave_ref, $sld_status)
+    {
+        $this->db->set("SLD_STATUS", $sld_status);
+
+        $this->db->where("SLD_REF_ID", $leave_ref);
+
+        return $this->db->update("STAFF_LEAVE_DETL");
     }
 }

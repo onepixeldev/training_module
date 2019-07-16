@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Conference / Approve / Verify Conference Application (TNC A&A)') ?>
+<?php echo $this->lib->title('Conference / Approve Conference Application (VC)') ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">
@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>ATF035 - Approve / Verify Conference Application (TNC A&A)</h2>				
+            <h2>ATF043 - Approve Conference Application (VC)</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -30,7 +30,7 @@
 
                             <ul id="myTab1" class="nav nav-tabs bordered">
                                 <li class="active">
-                                    <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Approve/Verify Conference Application (TNC A&A)</a>
+                                    <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Approve Conference Application (VC)</a>
                                 </li>
                                 <li class="">
                                     <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">File Attachment</a>
@@ -225,7 +225,7 @@
     // CONFERENCE LIST  FILTER
 	$('.listFilter').change(function() {
 		var deptCode = $('#deptCode').val();
-		var mod = 'TNCA';
+        var mod = 'VC';
 		// var sYear = $('#sYear').val();
 		// alert(deptCode);
 
@@ -328,7 +328,7 @@
 				$('.ins_con_leave').remove('');
 				$('#approveDateFrom').prop('readonly', true);
 				$('#approveDateTo').prop('readonly', true);
-				$('#appDateFromLabel').replaceWith('<label class="col-md-2 control-label" id="appDateFromLabel">Date From</label>');
+                $('#appDateFromLabel').replaceWith('<label class="col-md-2 control-label" id="appDateFromLabel">Date From</label>');
 				$('#appDateToLabel').replaceWith('<label class="col-md-2 control-label" id="appDateToLabel">Date To</label>');
 				$('#totalDayApproveLabel').replaceWith('<label class="col-md-2 control-label" id="totalDayApproveLabel">Total Day</label>');
 			}
@@ -344,6 +344,8 @@
 			},
 			success: function(res) {
 				$('#details').html(res);
+                $('.amend_stf_app_ver').addClass('hidden');
+
 				var budget = $('.research_info').data();
 				// console.log(budget.budgetOrigin);
 				if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
@@ -625,80 +627,80 @@
 	TAB 4 - DETAILS
 	-----------------------------*/
 
-	// AMEND
-	$('#details').on('click','.amend_stf_app_ver', function(){
-		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");
-		staff_id = $('#staff_id').val();
-		refid = $('#crRefid').val();
-		staff_name = $('#staff_name').val();
-		remark = $('#remark').val();
-		appr_rej_by = $('#approved_rjc_by_tnc').val();
-		appr_rej_date = $('#approved_rjc_date_tnc').val();
-		// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
+	// // AMEND
+	// $('#details').on('click','.amend_stf_app_ver', function(){
+	// 	var thisBtn = $(this);
+	// 	var td = thisBtn.closest("tr");
+	// 	staff_id = $('#staff_id').val();
+	// 	refid = $('#crRefid').val();
+	// 	staff_name = $('#staff_name').val();
+	// 	remark = $('#remark').val();
+	// 	appr_rej_by = $('#approved_rjc_by_tnc').val();
+	// 	appr_rej_date = $('#approved_rjc_date_tnc').val();
+	// 	// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
 
-		$.confirm({
-		    title: 'Please enter the reason (Remark) for amendment the application',
-		    content: 'Press <b>YES</b> to continue <br> Staff ID: <br><b>'+staff_id+' - '+staff_name+'</b>',
-			type: 'orange',
-		    buttons: {
-		        yes: function () {
-					$('.btn').attr('disabled', 'disabled');
+	// 	$.confirm({
+	// 	    title: 'Please enter the reason (Remark) for amendment the application',
+	// 	    content: 'Press <b>YES</b> to continue <br> Staff ID: <br><b>'+staff_id+' - '+staff_name+'</b>',
+	// 		type: 'orange',
+	// 	    buttons: {
+	// 	        yes: function () {
+	// 				$('.btn').attr('disabled', 'disabled');
 
-					if (remark == '') {
-						$('.btn').removeAttr('disabled');
-						$.alert({
-							title: 'Alert!',
-							content: 'Please fill in <b>Remark</b> field.',
-							type: 'red'
-						});
-						return;
-					}
+	// 				if (remark == '') {
+	// 					$('.btn').removeAttr('disabled');
+	// 					$.alert({
+	// 						title: 'Alert!',
+	// 						content: 'Please fill in <b>Remark</b> field.',
+	// 						type: 'red'
+	// 					});
+	// 					return;
+	// 				}
 
-					if (appr_rej_by == '') {
-						$('.btn').removeAttr('disabled');
-						$.alert({
-							title: 'Alert!',
-							content: 'Please fill in <b>Approved / Rejected By</b> field.',
-							type: 'red'
-						});
-						return;
-					}
+	// 				if (appr_rej_by == '') {
+	// 					$('.btn').removeAttr('disabled');
+	// 					$.alert({
+	// 						title: 'Alert!',
+	// 						content: 'Please fill in <b>Approved / Rejected By</b> field.',
+	// 						type: 'red'
+	// 					});
+	// 					return;
+	// 				}
 
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('ammendConferenceTncaa')?>',
-						data: {'staff_id' : staff_id, 'refid' : refid, 'remark' : remark, 'appr_rej_by' : appr_rej_by, 'appr_rej_date' : appr_rej_date},
-						dataType: 'JSON',
-						success: function(res) {
-							if (res.sts==1) {
-								$.alert({
-									title: 'Success!',
-									content: res.msg,
-									type: 'green',
-								});
-								$('.btn').removeAttr('disabled');
+	// 				$.ajax({
+	// 					type: 'POST',
+	// 					url: '<?php echo $this->lib->class_url('ammendConferenceTncaa')?>',
+	// 					data: {'staff_id' : staff_id, 'refid' : refid, 'remark' : remark, 'appr_rej_by' : appr_rej_by, 'appr_rej_date' : appr_rej_date},
+	// 					dataType: 'JSON',
+	// 					success: function(res) {
+	// 						if (res.sts==1) {
+	// 							$.alert({
+	// 								title: 'Success!',
+	// 								content: res.msg,
+	// 								type: 'green',
+	// 							});
+	// 							$('.btn').removeAttr('disabled');
 								
-								setTimeout(function () {
-									location = '<?php echo $this->lib->class_url('viewTabFilter','s1','ATF035')?>';
-								}, 1500);
-							} else {
-								$.alert({
-									title: 'Alert!',
-									content: res.msg,
-									type: 'red',
-								});
-								$('.btn').removeAttr('disabled');
-							}
-						}
-					});			
-		        },
-		        cancel: function () {
-		            $.alert('Amendment cancelled!');
-		        }
-		    }
-		});
-	});
+	// 							setTimeout(function () {
+	// 								location = '<?php echo $this->lib->class_url('viewTabFilter','s1','ATF035')?>';
+	// 							}, 1500);
+	// 						} else {
+	// 							$.alert({
+	// 								title: 'Alert!',
+	// 								content: res.msg,
+	// 								type: 'red',
+	// 							});
+	// 							$('.btn').removeAttr('disabled');
+	// 						}
+	// 					}
+	// 				});			
+	// 	        },
+	// 	        cancel: function () {
+	// 	            $.alert('Amendment cancelled!');
+	// 	        }
+	// 	    }
+	// 	});
+	// });
 
 	// APPROVE
 	$('#details').on('click','.approve_stf_app_ver', function(){
@@ -941,126 +943,22 @@
 		});
 	});	
 
-	// CALCULATE AMOUNT
-	$('#details').on('click','.calculate_amt', function(){
+	// REFRESH TOTAL
+	$('#details').on('click','.refresh_total', function(){
 		// alert('ALLOWANCE DETL RESEARCH / RESEARCH_CONFERENCE');
-		var staff_id = $('.calculate_amt').data('staff-id');
-		var refid = $('.calculate_amt').data('refid');
+		var staff_id = $('.allowance_detl').data('staff-id');
+		var refid = $('.allowance_detl').data('refid');
+		// alert(refid+' '+staff_id);
 
-		var allwCodeArr = [];
-		var appTncaArr = [];
-		var appTncaForArr = [];
-		var selectedID = 0;
-		//alert(remark+' '+refid);
-
-		$.confirm({
-		    title: 'Calculate selected allowance?',
-		    content: 'Press <b>YES</b> to continue',
-			type: 'orange',
-		    buttons: {
-		        yes: function () {
-					$('.btn').attr('disabled', 'disabled');
-					$('.checkitem:checked').each(function() {
-						// check the checked property 
-						var allwCode = $(this).val();
-						appTnca = $(this).closest('tr').find('[name="sca_amt_rm_approve_tnca"]').val();
-						appTncaFor = $(this).closest('tr').find('[name="sca_amt_foreign_approve_tnca"]').val();
-						++selectedID;
-						
-						// alert(currentID);
-						allwCodeArr.push(allwCode);
-						appTncaArr.push(appTnca);
-						appTncaForArr.push(appTncaFor);
-					});
-					//alert(staffIDArr);
-					// alert(allwCodeArr);
-
-					if (selectedID == 0) {
-						$('.btn').removeAttr('disabled');
-						$.alert({
-							title: 'Alert!',
-							content: 'You must select at least one record to continue.',
-							type: 'red'
-						});
-						return;
-					}
-
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('calculateAllwTnca')?>',
-						data: {'refid' : refid, 'staff_id' : staff_id, 'allwCodeArr' : allwCodeArr, 'appTncaArr' : appTncaArr, 'appTncaForArr' : appTncaForArr},
-						dataType: 'JSON',
-						success: function(res) {
-							if (res.sts==1) {
-								$.alert({
-									title: 'Success!',
-									content: res.msg,
-									type: 'green',
-								});
-								$('.btn').removeAttr('disabled');
-
-								// REFRESH 
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
-									data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName},
-									beforeSend: function() {
-										$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#details').html(res);
-										var budget = $('.research_info').data();
-										// console.log(budget.budgetOrigin);
-										if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
-											// alert('show');
-											$('#details #rsh_btn').removeClass('hidden');
-											
-											$('#details #allw_detl').removeClass('hidden');
-											$('#details #allw_detl2').addClass('hidden');
-										} else {
-											$('#details #rsh_btn').addClass('hidden');
-											
-											$('#details #allw_detl2').removeClass('hidden');
-											$('#details #allw_detl').addClass('hidden');
-											// alert('hide');
-										}
-
-										// REFRESH ALOWANCE DETAIL
-										$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-										$.ajax({
-											type: 'POST',
-											url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
-											data: {'staff_id' : staff_id, 'refid' : refid},
-											success: function(res) {
-												$('#details #allowance_detl').html(res);
-											}
-										});
-										
-										// SCROLL DOWN TO #details
-										$('html, body').animate(
-											{
-											scrollTop: $('#details #allowance_detl').offset().top,
-											},
-											500,
-											'linear'
-										)
-									}
-								});
-							} else {
-								$.alert({
-									title: 'Alert!',
-									content: res.msg,
-									type: 'red',
-								});
-								$('.btn').removeAttr('disabled');
-							}
-						}
-					});			
-		        },
-		        cancel: function () {
-		            $.alert('Calculate cancelled!');
-		        }
-		    }
+		$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('allowanceDetlOthers')?>',
+			data: {'staff_id' : staff_id, 'refid' : refid},
+			success: function(res) {
+				$('#details #allowance_detl').html(res);
+			}
 		});
 	});
 

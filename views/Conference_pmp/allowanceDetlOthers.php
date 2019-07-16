@@ -2,7 +2,7 @@
     <b>Allowance Details</b>
 </div>
 <div class="text-right">
-	<button type="button" class="btn btn-primary btn-sm refresh_total" data-refid="<?php echo $refid?>" data-staff-id="<?php echo $staff_id?>"><i class="fa fa-refresh"></i> Refresh Total</button>
+	<button type="button" class="btn btn-warning btn-sm calculate_amt" data-refid="<?php echo $refid?>" data-staff-id="<?php echo $staff_id?>"><i class="fa fa-calculator"></i> Calculate</button>
 </div>
 <p>
 <div class="well">

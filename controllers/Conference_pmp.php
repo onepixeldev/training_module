@@ -62,6 +62,7 @@ class Conference_pmp extends MY_Controller
     // APPROVE / VERIFY CONFERENCE APPLICATION (TNC/A&A)
     public function ATF035()
     {
+        $mod = 'TNCA';
 
         $data['month'] = $this->mdl->getCurDate();
         $data['year'] = $this->mdl->getCurDate();
@@ -70,7 +71,27 @@ class Conference_pmp extends MY_Controller
         $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
 
         // DEPARTMENT LIST
-        $data['dept_list'] = $this->dropdown($this->mdl->populateDept(), 'DM_DEPT_CODE', 'DM_DEPT_CODE', ' ---Please select--- ');
+        $data['dept_list'] = $this->dropdown($this->mdl->populateDept($mod), 'DM_DEPT_CODE', 'DM_DEPT_CODE', ' ---Please select--- ');
+        
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // APPROVE CONFERENCE APPLICATION (VC)
+    public function ATF043()
+    {
+        $mod = 'VC';
+
+        $data['month'] = $this->mdl->getCurDate();
+        $data['year'] = $this->mdl->getCurDate();
+
+        $data['cur_month'] = $data['month']->SYSDATE_MM;  
+        $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
+
+        // DEPARTMENT LIST
+        $data['dept_list'] = $this->dropdown($this->mdl->populateDept($mod), 'DM_DEPT_CODE', 'DM_DEPT_CODE', ' ---Please select--- ');
         
         //get month dd list
         $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
@@ -658,7 +679,7 @@ class Conference_pmp extends MY_Controller
             $cr_country = $cr_detl->CM_COUNTRY_CODE;
             $cr_duration = $cr_detl2->CM_DURATION;
 
-            if($cr_country != 'MYS') {
+            if($cr_country != 'MYS' && !empty($cr_country)) {
                 if($cr_duration <= '13') {
                     $repCode = 'ATR031';
                 } else {
@@ -1565,12 +1586,13 @@ class Conference_pmp extends MY_Controller
     ================================================================*/
 
     // CONFERENCE APLICATION TNCAA LIST
-    public function getConferenceApplicationTncaa()
+    public function getConferenceApplicationTncaVc()
     {
         $deptCode = $this->input->post('deptCode', true);
+        $mod = $this->input->post('mod', true);
 
         // get available records
-        $data['con_app_tncaa'] = $this->mdl->getConferenceApplicationTncaa($deptCode);
+        $data['con_app_tncaa'] = $this->mdl->getConferenceApplicationTncaVc($deptCode, $mod);
 
         $this->render($data);
     }
@@ -1991,6 +2013,100 @@ class Conference_pmp extends MY_Controller
         echo json_encode($json);
     }
 
+    // CALCULATE ALLOWANCE TNCA
+    public function calculateAllwTnca()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $allwCodeArr = $this->input->post('allwCodeArr', true);
+        $appTncaArr = $this->input->post('appTncaArr', true);
+        $appTncaForArr = $this->input->post('appTncaForArr', true);
+
+        $success = 0;
+        $successCalc = 0;
+
+        if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
+            $conDetl = $this->mdl->getConferenceDetl($refid);
+            $conCountry = $conDetl->CM_COUNTRY_CODE;
+
+            foreach ($allwCodeArr as $key => $aca) {
+                $success++;
+                $appTnca = $appTncaArr[$key];
+                $appTncaFor = $appTncaForArr[$key];
+
+                // amount approve tnca (local)
+                $aat = $this->mdl->amtApprTnca($refid, $staff_id, $aca);
+                if(!empty($aat->AMT_APPR_TNCA)) {
+                    $amt_app_tnca = $aat->AMT_APPR_TNCA;
+                } else {
+                    $amt_app_tnca = 0;
+                }
+
+                // amount foreign approve tnca (overseas)	
+                $aaft = $this->mdl->amtApprForTnca($refid, $staff_id, $aca);
+                if(!empty($aaft->AMT_APPR_FOR_TNCA)) {
+                    $amt_app_for_tnca = $aaft->AMT_APPR_FOR_TNCA;
+                } else {
+                    $amt_app_for_tnca = 0;
+                }
+
+                // amount RM approve tnca (overseas)
+                $aato = $this->mdl->amtApprTncaOversea($refid, $staff_id, $aca);
+                if(!empty($aato->AMT_APPR_TNCA_OS)) {
+                    $amt_app_tnca_os = $aato->AMT_APPR_TNCA_OS;
+                } else {
+                    $amt_app_tnca_os = 0;
+                }
+
+                // amount foreign approve tnca (overseas)
+                $aafto = $this->mdl->amtApprForTncaOversea($refid, $staff_id, $aca);
+                if(!empty($aafto->AMT_APPR_FOR_TNCA_OS)) {
+                    $amt_app_for_tnca_os = $aafto->AMT_APPR_FOR_TNCA_OS;
+                } else {
+                    $amt_app_for_tnca_os = 0;
+                }
+
+                if($conCountry != 'MYS') {
+                    if(empty($appTnca)) {
+                        $appTnca = $amt_app_tnca_os;
+                    }
+
+                    if(empty($appTncaFor)) {
+                        $appTncaFor = $amt_app_for_tnca_os;
+                    }
+                } elseif($conCountry == 'MYS') {
+                    if(empty($appTnca)) {
+                        $appTnca = $amt_app_tnca;
+                    }
+
+                    if(empty($appTncaFor)) {
+                        $appTncaFor = $amt_app_for_tnca;
+                    }
+                }
+
+                $save_calc = $this->mdl->saveCalcAllwTnca($refid, $staff_id, $aca, $appTnca, $appTncaFor);
+
+                if ($save_calc > 0) {
+                    $successCalc++;
+                } else {
+                    $successCalc = 0;
+                }
+            }
+
+            if($success == $successCalc) {
+                $json = array('sts' => 1, 'msg' => 'Calculate complete', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to calculate', 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
     // AMEND STAFF CONFERENCE TNCAA
     public function ammendConferenceTncaa()
     {  
@@ -2352,6 +2468,8 @@ class Conference_pmp extends MY_Controller
         $memoID = 0;
         $successReject = 0;
         $successMemo = 0;
+        $successUpdSLR = 0;
+        $successUpdSLD = 0;
         $rmic_staff = '';
 
 
@@ -2419,15 +2537,58 @@ class Conference_pmp extends MY_Controller
                     $memoMsg = nl2br("\r\n").'Failed to send memo to rejected staff';
                 }
 
+                // REJECT LEAVE AND RETURN LEAVE BALANCE
+                // STAFF CONFERENCE MAIN DETL
+                $stf_con_detl= $this->mdl->getStaffConferenceDetl($refid, $staff_id);
+                if(!empty($stf_con_detl->SCM_LEAVE_REFID)) {
+                    $leave_ref = $stf_con_detl->SCM_LEAVE_REFID;
+                } else {
+                    $leave_ref = '';
+                }
+
+                if(!empty($leave_ref)) {
+                    $sld_status = 'REJECT';
+                    $leaveDetl = $this->mdl->getLeaveDetl($leave_ref, $staff_id);
+                    $ldTotalDay = $leaveDetl->SLD_TOTAL_DAY;
+                    $sld_date_from = $leaveDetl->SLD_DATE_FROM;
+                    $sld_date_from_year_split = explode('/', $sld_date_from);
+                    $sld_date_from_year = $sld_date_from_year_split[2];
+
+                    $updRejSLR = $this->mdl->updateRejSLR($ldTotalDay, $staff_id, $sld_date_from_year);
+                    $updRejSLD = $this->mdl->updateRejSLD($leave_ref, $sld_status);
+
+                    if($updRejSLR > 0 && $updRejSLD > 0) {
+                        $successUpdSLR++;
+                        $updSLRMsg = nl2br("\r\n").'Staff Leave Record updated';
+                    } else {
+                        $successUpdSLR = 0;
+                        $updSLRMsg = nl2br("\r\n").'Fail to update Staff Leave Record';
+                    }
+
+                    if($updRejSLD > 0) {
+                        $successUpdSLD++;
+                        $updSLDMsg = nl2br("\r\n").'Staff Leave Detail updated';
+                    } else {
+                        $successUpdSLD = 0;
+                        $updSLDMsg = nl2br("\r\n").'Fail to update Staff Leave Detail';
+                    }
+                } else {
+                    $successUpdSLR = 3;
+                    $successUpdSLD = 3;
+                    $updSLRMsg = '';
+                    $updSLDMsg = '';
+                }
+
+
             } else {
                 $successReject = 0;
                 $rejectMsg = 'Faill to reject staff';
             }
 
-            if($successReject == $successMemo) {
-                $json = array('sts' => 1, 'msg' => $rejectMsg.$memoMsg, 'alert' => 'danger');
+            if($successReject == $successMemo && (($successUpdSLR == 3 && $successUpdSLD == 3) || ($successUpdSLR == $successReject && $successUpdSLD == $successReject))) {
+                $json = array('sts' => 1, 'msg' => $rejectMsg.$memoMsg.$updSLRMsg.$updSLDMsg, 'alert' => 'danger');
             } else {
-                $json = array('sts' => 0, 'msg' => $rejectMsg.$memoMsg, 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => $rejectMsg.$memoMsg.$updSLRMsg.$updSLDMsg, 'alert' => 'danger');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
