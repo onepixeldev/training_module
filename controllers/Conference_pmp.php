@@ -1705,6 +1705,7 @@ class Conference_pmp extends MY_Controller
         $refid = $this->input->post('refid', true);
         $crName = $this->input->post('crName', true);
         $crStaffName = $this->input->post('crStaffName', true);
+        $mod = $this->input->post('mod', true);
 
         if(empty($crStaffName) && !empty($staffID)) {
             // get staff name
@@ -1738,14 +1739,19 @@ class Conference_pmp extends MY_Controller
 
             $data['staff_list'] = $this->dropdown($this->mdl->getStaffList(), 'SM_STAFF_ID', 'SM_STAFF_ID_NAME', ' ---Please select--- ');
             // $data['cr_role_list'] = $this->dropdown($this->mdl->getConferenceRoleList(), 'CPR_CODE', 'CPR_CODE', ' ---Please select--- ');
-            $data['cr_cat_list'] = $this->dropdown($this->mdl->getCrCategoryList(), 'CC_CODE', 'CC_CODE_DESC_CC_FROM_TO', ' ---Please select--- ');
+            $data['cr_cat_list'] = $this->dropdown($this->mdl->getCrCategoryList($mod), 'CC_CODE', 'CC_CODE_DESC_CC_FROM_TO', '');
             // $data['cr_spon_list'] = array(''=>' ---Please select--- ', 'Y'=>'Yes', 'N'=>'No', 'H'=>'Half Sponsorship');
             // $data['cr_budget_spon_list'] = array(''=>' ---Please select--- ', 'GRANTS'=>'Grants', 'EXTERNAL'=>'External Organization', 'SELF'=>'Self');
             $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS', 'RESEARCH'=>'RESEARCH', 'RESEARCH_CONFERENCE'=>'RESEARCH_CONFERENCE');
             // $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_TNCA'=>'VERIFY_HOD', 'VERIFY_VC'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
             
             $data['stf_detl'] = $this->mdl->getStaffConferenceDetl($refid, $staffID);
-            
+
+            if($mod == 'TNCA') {
+                $data['remark'] = $data['stf_detl']->SCM_TNCA_REMARK;
+            } elseif($mod == 'VC') {
+                $data['remark'] = $data['stf_detl']->SCM_VC_REMARK;
+            }
 
             if(!empty($data['stf_detl'])) {
                 $budget_origin = $data['stf_detl']->SCM_BUDGET_ORIGIN;
@@ -1785,7 +1791,7 @@ class Conference_pmp extends MY_Controller
             }
 
 
-            $data['app_rejc'] = $this->mdl->getAppRejcStaff();
+            $data['app_rejc'] = $this->mdl->getAppRejcStaff($mod);
             if(!empty($data['app_rejc'])) {
                 $data['app_rejc_id'] = $data['app_rejc']->SM_STAFF_ID;
                 $data['curr_date'] = $data['app_rejc']->CURR_DATE;
@@ -1859,6 +1865,47 @@ class Conference_pmp extends MY_Controller
         $this->render($data);
     }
 
+    // ALLOWANCE DETAIL RESEARCH / RESEARCH_CONFERENCE VC
+    public function allowanceDetlResearchVc() {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $data['total_sca_amount_rm'] = 0;
+        $data['total_sca_amount_foreign'] = 0;
+        $data['total_sca_amt_rm_approve_rmic'] = 0;
+        $data['total_sca_amt_foreign_approve_rmic'] = 0;
+        $data['total_sca_amt_rm_approve_tncpi'] = 0;
+        $data['total_sca_amt_foreign_approve_tncpi'] = 0;
+        $data['total_sca_amt_rm_approve_tnca'] = 0;
+        $data['total_sca_amt_foreign_approve_tnca'] = 0;
+        $data['total_sca_amt_rm_approve_vc'] = 0;
+        $data['total_sca_amt_foreign_approve_vc'] = 0;
+        
+        if(!empty($staff_id) && !empty($refid)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;  
+            $data['research_allw_detl'] = $this->mdl->getStaffConAllowance($refid, $staff_id);
+
+            if(!empty($data['research_allw_detl'])) {
+                $research_allw_detl = $data['research_allw_detl'];
+
+                foreach($research_allw_detl as $rad) {
+                    $data['total_sca_amount_rm'] += $rad->SCA_AMOUNT_RM;
+                    $data['total_sca_amount_foreign'] += $rad->SCA_AMOUNT_FOREIGN;
+                    $data['total_sca_amt_rm_approve_rmic'] += $rad->SCA_AMT_RM_APPROVE_RMIC;
+                    $data['total_sca_amt_foreign_approve_rmic'] += $rad->SCA_AMT_FOREIGN_APPROVE_RMIC;
+                    $data['total_sca_amt_rm_approve_tncpi'] += $rad->SCA_AMT_RM_APPROVE_TNCPI;
+                    $data['total_sca_amt_foreign_approve_tncpi'] += $rad->SCA_AMT_FOREIGN_APPROVE_TNCPI;
+                    $data['total_sca_amt_rm_approve_tnca'] += $rad->SCA_AMT_RM_APPROVE_TNCA;
+                    $data['total_sca_amt_foreign_approve_tnca'] += $rad->SCA_AMT_FOREIGN_APPROVE_TNCA;
+                    $data['total_sca_amt_rm_approve_vc'] += $rad->SCA_AMT_RM_APPROVE_VC;
+                    $data['total_sca_amt_foreign_approve_vc'] += $rad->SCA_AMT_FOREIGN_APPROVE_VC;
+                }
+            }
+        }
+
+        $this->render($data);
+    }
+
     // ALLOWANCE DETAIL OTHERS
     public function allowanceDetlOthers() {
         $staff_id = $this->input->post('staff_id', true);
@@ -1875,6 +1922,9 @@ class Conference_pmp extends MY_Controller
             $data['refid'] = $refid;  
             $data['other_allw_detl'] = $this->mdl->getStaffConAllowance($refid, $staff_id);
 
+            // sponsor & total amount
+            // $data['stf_con_detl'] = $this->mdl->getStaffConferenceDetl($refid, $staff_id);
+
             if(!empty($data['other_allw_detl'])) {
                 $other_allw_detl = $data['other_allw_detl'];
 
@@ -1885,6 +1935,39 @@ class Conference_pmp extends MY_Controller
                     $data['total_sca_amt_foreign_approve_hod'] += $oad->SCA_AMT_FOREIGN_APPROVE_HOD;
                     $data['total_sca_amt_rm_approve_tnca'] += $oad->SCA_AMT_RM_APPROVE_TNCA;
                     $data['total_sca_amt_foreign_approve_tnca'] += $oad->SCA_AMT_FOREIGN_APPROVE_TNCA;
+                }
+            }
+        }
+
+        $this->render($data);
+    }
+
+    // ALLOWANCE DETAIL OTHERS VC
+    public function allowanceDetlOthersVc() {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $data['total_sca_amount_rm'] = 0;
+        $data['total_sca_amount_foreign'] = 0;
+        $data['total_sca_amt_rm_approve_tnca'] = 0;
+        $data['total_sca_amt_foreign_approve_tnca'] = 0;
+        $data['total_sca_amt_rm_approve_vc'] = 0;
+        $data['total_sca_amt_foreign_approve_vc'] = 0;
+        
+        if(!empty($staff_id) && !empty($refid)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;  
+            $data['other_allw_detl'] = $this->mdl->getStaffConAllowance($refid, $staff_id);
+
+            if(!empty($data['other_allw_detl'])) {
+                $other_allw_detl = $data['other_allw_detl'];
+
+                foreach($other_allw_detl as $oad) {
+                    $data['total_sca_amount_rm'] += $oad->SCA_AMOUNT_RM;
+                    $data['total_sca_amount_foreign'] += $oad->SCA_AMOUNT_FOREIGN;
+                    $data['total_sca_amt_rm_approve_tnca'] += $oad->SCA_AMT_RM_APPROVE_TNCA;
+                    $data['total_sca_amt_foreign_approve_tnca'] += $oad->SCA_AMT_FOREIGN_APPROVE_TNCA;
+                    $data['total_sca_amt_rm_approve_vc'] += $oad->SCA_AMT_RM_APPROVE_VC;
+                    $data['total_sca_amt_foreign_approve_vc'] += $oad->SCA_AMT_FOREIGN_APPROVE_VC;
                 }
             }
         }
@@ -2028,6 +2111,7 @@ class Conference_pmp extends MY_Controller
         $successCalc = 0;
 
         if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
+
             $conDetl = $this->mdl->getConferenceDetl($refid);
             $conCountry = $conDetl->CM_COUNTRY_CODE;
 
@@ -2035,7 +2119,7 @@ class Conference_pmp extends MY_Controller
                 $success++;
                 $appTnca = $appTncaArr[$key];
                 $appTncaFor = $appTncaForArr[$key];
-
+                
                 // amount approve tnca (local)
                 $aat = $this->mdl->amtApprTnca($refid, $staff_id, $aca);
                 if(!empty($aat->AMT_APPR_TNCA)) {
@@ -2071,18 +2155,26 @@ class Conference_pmp extends MY_Controller
                 if($conCountry != 'MYS') {
                     if(empty($appTnca)) {
                         $appTnca = $amt_app_tnca_os;
+                    } else {
+                        $appTnca = $appTnca;
                     }
 
                     if(empty($appTncaFor)) {
                         $appTncaFor = $amt_app_for_tnca_os;
+                    } else {
+                        $appTncaFor = $appTncaFor;
                     }
                 } elseif($conCountry == 'MYS') {
                     if(empty($appTnca)) {
                         $appTnca = $amt_app_tnca;
+                    } else {
+                        $appTnca = $appTnca;
                     }
 
                     if(empty($appTncaFor)) {
                         $appTncaFor = $amt_app_for_tnca;
+                    } else {
+                        $appTncaFor = $appTncaFor;
                     }
                 }
 
@@ -2553,6 +2645,10 @@ class Conference_pmp extends MY_Controller
                     $sld_date_from = $leaveDetl->SLD_DATE_FROM;
                     $sld_date_from_year_split = explode('/', $sld_date_from);
                     $sld_date_from_year = $sld_date_from_year_split[2];
+
+                    if(empty($ldTotalDay)) {
+                        $ldTotalDay = 0;
+                    }
 
                     $updRejSLR = $this->mdl->updateRejSLR($ldTotalDay, $staff_id, $sld_date_from_year);
                     $updRejSLD = $this->mdl->updateRejSLD($leave_ref, $sld_status);

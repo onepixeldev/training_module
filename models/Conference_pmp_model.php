@@ -94,13 +94,15 @@ class Conference_pmp_model extends MY_Model
     {
         $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID ||' - '||SM_STAFF_NAME AS SM_STAFF_ID_NAME");
         $this->db->from("STAFF_MAIN, STAFF_STATUS");
-        $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS AND SS_STATUS_STS = 'ACTIVE' AND SM_STAFF_TYPE = 'STAFF'");
+        $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
+        $this->db->where("SM_STAFF_TYPE = 'STAFF'");
 
         if(!empty($staffID)) {
             $this->db->where("SM_STAFF_ID", $staffID);
             $q = $this->db->get();
             return $q->row();
         } else {
+            $this->db->where("SS_STATUS_STS = 'ACTIVE'");
             $this->db->order_by("2");
 
             $q = $this->db->get();
@@ -120,11 +122,13 @@ class Conference_pmp_model extends MY_Model
     } 
 
     // GET CONFERENCE CATEGORY LIST
-    public function getCrCategoryList()
+    public function getCrCategoryList($mod = null)
     {
         $this->db->select("CC_CODE, CC_DESC, CC_RM_AMOUNT_FROM, CC_RM_AMOUNT_TO, CC_CODE||' - '||CC_DESC||' (RM'||CC_RM_AMOUNT_FROM||' - RM'||CC_RM_AMOUNT_TO||')' AS CC_CODE_DESC_CC_FROM_TO");
         $this->db->from("CONFERENCE_CATEGORY");
-        $this->db->where("CC_STATUS='Y'");
+        if($mod != 'VC') {
+            $this->db->where("CC_STATUS='Y'");
+        }
         $this->db->order_by("CC_RM_AMOUNT_FROM");
 
         $q = $this->db->get();
@@ -160,7 +164,7 @@ class Conference_pmp_model extends MY_Model
         TO_CHAR(SCM_VC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_VC_APPROVE_DATE, TO_CHAR(SCM_VC_RECEIVE_DATE, 'DD/MM/YYYY') AS SCM_VC_RECEIVE_DATE, TO_CHAR(SCM_LEAVE_DATE_FROM, 'DD/MM/YYYY') AS SCM_LEAVE_DATE_FROM, TO_CHAR(SCM_LEAVE_DATE_TO, 'DD/MM/YYYY') AS SCM_LEAVE_DATE_TO,
         SCM_RM_TOTAL_AMT, SCM_RM_TOTAL_AMT_APPROVE_HOD, SCM_RM_TOTAL_AMT_APPROVE_TNCA, SCM_RM_TOTAL_AMT_APPROVE_VC,
         SCM_RM_TOTAL_AMT_DEPT, SCM_TOTAL_AMT_DEPT_APPRV_HOD, SCM_RM_TOT_AMT_APPRV_RMIC, SCM_RM_TOT_AMT_APPRV_TNCPI, SCM_BUDGET_ORIGIN_PREV, TO_CHAR(SCM_TNCPI_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_TNCPI_APPROVE_DATE, 
-        TO_CHAR(SCM_RMIC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_RMIC_APPROVE_DATE, SCM_RESEARCH_REFID");
+        TO_CHAR(SCM_RMIC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_RMIC_APPROVE_DATE, SCM_RESEARCH_REFID, SCM_VC_REMARK");
         $this->db->from("STAFF_CONFERENCE_MAIN");
         $this->db->where("SCM_REFID", $refid);
         $this->db->where("SCM_STAFF_ID", $staff_id);
@@ -950,11 +954,17 @@ class Conference_pmp_model extends MY_Model
     }
 
     // APPROVE / REJECT BY
-    public function getAppRejcStaff() {
-        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, TO_CHAR(SYSDATE, 'DD/MM/YYYY') AS CURR_DATE");
-        $this->db->from("STAFF_MAIN");
-        $this->db->where("SM_ADMIN_JOBCODE = '43'");
-        $this->db->where("SM_STAFF_STATUS = '01'");
+    public function getAppRejcStaff($mod) {
+        if($mod == 'TNCA') {
+            $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, TO_CHAR(SYSDATE, 'DD/MM/YYYY') AS CURR_DATE");
+            $this->db->from("STAFF_MAIN");
+            $this->db->where("SM_ADMIN_JOBCODE = '43'");
+            $this->db->where("SM_STAFF_STATUS = '01'");
+        } elseif($mod == 'VC') {
+            $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, TO_CHAR(SYSDATE, 'DD/MM/YYYY') AS CURR_DATE");
+            $this->db->from("STAFF_MAIN");
+            $this->db->where("SM_ADMIN_JOBCODE = '20'");
+        }
 
         $q = $this->db->get();
         return $q->row();

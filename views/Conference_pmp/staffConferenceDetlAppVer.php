@@ -29,7 +29,7 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Remark</label>
         <div class="col-md-8">
-            <textarea name="form[remark]" placeholder="" class="form-control" type="text" rows="4" cols="50" id="remark"><?php echo $stf_detl->SCM_TNCA_REMARK?></textarea>
+            <textarea name="form[remark]" placeholder="" class="form-control" type="text" rows="4" cols="50" id="remark"><?php echo $remark?></textarea>
         </div>
     </div>
 
@@ -37,7 +37,7 @@
         <label class="col-md-2 control-label">Budget Origin</label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[budget_origin]', $cr_budget_origin_list, $stf_detl->SCM_BUDGET_ORIGIN, 'class="form-control width-50" id="budOrg"')
+                echo form_dropdown('form[budget_origin]', $cr_budget_origin_list, $stf_detl->SCM_BUDGET_ORIGIN, 'class="form-control width-50" id="budOrg" disabled')
             ?>
         </div>
 
@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" id="prev_bud_org">
         <label class="col-md-2 control-label">Previous Budget Origin</label>
         <div class="col-md-4">
             <input name="form[previous_budget_origin]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_BUDGET_ORIGIN_PREV?>" readonly>
@@ -109,6 +109,20 @@
         </div>
         <div class="col-md-2 hidden" id="allw_detl2">
             <button type="button" class="btn btn-primary allowance_detl2" data-refid="<?php echo $refid?>" data-staff-id="<?php echo $staffID?>"><i class="fa fa-info-circle"></i> Allowance Detail</button>
+        </div>
+    </div>
+
+    <div class="form-group hidden" id="app_vc">
+        <label class="col-md-3 control-label">Approved VC (RM)</label>
+        <div class="col-md-2">
+            <input name="form[approved_vc]" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOTAL_AMT_APPROVE_VC, 2)?>" readonly id="approved_vc">
+        </div>
+
+        <div class="col-md-2 hidden" id="allw_detl_vc">
+            <button type="button" class="btn btn-primary allowance_detl_vc" data-refid="<?php echo $refid?>" data-staff-id="<?php echo $staffID?>"><i class="fa fa-info-circle"></i> Allowance Detail</button>
+        </div>
+        <div class="col-md-2 hidden" id="allw_detl2_vc">
+            <button type="button" class="btn btn-primary allowance_detl2_vc" data-refid="<?php echo $refid?>" data-staff-id="<?php echo $staffID?>"><i class="fa fa-info-circle"></i> Allowance Detail</button>
         </div>
     </div>
     <br>
