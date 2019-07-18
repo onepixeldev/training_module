@@ -2692,4 +2692,76 @@ class Conference_pmp extends MY_Controller
          
         echo json_encode($json);
     }
+
+    // CALCULATE ALLOWANCE RESEARCH CONFERENCE VC
+    public function calculateAllwRcVc()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $allwCodeArr = $this->input->post('allwCodeArr', true);
+        $appTncaArr = $this->input->post('appTncaArr', true);
+        $appTncaForArr = $this->input->post('appTncaForArr', true);
+        $appVcArr = $this->input->post('appVcArr', true);
+        $appVcForArr = $this->input->post('appVcForArr', true);
+
+        $success = 0;
+        $successCalcRcVc = 0;
+
+        if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
+
+            foreach ($allwCodeArr as $key => $aca) {
+                $success++;
+                $appTnca = $appTncaArr[$key];
+                $appTncaFor = $appTncaForArr[$key];
+                $appVc = $appVcArr[$key];
+                $appVcFor = $appVcForArr[$key];
+
+                if(empty($appVc)) {
+                    $appVc = $appTnca;
+                } else {
+                    $appVc = $appVc;
+                }
+
+                if(empty($appVcFor)) {
+                    $appVcFor = $appTncaFor;
+                } else {
+                    $appVcFor = $appVcFor;
+                }
+
+                $save_calc_rc_vc = $this->mdl->calculateAllwRcVc($refid, $staff_id, $aca, $appVc, $appVcFor);
+
+                if ($save_calc_rc_vc > 0) {
+                    $successCalcRcVc++;
+                } else {
+                    $successCalcRcVc = 0;
+                }
+            }
+            // SCM_RM_TOTAL_AMT_APPROVE_VC
+            $sum = $this->mdl->sumStaffConAllwAmtAppVc($refid, $staff_id);
+            if(!empty($sum)) {
+                $newSumAppVc = $sum->SUM_SCA_AMT_RM_APPROVE_VC;
+                $updateSum = $this->mdl->updApprvAmtVc($refid, $staff_id, $newSumAppTnca);
+
+                if ($updateSum > 0) {
+                    $successUpdSum++;
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN)';
+                } else {
+                    $successUpdSum = 0;
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN)';
+                }
+            }
+
+            if($success == $successCalcRcVc) {
+                $json = array('sts' => 1, 'msg' => 'Calculate complete', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to calculate', 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
 }

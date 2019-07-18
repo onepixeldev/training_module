@@ -829,7 +829,7 @@
 	});	
 
 	// SAVE ALLOWANCE DETAIL OTHERS
-	$('#details').on('click','.save_allw_detl', function(){
+	$('#details').on('click','.save_allw_detl_rc_vc', function(){
 		var thisBtn = $(this);
 		var refid = $('.save_allw_detl').data("refid");
 		var staff_id = $('.save_allw_detl').data("staff-id");
@@ -856,15 +856,10 @@
 						var allwCode = $(this).val();
 						// staffID = $(this).closest("tr").find(".sid").text();
 						amount = $(this).closest('tr').find('[name="sca_amount_rm"]').val();
-						++selectedID;
 						amountFor = $(this).closest('tr').find('[name="sca_amount_foreign"]').val();
-						++selectedID;
 						appHod = $(this).closest('tr').find('[name="sca_amt_rm_approve_hod"]').val();
-						++selectedID;
 						appHodFor = $(this).closest('tr').find('[name="sca_amt_foreign_approve_hod"]').val();
-						++selectedID;
 						appTnca = $(this).closest('tr').find('[name="sca_amt_rm_approve_tnca"]').val();
-						++selectedID;
 						appTncaFor = $(this).closest('tr').find('[name="sca_amt_foreign_approve_tnca"]').val();
 						++selectedID;
 						
@@ -964,6 +959,137 @@
 		        },
 		        cancel: function () {
 		            $.alert('Saving changes cancelled!');
+		        }
+		    }
+		});
+	});
+
+	// CALCULATE AMOUNT
+	$('#details').on('click','.calculate_amt_rc_vc', function(){
+		var staff_id = $('.calculate_amt_rc_vc').data('staff-id');
+		var refid = $('.calculate_amt_rc_vc').data('refid');
+		var mod = 'VC';
+
+		var allwCodeArr = [];
+		var appTncaArr = [];
+		var appTncaForArr = [];
+		var appVcArr = [];
+		var appVcForArr = [];
+		var selectedID = 0;
+		//alert(remark+' '+refid);
+
+		$.confirm({
+		    title: 'Calculate selected allowance?',
+		    content: 'Press <b>YES</b> to continue',
+			type: 'orange',
+		    buttons: {
+		        yes: function () {
+					$('.btn').attr('disabled', 'disabled');
+					$('.checkitem:checked').each(function() {
+						// check the checked property 
+						var allwCode = $(this).val();
+						appTnca = $(this).closest('tr').find('[name="sca_amt_rm_approve_tnca"]').val();
+						appTncaFor = $(this).closest('tr').find('[name="sca_amt_foreign_approve_tnca"]').val();
+						appVc = $(this).closest('tr').find('[name="sca_amt_rm_approve_vc"]').val();
+						appVcFor = $(this).closest('tr').find('[name="sca_amt_foreign_approve_vc"]').val();
+						++selectedID;
+						
+						// alert(currentID);
+						allwCodeArr.push(allwCode);
+						appTncaArr.push(appTnca);
+						appTncaForArr.push(appTncaFor);
+						appVcArr.push(appVc);
+						appVcForArr.push(appVcFor);
+					});
+					//alert(staffIDArr);
+					// alert(appTncaForArr);
+
+					if (selectedID == 0) {
+						$('.btn').removeAttr('disabled');
+						$.alert({
+							title: 'Alert!',
+							content: 'You must select at least one record to continue.',
+							type: 'red'
+						});
+						return;
+					}
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('calculateAllwRcVc')?>',
+						data: {'refid' : refid, 'staff_id' : staff_id, 'allwCodeArr' : allwCodeArr, 'appVcArr' : appVcArr, 'appVcForArr' : appVcForArr, 'appTncaArr' : appTncaArr, 'appTncaForArr' : appTncaForArr},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('.btn').removeAttr('disabled');
+
+								// REFRESH 
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
+									data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
+									beforeSend: function() {
+										$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										$('#details').html(res);
+										var budget = $('.research_info').data();
+										// console.log(budget.budgetOrigin);
+										if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
+											// alert('show');
+											$('#details #rsh_btn').removeClass('hidden');
+											
+											$('#details #allw_detl_vc').removeClass('hidden');
+											$('#details #allw_detl2_vc').addClass('hidden');
+										} else {
+											$('#details #rsh_btn').addClass('hidden');
+											
+											$('#details #allw_detl2_vc').removeClass('hidden');
+											$('#details #allw_detl_vc').addClass('hidden');
+											// alert('hide');
+										}
+										$('#details #app_vc').removeClass('hidden');
+										$('#details #prev_bud_org').addClass('hidden');
+
+										// REFRESH ALOWANCE DETAIL
+										$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+										$.ajax({
+											type: 'POST',
+											url: '<?php echo $this->lib->class_url('allowanceDetlResearchVc')?>',
+											data: {'staff_id' : staff_id, 'refid' : refid},
+											success: function(res) {
+												$('#details #allowance_detl').html(res);
+											}
+										});
+										
+										// SCROLL DOWN TO #details
+										$('html, body').animate(
+											{
+											scrollTop: $('#details #allowance_detl').offset().top,
+											},
+											500,
+											'linear'
+										)
+									}
+								});
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+								$('.btn').removeAttr('disabled');
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Calculate cancelled!');
 		        }
 		    }
 		});

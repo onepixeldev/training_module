@@ -1341,4 +1341,35 @@ class Conference_pmp_model extends MY_Model
 
         return $this->db->update("STAFF_LEAVE_DETL");
     }
+
+    // CALCULATE ALLOWANCE RESEARCH CONFERENCE VC
+    public function calculateAllwRcVc($refid, $staff_id, $aca, $appVc, $appVcFor)
+    {
+        $curDate = 'SYSDATE';
+        $curUsr = $this->staff_id;
+
+        $data = array(
+            "SCA_AMT_RM_APPROVE_VC" => $appVc,
+            "SCA_AMT_FOREIGN_APPROVE_VC" => $appVcFor,
+            "SCA_UPDATE_BY" => $curUsr
+        );
+        $this->db->set("SCA_UPDATE_DATE", $curDate, false);
+
+        $this->db->where('SCA_REFID', $refid);
+        $this->db->where('SCA_STAFF_ID', $staff_id);
+        $this->db->where('SCA_ALLOWANCE_CODE', $aca);
+
+        return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
+    }
+
+    // SUM STAFF CONFERENCE ALLOWANCE SCM_RM_TOTAL_AMT_APPROVE_VC
+    public function sumStaffConAllwAmtAppVc($refid, $staff_id) {
+        $this->db->select("SUM(SCA_AMT_RM_APPROVE_VC) SUM_SCA_AMT_RM_APPROVE_VC");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
 }
