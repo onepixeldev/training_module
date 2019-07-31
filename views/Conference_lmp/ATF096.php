@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Conference / Conference Application - Manual Entry', $screen_id) ?>
+<?php echo $this->lib->title('Conference / Conference Report Application - Manual Entry', $screen_id) ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">
@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>ATF075 - Conference Application - Manual Entry</h2>				
+            <h2>ATF096 - Conference Report Application - Manual Entry</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -36,13 +36,16 @@
                                     <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Staff List</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Conference Application</a>
+                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Part I</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Conference Leave</a>
+                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Part II</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">Allowances</a>
+                                    <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">Part III</a>
+                                </li>
+								<li class="">
+                                    <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">Part IV</a>
                                 </li>
 								<!--<li class="">
                                     <a style="color:#000 !important" href="#s6" data-toggle="tab" aria-expanded="false">HOD Approval/Verification</a>
@@ -115,12 +118,12 @@
                                 </div> 
 
 								<div class="tab-pane fade" id="s3">
-									<div id="conference_application">
+									<div id="part_i">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please click Add New Staff or Edit from Staff List</th>
+													<th class="text-center">Please add report entry or click Edit from Staff List tab</th>
 												</tr>
 												</thead>
 											</table>
@@ -129,12 +132,12 @@
                                 </div> 
 
 								<div class="tab-pane fade" id="s4">
-									<div id="conference_leave">
+									<div id="part_ii">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please add record from Conference Application or click Edit from Staff List</th>
+													<th class="text-center">Please add report entry or click Edit from Staff List tab</th>
 												</tr>
 												</thead>
 											</table>
@@ -143,12 +146,12 @@
                                 </div>
 
 								<div class="tab-pane fade" id="s5">
-									<div id="allowances">
+									<div id="part_iii">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please add record from Conference Application or click Edit from Staff List</th>
+													<th class="text-center">Please add report entry or click Edit from Staff List tab</th>
 												</tr>
 												</thead>
 											</table>
@@ -156,6 +159,19 @@
 									</div>
                                 </div>
 
+								<div class="tab-pane fade" id="s6">
+									<div id="part_iv">
+										<p>
+											<table class="table table-bordered table-hover">
+												<thead>
+												<tr>
+													<th class="text-center">Please add report entry or click Edit from Staff List tab</th>
+												</tr>
+												</thead>
+											</table>
+										</p>
+									</div>
+                                </div>
 								<!--<div class="tab-pane fade" id="s6">
 									<div id="hod_approval_verification">
 									</div>
@@ -201,19 +217,9 @@
 
 <script>
 	var ca_row = '';
-	
-	$(document).ready(function(){
-		// navigate to selected tab
-		<?php
-        $currtab = $this->session->tabID;
-    
-        if (!empty($currtab)) {
-            if ($currtab == 's1'){
-                echo "$('.nav-tabs li:eq(0) a').tab('show');";
-            }
-		}
-        ?>
-	});
+	var sl_row = '';
+	var stf_row = '';
+	var crs_row = '';
 
 	$(".nav-tabs a").click(function(){
 		$(this).tab('show');
@@ -238,6 +244,7 @@
 			ca_row = $('#tbl_ca_list').DataTable({
 				"ordering":false,
 			});
+			$('#conference_list #add_rep_stf').html('<button type="button" class="btn btn-primary btn-sm add_rep_btn"><i class="fa fa-plus"></i> Add New Report Entry</button>').show();
 		},
 		complete: function(){
 			$('#loader').hide();
@@ -260,6 +267,7 @@
                 ca_row = $('#tbl_ca_list').DataTable({
                     "ordering":false,
                 });
+				$('#conference_list #add_rep_stf').html('<button type="button" class="btn btn-primary btn-sm add_rep_btn"><i class="fa fa-plus"></i> Add New Report Entry</button>').show();
             }
         });
 	});
@@ -282,6 +290,7 @@
                 ca_row = $('#tbl_ca_list').DataTable({
                     "ordering":false,
                 });
+				$('#conference_list #add_rep_stf').html('<button type="button" class="btn btn-primary btn-sm add_rep_btn"><i class="fa fa-plus"></i> Add New Report Entry</button>').show();
             },
         });
 	});	
@@ -295,19 +304,20 @@
 
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('getStaffConferenceApplication')?>',
+			url: '<?php echo $this->lib->class_url('getStaffListConRep')?>',
 			data: {'refid' : crRefID, 'crName' : crName},
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
 				$('#staff_list_conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-				$('#conference_application').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click Add New Staff or Edit from Staff List</th></tr></thead></table></p>').show();
-				$('#conference_leave').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add record from Conference Application or click Edit from Staff List</th></tr></thead></table></p>').show();
-				$('#allowances').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add record from Conference Application or click Edit from Staff List</th></tr></thead></table></p>').show();
+				$('#part_i').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_ii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_iii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_iv').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry or click Edit from Staff List tab</th></tr></thead></table></p>').show();
 			},
 			success: function(res) {
 				$('#staff_list_conference').html(res);
 				
-				ca_row = $('#tbl_list_sta_cr').DataTable({
+				sl_row = $('#tbl_list_sta_cr').DataTable({
 					"ordering":false,
 				});
 			}
@@ -318,27 +328,209 @@
 	TAB 2 - STAFF LIST
 	-----------------------------*/
 
-	// ADD STAFF TO CONFERENCE
-	$('#staff_list_conference').on('click','.con_app_add_btn', function(){
-		var thisBtn = $(this);
-		var crRefID = thisBtn.val();
-		var crName = thisBtn.data("crname");
-		// alert(crRefID+crName);
+	// ADD NEW REPORT ENTRY
+	$('#conference_list').on('click','.add_rep_btn', function(){
+		$('#part_i').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 
-		$('#conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		show_loading();
+		
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('addStaffConference')?>',
-			data: {'refid' : crRefID, 'crName' : crName},
+			url: '<?php echo $this->lib->class_url('addReportEntry')?>',
+			// data: {'refid' : crRefID, 'crName' : crName},
 			success: function(res) {
 				$('.nav-tabs li:eq(2) a').tab('show');
-				$('#conference_application').html(res);
-				$('#conference_leave').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add record from Conference Application or click Edit from Staff List</th></tr></thead></table></p>').show();
-				$('#allowances').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add record from Conference Application or click Edit from Staff List</th></tr></thead></table></p>').show();
+				$('#part_i').html(res);
 				hide_loading();
 			}
 		});
+	});
+
+	///// SEARCH STAFF//////
+	// AUTO SEARCH STAFF ID
+	$('#part_i').on('keyup','#staff_id', function(){
+		// console.log(this.value);
+		var val_length = this.value.length;
+		var staff_id = this.value;
+		msg.wait('#alertStfID');
+
+		if(val_length >= 5) {
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('staffKeyUp')?>',
+				data: {'staff_id' : staff_id},
+				dataType: 'JSON',
+				success: function(res) {
+					if(res.sts == 1) {
+						msg.show('Staff ID is valid', 'success', '#alertStfID');
+						$('#staff_name').val(res.stf_name);
+
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('getStaffDetlInfo')?>',
+							data: {'staff_id' : staff_id},
+							dataType: 'JSON',
+							success: function(res) {
+								if(res.sts == 1) {
+									$('#postion').val(res.pos);
+									$('#pos_lvl').val(res.pos_lvl);
+									$('#dept_unit_id').val(res.dept_unit);
+									$('#dept_unit_name').val(res.unit_desc);
+									$('#ptj_fac_id').val(res.ptj_fac);
+									$('#ptj_fac_name').val(res.dept_desc);
+								} 
+							}
+						});
+					} else {
+						msg.show('Invalid Staff ID', 'danger', '#alertStfID');
+						$('#staff_name').val('');
+						$('#postion').val('');
+						$('#pos_lvl').val('');
+						$('#dept_unit_id').val('');
+						$('#dept_unit_name').val('');
+						$('#ptj_fac_id').val('');
+						$('#ptj_fac_name').val('');
+					}
+				}
+			});
+		} else {
+			msg.show('Invalid Staff ID', 'danger', '#alertStfID');
+			$('#staff_name').val('');
+		}
+	});
+
+	// SEARCH STAFF
+	$('#part_i').on('click','.search_staff', function(){
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+			data: '',
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+			}
+		});
+	});
+
+	// SEARCH STAFF MODAL
+	$('#myModalis').on('click', '.search_staff_md', function () {
+		var staff_id = $('#myModalis #staff_id').val();
+		search_trigger = 1;
+		// console.log(staff_id);
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+			data: {'staff_id':staff_id, 'search_trigger':search_trigger,},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+				$('#myModalis #staff_list').removeClass('hidden');
+
+				stf_row = $('#myModalis #tbl_stf_res_list').DataTable({
+                    "ordering":false,
+                });
+			}
+		});
+	});
+
+	// SELECT STAFF ID
+	$('#myModalis').on('click', '.select_staff_id', function () {
+		$('#myModalis').modal('hide');
+
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var staff_id = td.eq(0).html().trim();
+		var staff_name = td.eq(1).html().trim();
+		// console.log(staff_id);
+
+		if(staff_id != '' && staff_name != '') {
+			$('#staff_id').val(staff_id);
+			$('#staff_name').val(staff_name);
+
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getStaffDetlInfo')?>',
+				data: {'staff_id' : staff_id},
+				dataType: 'JSON',
+				success: function(res) {
+					if(res.sts == 1) {
+						$('#postion').val(res.pos);
+						$('#pos_lvl').val(res.pos_lvl);
+						$('#dept_unit_id').val(res.dept_unit);
+						$('#dept_unit_name').val(res.unit_desc);
+						$('#ptj_fac_id').val(res.ptj_fac);
+						$('#ptj_fac_name').val(res.dept_desc);
+					} 
+				}
+			});
+		}
+	});
+	///// SEARCH STAFF//////
+
+
+	// SEARCH CONFERENCE
+	$('#part_i').on('click','.search_cr', function(){
+		var staff_id = $('#staff_id').val();
+		var staff_name = $('#staff_name').val();
+		// alert(staff_id);
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('searchCrMd')?>',
+			data: {'staff_id':staff_id,'staff_name':staff_name},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+
+				crs_row = $('#myModalis #con_sr_list').DataTable({
+                    "ordering":false,
+                });
+			}
+		});
+	});
+
+	// SELECT STAFF ID
+	$('#myModalis').on('click', '.select_conference', function () {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var con_id = td.eq(0).html().trim();
+		var con_name = td.eq(1).html().trim();
+		var staff_id = $('#staff_id_md').val();
+		var select = 1;
+
+		$('#myModalis').modal('hide');
+		// console.log(staff_id);
+
+		if(con_id != '' && con_name != '' && staff_id != '') {
+			$('#con_id').val(con_id);
+			$('#con_name').val(con_name);
+
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getConDetlInfo')?>',
+				data: {'staff_id' : staff_id, 'select' : select},
+				dataType: 'JSON',
+				success: function(res) {
+					if(res.sts == 1) {
+						// console.log(res.con_inf[0].CM_DATE_FROM);
+						$('#cr_city').val(res.con_inf.CM_DATE_FROM);
+						$('#cr_postcode').val(res.con_inf.CM_DATE_TO);
+						$('#date_from').val(res.con_inf.CM_DATE_FROM);
+						$('#date_to').val(res.con_inf.CM_DATE_TO);
+					} 
+				}
+			});
+		}
 	});
 
 	// EDIT STAFF TO CONFERENCE
@@ -499,6 +691,8 @@
 		    }
 		});
 	});
+
+
 
 	/*-----------------------------
 	TAB 3 - CONFERENCE APPLICATION

@@ -14,7 +14,7 @@
         <div class="form-group">
             <label class="col-md-3 control-label"></label>
             <div class="col-md-8">
-                <textarea name="form[research_title]" class="form-control" type="text" rows="3" cols="50" readonly><?php echo $research_detl->SR_RESEARCH_TITLE?></textarea>
+                <textarea name="form[research_title]" class="form-control" type="text" rows="3" cols="50" readonly><?php echo $research_desc?></textarea>
             </div>
 
             

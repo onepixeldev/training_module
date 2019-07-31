@@ -22,9 +22,17 @@
         </div>
     </div>
 
+    <div class="form-group hidden">
+        <label class="col-md-2 control-label">Mod</label>
+        <div class="col-md-2">
+            <input name="form[mod]" class="form-control" type="text" value="" id="modDetl" readonly>
+        </div>
+    </div>
+
     <div class="alert alert-info fade in">
         <b>Details</b>
     </div>
+    <div id="alertStaffConDetlAppVer"></div>
 
     <div class="form-group">
         <label class="col-md-2 control-label">Remark</label>
@@ -37,7 +45,7 @@
         <label class="col-md-2 control-label">Budget Origin</label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[budget_origin]', $cr_budget_origin_list, $stf_detl->SCM_BUDGET_ORIGIN, 'class="form-control width-50" id="budOrg" disabled')
+                echo form_dropdown('form[budget_origin]', $cr_budget_origin_list, $stf_detl->SCM_BUDGET_ORIGIN, 'class="form-control width-50" id="budOrg"')
             ?>
         </div>
 
@@ -65,7 +73,7 @@
     <div class="form-group">
         <label class="col-md-3 control-label">Applied (RM) (Conference/PTNCA)</label>
         <div class="col-md-2">
-            <input name="form[applied_rm_conference_ptnca]" placeholder="Total (RM)" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOTAL_AMT, 2)?>" readonly>
+            <input name="form[applied_rm_conference_ptnca]" placeholder="Total (RM)" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOTAL_AMT, 2)?>" readonly id="total_rm2">
         </div>
 
         <label class="col-md-3 control-label">Applied (RM) (Department)</label>
@@ -126,12 +134,25 @@
         </div>
     </div>
     <br>
+
     <div class="form-group">
         <label class="col-md-2 control-label">Approved / Rejected By</label>
-        <div class="col-md-8">
-            <?php
-                echo form_dropdown('form[approved_rjc_by_tnc]', $staff_list, $app_rejc_id, 'class="select2-filter form-control" style = "width: 100%" id="approved_rjc_by_tnc"')
-            ?>
+        <div class="col-md-2">
+            <input name="form[approved_rjc_by_tnc]" class="form-control" type="text" value="<?php echo $app_rejc_id?>" id="approved_rjc_by_tnc">
+        </div>
+
+        <div class="col-md-6">
+            <input name="" class="form-control" type="text" value="<?php echo $app_rejc_name?>" id="approved_rjc_by_tnc_name" readonly>
+        </div>
+
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary search_staff"><i class="fa fa-search"></i> Search</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-2"></div>
+        <div class="col-md-3" id="alertStfID">
         </div>
     </div>
 
@@ -145,7 +166,7 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Receive Date</label>
         <div class="col-md-2">
-            <input name="form[received_date_tnc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $receive_date?>" id="received_date_tnc">
+            <input name="form[received_date_tnc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $receive_date?>" id="received_date_tnc" readonly>
         </div>
     </div>
 
@@ -153,14 +174,19 @@
     
     <div class="modal-footer">
         <!--<button type="button" class="btn btn-success save_staff_con_detl_app_ver"><i class="fa fa-save"></i> Save</button>-->
-        <div class="btn-group">
+        <!--<div class="btn-group">
             <button type="button" class="btn btn-md btn-primary" data-toggle="dropdown"><i class="fa fa-cog"></i> Option</button>
             <div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn">
                 <button type="button" class="btn btn-warning text-left btn-block btn-md amend_stf_app_ver" value=""><i class="fa fa-share-square-o"></i> Amend</button>
                 <button type="button" class="btn btn-primary text-left btn-block btn-md approve_stf_app_ver" value=""><i class="fa fa-check-square-o"></i> Approve</button>
                 <button type="button" class="btn btn-danger text-left btn-block btn-md reject_stf_app_ver" value=""><i class="fa fa-times-circle"></i> Reject</button>
             </div>
-        </div>
+        </div>-->
+
+        <button type="button" class="btn btn-primary text-left btn-md save_stf_detl"><i class="fa fa-floppy-o"></i> Save</button>
+        <button type="button" class="btn btn-warning text-left btn-md amend_stf_app_ver" value=""><i class="fa fa-share-square-o"></i> Amend</button>
+        <button type="button" class="btn btn-success text-left btn-md approve_stf_app_ver" value=""><i class="fa fa-check-square-o"></i> Approve</button>
+        <button type="button" class="btn btn-danger text-left btn-md reject_stf_app_ver" value=""><i class="fa fa-times-circle"></i> Reject</button>
     </div>
 </form>
 

@@ -1,4 +1,8 @@
 <p>
+<div class="text-right" id="add_rep_stf">
+	
+</div>
+<br>
 <div class="well">
 	<div class="row table-condensed table-responsive">
 		<table class="table table-bordered table-hover" id="tbl_ca_list">

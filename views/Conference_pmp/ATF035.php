@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Conference / Approve / Verify Conference Application (TNC A&A)') ?>
+<?php echo $this->lib->title('Conference / Approve / Verify Conference Application (TNC A&A)', $screen_id) ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">
@@ -32,18 +32,15 @@
                                 <li class="active">
                                     <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Approve/Verify Conference Application (TNC A&A)</a>
                                 </li>
-                                <li class="">
-                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">File Attachment</a>
+								<li class="">
+                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Details</a>
                                 </li>
 								<li class="">
                                     <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Staff Conference Leave</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Details</a>
+                                    <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">File Attachment</a>
                                 </li>
-								<!-- <li class="">
-                                    <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">Details</a>
-                                </li>-->
                             </ul>
 							<!-- myTabContent1 -->
                             <div id="myTabContent1" class="tab-content padding-10">
@@ -80,19 +77,19 @@
 									</div>
                                 </div>
 
-                                <div class="tab-pane fade" id="s2">
-									<div id="file_attachment">
+								<div class="tab-pane fade" id="s2">
+									<div id="details">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) List</th>
+													<th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th>
 												</tr>
 												</thead>
 											</table>
-										</p>	
+										</p>
 									</div>
-                                </div> 
+                                </div>
 
 								<div class="tab-pane fade" id="s3">
 									<div id="conference_leave">
@@ -100,7 +97,7 @@
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) List</th>
+													<th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th>
 												</tr>
 												</thead>
 											</table>
@@ -109,42 +106,18 @@
                                 </div> 
 
 								<div class="tab-pane fade" id="s4">
-									<div id="details">
+									<div id="file_attachment">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) List</th>
+													<th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th>
 												</tr>
 												</thead>
 											</table>
-										</p>
+										</p>	
 									</div>
-                                </div>
-
-								<!--<div class="tab-pane fade" id="s5">
-									<div id="details">
-										<p>
-											<table class="table table-bordered table-hover">
-												<thead>
-												<tr>
-													<th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) List</th>
-												</tr>
-												</thead>
-											</table>
-										</p>
-									</div>
-                                </div>--> 
-
-								<!--<div class="tab-pane fade" id="s6">
-									<div id="hod_approval_verification">
-									</div>
-                                </div>
-
-								<div class="tab-pane fade" id="s7">
-									<div id="tncaa_approval_verification">
-									</div>
-                                </div>-->  
+                                </div> 
 
                             </div>
                             <!-- end myTabContent1 -->
@@ -181,6 +154,8 @@
 
 <script>
 	var ca_row = '';
+	var stf_row = '';
+	var b_row  = '';
 	
 	$(document).ready(function(){
 		// navigate to selected tab
@@ -236,16 +211,17 @@
                 $('#conference_list').html(res);
                 ca_row = $('#tbl_ca_list').DataTable({
                     "ordering":false,
+					// "scrollX": true
                 });
 
-				$('#file_attachment').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) List</th></tr></thead></table></p>').show();
-				$('#conference_leave').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) List</th></tr></thead></table></p>').show();
-				$('#details').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) List</th></tr></thead></table></p>').show();
+				$('#file_attachment').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+				$('#conference_leave').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+				$('#details').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
             }
         });
 	});	
 
-	// DETAILS STAFF
+	// SELECT STAFF
 	$('#conference_list').on('click','.select_stf_app_ver', function(){
 		var thisBtn = $(this);
 		var td = thisBtn.closest("tr");
@@ -261,7 +237,6 @@
 			url: '<?php echo $this->lib->class_url('getFileAttachment')?>',
 			data: {'staff_id' : staff_id, 'refid' : refid},
 			beforeSend: function() {
-				$('.nav-tabs li:eq(1) a').tab('show');
 				$('#file_attachment').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 			},
 			success: function(res) {
@@ -279,15 +254,16 @@
 			},
 			success: function(res) {
 				$('#conference_leave').html(res);
-				$('div').remove('.appliedDateFromRmv');
-				$('div').remove('.appliedDateToRmv');
-				$('div').remove('.totalDayAppliedRmv');
-				$('div').remove('#alertConferenceLeave');
-				$('.ins_con_leave').remove('');
-				$('#approveDateFrom').prop('readonly', true);
-				$('#approveDateTo').prop('readonly', true);
-				$('#appDateFromLabel').replaceWith('<label class="col-md-2 control-label" id="appDateFromLabel">Date From</label>');
-				$('#appDateToLabel').replaceWith('<label class="col-md-2 control-label" id="appDateToLabel">Date To</label>');
+				$('#mod_sc').val('TNCA');
+				$('.appliedDateFromRmv').addClass('hidden');
+				$('.appliedDateToRmv').addClass('hidden');
+				$('.totalDayAppliedRmv').addClass('hidden');
+				// $('div').remove('#alertConferenceLeave');
+				// $('.ins_con_leave').remove('');
+				// $('#approveDateFrom').prop('readonly', true);
+				// $('#approveDateTo').prop('readonly', true);
+				$('#appDateFromLabel').replaceWith('<label class="col-md-2 control-label" id="appDateFromLabel">Date From <b><font color="red">*</font></b</label>');
+				$('#appDateToLabel').replaceWith('<label class="col-md-2 control-label" id="appDateToLabel">Date To <b><font color="red">*</font></b</label>');
 				$('#totalDayApproveLabel').replaceWith('<label class="col-md-2 control-label" id="totalDayApproveLabel">Total Day</label>');
 			}
 		});
@@ -298,12 +274,14 @@
 			url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
 			data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
 			beforeSend: function() {
+				$('.nav-tabs li:eq(1) a').tab('show');
 				$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 			},
 			success: function(res) {
 				$('#details').html(res);
+				$('#modDetl').val('TNCA');
 				var budget = $('.research_info').data();
-				// console.log(budget.budgetOrigin);
+
 				if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
 					// alert('show');
 					$('#details #rsh_btn').removeClass('hidden');
@@ -317,6 +295,317 @@
 					$('#details #allw_detl').addClass('hidden');
 					// alert('hide');
 				}
+			}
+		});
+	});	
+
+	// DETAIL STAFF CONFERENCE
+	$('#conference_list').on('click','.detl_stf_app_ver', function(){
+		$('#conference_list #detl_history_query #dhq').removeClass('hidden');
+		$('#conference_list #detl_history_query #dhq2').addClass('hidden');
+		
+		$('#file_attachment').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+		$('#conference_leave').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+		$('#details').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var crRefID = td.find(".refid").text();
+		var crStaffID = td.find(".staff_id").text();
+		// var crName = $('#tbl_list_sta_cr thead tr').data("crname");
+		crName = td.find(".cr_name").text();;
+		crStaffName = '';
+		// alert(crRefID+' '+crName+' '+crStaffID);
+		$('#conference_list #detl_history_query #conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		show_loading();
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('conAppQuery')?>',
+			data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName},
+			success: function(res) {
+				$('#myTabdhq li:eq(0) a').tab('show');
+				$('#conference_list #detl_history_query #conference_application').html(res);
+				$('html, body').animate({scrollTop: $('#detl_history_query').position().top}, 'slow');
+
+				var budget = $('.research_info').data();
+				// console.log(budget.budgetOrigin);
+				if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
+					// alert('show');
+					$('#conference_application #rsh_btn').removeClass('hidden');
+					// $('#conference_application .research_info').replaceWith('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+				} else {
+					$('#conference_application #rsh_btn').addClass('hidden');
+					// alert('hide');
+				}
+
+				// CONFERENCE LEAVE RECORD
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('addConferenceLeave')?>',
+					data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
+					beforeSend: function() {
+						$('#conference_list #detl_history_query #conference_leave_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+                        $('#conference_list #detl_history_query #conference_leave_detl').html(res);
+                        $('div').remove('.appliedDateFromRmv');
+                        $('div').remove('.appliedDateToRmv');
+                        $('div').remove('.totalDayAppliedRmv');
+                        $('div').remove('#alertConferenceLeave');
+                        $('.ins_con_leave').remove('');
+                        $('#approveDateFrom').prop('readonly', true);
+                        $('#approveDateTo').prop('readonly', true);
+                        $('#appDateFromLabel').replaceWith('<label class="col-md-2 control-label" id="appDateFromLabel">Date From</label>');
+                        $('#appDateToLabel').replaceWith('<label class="col-md-2 control-label" id="appDateToLabel">Date To</label>');
+                        $('#totalDayApproveLabel').replaceWith('<label class="col-md-2 control-label" id="totalDayApproveLabel">Total Day</label>');
+					}
+				});
+
+				// CONFERENCE RMIC APPROVAL
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('conRmicApproval')?>',
+					data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName},
+					beforeSend: function() {
+						$('#conference_list #detl_history_query #conference_rmic_approval').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
+							// alert('show');
+							$('#conference_list #detl_history_query #conference_rmic_approval').html(res);
+						} else {
+							$('#conference_list #detl_history_query #conference_rmic_approval').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Record not available for selected staff</th></tr></thead></table></p>').show();
+						}
+					}
+				});
+
+				// STAFF CONFERENCE ALLOWANCE
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('staffConAllowanceQuery')?>',
+					data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
+					beforeSend: function() {
+						$('#conference_list #detl_history_query allowances_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#conference_list #detl_history_query #allowances_detl').html(res);
+					}
+				});
+
+				hide_loading();
+			}
+		});
+	});
+
+	// RESEARCH INFO
+	$(document).on('click', '.research_info', function() {
+		// alert ('hello'); 
+		var research_refid = $('.research_info').val();
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('researchInfo')?>',
+			data: {'research_refid' : research_refid},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+			}
+		});
+	});
+
+	// CONFERENCE APPLICATION - VIEW FILE ATTACHMENT
+	$(document).on('click', '.download_file_q', function() {
+		// alert ('hello'); 
+		var thisBtn = $(this);
+		staff_id = $('#conference_application #tbl_ca_list thead tr').data("sid");
+		cr_refid = $('#conference_application #tbl_ca_list thead tr').data("refid");
+		var td = thisBtn.parent().siblings();
+		var file_name = td.eq(1).html().trim();
+		// alert(staff_id+' '+cr_refid);
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('dloadFileAttParam')?>',
+			data: {'staff_id' : staff_id, 'cr_refid' : cr_refid, 'file_name' : file_name},
+			dataType: 'JSON',
+			success: function(res) {
+				if(res.sts == 1) {
+					var ecommURL = '<?php echo $this->lib->class_url('fileAttachmentDload') ?>';
+					var newWin = window.open(ecommURL, 'title', 'width=800, height=300');
+				} else {
+					$.alert({
+						title: 'Alert!',
+						content: res.msg,
+						type: 'red',
+					});
+				}
+			}
+		});
+	});
+
+	// CONFERENCE HISTORY
+	$('#conference_list').on('click','.history_stf_app_ver', function(){
+		$('#conference_list #detl_history_query #dhq').addClass('hidden');
+		$('#conference_list #detl_history_query #dhq2').removeClass('hidden');
+		$('#file_attachment').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+		$('#conference_leave').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+		$('#details').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var staff_id = td.find(".staff_id").text();
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('conHistoryListQ')?>',
+			data: {'staff_id':staff_id},
+			beforeSend: function() {
+				show_loading();
+				$('#conference_list #detl_history_query #conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			},
+			success: function(res) {
+				$('#conference_list #detl_history_query #conference').html(res);
+				$('html, body').animate({scrollTop: $('#detl_history_query #dhq2').position().top}, 'slow');
+				b_row = $('#tbl_chl_list').DataTable({
+                    "ordering":false,
+                });
+				hide_loading();
+			}
+		});
+	});
+
+	// DETAIL STAFF CONFERENCE 2
+	$('#conference_list').on('click','.detl_btn', function(){
+		$('#conference_list #detl_history_query #dhq').removeClass('hidden');
+		$('#conference_list #detl_history_query #dhq2').addClass('hidden');
+		$('#file_attachment').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+		$('#conference_leave').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+		$('#details').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select staff from Approve / Verify Conference Application (TNC A&A) tab</th></tr></thead></table></p>').show();
+
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var crRefID = td.find(".refid").text();
+		crName = td.find(".cr_name").text();
+		var crStaffID = $("#staff_id").val();
+		crStaffName = '';
+		// alert(crRefID+' '+crName+' '+crStaffID);
+		$('#conference_list #detl_history_query #conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		show_loading();
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('conAppQuery')?>',
+			data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName},
+			success: function(res) {
+				$('#myTabdhq li:eq(0) a').tab('show');
+				$('#conference_list #detl_history_query #conference_application').html(res);
+				$('html, body').animate({scrollTop: $('#detl_history_query').position().top}, 'slow');
+
+				var budget = $('.research_info').data();
+				// console.log(budget.budgetOrigin);
+				if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
+					// alert('show');
+					$('#conference_application #rsh_btn').removeClass('hidden');
+					// $('#conference_application .research_info').replaceWith('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+				} else {
+					$('#conference_application #rsh_btn').addClass('hidden');
+					// alert('hide');
+				}
+
+				// CONFERENCE LEAVE RECORD
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('addConferenceLeave')?>',
+					data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
+					beforeSend: function() {
+						$('#conference_list #detl_history_query #conference_leave_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+                        $('#conference_list #detl_history_query #conference_leave_detl').html(res);
+                        $('div').remove('.appliedDateFromRmv');
+                        $('div').remove('.appliedDateToRmv');
+                        $('div').remove('.totalDayAppliedRmv');
+                        $('div').remove('#alertConferenceLeave');
+                        $('.ins_con_leave').remove('');
+                        $('#approveDateFrom').prop('readonly', true);
+                        $('#approveDateTo').prop('readonly', true);
+                        $('#appDateFromLabel').replaceWith('<label class="col-md-2 control-label" id="appDateFromLabel">Date From</label>');
+                        $('#appDateToLabel').replaceWith('<label class="col-md-2 control-label" id="appDateToLabel">Date To</label>');
+                        $('#totalDayApproveLabel').replaceWith('<label class="col-md-2 control-label" id="totalDayApproveLabel">Total Day</label>');
+					}
+				});
+
+				// CONFERENCE RMIC APPROVAL
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('conRmicApproval')?>',
+					data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName},
+					beforeSend: function() {
+						$('#conference_list #detl_history_query #conference_rmic_approval').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
+							// alert('show');
+							$('#conference_list #detl_history_query #conference_rmic_approval').html(res);
+						} else {
+							$('#conference_list #detl_history_query #conference_rmic_approval').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Record not available for selected staff</th></tr></thead></table></p>').show();
+						}
+					}
+				});
+
+				// STAFF CONFERENCE ALLOWANCE
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('staffConAllowanceQuery')?>',
+					data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
+					beforeSend: function() {
+						$('#conference_list #detl_history_query allowances_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#conference_list #detl_history_query #allowances_detl').html(res);
+					}
+				});
+
+				hide_loading();
+			}
+		});
+	});
+
+	// MEMO TNCA
+	$('#conference_list').on('click','.memo_tnca_btn', function () {
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var refid = td.find(".refid").text();
+		var scm_status = td.find(".scm_status").text();
+		var staff_id = $("#staff_id").val();
+		var repCode = '';
+		var sts_set = ['ENTRY','APPLY','VERIFY_TNCA','REJECT','CANCEL', ''];
+		// console.log(refid+' '+staff_id+' '+scm_status);
+
+		if(jQuery.inArray(scm_status, sts_set) != -1) {
+			$.alert({
+				title: 'Alert!',
+				content: 'This application has not yet been approved.',
+				type: 'red',
+			});
+
+			return;
+		} else {
+			repCode = 'ATR270';
+			// console.log('APPROVE!');
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setRepParam')?>',
+			data: {'refid' : refid, 'staff_id' : staff_id, 'repCode' : repCode},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
 			}
 		});
 	});	
@@ -337,235 +626,162 @@
 			msg.danger('Please contact administrator.', '#alertEditStaffConference');        
 		});
 	});
-	
+
 	/*-----------------------------
-	TAB 2 - FILE ATTACHMENT
+	TAB 2 - DETAILS
 	-----------------------------*/
+	// DEFAULT VALUE BUDGET ORIGIN
+	$('#details').on('click','#budOrg', function(){
+		var total_rm2 = parseFloat($('#total_rm2').val().replace(/,/g, '')).toFixed(2);
+		// console.log(total_rm2);
 
-	// VIEW FILE ATTACHMENT
-	$('#file_attachment').on('click','.download_file', function(){
-		var thisBtn = $(this);
-		staff_id = $('#staff_id').val();
-		cr_refid = $('#cr_refid').val();
-		var td = thisBtn.parent().siblings();
-		var file_name = td.eq(1).html().trim();
-		// alert(staff_id+' '+cr_refid+' '+file_name);
+		if(total_rm2 < 500) {
+			// console.log('Ayy');
+			$('#budOrg').val('DEPARTMENT');
+		} else {
+			$('#budOrg').val('CONFERENCE');
+		}
+	});
 
+	///// SEARCH STAFF//////
+	// AUTO SEARCH STAFF ID
+	$('#details').on('keyup','#approved_rjc_by_tnc', function(){
+		// console.log(this.value);
+		var val_length = this.value.length;
+		var staff_id = this.value;
+		msg.wait('#alertStfID');
+
+		if(val_length >= 5) {
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('staffKeyUp')?>',
+				data: {'staff_id' : staff_id},
+				dataType: 'JSON',
+				success: function(res) {
+					if(res.sts == 1) {
+						msg.show('Staff ID is valid', 'success', '#alertStfID');
+						$('#approved_rjc_by_tnc_name').val(res.stf_name);
+					} else {
+						msg.show('Invalid Staff ID', 'danger', '#alertStfID');
+						$('#approved_rjc_by_tnc_name').val('');
+					}
+				}
+			});
+		} else {
+			msg.show('Invalid Staff ID', 'danger', '#alertStfID');
+			$('#approved_rjc_by_tnc_name').val('');
+		}
+	});
+
+	// SEARCH STAFF
+	$('#details').on('click','.search_staff', function(){
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('dloadFileAttParam')?>',
-			data: {'staff_id' : staff_id, 'cr_refid' : cr_refid, 'file_name' : file_name},
-			dataType: 'JSON',
+			url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+			data: '',
 			success: function(res) {
-				if(res.sts == 1) {
-					var ecommURL = '<?php echo $this->lib->class_url('fileAttachmentDload') ?>';
-					var newWin = window.open(ecommURL, 'title', 'width=800, height=300');
-				} else {
-					$.alert({
-						title: 'Alert!',
-						content: res.msg,
-						type: 'red',
-					});
-				}
+				$('#myModalis .modal-content').html(res);
 			}
 		});
-    });
+	});
 
-	/*-----------------------------
-	TAB 3 - STAFF CONFERENCE LEAVE
-	-----------------------------*/
+	// SEARCH STAFF MODAL
+	$('#myModalis').on('click', '.search_staff_md', function () {
+		var staff_id = $('#myModalis #staff_id').val();
+		search_trigger = 1;
+		// console.log(staff_id);
 
-	// TOTAL DAY APPROVE
-	$('#conference_leave').on('dp.change', '#approveDateFrom', function(e){ 
-		app_date_fr = $('#approveDateFrom').val();
-		app_date_to = $('#approveDateTo').val();
-		staffID = $('#staff_id').val();
-		crRefid = $('#crRefid').val();
-		// alert(app_date_fr);
-		$('#loaderTDayApp').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+			data: {'staff_id':staff_id, 'search_trigger':search_trigger,},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+				$('#myModalis #staff_list').removeClass('hidden');
 
-		if(app_date_fr != '' && app_date_to != '') {
-			$.ajax({
-				type: 'POST',
-				url: '<?php echo $this->lib->class_url('countTotalDayApplied')?>',
-				data: {'app_date_fr' : app_date_fr, 'app_date_to' : app_date_to},
-				dataType: 'JSON',
-				success: function(res) {
-					if(res.sts == 1) {
-						total_day_applied = res.total_day_applied
-						$('#totalDayApprove').val(total_day_applied);
-						// balance_leave = balance_leave - res.total_day_applied;
-						// alert(total_day_applied);
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('getLeaveBalance')?>',
-							data: {'staffID' : staffID, 'crRefid' : crRefid, 'total_day_applied' : total_day_applied, 'app_date_fr' : app_date_fr},
-							dataType: 'JSON',
-							success: function(res) {
-								if(res.sts == 1) {
-									// alert('1sts');
-									leave_balance_db = res.leave_balance;
-									leave_balance_ac = parseInt(leave_balance_db) - parseInt(total_day_applied);
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_ac);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 2) {
-									// alert('2sts');
-									leave_balance_db = parseInt(res.leave_balance);
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_db);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 3) {
-									// alert('3sts');
-									leave_balance_db = parseInt(res.leave_balance) + (parseInt(res.sld_total_day_db) - parseInt(total_day_applied));
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_db);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 4) {
-									// alert('4sts');
-									leave_balance_db = res.leave_balance;
-									total_day_db = res.sld_total_day_db;
-									leave_balance_ac = parseInt(leave_balance_db) - (parseInt(total_day_applied)-parseInt(total_day_db));
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_ac);
-									$('#entitledYear').val(res.app_date_fr_year);
-								}
-							}
-						});
-					}
-					$('#loaderTDayApp').hide();
-				}
-			});
-		} else {
-			$('#totalDayApprove').val('0');
-			$('#entitledLeave').val('0');
-			$('#entitledYear').val('0');
-			$('#balanceLeave').val('0');
-			$('#loaderTDayApp').hide();
-			return;
+				stf_row = $('#myModalis #tbl_stf_res_list').DataTable({
+                    "ordering":false,
+                });
+			}
+		});
+	});
+
+	// SELECT STAFF ID
+	$('#myModalis').on('click', '.select_staff_id', function () {
+		$('#myModalis').modal('hide');
+
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var staff_id = td.eq(0).html().trim();
+		var staff_name = td.eq(1).html().trim();
+		
+		if(staff_id != '' && staff_name != '') {
+			$('#approved_rjc_by_tnc').val(staff_id);
+			$('#approved_rjc_by_tnc_name').val(staff_name);
 		}
-    });
+	});
+	///// SEARCH STAFF//////
 
-	$('#conference_leave').on('dp.change', '#approveDateTo', function(e){ 
-		app_date_fr = $('#approveDateFrom').val();
-		app_date_to = $('#approveDateTo').val();
-		staffID = $('#staff_id').val();
-		crRefid = $('#crRefid').val();
-		// alert(app_date_fr);
-		$('#loaderTDayApp').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-
-		if(app_date_fr != '' && app_date_to != '') {
-			$.ajax({
-				type: 'POST',
-				url: '<?php echo $this->lib->class_url('countTotalDayApplied')?>',
-				data: {'app_date_fr' : app_date_fr, 'app_date_to' : app_date_to},
-				dataType: 'JSON',
-				success: function(res) {
-					if(res.sts == 1) {
-						total_day_applied = res.total_day_applied
-						$('#totalDayApprove').val(total_day_applied);
-						// balance_leave = balance_leave - res.total_day_applied;
-						// alert(total_day_applied);
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('getLeaveBalance')?>',
-							data: {'staffID' : staffID, 'crRefid' : crRefid, 'total_day_applied' : total_day_applied, 'app_date_fr' : app_date_fr},
-							dataType: 'JSON',
-							success: function(res) {
-								if(res.sts == 1) {
-									// alert('1sts');
-									leave_balance_db = res.leave_balance;
-									leave_balance_ac = parseInt(leave_balance_db) - parseInt(total_day_applied);
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_ac);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 2) {
-									// alert('2sts');
-									leave_balance_db = parseInt(res.leave_balance);
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_db);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 3) {
-									// alert('3sts');
-									leave_balance_db = parseInt(res.leave_balance) + (parseInt(res.sld_total_day_db) - parseInt(total_day_applied));
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_db);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 4) {
-									// alert('4sts');
-									leave_balance_db = res.leave_balance;
-									total_day_db = res.sld_total_day_db;
-									leave_balance_ac = parseInt(leave_balance_db) - (parseInt(total_day_applied)-parseInt(total_day_db));
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_ac);
-									$('#entitledYear').val(res.app_date_fr_year);
-								}
-							}
-						});
-					}
-					$('#loaderTDayApp').hide();
-				}
-			});
-		} else {
-			$('#totalDayApprove').val('0');
-			$('#entitledLeave').val('0');
-			$('#entitledYear').val('0');
-			$('#balanceLeave').val('0');
-			$('#loaderTDayApp').hide();
-			return;
-		}
-    });
-
-	// SAVE ADD/EDIT CONFERENCE LEAVE
-	$('#conference_leave').on('click', '.ins_con_leave', function () {
-		balance = $('#balanceLeave').val();
-		if(balance < 0) {
-			$.alert({
-				title: 'Alert!',
-				content: 'The leave applied exceeds the conference leave balance. Please apply for annual leave.',
-				type: 'red',
-			});
-
-			return;
-		}
-
-		var data = $('#addConferenceLeave').serialize();
-		msg.wait('#alertConferenceLeave');
-        msg.wait('#alertConferenceLeaveFooter');
-		//alert(data);
-		crStaffID = $('#staff_id').val();
-		crRefID = $('#crRefid').val();
+	// SAVE STAFF DETAIL
+	$('#details').on('click', '.save_stf_detl', function () {
+		var data = $('#staffConDetlAppVer').serialize();
+		staff_id = $('#staff_id').val();
+		refid = $('#crRefid').val();
+		crStaffName = '';
 		crName = $('#crName').val();
-		crStaffName = $('#staff_name').val();
-		alert(data);
+		mod = 'TNCA';
+		msg.wait('#alertStaffConDetlAppVer');
+		msg.wait('#alertStaffConDetlAppVerFooter');
+		// alert(data);
 		
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveInsEditConLeave')?>',
+			url: '<?php echo $this->lib->class_url('saveUpdStfConDetlAppVer')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertConferenceLeave');
-                msg.show(res.msg, res.alert, '#alertConferenceLeaveFooter');
+				msg.show(res.msg, res.alert, '#alertStaffConDetlAppVer');
+				msg.show(res.msg, res.alert, '#alertStaffConDetlAppVerFooter');
 
 				if (res.sts == 1) {
 					setTimeout(function () {
-						$('.btn').removeAttr('disabled');
-						
-						// refresh leave conference
 						$.ajax({
 							type: 'POST',
-							url: '<?php echo $this->lib->class_url('addConferenceLeave')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
+							url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
+							data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
 							beforeSend: function() {
-								$('#conference_leave').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+								$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 							},
 							success: function(res) {
-								$('#conference_leave').html(res);
-								$('.nav-tabs li:eq(2) a').tab('show');
+								$('#details').html(res);
+								$('#modDetl').val('TNCA');
+								var budget = $('.research_info').data();
+
+								if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
+									// alert('show');
+									$('#details #rsh_btn').removeClass('hidden');
+									
+									$('#details #allw_detl').removeClass('hidden');
+									$('#details #allw_detl2').addClass('hidden');
+								} else {
+									$('#details #rsh_btn').addClass('hidden');
+									
+									$('#details #allw_detl2').removeClass('hidden');
+									$('#details #allw_detl').addClass('hidden');
+									// alert('hide');
+								}
 							}
 						});
+						$('.btn').removeAttr('disabled');
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -573,15 +789,10 @@
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alertEditStaffConference');
-				msg.danger('Please contact administrator.', '#alertEditStaffConferenceFooter');
+				msg.danger('Please contact administrator.', '#alertStaffConDetlAppVer');
 			}
 		});	
 	});
-
-	/*-----------------------------
-	TAB 4 - DETAILS
-	-----------------------------*/
 
 	// AMEND
 	$('#details').on('click','.amend_stf_app_ver', function(){
@@ -774,6 +985,7 @@
 		appr_rej_date = $('#approved_rjc_date_tnc').val();
 		rec_date = $('#received_date_tnc').val();
 		bud_org = $('#budOrg').val();
+		mod = 'TNCA';
 		// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
 
 		$.confirm({
@@ -810,7 +1022,7 @@
 					$.ajax({
 						type: 'POST',
 						url: '<?php echo $this->lib->class_url('rejectConferenceTncaa')?>',
-						data: {'staff_id' : staff_id, 'refid' : refid, 'remark' : remark, 'appr_rej_by' : appr_rej_by, 'appr_rej_date' : appr_rej_date, 'rec_date' : rec_date, 'bud_org' : bud_org},
+						data: {'staff_id' : staff_id, 'refid' : refid, 'remark' : remark, 'appr_rej_by' : appr_rej_by, 'appr_rej_date' : appr_rej_date, 'rec_date' : rec_date, 'bud_org' : bud_org, 'mod' : mod},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
@@ -934,6 +1146,7 @@
 		    buttons: {
 		        yes: function () {
 					$('.btn').attr('disabled', 'disabled');
+					// show_loading();
 					$('.checkitem:checked').each(function() {
 						// check the checked property 
 						var allwCode = $(this).val();
@@ -950,6 +1163,7 @@
 					// alert(appTncaForArr);
 
 					if (selectedID == 0) {
+						// hide_loading();
 						$('.btn').removeAttr('disabled');
 						$.alert({
 							title: 'Alert!',
@@ -1020,6 +1234,7 @@
 										)
 									}
 								});
+								// hide_loading();
 							} else {
 								$.alert({
 									title: 'Alert!',
@@ -1067,15 +1282,10 @@
 						var allwCode = $(this).val();
 						// staffID = $(this).closest("tr").find(".sid").text();
 						amount = $(this).closest('tr').find('[name="sca_amount_rm"]').val();
-						++selectedID;
 						amountFor = $(this).closest('tr').find('[name="sca_amount_foreign"]').val();
-						++selectedID;
 						appHod = $(this).closest('tr').find('[name="sca_amt_rm_approve_hod"]').val();
-						++selectedID;
 						appHodFor = $(this).closest('tr').find('[name="sca_amt_foreign_approve_hod"]').val();
-						++selectedID;
 						appTnca = $(this).closest('tr').find('[name="sca_amt_rm_approve_tnca"]').val();
-						++selectedID;
 						appTncaFor = $(this).closest('tr').find('[name="sca_amt_foreign_approve_tnca"]').val();
 						++selectedID;
 						
@@ -1305,4 +1515,256 @@
 	$('#details').on('click','.unselect_all_btn', function() {
 		$(".checkitem").prop('checked', false);
 	});
+
+	/*-----------------------------
+	TAB 3 - CONFERENCE LEAVE
+	-----------------------------*/
+
+	// TOTAL DAY APPROVE
+	$('#conference_leave').on('dp.change', '#approveDateFrom', function(e){ 
+		app_date_fr = $('#approveDateFrom').val();
+		app_date_to = $('#approveDateTo').val();
+		staffID = $('#staff_id').val();
+		crRefid = $('#crRefid').val();
+		// alert(app_date_fr);
+		$('#loaderTDayApp').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+
+		if(app_date_fr != '' && app_date_to != '') {
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('countTotalDayApplied')?>',
+				data: {'app_date_fr' : app_date_fr, 'app_date_to' : app_date_to},
+				dataType: 'JSON',
+				success: function(res) {
+					if(res.sts == 1) {
+						total_day_applied = res.total_day_applied
+						$('#totalDayApprove').val(total_day_applied);
+						// balance_leave = balance_leave - res.total_day_applied;
+						// alert(total_day_applied);
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('getLeaveBalance')?>',
+							data: {'staffID' : staffID, 'crRefid' : crRefid, 'total_day_applied' : total_day_applied, 'app_date_fr' : app_date_fr},
+							dataType: 'JSON',
+							success: function(res) {
+								if(res.sts == 1) {
+									// alert('1sts');
+									leave_balance_db = res.leave_balance;
+									leave_balance_ac = parseInt(leave_balance_db) - parseInt(total_day_applied);
+									$('#entitledLeave').val(res.entitled_leave);
+									$('#balanceLeave').val(leave_balance_ac);
+									$('#entitledYear').val(res.app_date_fr_year);
+								} else if (res.sts == 2) {
+									// alert('2sts');
+									leave_balance_db = parseInt(res.leave_balance);
+									$('#entitledLeave').val(res.entitled_leave);
+									$('#balanceLeave').val(leave_balance_db);
+									$('#entitledYear').val(res.app_date_fr_year);
+								} else if (res.sts == 3) {
+									// alert('3sts');
+									leave_balance_db = parseInt(res.leave_balance) + (parseInt(res.sld_total_day_db) - parseInt(total_day_applied));
+									$('#entitledLeave').val(res.entitled_leave);
+									$('#balanceLeave').val(leave_balance_db);
+									$('#entitledYear').val(res.app_date_fr_year);
+								} else if (res.sts == 4) {
+									// alert('4sts');
+									leave_balance_db = res.leave_balance;
+									total_day_db = res.sld_total_day_db;
+									leave_balance_ac = parseInt(leave_balance_db) - (parseInt(total_day_applied)-parseInt(total_day_db));
+									$('#entitledLeave').val(res.entitled_leave);
+									$('#balanceLeave').val(leave_balance_ac);
+									$('#entitledYear').val(res.app_date_fr_year);
+								}
+							}
+						});
+					}
+					$('#loaderTDayApp').hide();
+				}
+			});
+		} else {
+			$('#totalDayApprove').val('0');
+			$('#entitledLeave').val('0');
+			$('#entitledYear').val('0');
+			$('#balanceLeave').val('0');
+			$('#loaderTDayApp').hide();
+			return;
+		}
+    });
+
+	$('#conference_leave').on('dp.change', '#approveDateTo', function(e){ 
+		app_date_fr = $('#approveDateFrom').val();
+		app_date_to = $('#approveDateTo').val();
+		staffID = $('#staff_id').val();
+		crRefid = $('#crRefid').val();
+		// alert(app_date_fr);
+		$('#loaderTDayApp').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+
+		if(app_date_fr != '' && app_date_to != '') {
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('countTotalDayApplied')?>',
+				data: {'app_date_fr' : app_date_fr, 'app_date_to' : app_date_to},
+				dataType: 'JSON',
+				success: function(res) {
+					if(res.sts == 1) {
+						total_day_applied = res.total_day_applied
+						$('#totalDayApprove').val(total_day_applied);
+						// balance_leave = balance_leave - res.total_day_applied;
+						// alert(total_day_applied);
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('getLeaveBalance')?>',
+							data: {'staffID' : staffID, 'crRefid' : crRefid, 'total_day_applied' : total_day_applied, 'app_date_fr' : app_date_fr},
+							dataType: 'JSON',
+							success: function(res) {
+								if(res.sts == 1) {
+									// alert('1sts');
+									leave_balance_db = res.leave_balance;
+									leave_balance_ac = parseInt(leave_balance_db) - parseInt(total_day_applied);
+									$('#entitledLeave').val(res.entitled_leave);
+									$('#balanceLeave').val(leave_balance_ac);
+									$('#entitledYear').val(res.app_date_fr_year);
+								} else if (res.sts == 2) {
+									// alert('2sts');
+									leave_balance_db = parseInt(res.leave_balance);
+									$('#entitledLeave').val(res.entitled_leave);
+									$('#balanceLeave').val(leave_balance_db);
+									$('#entitledYear').val(res.app_date_fr_year);
+								} else if (res.sts == 3) {
+									// alert('3sts');
+									leave_balance_db = parseInt(res.leave_balance) + (parseInt(res.sld_total_day_db) - parseInt(total_day_applied));
+									$('#entitledLeave').val(res.entitled_leave);
+									$('#balanceLeave').val(leave_balance_db);
+									$('#entitledYear').val(res.app_date_fr_year);
+								} else if (res.sts == 4) {
+									// alert('4sts');
+									leave_balance_db = res.leave_balance;
+									total_day_db = res.sld_total_day_db;
+									leave_balance_ac = parseInt(leave_balance_db) - (parseInt(total_day_applied)-parseInt(total_day_db));
+									$('#entitledLeave').val(res.entitled_leave);
+									$('#balanceLeave').val(leave_balance_ac);
+									$('#entitledYear').val(res.app_date_fr_year);
+								}
+							}
+						});
+					}
+					$('#loaderTDayApp').hide();
+				}
+			});
+		} else {
+			$('#totalDayApprove').val('0');
+			$('#entitledLeave').val('0');
+			$('#entitledYear').val('0');
+			$('#balanceLeave').val('0');
+			$('#loaderTDayApp').hide();
+			return;
+		}
+    });
+
+	// SAVE ADD/EDIT CONFERENCE LEAVE
+	$('#conference_leave').on('click', '.ins_con_leave', function () {
+		balance = $('#balanceLeave').val();
+		if(balance < 0) {
+			$.alert({
+				title: 'Alert!',
+				content: 'The leave applied exceeds the conference leave balance. Please apply for annual leave.',
+				type: 'red',
+			});
+
+			return;
+		}
+
+		var data = $('#addConferenceLeave').serialize();
+		msg.wait('#alertConferenceLeave');
+        msg.wait('#alertConferenceLeaveFooter');
+		//alert(data);
+		crStaffID = $('#staff_id').val();
+		crRefID = $('#crRefid').val();
+		crName = $('#crName').val();
+		crStaffName = $('#staff_name').val();
+		//alert(crStaffID);
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveInsEditConLeave')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertConferenceLeave');
+                msg.show(res.msg, res.alert, '#alertConferenceLeaveFooter');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('.btn').removeAttr('disabled');
+						
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('addConferenceLeave')?>',
+							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
+							beforeSend: function() {
+								$('#conference_leave').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#conference_leave').html(res);
+								$('#mod_sc').val('TNCA');
+								$('.appliedDateFromRmv').addClass('hidden');
+								$('.appliedDateToRmv').addClass('hidden');
+								$('.totalDayAppliedRmv').addClass('hidden');
+								// $('div').remove('#alertConferenceLeave');
+								// $('.ins_con_leave').remove('');
+								// $('#approveDateFrom').prop('readonly', true);
+								// $('#approveDateTo').prop('readonly', true);
+								$('#appDateFromLabel').replaceWith('<label class="col-md-2 control-label" id="appDateFromLabel">Date From <b><font color="red">*</font></b</label>');
+								$('#appDateToLabel').replaceWith('<label class="col-md-2 control-label" id="appDateToLabel">Date To <b><font color="red">*</font></b</label>');
+								$('#totalDayApproveLabel').replaceWith('<label class="col-md-2 control-label" id="totalDayApproveLabel">Total Day</label>');
+							}
+						});
+
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alertEditStaffConference');
+				msg.danger('Please contact administrator.', '#alertEditStaffConferenceFooter');
+			}
+		});	
+	});
+	
+	/*-----------------------------
+	TAB 4 - FILE ATTACHMENT
+	-----------------------------*/
+
+	// VIEW FILE ATTACHMENT
+	$('#file_attachment').on('click','.download_file', function(){
+		var thisBtn = $(this);
+		staff_id = $('#staff_id').val();
+		cr_refid = $('#cr_refid').val();
+		var td = thisBtn.parent().siblings();
+		var file_name = td.eq(1).html().trim();
+		// alert(staff_id+' '+cr_refid+' '+file_name);
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('dloadFileAttParam')?>',
+			data: {'staff_id' : staff_id, 'cr_refid' : cr_refid, 'file_name' : file_name},
+			dataType: 'JSON',
+			success: function(res) {
+				if(res.sts == 1) {
+					var ecommURL = '<?php echo $this->lib->class_url('fileAttachmentDload') ?>';
+					var newWin = window.open(ecommURL, 'title', 'width=800, height=300');
+				} else {
+					$.alert({
+						title: 'Alert!',
+						content: res.msg,
+						type: 'red',
+					});
+				}
+			}
+		});
+    });
 </script>

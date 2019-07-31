@@ -17,6 +17,33 @@ class Conference_pmp_model extends MY_Model
     /*===========================================================
        CONFERENCE APPLICATION - MANUAL ENTRY (ATF075)
     =============================================================*/
+
+    // DEPARTMENT LIST DROPDOWN
+    public function getDeptList() {
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_DESC, DM_DEPT_CODE||' - '||DM_DEPT_DESC DEPT_CODE_DESC");
+        $this->db->from("DEPARTMENT_MAIN");
+        $this->db->where("DM_LEVEL IN (1,2)");
+        $this->db->where("DM_STATUS = 'ACTIVE'");
+        $this->db->order_by("DM_DEPT_CODE");
+        $q = $this->db->get();
+                
+        return $q->result();
+
+    }
+
+    // DEPARTMENT LIST DROPDOWN ATR089
+    public function getDeptListAtr089() {
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_DESC, DM_DEPT_CODE||' - '||DM_DEPT_DESC DEPT_CODE_DESC");
+        $this->db->from("DEPARTMENT_MAIN");
+        $this->db->where("DM_LEVEL <= 2");
+        $this->db->where("DM_STATUS = 'ACTIVE'");
+        $this->db->order_by("DM_DEPT_DESC");
+        $q = $this->db->get();
+                
+        return $q->result();
+
+    }
+
     public function getCurDate() {		
         $this->db->select("TO_CHAR(SYSDATE, 'MM') AS SYSDATE_MM, TO_CHAR(SYSDATE, 'YYYY') AS SYSDATE_YYYY");
         $this->db->from("DUAL");
@@ -63,7 +90,7 @@ class Conference_pmp_model extends MY_Model
             $this->db->where("TO_CHAR(CM_DATE_FROM, 'YYYY') = '$year'");
         }
         elseif(empty($month) && empty($year) && !empty($refidTitle)) {
-            $this->db->where("CM_REFID LIKE '%$refidTitle%' OR UPPER(CM_NAME) LIKE UPPER('%$refidTitle%')");
+            $this->db->where("(CM_REFID LIKE '%$refidTitle%' OR UPPER(CM_NAME) LIKE UPPER('%$refidTitle%'))");
         }
         $this->db->order_by("CM_DATE_FROM DESC");
         $q = $this->db->get();
@@ -92,13 +119,13 @@ class Conference_pmp_model extends MY_Model
     // GET STAFF LIST DROPDOWN
     public function getStaffList($staffID = null)
     {
-        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID ||' - '||SM_STAFF_NAME AS SM_STAFF_ID_NAME");
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID ||' - '||SM_STAFF_NAME AS SM_STAFF_ID_NAME, TO_CHAR(SYSDATE, 'DD/MM/YYYY') AS CURR_DATE");
         $this->db->from("STAFF_MAIN, STAFF_STATUS");
         $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
         $this->db->where("SM_STAFF_TYPE = 'STAFF'");
 
         if(!empty($staffID)) {
-            $this->db->where("SM_STAFF_ID", $staffID);
+            $this->db->where("UPPER(SM_STAFF_ID) = UPPER('$staffID')");
             $q = $this->db->get();
             return $q->row();
         } else {
@@ -108,6 +135,31 @@ class Conference_pmp_model extends MY_Model
             $q = $this->db->get();
             return $q->result();
         }
+    }
+
+    // SEARCH STAFF
+    public function getStaffSearch($staffID)
+    {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID ||' - '||SM_STAFF_NAME AS SM_STAFF_ID_NAME");
+        $this->db->from("STAFF_MAIN, STAFF_STATUS");
+        $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
+        $this->db->where("SM_STAFF_TYPE = 'STAFF'");
+        $this->db->where("SS_STATUS_STS = 'ACTIVE'");
+
+        $this->db->where("(UPPER(SM_STAFF_ID) LIKE UPPER('%$staffID%') OR UPPER(SM_STAFF_NAME) LIKE UPPER('%$staffID%'))");
+        $this->db->order_by("2");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    public function getStaffInfo($staffID = null)
+    {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID ||' - '||SM_STAFF_NAME AS SM_STAFF_ID_NAME");
+        $this->db->from("STAFF_MAIN");
+        $this->db->where("SM_STAFF_ID", $staffID);
+        $q = $this->db->get();
+        return $q->row();
     }
 
     // GET CONFERENCE ROLE LIST
@@ -140,7 +192,7 @@ class Conference_pmp_model extends MY_Model
     {
         $this->db->select("CM_REFID, CM_NAME, CM_ADDRESS, CM_CITY, CM_POSTCODE, 
         CM_STATE, SM_STATE_DESC, CONFERENCE_MAIN.CM_COUNTRY_CODE AS CM_COUNTRY_CODE, COUNTRY_MAIN.CM_COUNTRY_DESC AS CM_COUNTRY_DESC, 
-        TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FROM, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, TO_CHAR(CM_DATE_FROM, 'YYYY') AS CM_DATE_FROM_YEAR");
+        TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FROM, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, TO_CHAR(CM_DATE_FROM, 'YYYY') AS CM_DATE_FROM_YEAR, CM_DESC, CM_ENTER_BY, TO_CHAR(CM_ENTER_DATE, 'DD/MM/YYYY') AS CM_ENTER_DATE");
         $this->db->from("CONFERENCE_MAIN");
         $this->db->join("STATE_MAIN", "CM_STATE = STATE_MAIN.SM_STATE_CODE", "LEFT");
         $this->db->join("COUNTRY_MAIN", "CONFERENCE_MAIN.CM_COUNTRY_CODE = COUNTRY_MAIN.CM_COUNTRY_CODE", "LEFT");
@@ -154,7 +206,13 @@ class Conference_pmp_model extends MY_Model
     public function getStaffConferenceDetl($refid, $staff_id)
     {
         $this->db->select("SCM_STAFF_ID, SCM_REFID, SCM_LEAVE_REFID, SCM_PARTICIPANT_ROLE, SCM_PAPER_TITLE,
-        SCM_PAPER_TITLE2, SCM_CATEGORY_CODE, SCM_APPROVE_BY, TO_CHAR(SCM_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_APPROVE_DATE, SCM_SPONSOR, SCM_SPONSOR_NAME, 
+        SCM_PAPER_TITLE2, SCM_CATEGORY_CODE, SCM_APPROVE_BY, TO_CHAR(SCM_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_APPROVE_DATE, 
+        CASE SCM_SPONSOR
+            WHEN 'Y' THEN 'Yes'
+            WHEN 'H' THEN 'Half Sponsorship'
+            ELSE 'No'
+        END AS SCM_SPONSOR_F,
+        SCM_SPONSOR, SCM_SPONSOR_NAME, 
         SCM_SPONSOR_BUDGET_ORIGIN, SCM_RM_SPONSOR_TOTAL_AMT, SCM_BUDGET_ORIGIN, 
         TO_CHAR(SCM_APPLY_DATE, 'DD/MM/YYYY') AS SCM_APPLY_DATE, 
         SCM_STATUS, SCM_APPROVER_REMARK1, SCM_APPROVER_REMARK2, SCM_APPROVER_REMARK3,
@@ -164,8 +222,9 @@ class Conference_pmp_model extends MY_Model
         TO_CHAR(SCM_VC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_VC_APPROVE_DATE, TO_CHAR(SCM_VC_RECEIVE_DATE, 'DD/MM/YYYY') AS SCM_VC_RECEIVE_DATE, TO_CHAR(SCM_LEAVE_DATE_FROM, 'DD/MM/YYYY') AS SCM_LEAVE_DATE_FROM, TO_CHAR(SCM_LEAVE_DATE_TO, 'DD/MM/YYYY') AS SCM_LEAVE_DATE_TO,
         SCM_RM_TOTAL_AMT, SCM_RM_TOTAL_AMT_APPROVE_HOD, SCM_RM_TOTAL_AMT_APPROVE_TNCA, SCM_RM_TOTAL_AMT_APPROVE_VC,
         SCM_RM_TOTAL_AMT_DEPT, SCM_TOTAL_AMT_DEPT_APPRV_HOD, SCM_RM_TOT_AMT_APPRV_RMIC, SCM_RM_TOT_AMT_APPRV_TNCPI, SCM_BUDGET_ORIGIN_PREV, TO_CHAR(SCM_TNCPI_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_TNCPI_APPROVE_DATE, 
-        TO_CHAR(SCM_RMIC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_RMIC_APPROVE_DATE, SCM_RESEARCH_REFID, SCM_VC_REMARK");
+        TO_CHAR(SCM_RMIC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_RMIC_APPROVE_DATE, SCM_RESEARCH_REFID, SCM_VC_REMARK, SCM_RMIC_REMARK, CC_DESC, SCM_RMIC_APPROVE_BY, SCM_TNCPI_REMARK, SCM_TNCPI_APPROVE_BY, SCM_RM_TOT_AMT_RMIC");
         $this->db->from("STAFF_CONFERENCE_MAIN");
+        $this->db->join("CONFERENCE_CATEGORY", "SCM_CATEGORY_CODE = CC_CODE", "LEFT");
         $this->db->where("SCM_REFID", $refid);
         $this->db->where("SCM_STAFF_ID", $staff_id);
 
@@ -362,7 +421,7 @@ class Conference_pmp_model extends MY_Model
     // CHECK STAFF ACADEMIN OR NON_ACADEMIC
     public function getStaffDetlAca($staffID)
     {
-        $this->db->select("SS_ACADEMIC, TO_CHAR(SYSDATE, 'YYYY') AS CURR_YEAR");
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_JOB_CODE, SS_SERVICE_DESC, SS_ACADEMIC, TO_CHAR(SYSDATE, 'YYYY') AS CURR_YEAR");
         $this->db->from("STAFF_MAIN, SERVICE_SCHEME");
         $this->db->where("SM_JOB_CODE = SS_SERVICE_CODE");
         $this->db->where("SM_STAFF_ID", $staffID);
@@ -1029,6 +1088,35 @@ class Conference_pmp_model extends MY_Model
 
         return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
     }
+
+    // SAVE STAFF DETAIL
+    public function saveUpdStfConDetlAppVer($form)
+    {
+        $mod = $form['mod'];
+        if($mod == 'TNCA') {
+            $data = array(
+                "SCM_TNCA_REMARK" => $form['remark'],
+                "SCM_BUDGET_ORIGIN" => $form['budget_origin'],
+                "SCM_CATEGORY_CODE" => $form['category'],
+                "SCM_TNCA_APPROVE_BY" => $form['approved_rjc_by_tnc']
+            );
+        } elseif($mod == 'VC') {
+            $data = array(
+                "SCM_VC_REMARK" => $form['remark'],
+                "SCM_VC_APPROVE_BY" => $form['approved_rjc_by_tnc']
+            );
+        }
+
+        if(!empty($form['approved_rjc_date_tnc'])) {
+            $appr_date = "to_date('".$form['approved_rjc_date_tnc']."', 'DD/MM/YYYY')";
+            $this->db->set("SCM_TNCA_APPROVE_DATE", $appr_date, false);
+        }
+        
+        $this->db->where("SCM_STAFF_ID", $form['staff_id']);
+        $this->db->where("SCM_REFID", $form['conference_title']);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
     
     // CLEAR VALUE APPROVED TNCA
     public function clearValAppTnca($refid, $staff_id, $aca)
@@ -1161,7 +1249,7 @@ class Conference_pmp_model extends MY_Model
     }
 
     // GET STAFF REMINDER
-    public function getStaffReminder($refid, $staff_id) {
+    public function getStaffReminder() {
         $this->db->select("SR_STAFF_ID");
         $this->db->from("STAFF_REMINDER");
         $this->db->where("SR_MODULE = 'CONFERENCE_RMIC'");
@@ -1182,11 +1270,11 @@ class Conference_pmp_model extends MY_Model
             $q = oci_execute($sql, OCI_DEFAULT); 
         }
 
-        if($memoID == 2) {
+        if($memoID == 2 && !empty($rmic_staff)) {
             $sql = oci_parse($this->db->conn_id, "begin create_memo(:bind1,:bind2,:bind3,:bind4,:bind5); end;");
             oci_bind_by_name($sql, ":bind1", $from);				//IN
             oci_bind_by_name($sql, ":bind2", $sendTO);				//IN
-            oci_bind_by_name($sql, ":bind3", $rmic_staff);				//IN
+            oci_bind_by_name($sql, ":bind3", $rmic_staff);			//IN
             oci_bind_by_name($sql, ":bind4", $memoTitle, 255);		//IN
             oci_bind_by_name($sql, ":bind5", $memoContent, 4000);	//IN
             $q = oci_execute($sql, OCI_DEFAULT); 
@@ -1275,7 +1363,7 @@ class Conference_pmp_model extends MY_Model
         return $this->db->update("STAFF_LEAVE_DETL", $data);
     }
 
-    // CONFERENCE DETAILS APPROVE TNCAA
+    // CONFERENCE DETAILS APPROVE TNCAA/VC
     public function getConferenceDetlAppTncaa($appr_rej_by, $staff_id, $refid) {
         $query = "SELECT DISTINCT SCM_REFID,CM_NAME,CM_ADDRESS,CM_POSTCODE,CM_CITY,
         CM_STATE,SM_STATE_DESC, CONFERENCE_MAIN.CM_COUNTRY_CODE CM_COUNTRY_CODE,CM_COUNTRY_DESC,
@@ -1295,22 +1383,40 @@ class Conference_pmp_model extends MY_Model
     }
 
     // REJECT STAFF CONFERENCE TNCAA
-    public function rejectConferenceTncaa($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date, $rec_date)
-    {
-        $data = array(
-            "SCM_TNCA_APPROVE_BY" => $appr_rej_by,
-            "SCM_TNCA_REMARK" => $remark,
-            "SCM_STATUS" => 'REJECT'
-        );
+    public function rejectConferenceTncaa($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date, $rec_date, $mod)
+    {   
+        if($mod == 'TNCA') {
+            $data = array(
+                "SCM_TNCA_APPROVE_BY" => $appr_rej_by,
+                "SCM_TNCA_REMARK" => $remark,
+                "SCM_STATUS" => 'REJECT'
+            );
 
-        if(!empty($appr_rej_date)) {
-            $appr_rej_date = "to_date('".$appr_rej_date."', 'DD/MM/YYYY')";
-            $this->db->set("SCM_TNCA_APPROVE_DATE", $appr_rej_date, false);
-        }
+            if(!empty($appr_rej_date)) {
+                $appr_rej_date = "to_date('".$appr_rej_date."', 'DD/MM/YYYY')";
+                $this->db->set("SCM_TNCA_APPROVE_DATE", $appr_rej_date, false);
+            }
+    
+            if(!empty($rec_date)) {
+                $rec_date = "to_date('".$rec_date."', 'DD/MM/YYYY')";
+                $this->db->set("SCM_TNCA_RECEIVE_DATE", $rec_date, false);
+            }
+        } elseif($mod == 'VC') {
+            $data = array(
+                "SCM_VC_APPROVE_BY" => $appr_rej_by,
+                "SCM_VC_REMARK" => $remark,
+                "SCM_STATUS" => 'REJECT'
+            );
 
-        if(!empty($rec_date)) {
-            $rec_date = "to_date('".$rec_date."', 'DD/MM/YYYY')";
-            $this->db->set("SCM_TNCA_RECEIVE_DATE", $rec_date, false);
+            if(!empty($appr_rej_date)) {
+                $appr_rej_date = "to_date('".$appr_rej_date."', 'DD/MM/YYYY')";
+                $this->db->set("SCM_VC_APPROVE_DATE", $appr_rej_date, false);
+            }
+    
+            if(!empty($rec_date)) {
+                $rec_date = "to_date('".$rec_date."', 'DD/MM/YYYY')";
+                $this->db->set("SCM_VC_RECEIVE_DATE", $rec_date, false);
+            }
         }
 
         $this->db->where('SCM_REFID', $refid);
@@ -1371,5 +1477,407 @@ class Conference_pmp_model extends MY_Model
 
         $q = $this->db->get();
         return $q->row();
+    }
+
+    // SAVE ALLOWANCE CALCULATION VC
+    public function updApprvAmtVc($refid, $staff_id, $newSumAppVc)
+    {
+        $data = array(
+            "SCM_RM_TOTAL_AMT_APPROVE_VC" => $newSumAppVc
+        );
+
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // SAVE ALLOWANCE DETAIL RESEARCH VC
+    public function saveAllwDetlRcVc($refid, $staff_id, $aca, $amt, $amtFor, $appRmic, $appRmicFor, $appTncpi, $appTncpiFor, $appTnca, $appTncaFor, $appVc, $appVcFor)
+    {
+        $curDate = 'SYSDATE';
+        $curUsr = $this->staff_id;
+
+        $data = array(
+            "SCA_AMOUNT_RM" => $amt,
+            "SCA_AMOUNT_FOREIGN" => $amtFor,
+            "SCA_AMT_RM_APPROVE_RMIC" => $appRmic,
+            "SCA_AMT_FOREIGN_APPROVE_RMIC" => $appRmicFor,
+            "SCA_AMT_RM_APPROVE_TNCPI" => $appTncpi,
+            "SCA_AMT_FOREIGN_APPROVE_TNCPI" => $appTncpiFor,
+            "SCA_AMT_RM_APPROVE_TNCA" => $appTnca,
+            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $appTncaFor,
+            "SCA_AMT_RM_APPROVE_VC" => $appVc,
+            "SCA_AMT_FOREIGN_APPROVE_VC" => $appVcFor,
+            "SCA_UPDATE_BY" => $curUsr
+        );
+        $this->db->set("SCA_UPDATE_DATE", $curDate, false);
+
+        $this->db->where('SCA_REFID', $refid);
+        $this->db->where('SCA_STAFF_ID', $staff_id);
+        $this->db->where('SCA_ALLOWANCE_CODE', $aca);
+
+        return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
+    }
+
+    // SUM STAFF CONFERENCE ALLOWANCE RESEARCH VC
+    public function sumStaffConAllwRcVc($refid, $staff_id) {
+        $this->db->select("SUM(SCA_AMT_RM_APPROVE_VC) SCA_AMT_RM_APPROVE_VC");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // SAVE ALLOWANCE DETAIL RESEARCH VC
+    public function updApprvAmtRcVc($refid, $staff_id, $newSumAppVc)
+    {
+        $data = array(
+            "SCM_RM_TOTAL_AMT_APPROVE_VC" => $newSumAppVc,
+        );
+        
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // SAVE ALLOWANCE DETAIL OTHERS VC
+    public function saveAllwDetlOthVc($refid, $staff_id, $aca, $amt, $amtFor, $appTnca, $appTncaFor, $appVc, $appVcFor)
+    {
+        $curDate = 'SYSDATE';
+        $curUsr = $this->staff_id;
+
+        $data = array(
+            "SCA_AMOUNT_RM" => $amt,
+            "SCA_AMOUNT_FOREIGN" => $amtFor,
+            "SCA_AMT_RM_APPROVE_TNCA" => $appTnca,
+            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $appTncaFor,
+            "SCA_AMT_RM_APPROVE_VC" => $appVc,
+            "SCA_AMT_FOREIGN_APPROVE_VC" => $appVcFor,
+            "SCA_UPDATE_BY" => $curUsr
+        );
+        $this->db->set("SCA_UPDATE_DATE", $curDate, false);
+
+        $this->db->where('SCA_REFID', $refid);
+        $this->db->where('SCA_STAFF_ID', $staff_id);
+        $this->db->where('SCA_ALLOWANCE_CODE', $aca);
+
+        return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
+    }
+
+    // APPROVE STAFF CONFERENCE VC
+    public function approveConferenceVc($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date, $rec_date, $scm_sts)
+    {
+        $data = array(
+            "SCM_VC_APPROVE_BY" => $appr_rej_by,
+            "SCM_VC_REMARK" => $remark,
+            "SCM_STATUS" => $scm_sts
+        );
+
+        if(!empty($appr_rej_date)) {
+            $appr_rej_date = "to_date('".$appr_rej_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCM_VC_APPROVE_DATE", $appr_rej_date, false);
+        }
+
+        if(!empty($rec_date)) {
+            $rec_date = "to_date('".$rec_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCM_VC_RECEIVE_DATE", $rec_date, false);
+        }
+
+        $this->db->where('SCM_REFID', $refid);
+        $this->db->where('SCM_STAFF_ID', $staff_id);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    /*===============================================================
+       Query Staff Conference (ATF068)
+    ================================================================*/
+
+    // POPULATE DEPARTMENT
+    public function populateDeptQ() {
+        $hrd = "(SELECT DM_DEPT_CODE FROM DEPARTMENT_MAIN WHERE DM_DEPT_CODE = 'PTNC-A')";
+        $curr_usr = $this->username;
+
+        $query = "SELECT '-'||'-'||'-'||'Please select'||'-'||'-'||'-' DM_DEPT_CODE, '' DM_DEPT_DESC FROM DUAL
+        UNION    
+        SELECT DM_DEPT_CODE, DM_DEPT_DESC
+        FROM DEPARTMENT_MAIN, STAFF_MAIN
+        WHERE UPPER(SM_APPS_USERNAME) = UPPER('$curr_usr')
+        AND DM_STATUS = 'ACTIVE'
+        AND ((SM_DEPT_CODE = $hrd OR SM_DEPT_CODE != $hrd AND DM_DEPT_CODE = SM_DEPT_CODE) OR (UPPER(SM_APPS_USERNAME) = 'HRA_ADMIN'))
+        ORDER BY DM_DEPT_CODE";
+
+        $q = $this->db->query($query);
+        return $q->result();
+    }
+
+    // STAFF LIST QUERY
+    public function getStaffListQ($dept) {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_JOB_CODE, SS_SERVICE_DESC");
+        $this->db->from("STAFF_MAIN");
+        $this->db->join("SERVICE_SCHEME", "SS_SERVICE_CODE = SM_JOB_CODE", "LEFT");
+        $this->db->where("SM_STAFF_ID IN (SELECT DISTINCT SCM_STAFF_ID FROM STAFF_CONFERENCE_MAIN,STAFF_MAIN WHERE SM_DEPT_CODE = '$dept' and SM_STAFF_ID = SCM_STAFF_ID)");
+        $this->db->order_by("SM_STAFF_NAME");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // CONFERENCE HISTORY LIST - QUERY
+    public function conHistoryListQ($staff_id) {
+        // $this->db->select("SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, TO_CHAR(SCM_APPLY_DATE, 'DD-MM-YYYY') AS SCM_APPLY_DATE, SCM_STATUS");
+        // $this->db->from("STAFF_CONFERENCE_MAIN");
+        // $this->db->join("CONFERENCE_MAIN", "SCM_REFID = CM_REFID", "LEFT");
+        // $this->db->join("CONFERENCE_CATEGORY", "CC_CODE = SCM_CATEGORY_CODE", "LEFT");
+        // $this->db->where("SCM_STAFF_ID", $staff_id);
+        // $this->db->order_by("SCM_APPLY_DATE");
+
+        $this->db->select("SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, SCM_APPLY_DATE, SCM_STATUS,
+        CASE 
+        WHEN  COUNT_REP != 0 THEN 'Yes'
+        ELSE 'No'
+        END 
+        COUNT_REP_DESC, SCR_STATUS");
+        $this->db->from("(SELECT SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, TO_CHAR(SCM_APPLY_DATE, 'DD-MM-YYYY') AS SCM_APPLY_DATE, SCM_STATUS, SCM_STAFF_ID
+        FROM STAFF_CONFERENCE_MAIN
+        LEFT JOIN CONFERENCE_MAIN ON SCM_REFID = CM_REFID
+        LEFT JOIN CONFERENCE_CATEGORY ON CC_CODE = SCM_CATEGORY_CODE
+        WHERE SCM_STAFF_ID = '$staff_id')");
+        $this->db->join("(SELECT COUNT(SCR_REFID) COUNT_REP, SCR_STATUS, SCR_STAFF_ID, SCR_REFID
+        FROM STAFF_CONFERENCE_REP
+        WHERE SCR_STAFF_ID = '$staff_id'
+        GROUP BY SCR_STATUS, SCR_STAFF_ID, SCR_REFID)", "SCR_STAFF_ID = SCM_STAFF_ID AND SCR_REFID = SCM_REFID", "LEFT");
+        // $this->db->order_by("SCM_APPLY_DATE");
+        // $this->db->join("CONFERENCE_CATEGORY", "CC_CODE = SCM_CATEGORY_CODE", "LEFT");
+        // $this->db->where("SCM_STAFF_ID", $staff_id);
+        // $this->db->order_by("SCM_APPLY_DATE");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    /*===========================================================
+       CONFERENCE QUERY (ATF101)
+    =============================================================*/
+
+    // GET CONFERENCE INFO LIST
+    public function getConferenceListQ($month = null, $year = null, $refidTitle = null) {
+
+        if(!empty($month) && empty($year) && empty($refidTitle)) {
+            $query = "SELECT CM_REFID, CM_NAME, ADDR_DESC||STATE_DESC||COUNTRY_DESC AS ADDR_COMBINED, CM_DATE_FR, CM_DATE_TO, CM_ORGANIZER_NAME
+                    FROM (
+                            SELECT CM_REFID, CM_ADDRESS, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FR, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, 
+                            CM_CITY, CM_POSTCODE, CM_STATE, CONFERENCE_MAIN.CM_COUNTRY_CODE, 
+                            CM_ADDRESS||DECODE(CM_CITY,null,'',', '||CM_CITY)||DECODE(CM_POSTCODE,null,'',', '||CM_POSTCODE) AS ADDR_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_STATE, '98', '',', '||SM_STATE_DESC) AS STATE_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_COUNTRY_CODE, null, '',', '||CM_COUNTRY_DESC) AS COUNTRY_DESC
+                            FROM CONFERENCE_MAIN
+                            LEFT JOIN STATE_MAIN ON SM_STATE_CODE = CM_STATE
+                            LEFT JOIN COUNTRY_MAIN ON COUNTRY_MAIN.CM_COUNTRY_CODE = CONFERENCE_MAIN.CM_COUNTRY_CODE
+                            WHERE TO_CHAR(CM_DATE_FROM, 'MM') = '$month'
+                            ORDER BY CM_DATE_FR, CM_NAME
+                    )";
+        } 
+        elseif(empty($month) && !empty($year) && empty($refidTitle)) {
+            $query = "SELECT CM_REFID, CM_NAME, ADDR_DESC||STATE_DESC||COUNTRY_DESC AS ADDR_COMBINED, CM_DATE_FR, CM_DATE_TO, CM_ORGANIZER_NAME
+                    FROM (
+                            SELECT CM_REFID, CM_ADDRESS, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FR, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, 
+                            CM_CITY, CM_POSTCODE, CM_STATE, CONFERENCE_MAIN.CM_COUNTRY_CODE, 
+                            CM_ADDRESS||DECODE(CM_CITY,null,'',', '||CM_CITY)||DECODE(CM_POSTCODE,null,'',', '||CM_POSTCODE) AS ADDR_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_STATE, '98', '',', '||SM_STATE_DESC) AS STATE_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_COUNTRY_CODE, null, '',', '||CM_COUNTRY_DESC) AS COUNTRY_DESC
+                            FROM CONFERENCE_MAIN
+                            LEFT JOIN STATE_MAIN ON SM_STATE_CODE = CM_STATE
+                            LEFT JOIN COUNTRY_MAIN ON COUNTRY_MAIN.CM_COUNTRY_CODE = CONFERENCE_MAIN.CM_COUNTRY_CODE
+                            WHERE TO_CHAR(CM_DATE_FROM, 'YYYY') = '$year'
+                            ORDER BY CM_DATE_FR, CM_NAME
+                    )";
+        }   
+        elseif(!empty($month) && !empty($year) && empty($refidTitle)) {
+            $query = "SELECT CM_REFID, CM_NAME, ADDR_DESC||STATE_DESC||COUNTRY_DESC AS ADDR_COMBINED, CM_DATE_FR, CM_DATE_TO, CM_ORGANIZER_NAME
+                    FROM (
+                    SELECT CM_REFID, CM_ADDRESS, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FR, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, 
+                    CM_CITY, CM_POSTCODE, CM_STATE, CONFERENCE_MAIN.CM_COUNTRY_CODE, 
+                    CM_ADDRESS||DECODE(CM_CITY,null,'',', '||CM_CITY)||DECODE(CM_POSTCODE,null,'',', '||CM_POSTCODE) AS ADDR_DESC,
+                    DECODE(CONFERENCE_MAIN.CM_STATE, '98', '',', '||SM_STATE_DESC) AS STATE_DESC,
+                    DECODE(CONFERENCE_MAIN.CM_COUNTRY_CODE, null, '',', '||CM_COUNTRY_DESC) AS COUNTRY_DESC
+                    FROM CONFERENCE_MAIN
+                    LEFT JOIN STATE_MAIN ON SM_STATE_CODE = CM_STATE
+                    LEFT JOIN COUNTRY_MAIN ON COUNTRY_MAIN.CM_COUNTRY_CODE = CONFERENCE_MAIN.CM_COUNTRY_CODE
+                    WHERE TO_CHAR(CM_DATE_FROM, 'MM') = '$month'
+                    AND TO_CHAR(CM_DATE_FROM, 'YYYY') = '$year'
+                    ORDER BY CM_DATE_FR, CM_NAME
+                    )";
+        }
+        elseif(empty($month) && empty($year) && !empty($refidTitle)) {
+            $query = "SELECT CM_REFID, CM_NAME, ADDR_DESC||STATE_DESC||COUNTRY_DESC AS ADDR_COMBINED, CM_DATE_FR, CM_DATE_TO, CM_ORGANIZER_NAME
+                    FROM (
+                            SELECT CM_REFID, CM_ADDRESS, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FR, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, 
+                            CM_CITY, CM_POSTCODE, CM_STATE, CONFERENCE_MAIN.CM_COUNTRY_CODE, 
+                            CM_ADDRESS||DECODE(CM_CITY,null,'',', '||CM_CITY)||DECODE(CM_POSTCODE,null,'',', '||CM_POSTCODE) AS ADDR_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_STATE, '98', '',', '||SM_STATE_DESC) AS STATE_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_COUNTRY_CODE, null, '',', '||CM_COUNTRY_DESC) AS COUNTRY_DESC
+                            FROM CONFERENCE_MAIN
+                            LEFT JOIN STATE_MAIN ON SM_STATE_CODE = CM_STATE
+                            LEFT JOIN COUNTRY_MAIN ON COUNTRY_MAIN.CM_COUNTRY_CODE = CONFERENCE_MAIN.CM_COUNTRY_CODE
+                            WHERE (CM_REFID LIKE '%$refidTitle%' OR UPPER(CM_NAME) LIKE UPPER('%$refidTitle%'))
+                            ORDER BY CM_DATE_FR, CM_NAME
+                    )";
+        } 
+        elseif(!empty($month) && !empty($year) && !empty($refidTitle)) {
+            $query = "SELECT CM_REFID, CM_NAME, ADDR_DESC||STATE_DESC||COUNTRY_DESC AS ADDR_COMBINED, CM_DATE_FR, CM_DATE_TO, CM_ORGANIZER_NAME
+                    FROM (
+                            SELECT CM_REFID, CM_ADDRESS, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FR, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, 
+                            CM_CITY, CM_POSTCODE, CM_STATE, CONFERENCE_MAIN.CM_COUNTRY_CODE, 
+                            CM_ADDRESS||DECODE(CM_CITY,null,'',', '||CM_CITY)||DECODE(CM_POSTCODE,null,'',', '||CM_POSTCODE) AS ADDR_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_STATE, '98', '',', '||SM_STATE_DESC) AS STATE_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_COUNTRY_CODE, null, '',', '||CM_COUNTRY_DESC) AS COUNTRY_DESC
+                            FROM CONFERENCE_MAIN
+                            LEFT JOIN STATE_MAIN ON SM_STATE_CODE = CM_STATE
+                            LEFT JOIN COUNTRY_MAIN ON COUNTRY_MAIN.CM_COUNTRY_CODE = CONFERENCE_MAIN.CM_COUNTRY_CODE
+                            WHERE TO_CHAR(CM_DATE_FROM, 'MM') = '$month'
+                            AND TO_CHAR(CM_DATE_FROM, 'YYYY') = '$year'
+                            AND (CM_REFID LIKE '%$refidTitle%' OR UPPER(CM_NAME) LIKE UPPER('%$refidTitle%'))
+                            ORDER BY CM_DATE_FR, CM_NAME
+                    )";
+        } 
+        elseif(empty($month) && !empty($year) && !empty($refidTitle)) {
+            $query = "SELECT CM_REFID, CM_NAME, ADDR_DESC||STATE_DESC||COUNTRY_DESC AS ADDR_COMBINED, CM_DATE_FR, CM_DATE_TO, CM_ORGANIZER_NAME
+                    FROM (
+                            SELECT CM_REFID, CM_ADDRESS, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FR, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, 
+                            CM_CITY, CM_POSTCODE, CM_STATE, CONFERENCE_MAIN.CM_COUNTRY_CODE, 
+                            CM_ADDRESS||DECODE(CM_CITY,null,'',', '||CM_CITY)||DECODE(CM_POSTCODE,null,'',', '||CM_POSTCODE) AS ADDR_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_STATE, '98', '',', '||SM_STATE_DESC) AS STATE_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_COUNTRY_CODE, null, '',', '||CM_COUNTRY_DESC) AS COUNTRY_DESC
+                            FROM CONFERENCE_MAIN
+                            LEFT JOIN STATE_MAIN ON SM_STATE_CODE = CM_STATE
+                            LEFT JOIN COUNTRY_MAIN ON COUNTRY_MAIN.CM_COUNTRY_CODE = CONFERENCE_MAIN.CM_COUNTRY_CODE
+                            WHERE TO_CHAR(CM_DATE_FROM, 'YYYY') = '$year'
+                            AND (CM_REFID LIKE '%$refidTitle%' OR UPPER(CM_NAME) LIKE UPPER('%$refidTitle%'))
+                            ORDER BY CM_DATE_FR, CM_NAME
+                    )";
+        } 
+        elseif(!empty($month) && empty($year) && !empty($refidTitle)) {
+            $query = "SELECT CM_REFID, CM_NAME, ADDR_DESC||STATE_DESC||COUNTRY_DESC AS ADDR_COMBINED, CM_DATE_FR, CM_DATE_TO, CM_ORGANIZER_NAME
+                    FROM (
+                            SELECT CM_REFID, CM_ADDRESS, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FR, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, 
+                            CM_CITY, CM_POSTCODE, CM_STATE, CONFERENCE_MAIN.CM_COUNTRY_CODE, 
+                            CM_ADDRESS||DECODE(CM_CITY,null,'',', '||CM_CITY)||DECODE(CM_POSTCODE,null,'',', '||CM_POSTCODE) AS ADDR_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_STATE, '98', '',', '||SM_STATE_DESC) AS STATE_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_COUNTRY_CODE, null, '',', '||CM_COUNTRY_DESC) AS COUNTRY_DESC
+                            FROM CONFERENCE_MAIN
+                            LEFT JOIN STATE_MAIN ON SM_STATE_CODE = CM_STATE
+                            LEFT JOIN COUNTRY_MAIN ON COUNTRY_MAIN.CM_COUNTRY_CODE = CONFERENCE_MAIN.CM_COUNTRY_CODE
+                            WHERE TO_CHAR(CM_DATE_FROM, 'MM') = '$month'
+                            AND (CM_REFID LIKE '%$refidTitle%' OR UPPER(CM_NAME) LIKE UPPER('%$refidTitle%'))
+                            ORDER BY CM_DATE_FR, CM_NAME
+                    )";
+        } elseif(empty($month) && empty($year) && empty($refidTitle)) {
+            $query = "SELECT CM_REFID, CM_NAME, ADDR_DESC||STATE_DESC||COUNTRY_DESC AS ADDR_COMBINED, CM_DATE_FR, CM_DATE_TO, CM_ORGANIZER_NAME
+                    FROM (
+                            SELECT CM_REFID, CM_ADDRESS, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FR, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, 
+                            CM_CITY, CM_POSTCODE, CM_STATE, CONFERENCE_MAIN.CM_COUNTRY_CODE, 
+                            CM_ADDRESS||DECODE(CM_CITY,null,'',', '||CM_CITY)||DECODE(CM_POSTCODE,null,'',', '||CM_POSTCODE) AS ADDR_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_STATE, '98', '',', '||SM_STATE_DESC) AS STATE_DESC,
+                            DECODE(CONFERENCE_MAIN.CM_COUNTRY_CODE, null, '',', '||CM_COUNTRY_DESC) AS COUNTRY_DESC
+                            FROM CONFERENCE_MAIN
+                            LEFT JOIN STATE_MAIN ON SM_STATE_CODE = CM_STATE
+                            LEFT JOIN COUNTRY_MAIN ON COUNTRY_MAIN.CM_COUNTRY_CODE = CONFERENCE_MAIN.CM_COUNTRY_CODE
+                            ORDER BY CM_DATE_FR, CM_NAME
+                    )";
+        }
+
+        $q = $this->db->query($query);
+        return $q->result();
+    }
+
+    // STAFF CONFERENCE APPLICATION QUERY
+    public function staffConAppQ($refid)
+    {
+        $this->db->select("SCM_STAFF_ID||' - '||SM_STAFF_NAME AS STF_ID_NAME,SM_STAFF_NAME, SM_DEPT_CODE, SCM_STAFF_ID, SCM_REFID, SCM_LEAVE_REFID, INITCAP(SCM_PARTICIPANT_ROLE) AS SCM_PARTICIPANT_ROLE, SCM_PAPER_TITLE,
+        SCM_PAPER_TITLE2, SCM_CATEGORY_CODE, SCM_APPROVE_BY, TO_CHAR(SCM_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_APPROVE_DATE, 
+        CASE SCM_SPONSOR
+            WHEN 'Y' THEN 'Yes'
+            WHEN 'H' THEN 'Half Sponsorship'
+            ELSE 'No'
+        END AS SCM_SPONSOR_F,
+        SCM_SPONSOR, SCM_SPONSOR_NAME, 
+        SCM_SPONSOR_BUDGET_ORIGIN, SCM_RM_SPONSOR_TOTAL_AMT, SCM_BUDGET_ORIGIN, 
+        TO_CHAR(SCM_APPLY_DATE, 'DD/MM/YYYY') AS SCM_APPLY_DATE, 
+        SCM_STATUS, SCM_APPROVER_REMARK1, SCM_APPROVER_REMARK2, SCM_APPROVER_REMARK3,
+        SCM_APPROVER_REMARK4, SCM_RECOMMEND_BY, TO_CHAR(SCM_RECOMMEND_DATE, 'DD/MM/YYYY') AS SCM_RECOMMEND_DATE,
+        SCM_TNCA_REMARK, SCM_TNCA_APPROVE_BY, TO_CHAR(SCM_TNCA_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_TNCA_APPROVE_DATE,
+        TO_CHAR(SCM_TNCA_RECEIVE_DATE, 'DD/MM/YYYY') AS SCM_TNCA_RECEIVE_DATE, SCM_VC_REMARK, SCM_VC_APPROVE_BY, 
+        TO_CHAR(SCM_VC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_VC_APPROVE_DATE, TO_CHAR(SCM_VC_RECEIVE_DATE, 'DD/MM/YYYY') AS SCM_VC_RECEIVE_DATE, TO_CHAR(SCM_LEAVE_DATE_FROM, 'DD/MM/YYYY') AS SCM_LEAVE_DATE_FROM, TO_CHAR(SCM_LEAVE_DATE_TO, 'DD/MM/YYYY') AS SCM_LEAVE_DATE_TO,
+        SCM_RM_TOTAL_AMT, SCM_RM_TOTAL_AMT_APPROVE_HOD, SCM_RM_TOTAL_AMT_APPROVE_TNCA, SCM_RM_TOTAL_AMT_APPROVE_VC,
+        SCM_RM_TOTAL_AMT_DEPT, SCM_TOTAL_AMT_DEPT_APPRV_HOD, SCM_RM_TOT_AMT_APPRV_RMIC, SCM_RM_TOT_AMT_APPRV_TNCPI, SCM_BUDGET_ORIGIN_PREV, TO_CHAR(SCM_TNCPI_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_TNCPI_APPROVE_DATE, 
+        TO_CHAR(SCM_RMIC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_RMIC_APPROVE_DATE, SCM_RESEARCH_REFID, SCM_VC_REMARK, SCM_RMIC_REMARK, CC_DESC, SCM_RMIC_APPROVE_BY, SCM_TNCPI_REMARK, SCM_TNCPI_APPROVE_BY, SCM_RM_TOT_AMT_RMIC");
+        $this->db->from("STAFF_CONFERENCE_MAIN");
+        $this->db->join("CONFERENCE_CATEGORY", "SCM_CATEGORY_CODE = CC_CODE", "LEFT");
+        $this->db->join("STAFF_MAIN", "SM_STAFF_ID = SCM_STAFF_ID");
+        $this->db->where("SCM_REFID", $refid);
+        $this->db->order_by("SM_STAFF_NAME");
+
+        $q = $this->db->get();
+        return $q->result();
+    } 
+
+    // GET CONFERENCE INFO
+    public function getCrInf($refid, $staff_id) {
+        $this->db->select("TRUNC(SCA_DATE_TO)-TRUNC(SCA_DATE_FROM)+1 SCA_DURATION, CM_COUNTRY_CODE");
+        $this->db->from("CONFERENCE_MAIN, STAFF_CONFERENCE_MAIN, STAFF_CONFERENCE_A");
+        $this->db->where("SCM_REFID", $refid);
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    /*===========================================================
+        CONFERENCE REPORTS (ATF091)
+    =============================================================*/
+
+    // UNIT DEPT LIST
+    public function getUnitDeptList($dept_code) {
+
+        $query = "SELECT DISTINCT DM_DEPT_CODE, DM_DEPT_DESC, DM_DEPT_CODE||' - '||DM_DEPT_DESC DM_DEPT_CODE_DESC
+        FROM DEPARTMENT_MAIN
+        WHERE DM_LEVEL IN ('3') 
+        AND DM_PARENT_DEPT_CODE = '$dept_code'
+        AND DM_STATUS = 'ACTIVE'
+        ORDER BY DM_DEPT_DESC";
+
+        $q = $this->db->query($query);
+        return $q->result();
+    }
+
+    /*===========================================================
+        CONFERENCE REPORTS PTJ (ATF092)
+    =============================================================*/
+
+    // GET CURRENT USER DEPT
+    public function getDeptUsr($curr_dept = null) {
+        $curr_usr = $this->username;
+
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_DESC, DM_DEPT_CODE||' - '||DM_DEPT_DESC DEPT_CODE_DESC");
+        $this->db->from("DEPARTMENT_MAIN");
+        $this->db->where("UPPER(DM_TYPE)='ADMIN'");
+        $this->db->where("DM_DEPT_CODE = (SELECT SM_DEPT_CODE FROM STAFF_MAIN 
+        WHERE UPPER(SM_APPS_USERNAME) = UPPER('$curr_usr'))");
+        $this->db->order_by("DM_DEPT_DESC");
+
+        $q = $this->db->get();
+
+        if(!empty($curr_dept)) {
+            return $q->row();
+        } else {
+            return $q->result();
+        }
     }
 }

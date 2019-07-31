@@ -35,6 +35,13 @@
         </div>
     </div>
 
+    <div class="form-group hidden">
+        <label class="col-md-2 control-label">Mod</label>
+        <div class="col-md-2">
+            <input name="form[mod]"  value="" class="form-control" id="mod_sc" readonly>
+        </div>
+    </div>
+
 
     <div class="alert alert-info fade in">
         <b>Staff Conference Leave</b>
