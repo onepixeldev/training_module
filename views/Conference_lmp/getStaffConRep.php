@@ -26,7 +26,7 @@
 </div>
 <p>
 <div class="well">
-	<div class="row table-condensed table-responsive">
+	<div class="row table-condensed">
 		<table class="table table-bordered table-hover" id="tbl_stf_rep_list">
 		<thead>
 		<tr>

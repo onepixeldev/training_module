@@ -45,7 +45,7 @@
                                     <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">Part III</a>
                                 </li>
 								<li class="">
-                                    <a style="color:#000 !important" href="#s5" data-toggle="tab" aria-expanded="false">Part IV</a>
+                                    <a style="color:#000 !important" href="#s6" data-toggle="tab" aria-expanded="false">Part IV</a>
                                 </li>
 								<!--<li class="">
                                     <a style="color:#000 !important" href="#s6" data-toggle="tab" aria-expanded="false">HOD Approval/Verification</a>
@@ -137,7 +137,7 @@
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please add report entry or click Edit from Staff List tab</th>
+													<th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th>
 												</tr>
 												</thead>
 											</table>
@@ -151,7 +151,7 @@
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please add report entry or click Edit from Staff List tab</th>
+													<th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th>
 												</tr>
 												</thead>
 											</table>
@@ -165,22 +165,13 @@
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please add report entry or click Edit from Staff List tab</th>
+													<th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th>
 												</tr>
 												</thead>
 											</table>
 										</p>
 									</div>
                                 </div>
-								<!--<div class="tab-pane fade" id="s6">
-									<div id="hod_approval_verification">
-									</div>
-                                </div>
-
-								<div class="tab-pane fade" id="s7">
-									<div id="tncaa_approval_verification">
-									</div>
-                                </div>-->  
 
                             </div>
                             <!-- end myTabContent1 -->
@@ -248,7 +239,7 @@
 		},
 		complete: function(){
 			$('#loader').hide();
-		},
+		}
     });
 
     // CONFERENCE LIST  FILTER
@@ -268,6 +259,12 @@
                     "ordering":false,
                 });
 				$('#conference_list #add_rep_stf').html('<button type="button" class="btn btn-primary btn-sm add_rep_btn"><i class="fa fa-plus"></i> Add New Report Entry</button>').show();
+
+				$('#staff_list_conference').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select conference from Conference List</th></tr></thead></table></p>').show();
+				$('#part_i').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_ii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_iii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_iv').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
             }
         });
 	});
@@ -291,6 +288,12 @@
                     "ordering":false,
                 });
 				$('#conference_list #add_rep_stf').html('<button type="button" class="btn btn-primary btn-sm add_rep_btn"><i class="fa fa-plus"></i> Add New Report Entry</button>').show();
+
+				$('#staff_list_conference').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select conference from Conference List</th></tr></thead></table></p>').show();
+				$('#part_i').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_ii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_iii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_iv').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
             },
         });
 	});	
@@ -310,9 +313,9 @@
 				$('.nav-tabs li:eq(1) a').tab('show');
 				$('#staff_list_conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 				$('#part_i').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry or click Edit from Staff List tab</th></tr></thead></table></p>').show();
-				$('#part_ii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry or click Edit from Staff List tab</th></tr></thead></table></p>').show();
-				$('#part_iii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry or click Edit from Staff List tab</th></tr></thead></table></p>').show();
-				$('#part_iv').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_ii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_iii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_iv').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
 			},
 			success: function(res) {
 				$('#staff_list_conference').html(res);
@@ -323,10 +326,6 @@
 			}
 		});
 	});	
-
-	/*-----------------------------
-	TAB 2 - STAFF LIST
-	-----------------------------*/
 
 	// ADD NEW REPORT ENTRY
 	$('#conference_list').on('click','.add_rep_btn', function(){
@@ -342,9 +341,82 @@
 				$('.nav-tabs li:eq(2) a').tab('show');
 				$('#part_i').html(res);
 				hide_loading();
+				$('#staff_list_conference').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select conference from Conference List</th></tr></thead></table></p>').show();
+				$('#part_ii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_iii').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
+				$('#part_iv').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add report entry on Part I tab or click Edit from Staff List tab</th></tr></thead></table></p>').show();
 			}
 		});
 	});
+
+	/*-----------------------------
+	TAB 2 - STAFF LIST
+	-----------------------------*/
+	
+	// EDIT REPORT STAFF
+	$('#staff_list_conference').on('click','.rep_edit_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var staff_id = td.eq(0).html().trim();
+		var refid = thisBtn.val();
+		
+		// REPORT PART I
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editRepPartI')?>',
+			data: {'staff_id' : staff_id, 'refid' : refid},
+			beforeSend: function() {
+				$('.nav-tabs li:eq(2) a').tab('show');
+				$('#part_i').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			},
+			success: function(res) {
+				$('#part_i').html(res);
+			}
+		});
+
+		// REPORT PART II	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editRepPartII')?>',
+			data: {'refid' : refid, 'staff_id' : staff_id},
+			beforeSend: function() {
+				$('#part_ii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			},
+			success: function(res) {
+				$('#part_ii').html(res);
+			}
+		});
+
+		// REPORT PART III	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editRepPartIII')?>',
+			data: {'refid' : refid, 'staff_id' : staff_id},
+			beforeSend: function() {
+				$('#part_iii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			},
+			success: function(res) {
+				$('#part_iii').html(res);
+			}
+		});
+
+		// REPORT PART IV
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editRepPartIV')?>',
+			data: {'refid' : refid, 'staff_id' : staff_id},
+			beforeSend: function() {
+				$('#part_iv').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			},
+			success: function(res) {
+				$('#part_iv').html(res);
+			}
+		});
+	});	
+
+	/*-----------------------------
+	TAB 3 - PART I
+	-----------------------------*/
 
 	///// SEARCH STAFF//////
 	// AUTO SEARCH STAFF ID
@@ -378,6 +450,23 @@
 									$('#dept_unit_name').val(res.unit_desc);
 									$('#ptj_fac_id').val(res.ptj_fac);
 									$('#ptj_fac_name').val(res.dept_desc);
+
+									// CLEAR PART II
+									$('#con_id').val('');
+									$('#con_name').val('');
+									$('#paper_work_title_i').val('');
+									$('#paper_work_title_ii').val('');
+									$('#address').val('');
+									$('#city').val('');
+									$('#postcode').val('');
+									$('#state').val('');
+									$('#country').val('');
+									$('#date_from').val('');
+									$('#date_to').val('');
+									$('#duration').val('');
+									$('#organizer').val('');
+									$('#fa_upsi').val('');
+									$('#fa_ea').val('');
 								} 
 							}
 						});
@@ -390,6 +479,24 @@
 						$('#dept_unit_name').val('');
 						$('#ptj_fac_id').val('');
 						$('#ptj_fac_name').val('');
+
+
+						// CLEAR PART II
+						$('#con_id').val('');
+						$('#con_name').val('');
+						$('#paper_work_title_i').val('');
+						$('#paper_work_title_ii').val('');
+						$('#address').val('');
+						$('#city').val('');
+						$('#postcode').val('');
+						$('#state').val('');
+						$('#country').val('');
+						$('#date_from').val('');
+						$('#date_to').val('');
+						$('#duration').val('');
+						$('#organizer').val('');
+						$('#fa_upsi').val('');
+						$('#fa_ea').val('');
 					}
 				}
 			});
@@ -420,6 +527,23 @@
 		var staff_id = $('#myModalis #staff_id').val();
 		search_trigger = 1;
 		// console.log(staff_id);
+
+		if(staff_id == '') {
+			$('#myModalis .modal-content').empty();
+			$('#myModalis').modal('show');
+			$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+				data: '',
+				success: function(res) {
+					$('#myModalis .modal-content').html(res);
+					msg.show('Please enter Staff ID / Name', 'danger', '#myModalis .modal-content #alertStfIDMD');
+				}
+			});
+			return;
+		}
 
 		$('#myModalis .modal-content').empty();
 		$('#myModalis').modal('show');
@@ -467,13 +591,29 @@
 						$('#dept_unit_name').val(res.unit_desc);
 						$('#ptj_fac_id').val(res.ptj_fac);
 						$('#ptj_fac_name').val(res.dept_desc);
+
+						// CLEAR PART II
+						$('#con_id').val('');
+						$('#con_name').val('');
+						$('#paper_work_title_i').val('');
+						$('#paper_work_title_ii').val('');
+						$('#address').val('');
+						$('#city').val('');
+						$('#postcode').val('');
+						$('#state').val('');
+						$('#country').val('');
+						$('#date_from').val('');
+						$('#date_to').val('');
+						$('#duration').val('');
+						$('#organizer').val('');
+						$('#fa_upsi').val('');
+						$('#fa_ea').val('');
 					} 
 				}
 			});
 		}
 	});
 	///// SEARCH STAFF//////
-
 
 	// SEARCH CONFERENCE
 	$('#part_i').on('click','.search_cr', function(){
@@ -499,183 +639,340 @@
 		});
 	});
 
-	// SELECT STAFF ID
+	// SELECT CONFERENCE
 	$('#myModalis').on('click', '.select_conference', function () {
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
-		var con_id = td.eq(0).html().trim();
+		var refid = td.eq(0).html().trim();
 		var con_name = td.eq(1).html().trim();
 		var staff_id = $('#staff_id_md').val();
-		var select = 1;
 
 		$('#myModalis').modal('hide');
 		// console.log(staff_id);
 
-		if(con_id != '' && con_name != '' && staff_id != '') {
-			$('#con_id').val(con_id);
+		if(refid != '' && con_name != '' && staff_id != '') {
+			$('#con_id').val(refid);
 			$('#con_name').val(con_name);
 
 			$.ajax({
 				type: 'POST',
 				url: '<?php echo $this->lib->class_url('getConDetlInfo')?>',
-				data: {'staff_id' : staff_id, 'select' : select},
+				data: {'refid' : refid, 'staff_id' : staff_id},
 				dataType: 'JSON',
 				success: function(res) {
 					if(res.sts == 1) {
 						// console.log(res.con_inf[0].CM_DATE_FROM);
-						$('#cr_city').val(res.con_inf.CM_DATE_FROM);
-						$('#cr_postcode').val(res.con_inf.CM_DATE_TO);
+						$('#paper_work_title_i').val(res.con_inf.SCM_PAPER_TITLE);
+						$('#paper_work_title_ii').val(res.con_inf.SCM_PAPER_TITLE2);
+						$('#address').val(res.con_inf.CM_ADDRESS);
+						$('#city').val(res.con_inf.CM_CITY);
+						$('#postcode').val(res.con_inf.CM_POSTCODE);
+						$('#state').val(res.con_inf.SM_STATE_DESC);
+						$('#country').val(res.con_inf.CM_COUNTRY_DESC);
 						$('#date_from').val(res.con_inf.CM_DATE_FROM);
 						$('#date_to').val(res.con_inf.CM_DATE_TO);
+						$('#duration').val(res.con_inf.DURATION_CM);
+						$('#organizer').val(res.con_inf.CM_ORGANIZER_NAME);
+						$('#fa_upsi').val(res.con_inf.SCM_RM_TOTAL_AMT_APPROVE_TNCA);
+						$('#fa_ea').val(res.con_inf.SCM_RM_SPONSOR_TOTAL_AMT);
 					} 
 				}
 			});
 		}
 	});
 
-	// EDIT STAFF TO CONFERENCE
-	$('#staff_list_conference').on('click','.stacr_edit_btn', function(){
-		var thisBtn = $(this);
-		var crRefID = thisBtn.val();
-		var crName = thisBtn.data("crname");
-		var td = thisBtn.parent().siblings();
-		var crStaffID = td.eq(0).html().trim();
-		var crStaffName = td.eq(1).html().trim();
-		// alert(crRefID+' '+crName+' '+crStaffID);
-
-		$('#conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-		show_loading();
+	// SAVE REPORT ENTRY PART I
+	$('#part_i').on('click', '.ins_rep_ent_pt_i', function () {
+		var data = $('#addNewReportPartI').serialize();
+		msg.wait('#alertAddNewReportPartI');
+        msg.wait('#alertAddNewReportPartIFooter');
+		//alert(data);
+		//alert(crStaffID);
 		
+		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editStaffConference')?>',
-			data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName},
+			url: '<?php echo $this->lib->class_url('saveRepPartI')?>',
+			data: data,
+			dataType: 'JSON',
 			success: function(res) {
-				$('#conference_application').html(res);
-				
-				// MODIFY INPUT FIELD RELATED TO SPONSOR
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('checkSponsor')?>',
-					data: {'staffID' : crStaffID, 'refid' : crRefID},
-					dataType: 'JSON',
-					success: function(res) {
-						var sponsor = res.sponsor;
+				msg.show(res.msg, res.alert, '#alertAddNewReportPartI');
+                msg.show(res.msg, res.alert, '#alertAddNewReportPartIFooter');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('.btn').removeAttr('disabled');
 						
-						if(sponsor != "" && (sponsor == 'Y' || sponsor == 'H')) {
-							$('#spName').html('Sponsor Name <b><font color="red">* </font></b>').show();
-							$('#budSp').html('Budget Origin for Sponsor <b><font color="red">* </font></b>').show();
-							$('#totalAmt').html('Total (RM) <b><font color="red">* </font></b>').show();
+						var refid = res.refid;
+						var staff_id = res.staff_id;
+						$('.nav-tabs li:eq(3) a').tab('show');
 
-							$('#spNameInput').prop('readonly', false);
+						// REPORT PART I
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editRepPartI')?>',
+							data: {'staff_id' : staff_id, 'refid' : refid},
+							beforeSend: function() {
+								$('#part_i').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#part_i').html(res);
+							}
+						});
 
-							$('.budSpInput').removeAttr('disabled');
-							$('#spNameInputDummy').attr('disabled', 'disabled');
+						// REPORT PART II	
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editRepPartII')?>',
+							data: {'refid' : refid, 'staff_id' : staff_id},
+							beforeSend: function() {
+								$('#part_ii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#part_ii').html(res);
+							}
+						});
 
-							$('#totalAmtInput').prop('readonly', false);
-						} else {
-							$('#spName').html('Sponsor Name').show();
-							$('#budSp').html('Budget Origin for Sponsor').show();
-							$('#totalAmt').html('Total (RM)').show();
+						// REPORT PART III	
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editRepPartIII')?>',
+							data: {'refid' : refid, 'staff_id' : staff_id},
+							beforeSend: function() {
+								$('#part_iii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#part_iii').html(res);
+							}
+						});
 
-							$('#spNameInput').prop('readonly', true);
+						// REPORT PART IV
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editRepPartIV')?>',
+							data: {'refid' : refid, 'staff_id' : staff_id},
+							beforeSend: function() {
+								$('#part_iv').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#part_iv').html(res);
+							}
+						});
+						
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alertAddNewReportPartI');
+				msg.danger('Please contact administrator.', '#alertAddNewReportPartIFooter');
+			}
+		});	
+	});
+	
+	// SAVE EDIT REPORT ENTRY PART I
+	$('#part_i').on('click', '.edit_rep_ent_pt_i', function () {
+		var data = $('#editReportPartI').serialize();
+		msg.wait('#alertEditReportPartI');
+        msg.wait('#alertEditReportPartIFooter');
+		//alert(data);
+		//alert(crStaffID);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveEditRepPartI')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertEditReportPartI');
+                msg.show(res.msg, res.alert, '#alertEditReportPartIFooter');
 
-							$('.budSpInput').attr('disabled', 'disabled');
-							$('#spNameInputDummy').removeAttr('disabled');
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('.btn').removeAttr('disabled');
+						
+						var refid = res.refid;
+						var staff_id = res.staff_id;
 
-							$('#totalAmtInput').prop('readonly', true);
-						}
-					}
-				});
+						// REPORT PART I
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editRepPartI')?>',
+							data: {'staff_id' : staff_id, 'refid' : refid},
+							beforeSend: function() {
+								$('.nav-tabs li:eq(2) a').tab('show');
+								$('#part_i').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#part_i').html(res);
+							}
+						});
+						
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alertEditReportPartI');
+				msg.danger('Please contact administrator.', '#alertEditReportPartIFooter');
+			}
+		});	
+	});
 
-				// ADD / UPDATE CONFERENCE LEAVE RECORD
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('addConferenceLeave')?>',
-					data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
-					beforeSend: function() {
-						$('#conference_leave').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-					},
-					success: function(res) {
-						$('#conference_leave').html(res);
-					}
-				});
+	/*-----------------------------
+	TAB 4 - PART II
+	-----------------------------*/
 
-				// STAFF CONFERENCE ALLOWANCE
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('staffConferenceAllowance')?>',
-					data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
-					beforeSend: function() {
-						$('#allowances').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-					},
-					success: function(res) {
-						$('#allowances').html(res);
-					}
-				});
+	// SAVE EDIT REPORT ENTRY PART II
+	$('#part_ii').on('click', '.edit_rep_part_ii', function () {
+		var data = $('#editReportPartII').serialize();
+		msg.wait('#alertEditReportPartII');
+        // msg.wait('#alertEditReportPartIIFooter');
+		//alert(data);
+		//alert(crStaffID);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveRepPartII')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alertEditReportPartII');
+                // msg.show(res.msg, res.alert, '#alertEditReportPartIIFooter');
 
-				$('.nav-tabs li:eq(2) a').tab('show');
-				hide_loading();
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('.btn').removeAttr('disabled');
+						
+						var refid = res.refid;
+						var staff_id = res.staff_id;
+
+						$('#part_ii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editRepPartII')?>',
+							data: {'refid' : refid, 'staff_id' : staff_id},
+							success: function(res) {
+								$('.nav-tabs li:eq(3) a').tab('show');
+								$('#part_ii').html(res);
+							}
+						});
+						
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alertEditReportPartII');
+				// msg.danger('Please contact administrator.', '#alertEditReportPartIIFooter');
+			}
+		});	
+	});
+
+	// ADD RECORD ESTABLISHED NETWORKS AND RELATIONSHIPS MODAL
+	$('#part_ii').on('click','.add_rec_net_relay', function(){
+		var refid = $('#staff_id').val();
+		var staff_id = $('#crRefid').val();
+
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('addEstNetRelayMd')?>',
+			data: {'refid':refid, 'staff_id':staff_id},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
 			}
 		});
 	});
 
-	// DELETE STAFF FROM CONFERENCE
-	$('#staff_list_conference').on('click', '.stacr_del_btn', function() {
-		var thisBtn = $(this);
-		var crRefID = thisBtn.val();
-		var crName = thisBtn.data("crname");
-		var td = thisBtn.parent().siblings();
-		var crStaffID = td.eq(0).html().trim();
-		var crStaffName = td.eq(1).html().trim();
-		// alert(staffId+' '+crRefID);
+	// SAVE RECORD ESTABLISHED NETWORKS AND RELATIONSHIPS
+	$('#myModalis2').on('click', '.ins_net_relay', function () {
+		var data = $('#addEstNetRelayMd').serialize();
+		msg.wait('#addEstNetRelayMdAlert');
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveEstNetRelay')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#addEstNetRelayMdAlert');
 
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('.btn').removeAttr('disabled');
+						$('#myModalis2').modal('hide');
+						
+						var refid = res.refid;
+						var staff_id = res.staff_id;
+
+						$('#part_ii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editRepPartII')?>',
+							data: {'refid' : refid, 'staff_id' : staff_id},
+							success: function(res) {
+								$('.nav-tabs li:eq(3) a').tab('show');
+								$('#part_ii').html(res);
+							}
+						});
+						
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#addEstNetRelayMdAlert');
+			}
+		});
+	});
+
+	// DELETE RECORD ESTABLISHED NETWORKS AND RELATIONSHIPS
+	$('#part_ii').on('click','.delete_scrpi', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var name = td.eq(0).html().trim();
+		var field = td.eq(1).html().trim();
+		var refid = $('#crRefid').val();
+		var staff_id = $('#staff_id').val();
+		//alert(refid);
+		
 		$.confirm({
-		    title: 'Delete Staff',
-		    content: 'Are you sure to delete this record? <br> <b>'+crStaffID+' - '+crStaffName+'</b>',
+		    title: 'Delete Record',
+		    content: 'Are you sure to delete this record? <br> Established networks and relationships : <b>'+name+'</b>',
 			type: 'red',
 		    buttons: {
 		        yes: function () {
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo $this->lib->class_url('delStfConference')?>',
-						data: {'staffId' : crStaffID, 'crRefID' : crRefID},
+						url: '<?php echo $this->lib->class_url('delEstNetRelay')?>',
+						data: {'refid' : refid, 'staff_id' : staff_id, 'name' : name, 'field' : field},
 						dataType: 'JSON',
-						beforeSend: function() {
-							show_loading();
-						},
 						success: function(res) {
 							if (res.sts==1) {
-								hide_loading();
 								$.alert({
 									title: 'Success!',
 									content: res.msg,
 									type: 'green',
 								});
-								
-								// refresh staff list tab
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('getStaffConferenceApplication')?>',
-									data: {'refid' : crRefID, 'crName' : crName},
-									beforeSend: function() {
-										$('#staff_list_conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#staff_list_conference').html(res);
-										
-										ca_row = $('#tbl_list_sta_cr').DataTable({
-											"ordering":false,
-										});
-										
-										$('#conference_application').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click Add New Staff or Edit from Staff List</th></tr></thead></table></p>').show();
-										$('#conference_leave').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add record from Conference Application or click Edit from Staff List</th></tr></thead></table></p>').show();
-										$('#allowances').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please add record from Conference Application or click Edit from Staff List</th></tr></thead></table></p>').show();
-									}
-								});
-								
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
 							} else {
-								hide_loading();
 								$.alert({
 									title: 'Alert!',
 									content: res.msg,
@@ -690,350 +987,118 @@
 		        }
 		    }
 		});
+		
 	});
-
-
 
 	/*-----------------------------
-	TAB 3 - CONFERENCE APPLICATION
+	TAB 5 - PART III
 	-----------------------------*/
-	
-	// MODIFY INPUT FIELD RELATED TO SPONSOR
-	$('#conference_application').on('change', '#sponsor', function () {
-		sponsor = $('#sponsor').val();
-		// alert(sponsor);
-		if(sponsor != "" && (sponsor == 'Y' || sponsor == 'H')) {
-			$('#spName').html('Sponsor Name <b><font color="red">* </font></b>').show();
-			$('#budSp').html('Budget Origin for Sponsor <b><font color="red">* </font></b>').show();
-			$('#totalAmt').html('Total (RM) <b><font color="red">* </font></b>').show();
 
-			$('#spNameInput').prop('readonly', false);
-
-			$('.budSpInput').removeAttr('disabled');
-			$('#spNameInputDummy').attr('disabled', 'disabled');
-
-			$('#totalAmtInput').prop('readonly', false);
-		} else {
-			$('#spName').html('Sponsor Name').show();
-			$('#budSp').html('Budget Origin for Sponsor').show();
-			$('#totalAmt').html('Total (RM)').show();
-
-			$('#spNameInput').prop('readonly', true);
-			$('#spNameInput').val('');
-
-			$('.budSpInput').attr('disabled', 'disabled');
-			$('.budSpInput').val('');
-			$('#spNameInputDummy').removeAttr('disabled');
-
-			$('#totalAmtInput').prop('readonly', true);
-			$('#totalAmtInput').val('');
-		}
-	});
-
-	// STATUS FIELD ALERT ADD NEW STAFF
-	$('#conference_application').on('change', '#status', function () {
-		status = $('#status').val();
-		approveByHod = $('#approveByHod').val();
-		approveDateHod = $('#approveDateHod').val();
-		tncaRemark = $('#tncaRemark').val();
-		approveByTnca = $('#approveByTnca').val();
-		approveDateTnca = $('#approveDateTnca').val();
-		// alert(status);
-
-		if(status != "" && status == 'VERIFY_TNCA') {
-			if(approveByHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			}
-		} else if(status != "" && status == 'VERIFY_VC') {
-			if(tncaRemark == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Remark (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveByTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			}
-		} else if(status != "" && status == 'APPROVE') {
-			if(approveByHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(tncaRemark == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Remark (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveByTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			}
-		}
-	});
-
-	// STATUS FIELD ALERT UPDATE STAFF
-	$('#conference_application').on('change', '#statusUpd', function () {
-		status = $('#statusUpd').val();
-		approveByHod = $('#approveByHod').val();
-		approveDateHod = $('#approveDateHod').val();
-		tncaRemark = $('#tncaRemark').val();
-		approveByTnca = $('#approveByTnca').val();
-		approveDateTnca = $('#approveDateTnca').val();
-		staff_id = $('#staffID').val();
-		refid = $('#crRefid').val();
-		currStatus = '';
-		resSts = '';
-		// alert(staff_id);
-
+	// SAVE EDIT REPORT ENTRY PART III
+	$('#part_iii').on('click', '.edit_rep_part_iii', function () {
+		var data = $('#editReportPartIII').serialize();
+		msg.wait('#alertEditReportPartIII');
+        msg.wait('#alertEditReportPartIIIFooter');
+		//alert(data);
+		//alert(crStaffID);
+		
+		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('getStaffConStatus')?>',
-			data: {'staffID' : staff_id, 'refid' : refid},
+			url: '<?php echo $this->lib->class_url('saveRepPartIII')?>',
+			data: data,
 			dataType: 'JSON',
 			success: function(res) {
-				if(res.sts == 1) {
-					currStatus = res.status;
+				msg.show(res.msg, res.alert, '#alertEditReportPartIII');
+                msg.show(res.msg, res.alert, '#alertEditReportPartIIIFooter');
+
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('.btn').removeAttr('disabled');
+						
+						var refid = res.refid;
+						var staff_id = res.staff_id;
+
+						// REPORT PART III	
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editRepPartIII')?>',
+							data: {'refid' : refid, 'staff_id' : staff_id},
+							beforeSend: function() {
+								$('#part_iii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#part_iii').html(res);
+							}
+						});
+						
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
 				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alertEditReportPartII');
+				msg.danger('Please contact administrator.', '#alertEditReportPartIIIFooter');
 			}
-		}).done(function(currStatus) {
-			resSts = currStatus.status;
-			// alert(resSts);
-			if(status != "" && status == 'VERIFY_TNCA') {
-				if(approveByHod == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (HOD)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateHod == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (HOD)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				}
-			} else if(status != "" && status == 'VERIFY_VC') {
-				if(tncaRemark == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Remark (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveByTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				}
-			} else if(status != "" && status == 'APPROVE') {
-				if(approveByHod == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (HOD)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateHod == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (HOD)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(tncaRemark == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Remark (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveByTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				}
+		});	
+	});
+
+	// ADD RECORD SCR PART 2
+	$('#part_iii').on('click','.add_scrpii', function(){
+		var refid = $('#staff_id').val();
+		var staff_id = $('#crRefid').val();
+
+		$('#myModalis2 .modal-content').empty();
+		$('#myModalis2').modal('show');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('addScrPartIIMd')?>',
+			data: {'refid':refid, 'staff_id':staff_id},
+			success: function(res) {
+				$('#myModalis2 .modal-content').html(res);
 			}
 		});
 	});
 
-	// SAVE INSERT STAFF TO CONFERENCE
-	$('#conference_application').on('click', '.ins_stf_cr', function () {
-		var data = $('#addStaffConference').serialize();
-		msg.wait('#alertStaffConference');
-        msg.wait('#alertStaffConferenceFooter');
-		//alert(data);
-		crStaffID = $('#staffID').val();
-		crRefID = $('#crRefid').val();
-		crName = $('#crName').val();
-		crStaffName = '';
-		//alert(crStaffID);
+	// SAVE RECORD SCR PART 2
+	$('#myModalis2').on('click', '.save_scrpii', function () {
+		var data = $('#addScrPartIIMd').serialize();
+		msg.wait('#addScrPartIIMdAlert');
 		
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveNewStfCr')?>',
+			url: '<?php echo $this->lib->class_url('saveScrpii')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertStaffConference');
-                msg.show(res.msg, res.alert, '#alertStaffConferenceFooter');
+				msg.show(res.msg, res.alert, '#addScrPartIIMdAlert');
 
 				if (res.sts == 1) {
-					var sponsor = res.sponsor;
 					setTimeout(function () {
 						$('.btn').removeAttr('disabled');
-
-						// refresh staff list tab
+						$('#myModalis2').modal('hide');
+						
+						var refid = res.refid;
+						var staff_id = res.staff_id;
+						
+						// REPORT PART III	
 						$.ajax({
 							type: 'POST',
-							url: '<?php echo $this->lib->class_url('getStaffConferenceApplication')?>',
-							data: {'refid' : crRefID, 'crName' : crName},
+							url: '<?php echo $this->lib->class_url('editRepPartIII')?>',
+							data: {'refid' : refid, 'staff_id' : staff_id},
 							beforeSend: function() {
-								$('#staff_list_conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+								$('#part_iii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 							},
 							success: function(res) {
-								$('#staff_list_conference').html(res);
-								
-								ca_row = $('#tbl_list_sta_cr').DataTable({
-									"ordering":false,
-								});
+								$('#part_iii').html(res);
 							}
 						});
 						
-						// redirect to edit staff
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('editStaffConference')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName},
-							beforeSend: function() {
-								$('#conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#conference_application').html(res);
-								
-								// MODIFY INPUT FIELD RELATED TO SPONSOR
-								if(sponsor != "" && (sponsor == 'Y' || sponsor == 'H')) {
-									$('#spName').html('Sponsor Name <b><font color="red">* </font></b>').show();
-									$('#budSp').html('Budget Origin for Sponsor <b><font color="red">* </font></b>').show();
-									$('#totalAmt').html('Total (RM) <b><font color="red">* </font></b>').show();
-
-									$('#spNameInput').prop('readonly', false);
-
-									$('.budSpInput').removeAttr('disabled');
-									$('#spNameInputDummy').attr('disabled', 'disabled');
-
-									$('#totalAmtInput').prop('readonly', false);
-								} else {
-									$('#spName').html('Sponsor Name').show();
-									$('#budSp').html('Budget Origin for Sponsor').show();
-									$('#totalAmt').html('Total (RM)').show();
-
-									$('#spNameInput').prop('readonly', true);
-
-									$('.budSpInput').attr('disabled', 'disabled');
-									$('#spNameInputDummy').removeAttr('disabled');
-
-									$('#totalAmtInput').prop('readonly', true);
-								}
-							}
-						});
-
-						// ADD CONFERENCE LEAVE RECORD
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('addConferenceLeave')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
-							beforeSend: function() {
-								$('#conference_leave').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#conference_leave').html(res);
-								$('.nav-tabs li:eq(3) a').tab('show');
-							}
-						});
-						
-						// ADD STAFF CONFERENCE ALLOWANCE RECORD
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('staffConferenceAllowance')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
-							beforeSend: function() {
-								$('#allowances').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#allowances').html(res);
-							}
-						});
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1041,159 +1106,73 @@
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alertStaffConference');
-				msg.danger('Please contact administrator.', '#alertStaffConferenceFooter');
+				msg.danger('Please contact administrator.', '#addScrPartIIMdAlert');
 			}
-		});	
+		});
 	});
 
-	// SAVE EDIT STAFF TO CONFERENCE
-	$('#conference_application').on('click', '.edit_stf_cr', function () {
-		var data = $('#editStaffConference').serialize();
-		msg.wait('#alertEditStaffConference');
-        msg.wait('#alertEditStaffConferenceFooter');
-		//alert(data);
-		crStaffID = $('#staffID').val();
-		crRefID = $('#crRefid').val();
-		crName = $('#crName').val();
-		crStaffName = '';
-		//alert(crStaffID);
+	// DELETE RECORD SCR PART 2
+	$('#part_iii').on('click','.delete_scrpii', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var activity = td.eq(0).html().trim();
+		var refid = $('#crRefid').val();
+		var staff_id = $('#staff_id').val();
+		//alert(refid);
 		
-		$('.btn').attr('disabled', 'disabled');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveEditStfCr')?>',
-			data: data,
-			dataType: 'JSON',
-			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertEditStaffConference');
-                msg.show(res.msg, res.alert, '#alertEditStaffConferenceFooter');
-
-				if (res.sts == 1) {
-					setTimeout(function () {
-						$('.btn').removeAttr('disabled');
-
-						// refresh staff list tab
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('getStaffConferenceApplication')?>',
-							data: {'refid' : crRefID, 'crName' : crName},
-							beforeSend: function() {
-								$('#staff_list_conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#staff_list_conference').html(res);
-								
-								ca_row = $('#tbl_list_sta_cr').DataTable({
-									"ordering":false,
+		$.confirm({
+		    title: 'Delete Record',
+		    content: 'Are you sure to delete this record? <br> Plan / Activity / Follow-Up at PTj : <b>'+activity+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('delScrpII')?>',
+						data: {'refid' : refid, 'staff_id' : staff_id, 'activity' : activity},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
 								});
 							}
-						});
-						
-						// refresh to edit staff
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('editStaffConference')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName},
-							beforeSend: function() {
-								$('#conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('.nav-tabs li:eq(2) a').tab('show');
-								
-								// MODIFY INPUT FIELD RELATED TO SPONSOR
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('checkSponsor')?>',
-									data: {'staffID' : crStaffID, 'refid' : crRefID},
-									dataType: 'JSON',
-									success: function(res) {
-										var sponsor = res.sponsor;
-										
-										if(sponsor != "" && (sponsor == 'Y' || sponsor == 'H')) {
-											$('#spName').html('Sponsor Name <b><font color="red">* </font></b>').show();
-											$('#budSp').html('Budget Origin for Sponsor <b><font color="red">* </font></b>').show();
-											$('#totalAmt').html('Total (RM) <b><font color="red">* </font></b>').show();
-
-											$('#spNameInput').prop('readonly', false);
-
-											$('.budSpInput').removeAttr('disabled');
-											$('#spNameInputDummy').attr('disabled', 'disabled');
-
-											$('#totalAmtInput').prop('readonly', false);
-										} else {
-											$('#spName').html('Sponsor Name').show();
-											$('#budSp').html('Budget Origin for Sponsor').show();
-											$('#totalAmt').html('Total (RM)').show();
-
-											$('#spNameInput').prop('readonly', true);
-
-											$('.budSpInput').attr('disabled', 'disabled');
-											$('#spNameInputDummy').removeAttr('disabled');
-
-											$('#totalAmtInput').prop('readonly', true);
-										}
-									}
-								});
-
-								$('#conference_application').html(res);
-							}
-						});
-
-						// refresh leave conference
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('addConferenceLeave')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
-							beforeSend: function() {
-								$('#conference_leave').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#conference_leave').html(res);
-							}
-						});
-
-						// REFRESH STAFF CONFERENCE ALLOWANCE RECORD
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('staffConferenceAllowance')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
-							beforeSend: function() {
-								$('#allowances').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#allowances').html(res);
-							}
-						});
-					}, 1000);
-				} else {
-					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alertEditStaffConference');
-				msg.danger('Please contact administrator.', '#alertEditStaffConferenceFooter');
-			}
-		});	
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
+		});
+		
 	});
 
 	// FILE ATTACHMENT
-	$('#conference_application').on('click','.file_att_btn', function(){
+	$('#part_iii').on('click','.file_attach_part_iii', function(){
 		var thisBtn = $(this);
-		crStaffID = $('#staffID').val();
-		crRefID = $('#crRefid').val();
-		//alert(crStaffID+' '+crRefID);
+		staff_id = $('#staff_id').val();
+		refid = $('#crRefid').val();
+		// alert(staff_id+' '+refid);
 
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('fileAttParam')?>',
-			data: {'staffID' : crStaffID, 'refid' : crRefID},
+			data: {'staff_id' : staff_id, 'refid' : refid},
 			dataType: 'JSON',
 			success: function(res) {
 				if(res.sts == 1) {
 					var ecommURL = '<?php echo $this->lib->class_url('fileAttachment') ?>';
-					var newWin = window.open(ecommURL, 'title', 'width=800, height=300');
+					var newWin = window.open(ecommURL, '_blank', 'width=800, height=300');
 				} else {
 					$.alert({
 						title: 'Alert!',
@@ -1204,377 +1183,280 @@
 			}
 		});
     });
-
-	// PRINT PMP
-	$('#conference_application').on('click','.print_pmp_btn', function () {
-		var repCode = $(this).attr('repCode');
-		crStaffID = $('#staffID').val();
-		crRefID = $('#crRefid').val();
-		// alert(repCode+' '+crStaffID+' '+crRefID);
-		
-		$.post('<?php echo $this->lib->class_url('setParamPmpAtt') ?>', {repCode: repCode, crStaffID: crStaffID, crRefID: crRefID}, function (res) {
-			var repURL = '<?php echo $this->lib->class_url('genReportPmpAtt') ?>';
-			var mywin = window.open( repURL , 'report');
-		}).fail(function(){
-			msg.danger('Please contact administrator.', '#alertEditStaffConference');        
-		});
-	});
-
-	// PRINT ATTACHMENT A/B
-	$('#conference_application').on('click','.print_att_btn', function () {
-		var repCode = $(this).attr('repCode');
-		crStaffID = $('#staffID').val();
-		crRefID = $('#crRefid').val();
-		// alert(repCode+' '+crStaffID+' '+crRefID);
-
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('setParamPmpAtt')?>',
-			data: {'repCode': repCode, 'crStaffID': crStaffID, 'crRefID': crRefID},
-			dataType: 'JSON',
-			success: function(res) {
-				if(res.sts == 0) {
-					$.alert({
-						title: 'Alert!',
-						content: res.msg,
-						type: 'red',
-					});
-				} else {
-					var repURL = '<?php echo $this->lib->class_url('genReportPmpAtt') ?>';
-					var mywin = window.open( repURL , 'report');
-				}
-			}
-		});
-	});
 
 	/*-----------------------------
-	TAB 4 - CONFERENCE LEAVE
+	TAB 6 - PART IV
 	-----------------------------*/
-	// TOTAL DAY APPLIED
-	$('#conference_leave').on('dp.change', '#appliedDateFrom', function(){ 
-		app_date_fr = $('#appliedDateFrom').val();
-		app_date_to = $('#appliedDateTo').val();
-        // console.log(app_date_to);
 
-		$('#loaderTDayApp').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-		
-		if(app_date_fr != '' && app_date_to != '') {
+	///// SEARCH STAFF CERTIFIED BY//////
+	// AUTO SEARCH STAFF ID
+	$('#part_iv').on('keyup','#staff_id_hod', function(){
+		// console.log(this.value);
+		var val_length = this.value.length;
+		var staff_id = this.value;
+		msg.wait('#alertStfIDHod');
+
+		if(val_length >= 5) {
 			$.ajax({
 				type: 'POST',
-				url: '<?php echo $this->lib->class_url('countTotalDayApplied')?>',
-				data: {'app_date_fr' : app_date_fr, 'app_date_to' : app_date_to},
+				url: '<?php echo $this->lib->class_url('staffKeyUp')?>',
+				data: {'staff_id' : staff_id},
 				dataType: 'JSON',
 				success: function(res) {
 					if(res.sts == 1) {
-						$('#totalDayApplied').val(res.total_day_applied);
+						msg.show('Staff ID is valid', 'success', '#alertStfIDHod');
+						$('#staff_name_hod').val(res.stf_name);
+					} else {
+						msg.show('Invalid Staff ID', 'danger', '#alertStfIDHod');
 					}
-					$('#loaderTDayApp').hide();
 				}
 			});
 		} else {
-			$('#totalDayApplied').val('0');
-			$('#loaderTDayApp').hide();
-			return;
+			msg.show('Invalid Staff ID', 'danger', '#alertStfIDHod');
+			$('#staff_name').val('');
 		}
-    });
+	});
 
-	$('#conference_leave').on('dp.change', '#appliedDateTo', function(){ 
-		app_date_fr = $('#appliedDateFrom').val();
-		app_date_to = $('#appliedDateTo').val();
-        // console.log(app_date_to);
+	// SEARCH STAFF
+	$('#part_iv').on('click','.search_staff_hod', function(){
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+			data: '',
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+				$('#myModalis .modal-content .search_staff_md').replaceWith('<div class="col-md-2" id="search_staff_div"><button type="button" class="btn btn-primary search_staff_md_hod"><i class="fa fa-search"></i> </button></div>');
+			}
+		});
+	});
 
-		$('#loaderTDayApp').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+	// SEARCH STAFF MODAL
+	$('#myModalis').on('click', '.search_staff_md_hod', function () {
+		var staff_id = $('#myModalis #staff_id').val();
+		search_trigger = 1;
+		// console.log(staff_id);
+
+		if(staff_id == '') {
+			$('#myModalis .modal-content').empty();
+			$('#myModalis').modal('show');
+			$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 		
-		if(app_date_fr != '' && app_date_to != '') {
 			$.ajax({
 				type: 'POST',
-				url: '<?php echo $this->lib->class_url('countTotalDayApplied')?>',
-				data: {'app_date_fr' : app_date_fr, 'app_date_to' : app_date_to},
-				dataType: 'JSON',
+				url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+				data: '',
 				success: function(res) {
-					if(res.sts == 1) {
-						$('#totalDayApplied').val(res.total_day_applied);
-					}
-					$('#loaderTDayApp').hide();
+					$('#myModalis .modal-content').html(res);
+					$('#myModalis .modal-content .search_staff_md').replaceWith('<div class="col-md-2" id="search_staff_div"><button type="button" class="btn btn-primary search_staff_md_hod"><i class="fa fa-search"></i> </button></div>');
 				}
 			});
-		} else {
-			$('#totalDayApplied').val('0');
-			$('#loaderTDayApp').hide();
 			return;
 		}
-    });
 
-	// TOTAL DAY APPROVE
-	$('#conference_leave').on('dp.change', '#approveDateFrom', function(e){ 
-		app_date_fr = $('#approveDateFrom').val();
-		app_date_to = $('#approveDateTo').val();
-		staffID = $('#staff_id').val();
-		crRefid = $('#crRefid').val();
-		// alert(app_date_fr);
-		$('#loaderTDayApp').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+			data: {'staff_id':staff_id, 'search_trigger':search_trigger,},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+				$('#myModalis #staff_list').removeClass('hidden');
 
-		if(app_date_fr != '' && app_date_to != '') {
-			$.ajax({
-				type: 'POST',
-				url: '<?php echo $this->lib->class_url('countTotalDayApplied')?>',
-				data: {'app_date_fr' : app_date_fr, 'app_date_to' : app_date_to},
-				dataType: 'JSON',
-				success: function(res) {
-					if(res.sts == 1) {
-						total_day_applied = res.total_day_applied
-						$('#totalDayApprove').val(total_day_applied);
-						// balance_leave = balance_leave - res.total_day_applied;
-						// alert(total_day_applied);
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('getLeaveBalance')?>',
-							data: {'staffID' : staffID, 'crRefid' : crRefid, 'total_day_applied' : total_day_applied, 'app_date_fr' : app_date_fr},
-							dataType: 'JSON',
-							success: function(res) {
-								if(res.sts == 1) {
-									// alert('1sts');
-									leave_balance_db = res.leave_balance;
-									leave_balance_ac = parseInt(leave_balance_db) - parseInt(total_day_applied);
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_ac);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 2) {
-									// alert('2sts');
-									leave_balance_db = parseInt(res.leave_balance);
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_db);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 3) {
-									// alert('3sts');
-									leave_balance_db = parseInt(res.leave_balance) + (parseInt(res.sld_total_day_db) - parseInt(total_day_applied));
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_db);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 4) {
-									// alert('4sts');
-									leave_balance_db = res.leave_balance;
-									total_day_db = res.sld_total_day_db;
-									leave_balance_ac = parseInt(leave_balance_db) - (parseInt(total_day_applied)-parseInt(total_day_db));
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_ac);
-									$('#entitledYear').val(res.app_date_fr_year);
+				stf_row = $('#myModalis #tbl_stf_res_list').DataTable({
+					"ordering":false,
+					drawCallback: function(){
+						$(function() {
+							$('#tbl_stf_res_list').each(function() {
+							var Cell = $(this).find('td:eq(2)');
+							//debugger;
+								if (Cell.text() !== 'error') {
+									$('#tbl_stf_res_list tbody .select_staff_id').replaceWith('<button type="button" class="btn btn-primary btn-xs select_staff_id_hod"><i class="fa fa-chevron-down"></i> Select</button>');
 								}
-							}
+							});
 						});
 					}
-					$('#loaderTDayApp').hide();
-				}
-			});
-		} else {
-			$('#totalDayApprove').val('0');
-			$('#entitledLeave').val('0');
-			$('#entitledYear').val('0');
-			$('#balanceLeave').val('0');
-			$('#loaderTDayApp').hide();
-			return;
+                });
+			}
+		});
+	});
+
+	// SELECT STAFF ID
+	$('#myModalis').on('click', '.select_staff_id_hod', function () {
+		$('#myModalis').modal('hide');
+
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var staff_id = td.eq(0).html().trim();
+		var staff_name = td.eq(1).html().trim();
+		// console.log(staff_id);
+
+		if(staff_id != '' && staff_name != '') {
+			$('#staff_id_hod').val(staff_id);
+			$('#staff_name_hod').val(staff_name);
 		}
-    });
+	});
+	///// SEARCH STAFF CERTIFIED BY//////
 
-	$('#conference_leave').on('dp.change', '#approveDateTo', function(e){ 
-		app_date_fr = $('#approveDateFrom').val();
-		app_date_to = $('#approveDateTo').val();
-		staffID = $('#staff_id').val();
-		crRefid = $('#crRefid').val();
-		// alert(app_date_fr);
-		$('#loaderTDayApp').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+	///// SEARCH STAFF APPROVED BY//////
+	// AUTO SEARCH STAFF ID
+	$('#part_iv').on('keyup','#staff_id_tnca', function(){
+		// console.log(this.value);
+		var val_length = this.value.length;
+		var staff_id = this.value;
+		msg.wait('#alertStfIDTnca');
 
-		if(app_date_fr != '' && app_date_to != '') {
+		if(val_length >= 5) {
 			$.ajax({
 				type: 'POST',
-				url: '<?php echo $this->lib->class_url('countTotalDayApplied')?>',
-				data: {'app_date_fr' : app_date_fr, 'app_date_to' : app_date_to},
+				url: '<?php echo $this->lib->class_url('staffKeyUp')?>',
+				data: {'staff_id' : staff_id},
 				dataType: 'JSON',
 				success: function(res) {
 					if(res.sts == 1) {
-						total_day_applied = res.total_day_applied
-						$('#totalDayApprove').val(total_day_applied);
-						// balance_leave = balance_leave - res.total_day_applied;
-						// alert(total_day_applied);
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('getLeaveBalance')?>',
-							data: {'staffID' : staffID, 'crRefid' : crRefid, 'total_day_applied' : total_day_applied, 'app_date_fr' : app_date_fr},
-							dataType: 'JSON',
-							success: function(res) {
-								if(res.sts == 1) {
-									// alert('1sts');
-									leave_balance_db = res.leave_balance;
-									leave_balance_ac = parseInt(leave_balance_db) - parseInt(total_day_applied);
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_ac);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 2) {
-									// alert('2sts');
-									leave_balance_db = parseInt(res.leave_balance);
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_db);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 3) {
-									// alert('3sts');
-									leave_balance_db = parseInt(res.leave_balance) + (parseInt(res.sld_total_day_db) - parseInt(total_day_applied));
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_db);
-									$('#entitledYear').val(res.app_date_fr_year);
-								} else if (res.sts == 4) {
-									// alert('4sts');
-									leave_balance_db = res.leave_balance;
-									total_day_db = res.sld_total_day_db;
-									leave_balance_ac = parseInt(leave_balance_db) - (parseInt(total_day_applied)-parseInt(total_day_db));
-									$('#entitledLeave').val(res.entitled_leave);
-									$('#balanceLeave').val(leave_balance_ac);
-									$('#entitledYear').val(res.app_date_fr_year);
-								}
-							}
-						});
+						msg.show('Staff ID is valid', 'success', '#alertStfIDTnca');
+						$('#staff_name_tnca').val(res.stf_name);
+					} else {
+						msg.show('Invalid Staff ID', 'danger', '#alertStfIDTnca');
 					}
-					$('#loaderTDayApp').hide();
 				}
 			});
 		} else {
-			$('#totalDayApprove').val('0');
-			$('#entitledLeave').val('0');
-			$('#entitledYear').val('0');
-			$('#balanceLeave').val('0');
-			$('#loaderTDayApp').hide();
-			return;
+			msg.show('Invalid Staff ID', 'danger', '#alertStfIDTnca');
+			$('#staff_name_tnca').val('');
 		}
-    });
+	});
 
-	// SAVE ADD/EDIT CONFERENCE LEAVE
-	$('#conference_leave').on('click', '.ins_con_leave', function () {
-		balance = $('#balanceLeave').val();
-		if(balance < 0) {
-			$.alert({
-				title: 'Alert!',
-				content: 'The leave applied exceeds the conference leave balance. Please apply for annual leave.',
-				type: 'red',
+	// SEARCH STAFF
+	$('#part_iv').on('click','.search_staff_tnca', function(){
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+			data: '',
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+				$('#myModalis .modal-content .search_staff_md').replaceWith('<div class="col-md-2" id="search_staff_div"><button type="button" class="btn btn-primary search_staff_md_tnca"><i class="fa fa-search"></i> </button></div>');
+			}
+		});
+	});
+
+	// SEARCH STAFF MODAL
+	$('#myModalis').on('click', '.search_staff_md_tnca', function () {
+		var staff_id = $('#myModalis #staff_id').val();
+		search_trigger = 1;
+		// console.log(staff_id);
+		if(staff_id == '') {
+			$('#myModalis .modal-content').empty();
+			$('#myModalis').modal('show');
+			$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+				data: '',
+				success: function(res) {
+					$('#myModalis .modal-content').html(res);
+					$('#myModalis .modal-content .search_staff_md').replaceWith('<div class="col-md-2" id="search_staff_div"><button type="button" class="btn btn-primary search_staff_md_tnca"><i class="fa fa-search"></i> </button></div>');
+				}
 			});
-
 			return;
 		}
 
-		var data = $('#addConferenceLeave').serialize();
-		msg.wait('#alertConferenceLeave');
-        msg.wait('#alertConferenceLeaveFooter');
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+			data: {'staff_id':staff_id, 'search_trigger':search_trigger,},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+				$('#myModalis #staff_list').removeClass('hidden');
+
+				stf_row = $('#myModalis #tbl_stf_res_list').DataTable({
+					"ordering":false,
+					drawCallback: function(){
+						$(function() {
+							$('#tbl_stf_res_list').each(function() {
+							var Cell = $(this).find('td:eq(2)');
+							//debugger;
+								if (Cell.text() !== 'error') {
+									$('#tbl_stf_res_list tbody .select_staff_id').replaceWith('<button type="button" class="btn btn-primary btn-xs select_staff_id_tnca"><i class="fa fa-chevron-down"></i> Select</button>');
+								}
+							});
+						});
+					}
+                });
+			}
+		});
+	});
+
+	// SELECT STAFF ID
+	$('#myModalis').on('click', '.select_staff_id_tnca', function () {
+		$('#myModalis').modal('hide');
+
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var staff_id = td.eq(0).html().trim();
+		var staff_name = td.eq(1).html().trim();
+		// console.log(staff_id);
+
+		if(staff_id != '' && staff_name != '') {
+			$('#staff_id_tnca').val(staff_id);
+			$('#staff_name_tnca').val(staff_name);
+		}
+	});
+	///// SEARCH STAFF APPROVED BY//////
+
+	// SAVE EDIT REPORT ENTRY PART II
+	$('#part_iv').on('click', '.edit_rep_part_iv', function () {
+		var data = $('#editReportPartIV').serialize();
+		msg.wait('#alertEditReportPartIV');
+        msg.wait('#alertEditReportPartIVFooter');
 		//alert(data);
-		crStaffID = $('#staff_id').val();
-		crRefID = $('#crRefid').val();
-		crName = $('#crName').val();
-		crStaffName = $('#staff_name').val();
 		//alert(crStaffID);
 		
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveInsEditConLeave')?>',
+			url: '<?php echo $this->lib->class_url('saveRepPartIV')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertConferenceLeave');
-                msg.show(res.msg, res.alert, '#alertConferenceLeaveFooter');
+				msg.show(res.msg, res.alert, '#alertEditReportPartIV');
+                msg.show(res.msg, res.alert, '#alertEditReportPartIVFooter');
 
 				if (res.sts == 1) {
 					setTimeout(function () {
 						$('.btn').removeAttr('disabled');
+						
+						var refid = res.refid;
+						var staff_id = res.staff_id;
 
-						// refresh staff list tab
+						// REPORT PART IV
 						$.ajax({
 							type: 'POST',
-							url: '<?php echo $this->lib->class_url('getStaffConferenceApplication')?>',
-							data: {'refid' : crRefID, 'crName' : crName},
+							url: '<?php echo $this->lib->class_url('editRepPartIV')?>',
+							data: {'refid' : refid, 'staff_id' : staff_id},
 							beforeSend: function() {
-								$('#staff_list_conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+								$('#part_iv').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 							},
 							success: function(res) {
-								$('#staff_list_conference').html(res);
-								
-								ca_row = $('#tbl_list_sta_cr').DataTable({
-									"ordering":false,
-								});
+								$('#part_iv').html(res);
 							}
 						});
 						
-						// refresh edit conference application
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('editStaffConference')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName},
-							beforeSend: function() {
-								$('#conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								// MODIFY INPUT FIELD RELATED TO SPONSOR
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('checkSponsor')?>',
-									data: {'staffID' : crStaffID, 'refid' : crRefID},
-									dataType: 'JSON',
-									success: function(res) {
-										var sponsor = res.sponsor;
-										
-										if(sponsor != "" && (sponsor == 'Y' || sponsor == 'H')) {
-											$('#spName').html('Sponsor Name <b><font color="red">* </font></b>').show();
-											$('#budSp').html('Budget Origin for Sponsor <b><font color="red">* </font></b>').show();
-											$('#totalAmt').html('Total (RM) <b><font color="red">* </font></b>').show();
-
-											$('#spNameInput').prop('readonly', false);
-
-											$('.budSpInput').removeAttr('disabled');
-											$('#spNameInputDummy').attr('disabled', 'disabled');
-
-											$('#totalAmtInput').prop('readonly', false);
-										} else {
-											$('#spName').html('Sponsor Name').show();
-											$('#budSp').html('Budget Origin for Sponsor').show();
-											$('#totalAmt').html('Total (RM)').show();
-
-											$('#spNameInput').prop('readonly', true);
-
-											$('.budSpInput').attr('disabled', 'disabled');
-											$('#spNameInputDummy').removeAttr('disabled');
-
-											$('#totalAmtInput').prop('readonly', true);
-										}
-									}
-								});
-
-								$('#conference_application').html(res);
-							}
-						});
-						
-						// refresh leave conference
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('addConferenceLeave')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
-							beforeSend: function() {
-								$('#conference_leave').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#conference_leave').html(res);
-								// $('.nav-tabs li:eq(3) a').tab('show');
-							}
-						});
-
-						// REDIRECT ADD STAFF CONFERENCE ALLOWANCE RECORD
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('staffConferenceAllowance')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
-							beforeSend: function() {
-								$('#allowances').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#allowances').html(res);
-								$('.nav-tabs li:eq(4) a').tab('show');
-							}
-						});
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1582,225 +1464,9 @@
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alertEditStaffConference');
-				msg.danger('Please contact administrator.', '#alertEditStaffConferenceFooter');
+				msg.danger('Please contact administrator.', '#alertEditReportPartIV');
+				msg.danger('Please contact administrator.', '#alertEditReportPartIVFooter');
 			}
 		});	
-	});
-
-	/*-----------------------------
-	TAB 5 - ALLOWANCES
-	-----------------------------*/
-
-	// ADD STAFF CONFERENCE ALLOWANCE
-	$('#allowances').on('click','.add_allowance_con', function(){
-		var staffId = $('#staff_id').val();
-		var staffName = $('#staff_name').val();
-		var crRefID = $('#crRefid').val();
-		var crName = $('#crName').val();
-
-		$('#myModalis .modal-content').empty();
-		$('#myModalis').modal('show');
-		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('addStaffConferenceAllowance')?>',
-			data: {'staffId' : staffId, 'staffName' : staffName, 'refid' : crRefID, 'crName' : crName},
-			success: function(res) {
-				$('#myModalis .modal-content').html(res);
-			}
-		});
-	});	
-
-	// SAVE INSERT NEW STAFF CONFERENCE ALLOWANCE
-	$('#myModalis').on('click', '.ins_stf_con_allw', function () {
-		var staffId = $('#staff_id').val();
-		var staffName = $('#staff_name').val();
-		var crRefID = $('#crRefid').val();
-		var crName = $('#crName').val();
-		
-		var data = $('#addStaffConAllw').serialize();
-		msg.wait('#addStaffConAllwAlert');
-		// alert(data);
-		
-		$('.btn').attr('disabled', 'disabled');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveNewStfConAllowance')?>',
-			data: data,
-			dataType: 'JSON',
-			success: function(res) {
-				msg.show(res.msg, res.alert, '#addStaffConAllwAlert');
-
-				if (res.sts == 1) {
-					setTimeout(function () {
-						$('#myModalis').modal('hide');
-						$('.btn').removeAttr('disabled');
-
-						// STAFF CONFERENCE ALLOWANCE
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('staffConferenceAllowance')?>',
-							data: {'staffID' : staffId, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : staffName},
-							beforeSend: function() {
-								$('#allowances').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#allowances').html(res);
-							}
-						});
-
-						$('.nav-tabs li:eq(4) a').tab('show');
-					}, 1000);
-				} else {
-					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#addStaffConAllwAlert');
-			}
-		});	
-	});
-
-	// EDIT STAFF CONFERENCE ALLOWANCE
-	$('#allowances').on('click', '.edit_stf_con_allw', function() {
-		var staffId = $('#staff_id').val();
-		var staffName = $('#staff_name').val();
-		var crRefID = $('#crRefid').val();
-		var crName = $('#crName').val();
-
-		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");
-		var sca_code = td.find(".sca_code").text();
-		// alert(sca_code);
-
-		$('#myModalis .modal-content').empty();
-		$('#myModalis').modal('show');
-		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editStaffConferenceAllowance')?>',
-			data: {'staffId' : staffId, 'staffName' : staffName, 'refid' : crRefID, 'crName' : crName, 'sca_code' : sca_code},
-			success: function(res) {
-				$('#myModalis .modal-content').html(res);
-			}
-		});
-	});
-
-	// SAVE UPDATE STAFF CONFERENCE ALLOWANCE
-	$('#myModalis').on('click', '.upd_stf_con_allw', function () {
-		var staffId = $('#staff_id').val();
-		var staffName = $('#staff_name').val();
-		var crRefID = $('#crRefid').val();
-		var crName = $('#crName').val();
-		
-		var data = $('#updStaffConAllw').serialize();
-		msg.wait('#updStaffConAllwAlert');
-		// alert(data);
-		
-		$('.btn').attr('disabled', 'disabled');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdStfConAllowance')?>',
-			data: data,
-			dataType: 'JSON',
-			success: function(res) {
-				msg.show(res.msg, res.alert, '#updStaffConAllwAlert');
-
-				if (res.sts == 1) {
-					setTimeout(function () {
-						$('#myModalis').modal('hide');
-						$('.btn').removeAttr('disabled');
-
-						// STAFF CONFERENCE ALLOWANCE
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('staffConferenceAllowance')?>',
-							data: {'staffID' : staffId, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : staffName},
-							beforeSend: function() {
-								$('#allowances').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#allowances').html(res);
-							}
-						});
-
-						$('.nav-tabs li:eq(4) a').tab('show');
-					}, 1000);
-				} else {
-					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#updStaffConAllwAlert');
-			}
-		});	
-	});
-
-	// DELETE STAFF CONFERENCE ALLOWANCE
-	$('#allowances').on('click', '.del_stf_con_allw', function() {
-		var staffId = $('#staff_id').val();
-		var staffName = $('#staff_name').val();
-		var crRefID = $('#crRefid').val();
-		var crName = $('#crName').val();
-
-		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");
-		var sca_code = td.find(".sca_code").text();
-		var sca_desc = td.find(".sca_desc").text();
-		// alert(staffId+' '+crRefID);
-
-		$.confirm({
-		    title: 'Delete Staff Conference Allowance',
-		    content: 'Are you sure to delete this record? <br> <b>'+sca_code+' - '+sca_desc+'</b>',
-			type: 'red',
-		    buttons: {
-		        yes: function () {
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('delStfConAllowance')?>',
-						data: {'staffId' : staffId, 'crRefID' : crRefID, 'sca_code' : sca_code},
-						dataType: 'JSON',
-						success: function(res) {
-							if (res.sts==1) {
-								$.alert({
-									title: 'Success!',
-									content: res.msg,
-									type: 'green',
-								});
-								
-								// STAFF CONFERENCE ALLOWANCE
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('staffConferenceAllowance')?>',
-									data: {'staffID' : staffId, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : staffName},
-									beforeSend: function() {
-										$('#allowances').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#allowances').html(res);
-									}
-								});
-
-								$('.nav-tabs li:eq(4) a').tab('show');
-							} else {
-								$.alert({
-									title: 'Alert!',
-									content: res.msg,
-									type: 'red',
-								});
-							}
-						}
-					});			
-		        },
-		        cancel: function () {
-		            $.alert('Canceled Delete Record!');
-		        }
-		    }
-		});
 	});
 </script>

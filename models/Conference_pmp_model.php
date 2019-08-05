@@ -99,7 +99,7 @@ class Conference_pmp_model extends MY_Model
     } 
 
     // CONFERENCE APPLICANT LIST
-    public function getStaffConferenceApplication($refid) {		
+    public function getStaffConferenceApplication($refid, $mod = null) {		
         $this->db->select("SCM_STAFF_ID, SM_STAFF_NAME, CC_DESC, CPR_DESC,
         CASE SCM_STATUS
           WHEN 'VERIFY_VC' THEN 'VERIFY VC'
@@ -111,6 +111,11 @@ class Conference_pmp_model extends MY_Model
         $this->db->join("CONFERENCE_CATEGORY", "STAFF_CONFERENCE_MAIN.SCM_CATEGORY_CODE = CONFERENCE_CATEGORY.CC_CODE", "LEFT");
         $this->db->join("CONFERENCE_PARTICIPANT_ROLE", "STAFF_CONFERENCE_MAIN.SCM_PARTICIPANT_ROLE = CONFERENCE_PARTICIPANT_ROLE.CPR_CODE", "LEFT");
         $this->db->where("SCM_REFID", $refid);
+
+        if($mod == 'EDIT_RMIC') {
+            $this->db->where("SCM_BUDGET_ORIGIN IN ('RESEARCH','RESEARCH_CONFERENCE')");
+        }
+
         $q = $this->db->get();
                 
         return $q->result();
@@ -322,29 +327,73 @@ class Conference_pmp_model extends MY_Model
     {
         $curDate = 'SYSDATE';
         $curUsr = $this->staff_id;
+        $mod = $form['mod'];
 
-        $data = array(
-            "SCM_PARTICIPANT_ROLE" => $form['role'],
-            "SCM_PAPER_TITLE" => $form['paper_title1'],
-            "SCM_PAPER_TITLE2" => $form['paper_title2'],
-            "SCM_CATEGORY_CODE" => $form['category'],
-            "SCM_SPONSOR" => $form['sponsor'],
-            "SCM_SPONSOR_NAME" => $form['sponsor_name'],
-            "SCM_SPONSOR_BUDGET_ORIGIN" => $form['budget_origin_for_sponsor'],
-            "SCM_RM_SPONSOR_TOTAL_AMT" => $form['total'],
-            "SCM_BUDGET_ORIGIN" => $form['budget_origin'],
-            "SCM_STATUS" => $form['status'],
-            "SCM_APPROVER_REMARK1" => $form['remark1'],
-            "SCM_APPROVER_REMARK2" => $form['remark2'],
-            "SCM_APPROVER_REMARK3" => $form['remark3'],
-            "SCM_APPROVER_REMARK4" => $form['remark4'],
-            "SCM_RECOMMEND_BY" => $form['approved_by_hod'],
-            "SCM_TNCA_REMARK" => $form['remark_tnc'],
-            "SCM_TNCA_APPROVE_BY" => $form['approved_by_tnc'],
-            "SCM_VC_REMARK" => $form['remark_vc'],
-            "SCM_VC_APPROVE_BY" => $form['approved_by_vc'],
-            "SCM_APPLY_BY" => $curUsr
-        );
+        if($mod = 'EDIT_RMIC') {
+            $data = array(
+                "SCM_PARTICIPANT_ROLE" => $form['role'],
+                "SCM_PAPER_TITLE" => $form['paper_title1'],
+                "SCM_PAPER_TITLE2" => $form['paper_title2'],
+                "SCM_CATEGORY_CODE" => $form['category'],
+                "SCM_SPONSOR" => $form['sponsor'],
+                "SCM_SPONSOR_NAME" => $form['sponsor_name'],
+                "SCM_SPONSOR_BUDGET_ORIGIN" => $form['budget_origin_for_sponsor'],
+                "SCM_RM_SPONSOR_TOTAL_AMT" => $form['total'],
+                "SCM_BUDGET_ORIGIN" => $form['budget_origin'],
+                "SCM_STATUS" => $form['status'],
+                "SCM_APPROVER_REMARK1" => $form['remark1'],
+                "SCM_APPROVER_REMARK2" => $form['remark2'],
+                "SCM_APPROVER_REMARK3" => $form['remark3'],
+                "SCM_APPROVER_REMARK4" => $form['remark4'],
+                "SCM_RECOMMEND_BY" => $form['approved_by_hod'],
+                "SCM_TNCA_REMARK" => $form['remark_tnc'],
+                "SCM_TNCA_APPROVE_BY" => $form['approved_by_tnc'],
+                "SCM_VC_REMARK" => $form['remark_vc'],
+                "SCM_VC_APPROVE_BY" => $form['approved_by_vc'],
+                "SCM_APPLY_BY" => $curUsr,
+
+                // RMIC
+                "SCM_RESEARCH_REFID" => $form['research_project'],
+                "SCM_RMIC_REMARK" => $form['remark_rmic'],
+                "SCM_RMIC_APPROVE_BY" => $form['approved_by_rmic'],
+                "SCM_TNCPI_REMARK" => $form['remark_tncpi'],
+                "SCM_TNCPI_APPROVE_BY" => $form['approved_by_tncpi'],
+            );
+
+            if(!empty($form['approved_date_rmic'])) {
+                $approved_date_rmic = "to_date('".$form['approved_date_rmic']."', 'DD/MM/YYYY')";
+                $this->db->set("SCM_RMIC_APPROVE_DATE", $approved_date_rmic, false);
+            }
+
+            if(!empty($form['approved_date_tncpi'])) {
+                $approved_date_tncpi = "to_date('".$form['approved_date_tncpi']."', 'DD/MM/YYYY')";
+                $this->db->set("SCM_TNCPI_APPROVE_DATE", $approved_date_tncpi, false);
+            }
+        } else {
+            $data = array(
+                "SCM_PARTICIPANT_ROLE" => $form['role'],
+                "SCM_PAPER_TITLE" => $form['paper_title1'],
+                "SCM_PAPER_TITLE2" => $form['paper_title2'],
+                "SCM_CATEGORY_CODE" => $form['category'],
+                "SCM_SPONSOR" => $form['sponsor'],
+                "SCM_SPONSOR_NAME" => $form['sponsor_name'],
+                "SCM_SPONSOR_BUDGET_ORIGIN" => $form['budget_origin_for_sponsor'],
+                "SCM_RM_SPONSOR_TOTAL_AMT" => $form['total'],
+                "SCM_BUDGET_ORIGIN" => $form['budget_origin'],
+                "SCM_STATUS" => $form['status'],
+                "SCM_APPROVER_REMARK1" => $form['remark1'],
+                "SCM_APPROVER_REMARK2" => $form['remark2'],
+                "SCM_APPROVER_REMARK3" => $form['remark3'],
+                "SCM_APPROVER_REMARK4" => $form['remark4'],
+                "SCM_RECOMMEND_BY" => $form['approved_by_hod'],
+                "SCM_TNCA_REMARK" => $form['remark_tnc'],
+                "SCM_TNCA_APPROVE_BY" => $form['approved_by_tnc'],
+                "SCM_VC_REMARK" => $form['remark_vc'],
+                "SCM_VC_APPROVE_BY" => $form['approved_by_vc'],
+                "SCM_APPLY_BY" => $curUsr
+            );
+        }
+        
 
         if(!empty($form['apply_date'])) {
             $apply_date = "to_date('".$form['apply_date']."', 'DD/MM/YYYY')";
@@ -756,20 +805,43 @@ class Conference_pmp_model extends MY_Model
 
     // SAVE INSERT STAFF CONFERENCE ALLOWANCE
     public function saveNewStfConAllowance($form, $refid, $staff_id, $allowance_code)
-    {
-        $data = array(
-            "SCA_REFID" => $refid,
-            "SCA_STAFF_ID" => $staff_id,
-            "SCA_ALLOWANCE_CODE" => $allowance_code,
-            "SCA_AMOUNT_RM" => $form['apply'],
-            "SCA_AMOUNT_FOREIGN" => $form['apply_foreign'],
-            "SCA_AMT_RM_APPROVE_HOD" => $form['approved_hod'],
-            "SCA_AMT_FOREIGN_APPROVE_HOD" => $form['approved_hod_foreign'],
-            "SCA_AMT_RM_APPROVE_TNCA" => $form['approved_tnca'],
-            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $form['approved_tnca_foreign'],
-            "SCA_AMT_RM_APPROVE_VC" => $form['approved_vc'],
-            "SCA_AMT_FOREIGN_APPROVE_VC" => $form['approved_vc_foreign']
-        );
+    {   
+        if($form['mod'] == 'EDIT_RMIC') {
+            $data = array(
+                "SCA_REFID" => $refid,
+                "SCA_STAFF_ID" => $staff_id,
+                "SCA_ALLOWANCE_CODE" => $allowance_code,
+                "SCA_AMOUNT_RM" => $form['apply'],
+                "SCA_AMOUNT_FOREIGN" => $form['apply_foreign'],
+                "SCA_AMT_RM_APPROVE_HOD" => $form['approved_hod'],
+                "SCA_AMT_FOREIGN_APPROVE_HOD" => $form['approved_hod_foreign'],
+                "SCA_AMT_RM_APPROVE_TNCA" => $form['approved_tnca'],
+                "SCA_AMT_FOREIGN_APPROVE_TNCA" => $form['approved_tnca_foreign'],
+                "SCA_AMT_RM_APPROVE_VC" => $form['approved_vc'],
+                "SCA_AMT_FOREIGN_APPROVE_VC" => $form['approved_vc_foreign'],
+
+                // EDIT_RMIC
+                "SCA_AMT_RM_APPROVE_RMIC" => $form['approved_rmic'],
+                "SCA_AMT_FOREIGN_APPROVE_RMIC" => $form['approved_rmic_foreign'],
+                "SCA_AMT_RM_APPROVE_TNCPI" => $form['approved_tncpi'],
+                "SCA_AMT_FOREIGN_APPROVE_TNCPI" => $form['approved_tncpi_foreign']
+            );
+        } else {
+            $data = array(
+                "SCA_REFID" => $refid,
+                "SCA_STAFF_ID" => $staff_id,
+                "SCA_ALLOWANCE_CODE" => $allowance_code,
+                "SCA_AMOUNT_RM" => $form['apply'],
+                "SCA_AMOUNT_FOREIGN" => $form['apply_foreign'],
+                "SCA_AMT_RM_APPROVE_HOD" => $form['approved_hod'],
+                "SCA_AMT_FOREIGN_APPROVE_HOD" => $form['approved_hod_foreign'],
+                "SCA_AMT_RM_APPROVE_TNCA" => $form['approved_tnca'],
+                "SCA_AMT_FOREIGN_APPROVE_TNCA" => $form['approved_tnca_foreign'],
+                "SCA_AMT_RM_APPROVE_VC" => $form['approved_vc'],
+                "SCA_AMT_FOREIGN_APPROVE_VC" => $form['approved_vc_foreign']
+            );
+        }
+        
 
         return $this->db->insert("STAFF_CONFERENCE_ALLOWANCE", $data);
     }
@@ -874,16 +946,36 @@ class Conference_pmp_model extends MY_Model
     // SAVE UPDATE STAFF CONFERENCE ALLOWANCE
     public function saveUpdStfConAllowance($form, $refid, $staff_id, $allowance_code)
     {
-        $data = array(
-            "SCA_AMOUNT_RM" => $form['apply'],
-            "SCA_AMOUNT_FOREIGN" => $form['apply_foreign'],
-            "SCA_AMT_RM_APPROVE_HOD" => $form['approved_hod'],
-            "SCA_AMT_FOREIGN_APPROVE_HOD" => $form['approved_hod_foreign'],
-            "SCA_AMT_RM_APPROVE_TNCA" => $form['approved_tnca'],
-            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $form['approved_tnca_foreign'],
-            "SCA_AMT_RM_APPROVE_VC" => $form['approved_vc'],
-            "SCA_AMT_FOREIGN_APPROVE_VC" => $form['approved_vc_foreign']
-        );
+        if($form['mod'] == 'EDIT_RMIC') {
+
+            $data = array(
+                "SCA_AMOUNT_RM" => $form['apply'],
+                "SCA_AMOUNT_FOREIGN" => $form['apply_foreign'],
+                "SCA_AMT_RM_APPROVE_HOD" => $form['approved_hod'],
+                "SCA_AMT_FOREIGN_APPROVE_HOD" => $form['approved_hod_foreign'],
+                "SCA_AMT_RM_APPROVE_TNCA" => $form['approved_tnca'],
+                "SCA_AMT_FOREIGN_APPROVE_TNCA" => $form['approved_tnca_foreign'],
+                "SCA_AMT_RM_APPROVE_VC" => $form['approved_vc'],
+                "SCA_AMT_FOREIGN_APPROVE_VC" => $form['approved_vc_foreign'],
+
+                // EDIT_RMIC
+                "SCA_AMT_RM_APPROVE_RMIC" => $form['approved_rmic'],
+                "SCA_AMT_FOREIGN_APPROVE_RMIC" => $form['approved_rmic_foreign'],
+                "SCA_AMT_RM_APPROVE_TNCPI" => $form['approved_tncpi'],
+                "SCA_AMT_FOREIGN_APPROVE_TNCPI" => $form['approved_tncpi_foreign']
+            );
+        } else {
+            $data = array(
+                "SCA_AMOUNT_RM" => $form['apply'],
+                "SCA_AMOUNT_FOREIGN" => $form['apply_foreign'],
+                "SCA_AMT_RM_APPROVE_HOD" => $form['approved_hod'],
+                "SCA_AMT_FOREIGN_APPROVE_HOD" => $form['approved_hod_foreign'],
+                "SCA_AMT_RM_APPROVE_TNCA" => $form['approved_tnca'],
+                "SCA_AMT_FOREIGN_APPROVE_TNCA" => $form['approved_tnca_foreign'],
+                "SCA_AMT_RM_APPROVE_VC" => $form['approved_vc'],
+                "SCA_AMT_FOREIGN_APPROVE_VC" => $form['approved_vc_foreign']
+            );
+        }
 
         $this->db->where('SCA_REFID', $refid);
         $this->db->where('SCA_STAFF_ID', $staff_id);
@@ -941,6 +1033,8 @@ class Conference_pmp_model extends MY_Model
             $scm_status = 'VERIFY_TNCA';
         } elseif($mod == 'VC') {
             $scm_status = 'VERIFY_VC';
+        } elseif($mod == 'RMIC') {
+            $scm_status = 'VERIFY_RMIC';
         }   
 
         $query = "SELECT 'All' DM_DEPT_CODE, '' SS_DESC_SHORT FROM DUAL
@@ -984,10 +1078,16 @@ class Conference_pmp_model extends MY_Model
             $this->db->where("(SCM_STATUS='VERIFY_VC' 
             AND SCM_STAFF_ID IN
             (SELECT SM_STAFF_ID FROM STAFF_MAIN WHERE SM_DEPT_CODE = '$deptCode'))");
+        } elseif($deptCode != 'All' && $mod == 'RMIC') {
+            $this->db->where("(SCM_STATUS='VERIFY_RMIC' 
+            AND SCM_STAFF_ID IN
+            (SELECT SM_STAFF_ID FROM STAFF_MAIN WHERE SM_DEPT_CODE = '$deptCode'))");
         } elseif($mod == 'TNCA') {
             $this->db->where("SCM_STATUS='VERIFY_TNCA'");
         } elseif($mod == 'VC') {
             $this->db->where("SCM_STATUS='VERIFY_VC'");
+        } elseif($mod == 'RMIC') {
+            $this->db->where("SCM_STATUS='VERIFY_RMIC'");
         }
         
         $this->db->where("SCM_STAFF_ID = SM_STAFF_ID");
@@ -1023,6 +1123,11 @@ class Conference_pmp_model extends MY_Model
             $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, TO_CHAR(SYSDATE, 'DD/MM/YYYY') AS CURR_DATE");
             $this->db->from("STAFF_MAIN");
             $this->db->where("SM_ADMIN_JOBCODE = '20'");
+        } elseif($mod == 'RMIC') {
+            $this->db->select("DM_DIRECTOR, SM_STAFF_ID, SM_STAFF_NAME, TO_CHAR(SYSDATE, 'DD/MM/YYYY') AS CURR_DATE");
+            $this->db->from("STAFF_MAIN, DEPARTMENT_MAIN");
+            $this->db->where("DM_DIRECTOR = SM_STAFF_ID");
+            $this->db->where("DM_DEPT_CODE = 'PPP'");
         }
 
         $q = $this->db->get();
@@ -1100,16 +1205,32 @@ class Conference_pmp_model extends MY_Model
                 "SCM_CATEGORY_CODE" => $form['category'],
                 "SCM_TNCA_APPROVE_BY" => $form['approved_rjc_by_tnc']
             );
+
+            if(!empty($form['approved_rjc_date_tnc'])) {
+                $appr_date = "to_date('".$form['approved_rjc_date_tnc']."', 'DD/MM/YYYY')";
+                $this->db->set("SCM_TNCA_APPROVE_DATE", $appr_date, false);
+            }
         } elseif($mod == 'VC') {
             $data = array(
                 "SCM_VC_REMARK" => $form['remark'],
                 "SCM_VC_APPROVE_BY" => $form['approved_rjc_by_tnc']
             );
-        }
 
-        if(!empty($form['approved_rjc_date_tnc'])) {
-            $appr_date = "to_date('".$form['approved_rjc_date_tnc']."', 'DD/MM/YYYY')";
-            $this->db->set("SCM_TNCA_APPROVE_DATE", $appr_date, false);
+            if(!empty($form['approved_rjc_date_tnc'])) {
+                $appr_date = "to_date('".$form['approved_rjc_date_tnc']."', 'DD/MM/YYYY')";
+                $this->db->set("SCM_TNCA_APPROVE_DATE", $appr_date, false);
+            }
+        } elseif($mod == 'RMIC') {
+            $data = array(
+                "SCM_RMIC_REMARK" => $form['remark'],
+                "SCM_CATEGORY_CODE" => $form['category'],
+                "SCM_RMIC_APPROVE_BY" => $form['approved_rjc_by_tnc']
+            );
+
+            if(!empty($form['approved_rjc_date_tnc'])) {
+                $appr_date = "to_date('".$form['approved_rjc_date_tnc']."', 'DD/MM/YYYY')";
+                $this->db->set("SCM_RMIC_APPROVE_DATE", $appr_date, false);
+            }
         }
         
         $this->db->where("SCM_STAFF_ID", $form['staff_id']);
@@ -1879,5 +2000,341 @@ class Conference_pmp_model extends MY_Model
         } else {
             return $q->result();
         }
+    }
+
+    /*===========================================================
+        EDIT CONFERENCE APPLICATION FOR RMIC (ATF157)
+    =============================================================*/
+
+    // GET RESEARCH PROJECT DD
+    public function getResearchProject($staff_id, $dateTo) {
+        $dateTo = "TO_DATE('$dateTo', 'DD/MM/YYYY')";
+
+        $this->db->select("TO_CHAR(SR_DATE_FROM, 'DD/MM/YYYY') SR_DATE_FROM, TO_CHAR(SR_DATE_TO, 'DD/MM/YYYY') SR_DATE_TO, SR_RESEARCH_REFID, SR_RESEARCH_TITLE, SR_GRANT_AMT, SR_PROJECT_ID");
+        $this->db->from("STAFF_RESEARCH_RIMS");
+        $this->db->where("SR_DATE_TO >= $dateTo");
+        $this->db->where("SR_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->result();
+    }
+
+    // GET SUM ALLOWANCE BUDGET 'RESEARCH'
+    public function getSumAllowanceConferenceRmic($refid, $staff_id) {
+        $this->db->select("SUM(SCA_AMOUNT_RM) SCM_RM_TOT_AMT_RMIC, SUM(SCA_AMOUNT_FOREIGN) SCM_FOREIGN_TOT_AMT_RMIC");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("CA_BUDGET_ORIGIN_LOCAL_RMIC = 'RESEARCH'");
+        $this->db->where("NVL(CA_RMIC,'N') = 'Y'");
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET SUM ALLOWANCE BUDGET 'RESEARCH' UPDATE
+    public function getSumAllowanceConferenceRmicUpd($refid, $staff_id) {
+        $this->db->select("sum(SCA_AMOUNT_RM) SCA_AMOUNT_RM, sum(SCA_AMT_RM_APPROVE_HOD) SCA_AMT_RM_APPROVE_HOD, sum(SCA_AMT_RM_APPROVE_RMIC) SCA_AMT_RM_APPROVE_RMIC, sum(SCA_AMT_RM_APPROVE_TNCPI) SCA_AMT_RM_APPROVE_TNCPI, sum(SCA_AMOUNT_FOREIGN) SCA_AMOUNT_FOREIGN");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("CA_BUDGET_ORIGIN_LOCAL_RMIC in ('RESEARCH','CONFERENCE')");
+        $this->db->where("NVL(CA_RMIC,'N') = 'Y'");
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET SUM ALLOWANCE BUDGET 'RESEARCH' UPDATE 2
+    public function getSumAllowanceConferenceRmicUpd2($refid, $staff_id) {
+        $this->db->select("sum(SCA_AMOUNT_RM) SCA_AMOUNT_RM, sum(SCA_AMT_RM_APPROVE_HOD) SCA_AMT_RM_APPROVE_HOD, sum(SCA_AMT_RM_APPROVE_RMIC) SCA_AMT_RM_APPROVE_RMIC, sum(SCA_AMT_RM_APPROVE_TNCPI) SCA_AMT_RM_APPROVE_TNCPI, sum(SCA_AMOUNT_FOREIGN) SCA_AMOUNT_FOREIGN, sum(SCA_AMT_RM_APPROVE_TNCA) SCA_AMT_RM_APPROVE_TNCA");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("CA_BUDGET_ORIGIN_LOCAL_RMIC = 'RESEARCH'");
+        $this->db->where("NVL(CA_RMIC,'N') = 'Y'");
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET SUM ALLOWANCE BUDGET 'RESEARCH' UPDATE 3
+    public function getSumAllowanceConferenceRmicUpd3($refid, $staff_id) {
+        $this->db->select("nvl(sum(SCA_AMOUNT_RM),0) SCA_AMOUNT_RM, nvl(sum(SCA_AMT_RM_APPROVE_HOD),0) SCA_AMT_RM_APPROVE_HOD, nvl(sum(SCA_AMT_RM_APPROVE_RMIC),0) SCA_AMT_RM_APPROVE_RMIC, sum(SCA_AMOUNT_FOREIGN) SCA_AMOUNT_FOREIGN");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("CA_BUDGET_ORIGIN_LOCAL_RMIC = 'CONFERENCE'");
+        $this->db->where("NVL(CA_RMIC,'N') = 'Y'");
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET SUM ALLOWANCE BUDGET 'RESEARCH' UPDATE 3
+    public function getSumAllowanceConferenceRmicUpd4($refid, $staff_id) {
+        $this->db->select("sum(SCA_AMT_RM_APPROVE_TNCA) SCA_AMT_RM_APPROVE_TNCA, sum(SCA_AMT_RM_APPROVE_VC) SCA_AMT_RM_APPROVE_VC");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("CA_BUDGET_ORIGIN_LOCAL_RMIC IN ('RESEARCH','CONFERENCE')");
+        $this->db->where("NVL(CA_RMIC,'N') = 'Y'");
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // UPDATE SUM RMIC
+    public function updSumScmRmic($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_foreign_tot_amt_rmic)
+    {
+        $data = array(
+            "SCM_RM_TOT_AMT_RMIC" => $scm_rm_tot_amt_rmic,
+            "SCM_FOREIGN_TOT_AMT_RMIC" => $scm_foreign_tot_amt_rmic,
+            "SCM_RM_TOTAL_AMT" => 0,
+            "SCM_FOREIGN_TOTAL_AMT" => 0,
+            "SCM_RM_TOTAL_AMT_DEPT" => 0,
+            "SCM_FOREIGN_TOTAL_AMT_DEPT" => 0
+        );
+        
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // UPDATE SUM RMIC 2
+    public function updSumScmRmic2($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_total_amt_dept_apprv_hod, $scm_rm_tot_amt_apprv_rmic, $scm_rm_tot_amt_apprv_tncpi, $scm_foreign_tot_amt_rmic)
+    {
+        $data = array(
+            "SCM_RM_TOT_AMT_RMIC" => $scm_rm_tot_amt_rmic,
+            "SCM_TOTAL_AMT_DEPT_APPRV_HOD" => $scm_total_amt_dept_apprv_hod,
+            "SCM_RM_TOT_AMT_APPRV_RMIC" => $scm_rm_tot_amt_apprv_rmic,
+            "SCM_RM_TOT_AMT_APPRV_TNCPI" => $scm_rm_tot_amt_apprv_tncpi,
+            "SCM_FOREIGN_TOT_AMT_RMIC" => $scm_foreign_tot_amt_rmic,
+            "SCM_RM_TOTAL_AMT_APPROVE_TNCA" => 0,
+            "SCM_RM_TOTAL_AMT_APPROVE_VC" => 0,
+            "SCM_RM_TOTAL_AMT" => 0,
+            "SCM_FOREIGN_TOTAL_AMT" => 0,
+            "SCM_RM_TOTAL_AMT_DEPT" => 0,
+            "SCM_FOREIGN_TOTAL_AMT_DEPT" => 0,
+            "SCM_RM_TOTAL_AMT_APPROVE_HOD" => 0
+        );
+        
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // UPDATE SUM RMIC 3
+    public function updSumScmRmic3($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_total_amt_dept_apprv_hod, $scm_rm_tot_amt_apprv_rmic, $scm_rm_tot_amt_apprv_tncpi, $scm_rm_total_amt_approve_tnca, $scm_foreign_tot_amt_rmic, $scm_rm_total_amt, $scm_rm_total_amt_approve_hod, $scm_rm_total_amt_approve_tnca2, $scm_rm_total_amt_approve_tnca3, $scm_rm_total_amt_approve_vc, $scm_foreign_total_amt)
+    {
+        $data = array(
+            "SCM_RM_TOT_AMT_RMIC" => $scm_rm_tot_amt_rmic,
+            "SCM_TOTAL_AMT_DEPT_APPRV_HOD" => $scm_total_amt_dept_apprv_hod,
+            "SCM_RM_TOT_AMT_APPRV_RMIC" => $scm_rm_tot_amt_apprv_rmic,
+            "SCM_RM_TOT_AMT_APPRV_TNCPI" => $scm_rm_tot_amt_apprv_tncpi,
+            "SCM_FOREIGN_TOT_AMT_RMIC" => $scm_foreign_tot_amt_rmic,
+            "SCM_RM_TOTAL_AMT_APPROVE_TNCA" => $scm_rm_total_amt_approve_tnca3,
+            "SCM_RM_TOTAL_AMT_APPROVE_VC" => $scm_rm_total_amt_approve_vc,
+            "SCM_RM_TOTAL_AMT" => $scm_rm_total_amt,
+            "SCM_FOREIGN_TOTAL_AMT" => $scm_foreign_total_amt,
+            "SCM_RM_TOTAL_AMT_DEPT" => 0,
+            "SCM_FOREIGN_TOTAL_AMT_DEPT" => 0,
+            "SCM_RM_TOTAL_AMT_APPROVE_HOD" => $scm_rm_total_amt_approve_hod,
+        );
+        
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    /*===========================================================
+       Approve / Verify Conference Application (RMIC) (ATF158)
+    =============================================================*/
+
+    // SAVE RESEARCH INFO
+    public function saveResearchInfo($form)
+    {
+        $data = array(
+            "SCM_RESEARCH_REFID" => $form['research_project'],
+        );
+        
+        $this->db->where("SCM_REFID", $form['conference_title']);
+        $this->db->where("SCM_STAFF_ID", $form['staff_id']);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // SAVE ALLOWANCE DETAIL RMIC
+    public function saveAllwDetlRmic($refid, $staff_id, $aca, $amt, $amtFor, $appHod, $appHodFor, $appRmic, $appRmicFor, $appTnca, $appTncaFor)
+    {
+        $curDate = 'SYSDATE';
+        $curUsr = $this->staff_id;
+
+        $data = array(
+            "SCA_AMOUNT_RM" => $amt,
+            "SCA_AMOUNT_FOREIGN" => $amtFor,
+
+            "SCA_AMT_RM_APPROVE_HOD" => $appHod,
+            "SCA_AMT_FOREIGN_APPROVE_HOD" => $appHodFor,
+            "SCA_AMT_RM_APPROVE_RMIC" => $appRmic,
+            "SCA_AMT_FOREIGN_APPROVE_RMIC" => $appRmicFor,
+            
+            "SCA_AMT_RM_APPROVE_TNCA" => $appTnca,
+            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $appTncaFor,
+            
+            "SCA_UPDATE_BY" => $curUsr
+        );
+        $this->db->set("SCA_UPDATE_DATE", $curDate, false);
+
+        $this->db->where('SCA_REFID', $refid);
+        $this->db->where('SCA_STAFF_ID', $staff_id);
+        $this->db->where('SCA_ALLOWANCE_CODE', $aca);
+
+        return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
+    }
+
+    // SUM STAFF CONFERENCE ALLOWANCE RMIC
+    public function sumStaffConAllwRmic($refid, $staff_id) {
+        $this->db->select("SUM(SCA_AMT_RM_APPROVE_RMIC) SCA_AMT_RM_APPROVE_RMIC");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // SAVE ALLOWANCE DETAIL SUM RMIC
+    public function updApprvAmtSumRmic($refid, $staff_id, $newSumAppRmic)
+    {
+        $data = array(
+            "SCM_RM_TOT_AMT_APPRV_RMIC" => $newSumAppRmic,
+        );
+        
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // GET CATEGORY BASED TOTAL
+    public function getCategoryBasedOnTotal($newSumAppTnca) {
+        $this->db->select("CC_CODE, CC_DESC");
+        $this->db->from("CONFERENCE_CATEGORY");
+        $this->db->where("NVL(CC_STATUS,'N') = 'Y'");
+        $this->db->where("'$newSumAppTnca' BETWEEN CC_RM_AMOUNT_FROM AND CC_RM_AMOUNT_TO");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // UPDATE NEW CATEGORY
+    public function updNewCat($refid, $staff_id, $newCat, $oldCat)
+    {   
+        if(!empty($newCat)) {
+            $data = array(
+                "SCM_CATEGORY_CODE" => $newCat,
+            );
+        } else {
+            $data = array(
+                "SCM_CATEGORY_CODE" => $oldCat,
+            );
+        }
+        
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // UPDATE NEW BUDGET
+    public function updNewBudget($refid, $staff_id, $scm_budget_origin, $scm_budget_origin_prev, $bud_org, $prev_bud_org)
+    {
+        if(!empty($scm_budget_origin) && !empty($scm_budget_origin_prev)) {
+            $data = array(
+                "SCM_BUDGET_ORIGIN" => $scm_budget_origin,
+                "SCM_BUDGET_ORIGIN_PREV" => $scm_budget_origin_prev,
+            );
+        } elseif(empty($scm_budget_origin) && !empty($scm_budget_origin_prev)) {
+            $data = array(
+                "SCM_BUDGET_ORIGIN_PREV" => $scm_budget_origin_prev,
+            );
+        } elseif(!empty($scm_budget_origin) && empty($scm_budget_origin_prev)) {
+            $data = array(
+                "SCM_BUDGET_ORIGIN" => $scm_budget_origin
+            );
+        } else {
+            $data = array(
+                "SCM_BUDGET_ORIGIN" => $bud_org,
+                "SCM_BUDGET_ORIGIN_PREV" => $prev_bud_org,
+            );
+        }
+        
+        
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // RMIC VALUE CALCULATE
+    public function getRmicVal($refid, $staff_id, $aca) {
+        $this->db->select("nvl(SCA_AMT_RM_APPROVE_HOD,SCA_AMOUNT_RM) RMIC_VAL");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("CA_BUDGET_ORIGIN_LOCAL_RMIC = 'RESEARCH'");
+        $this->db->where("SCA_ALLOWANCE_CODE", $aca);
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("CA_STATUS = 'ACTIVE'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // RMIC FOR VALUE CALCULATE
+    public function getRmicForVal($refid, $staff_id, $aca) {
+        $this->db->select("nvl(SCA_AMT_FOREIGN_APPROVE_HOD,SCA_AMOUNT_FOREIGN) RMIC_FOR_VAL");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("CA_BUDGET_ORIGIN_LOCAL_RMIC = 'RESEARCH'");
+        $this->db->where("SCA_ALLOWANCE_CODE", $aca);
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("CA_STATUS = 'ACTIVE'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+
+    // CALCULATE ALLOWANCE RMIC
+    public function calculateAllwRmic($refid, $staff_id, $aca, $appRmic, $appRmicFor, $appTnca, $appTncaFor)
+    {
+        $curDate = 'SYSDATE';
+        $curUsr = $this->staff_id;
+
+        $data = array(
+            "SCA_AMT_RM_APPROVE_RMIC" => $appRmic,
+            "SCA_AMT_FOREIGN_APPROVE_RMIC" => $appRmicFor,
+            "SCA_AMT_RM_APPROVE_TNCA" => $appTnca,
+            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $appTncaFor,
+            "SCA_UPDATE_BY" => $curUsr
+        );
+        $this->db->set("SCA_UPDATE_DATE", $curDate, false);
+
+        $this->db->where('SCA_REFID', $refid);
+        $this->db->where('SCA_STAFF_ID', $staff_id);
+        $this->db->where('SCA_ALLOWANCE_CODE', $aca);
+
+        return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
     }
 }

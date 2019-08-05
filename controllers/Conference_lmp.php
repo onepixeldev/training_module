@@ -44,6 +44,15 @@ class Conference_lmp extends MY_Controller
         $this->render($data);
     }
 
+    // APPROVE CONFERENCE REPORT (TNC A&A)
+    public function ATF087()
+    { 
+        // DEPARTMENT LIST
+        $data['dept_list'] = $this->dropdown($this->mdl_lmp->populateDeptQ($mod = 'APP_REPORT'), 'DM_DEPT_CODE', 'DM_DEPT_CODE', '');
+
+        $this->render($data);
+    }
+
     /*===========================================================
        QUERY CONFERENCE REPORT APPLICATION - ATF088
     =============================================================*/
@@ -51,11 +60,20 @@ class Conference_lmp extends MY_Controller
     // STAFF INFO LIST - QUERY
     public function staffInfoListQ() {
         $dept = $this->input->post('deptCode', true);
+        $mod = $this->input->post('mod', true);
 
-        if(!empty($dept)) {
-            $data['dept'] = $dept;
-            $data['stf_inf'] = $this->mdl_lmp->getStaffListQ($dept);
+        if($mod == 'APP_REPORT') {
+            if(!empty($dept)) {
+                $data['dept'] = $dept;
+                $data['stf_inf'] = $this->mdl_lmp->getStaffListQ($dept, $mod);
+            }
+        } else {
+            if(!empty($dept)) {
+                $data['dept'] = $dept;
+                $data['stf_inf'] = $this->mdl_lmp->getStaffListQ($dept);
+            }
         }
+        
 
         $this->render($data);
     }
@@ -91,13 +109,14 @@ class Conference_lmp extends MY_Controller
         $staff_name = $this->input->post('staff_name', true);
         $svc_code = $this->input->post('svc_code', true);
         $svc_desc = $this->input->post('svc_desc', true);
+        $mod = $this->input->post('mod', true);
 
         if(!empty($staff_id) && !empty($staff_name) && !empty($svc_code) && !empty($svc_code)) {
             $data['staff_id'] = $staff_id;
             $data['staff_name'] = $staff_name;
             $data['svc_code'] = $svc_code;
             $data['svc_desc'] = $svc_desc;
-            $data['con_rep'] = $this->mdl_lmp->getStaffConRepQ($staff_id);
+            $data['con_rep'] = $this->mdl_lmp->getStaffConRepQ($staff_id, $mod);
         } elseif(!empty($staff_id) && empty($staff_name) && empty($svc_code) && empty($svc_code)) {
             $data['staff_id'] = $staff_id;
 
@@ -113,7 +132,7 @@ class Conference_lmp extends MY_Controller
                 $data['svc_desc'] = '';
             }
 
-            $data['con_rep'] = $this->mdl_lmp->getStaffConRepQ($staff_id);
+            $data['con_rep'] = $this->mdl_lmp->getStaffConRepQ($staff_id, $mod);
         }
 
         $this->render($data);
@@ -406,13 +425,13 @@ class Conference_lmp extends MY_Controller
     public function getConDetlInfo()
     {  
         $this->isAjax();
+        $refid = $this->input->post('refid', true);
         $staff_id = $this->input->post('staff_id', true);
-        $refid = $this->input->post('select', true);
         // var_dump($staff_id);
         // exit;
-        if (!empty($staff_id)) {
+        if (!empty($refid) && !empty($staff_id)) {
 
-            $con_inf = $this->mdl_lmp->searchCrMd($staff_id);
+            $con_inf = $this->mdl_lmp->getConferenceDetlRep($refid, $staff_id);
             
             if(!empty($con_inf)) {
                 $json = array('sts' => 1, 'msg' => '', 'alert' => 'green', 'con_inf' => $con_inf);
@@ -423,6 +442,775 @@ class Conference_lmp extends MY_Controller
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
         }
          
+        echo json_encode($json);
+    }
+
+    // SAVE REPORT ENTRY PART I
+    public function saveRepPartI() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['conference_workshop_seminar'];
+        $staff_id = $form['staff_id'];
+
+        // $refid = '2013-00001498';
+        // $staff_id = 'K01503';
+
+        $rule = array(
+            'staff_id' => 'required|max_length[10]',
+            'staff_name' => 'required|max_length[100]',
+            'conference_workshop_seminar' => 'required|max_length[20]',
+            'fa_os' => 'max_length[40]',
+            'report_date_submission' => 'max_length[11]',
+            'status' => 'max_length[20]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $check = $this->mdl_lmp->getStaffListConRep($refid, $staff_id);
+
+            if(empty($check)) {
+                $insert = $this->mdl_lmp->saveRepPartI($form, $refid);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => strtoupper($staff_id));
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist.', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // EDIT REPORT PART I
+    public function editRepPartI()
+    {  
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+
+        if(!empty($refid) && ! empty($staff_id)) {
+            $data['refid'] = $refid;
+            $data['staff_id'] = $staff_id;
+
+            // STAFF DETAILS
+            $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+            if(!empty($staffDetl)) {
+                $data['staff_name'] = $staffDetl->SM_STAFF_NAME;
+            } else {
+                $data['staff_name'] = '';
+            }
+
+            $stf_inf = $this->mdl_lmp->getStaffDetlInfo($staff_id);
+            if(!empty($stf_inf)) {
+                $data['pos'] = $stf_inf->SS_SERVICE_DESC;
+                $data['pos_lvl'] = $stf_inf->SJS_STATUS_DESC;
+                $data['dept_unit'] = $stf_inf->SM_UNIT;
+                $data['ptj_fac'] = $stf_inf->SM_DEPT_CODE;
+                $data['dept_desc'] = $stf_inf->DM_DEPT_DESC1;
+                $data['unit_desc'] = $stf_inf->DM_DEPT_DESC2;
+            } else {
+                $data['pos'] = '';
+                $data['pos_lvl'] = '';
+                $data['dept_unit'] = '';
+                $data['ptj_fac'] = '';
+                $data['dept_desc'] = '';
+                $data['unit_desc'] = '';
+            }
+
+            $con_rep_inf = $this->mdl_lmp->getConferenceDetlRep($refid, $staff_id);
+            if(!empty($con_rep_inf)) {
+                $data['pw1'] = $con_rep_inf->SCM_PAPER_TITLE;
+                $data['pw2'] = $con_rep_inf->SCM_PAPER_TITLE2;
+                $data['address'] = $con_rep_inf->CM_ADDRESS;
+                $data['city'] = $con_rep_inf->CM_CITY;
+                $data['postcode'] = $con_rep_inf->CM_POSTCODE;
+                $data['state'] = $con_rep_inf->SM_STATE_DESC;
+                $data['country'] = $con_rep_inf->CM_COUNTRY_DESC;
+                $data['date_from'] = $con_rep_inf->CM_DATE_FROM;
+                $data['date_to'] = $con_rep_inf->CM_DATE_TO;
+                $data['duration'] = $con_rep_inf->DURATION_CM;
+                $data['organizer'] = $con_rep_inf->CM_ORGANIZER_NAME;
+                $data['fa_upsi'] = $con_rep_inf->SCM_RM_TOTAL_AMT_APPROVE_TNCA;
+                $data['fa_ea'] = $con_rep_inf->SCM_RM_SPONSOR_TOTAL_AMT;
+            } else {
+                $data['pw1'] = '';
+                $data['pw2'] = '';
+                $data['address'] = '';
+                $data['city'] = '';
+                $data['postcode'] = '';
+                $data['state'] = '';
+                $data['country'] = '';
+                $data['date_from'] = '';
+                $data['date_to'] = '';
+                $data['duration'] = '';
+                $data['organizer'] = '';
+                $data['fa_upsi'] = '';
+                $data['fa_ea'] = '';
+            }
+
+            $scr_detl = $this->mdl_lmp->getStaffListConRep($refid, $staff_id);
+            if(!empty($scr_detl)) {
+                $data['oth_s'] = $scr_detl->SCR_OTHER_TOTAL_AMT;
+                $data['appl_date'] = $scr_detl->SCR_APPLY_DATE;
+                $data['scr_sts'] = $scr_detl->SCR_STATUS;
+            } else {
+                $data['oth_s'] = '';
+                $data['appl_date'] = '';
+                $data['scr_sts'] = '';
+            }
+
+            // CONFERENCE DETAILS
+            $cr_detl = $this->mdl_pmp->getConferenceDetl($refid);
+            if(!empty($cr_detl)) {
+                $data['crName'] = $cr_detl->CM_NAME;
+            } else {
+                $data['crName'] = '';
+            }
+        }
+
+        // STATUS LIST
+        $data['sts_list'] = array(''=>'--- Please Select ---', 'APPLY'=>'APPLY', 'VERIFY_HOD'=>'VERIFY_HOD', 'VERIFY_TNCA'=>'VERIFY_TNCA', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
+
+        $this->renderAjax($data);
+    }
+
+    // SAVE EDIT REPORT ENTRY PART I
+    public function saveEditRepPartI() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['conference_workshop_seminar'];
+        $staff_id = $form['staff_id'];
+        // var_dump($form['conference_content']);
+
+        $rule = array(
+            'fa_os' => 'max_length[40]',
+            'report_date_submission' => 'max_length[11]',
+            'status' => 'max_length[20]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $update = $this->mdl_lmp->saveEditRepPartI($form);
+
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => strtoupper($staff_id));
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // EDIT REPORT PART II
+    public function editRepPartII()
+    {  
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+
+        if(!empty($refid) && ! empty($staff_id)) {
+            $data['refid'] = $refid;
+            $data['staff_id'] = $staff_id;
+
+            // STAFF DETAILS
+            $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+            if(!empty($staffDetl)) {
+                $data['staff_name'] = $staffDetl->SM_STAFF_NAME;
+            } else {
+                $data['staff_name'] = '';
+            }
+
+            // CONFERENCE DETAILS
+            $cr_detl = $this->mdl_pmp->getConferenceDetl($refid);
+            if(!empty($cr_detl)) {
+                $data['crName'] = $cr_detl->CM_NAME;
+            } else {
+                $data['crName'] = '';
+            }
+
+            $data['part_ii_detl'] = $this->mdl_lmp->getStaffListConRep($refid, $staff_id);
+            if(!empty($data['part_ii_detl'])) {
+                $data['scr_content'] = $data['part_ii_detl']->SCR_CONTENT;   
+            } else {
+                $data['scr_content'] = '';
+            }
+
+            $data['scr_parti'] = $this->mdl_lmp->getScrPart1($refid, $staff_id);
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // SAVE REPORT ENTRY PART II
+    public function saveRepPartII() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['conference_id'];
+        $staff_id = $form['staff_id'];
+        // var_dump($form['conference_content']);
+
+        $rule = array(
+            'staff_id' => 'required|max_length[10]',
+            'conference_id' => 'required|max_length[20]',
+            'conference_content' => 'max_length[4000]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $update = $this->mdl_lmp->saveRepPartII($form);
+
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => strtoupper($staff_id));
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // ADD RECORD ESTABLISHED NETWORKS AND RELATIONSHIPS
+    public function addEstNetRelayMd()
+    {   
+        $refid = $this->input->post('staff_id', true);
+        $staff_id = $this->input->post('refid', true);
+        
+        if(!empty($refid) && !empty($staff_id)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;
+        } else {
+            $data['staff_id'] = '';
+            $data['refid'] = '';
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // SAVE RECORD ESTABLISHED NETWORKS AND RELATIONSHIPS 
+    public function saveEstNetRelay() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['refid'];
+        $staff_id = $form['staff_id'];
+        // var_dump($form['conference_content']);
+
+        $rule = array(
+            'staff_id' => 'required|max_length[10]',
+            'refid' => 'required|max_length[20]',
+            'name' => 'required|max_length[100]',
+            'expertise' => 'required|max_length[100]',
+            'institution' => 'max_length[100]',
+            'tel_no' => 'max_length[15]',
+            'email' => 'max_length[100]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $check = $this->mdl_lmp->getScrPart1Detl($refid, $staff_id, $form['name'], $form['expertise']);
+
+            if(empty($check)) {
+                $insert = $this->mdl_lmp->saveEstNetRelay($form, $refid, $staff_id);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => strtoupper($staff_id));
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist.', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // DELETE RECORD ESTABLISHED NETWORKS AND RELATIONSHIPS
+    public function delEstNetRelay() {
+		$this->isAjax();
+		
+        $name = $this->input->post('name', true);
+        $field = $this->input->post('field', true);
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        
+        if (!empty($name) && !empty($field) && !empty($refid) && !empty($staff_id)) {
+            $del = $this->mdl_lmp->delEstNetRelay($refid, $staff_id, $name, $field);
+        
+            if ($del > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // EDIT REPORT PART III
+    public function editRepPartIII()
+    {  
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+
+        if(!empty($refid) && ! empty($staff_id)) {
+            $data['refid'] = $refid;
+            $data['staff_id'] = $staff_id;
+
+            // STAFF DETAILS
+            $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+            if(!empty($staffDetl)) {
+                $data['staff_name'] = $staffDetl->SM_STAFF_NAME;
+            } else {
+                $data['staff_name'] = '';
+            }
+
+            // CONFERENCE DETAILS
+            $cr_detl = $this->mdl_pmp->getConferenceDetl($refid);
+            if(!empty($cr_detl)) {
+                $data['crName'] = $cr_detl->CM_NAME;
+            } else {
+                $data['crName'] = '';
+            }
+
+            $data['part_ii_detl'] = $this->mdl_lmp->getStaffListConRep($refid, $staff_id);
+            if(!empty($data['part_ii_detl'])) {
+                $data['scr_exp'] = $data['part_ii_detl']->SCR_EXPERIENCE;
+                $data['scr_remark'] = $data['part_ii_detl']->SCR_REMARK;   
+            } else {
+                $data['scr_exp'] = '';
+                $data['scr_remark'] = '';
+            }
+
+            $data['scr_partii'] = $this->mdl_lmp->getScrPart2($refid, $staff_id);
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // SAVE REPORT ENTRY PART III
+    public function saveRepPartIII() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['conference_id'];
+        $staff_id = $form['staff_id'];
+        // var_dump($form['conference_content']);
+
+        $rule = array(
+            'staff_id' => 'required|max_length[10]',
+            'conference_id' => 'required|max_length[20]',
+            'conference_experience' => 'max_length[4000]',
+            'conference_remark' => 'max_length[4000]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $update = $this->mdl_lmp->saveRepPartIII($form);
+
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => strtoupper($staff_id));
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // ADD RECORD SCR PART 2
+    public function addScrPartIIMd()
+    {   
+        $refid = $this->input->post('staff_id', true);
+        $staff_id = $this->input->post('refid', true);
+        
+        if(!empty($refid) && !empty($staff_id)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;
+        } else {
+            $data['staff_id'] = '';
+            $data['refid'] = '';
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // SAVE ADD RECORD SCR PART 2
+    public function saveScrpii() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['refid'];
+        $staff_id = $form['staff_id'];
+        // var_dump($form['conference_content']);
+
+        $rule = array(
+            'staff_id' => 'required|max_length[10]',
+            'refid' => 'required|max_length[20]',
+            'activity' => 'required|max_length[2000]',
+            'implementation_date' => 'max_length[20]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $check = $this->mdl_lmp->getScrPart2Detl($refid, $staff_id, $form['activity']);
+
+            if(empty($check)) {
+                $insert = $this->mdl_lmp->saveScrpii($form, $refid, $staff_id);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => strtoupper($staff_id));
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist.', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // DELETE RECORD SCR PART 2
+    public function delScrpII() {
+		$this->isAjax();
+		
+        $activity = $this->input->post('activity', true);
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        
+        if (!empty($activity) && !empty($refid) && !empty($staff_id)) {
+            $del = $this->mdl_lmp->delScrpII($refid, $staff_id, $activity);
+        
+            if ($del > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // FILE ATTACHMENT PARAM
+    public function fileAttParam() {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+
+        if(!empty($staff_id) && !empty($refid)) {
+            $this->session->set_userdata('staff_id', $staff_id);
+            $this->session->set_userdata('refid', $refid);
+
+            $json = array('sts' => 1, 'msg' => 'Param assigned.', 'alert' => 'success');
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Param not assigned', 'alert' => 'danger');
+        }
+        
+        echo json_encode($json);
+    }
+
+    // FILE ATTACHMENT URL
+    public function fileAttachment() {
+        $staff_id = $this->session->userdata('staff_id');
+        $refid = $this->session->userdata('refid');
+        $curUser = $this->staff_id;
+
+        if(!empty($staff_id) && !empty($refid) && !empty($curUser)) {
+            $selUrl = $this->mdl_pmp->getEcommUrl();
+            if(!empty($selUrl)) {
+                $ecomm_url = $selUrl->HP_PARM_DESC;
+            } else {
+                $ecomm_url = '';
+            }
+
+            echo header('Location: '.$ecomm_url.'conferenceAttachment.jsp?action=attachLMP&admsID='.$curUser.'&sID='.$curUser.'&apRID='.$refid);
+            exit;
+        } 
+    }
+
+    // EDIT REPORT PART IV
+    public function editRepPartIV()
+    {  
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+
+        if(!empty($refid) && ! empty($staff_id)) {
+            $data['refid'] = $refid;
+            $data['staff_id'] = $staff_id;
+
+            // STAFF DETAILS
+            $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+            if(!empty($staffDetl)) {
+                $data['staff_name'] = $staffDetl->SM_STAFF_NAME;
+            } else {
+                $data['staff_name'] = '';
+            }
+
+            // CONFERENCE DETAILS
+            $cr_detl = $this->mdl_pmp->getConferenceDetl($refid);
+            if(!empty($cr_detl)) {
+                $data['crName'] = $cr_detl->CM_NAME;
+            } else {
+                $data['crName'] = '';
+            }
+
+            $data['con_rep_partiv'] = $this->mdl_lmp->getConRepDetl($refid, $staff_id);
+            if(!empty($data['con_rep_partiv'])) {
+                $data['hod_remark1'] = $data['con_rep_partiv']->SCR_HOD_REMARK1;
+                $data['hod_remark2'] = $data['con_rep_partiv']->SCR_HOD_REMARK2;
+                $data['hod_remark3'] = $data['con_rep_partiv']->SCR_HOD_REMARK3;
+                $data['tnca_remark1'] = $data['con_rep_partiv']->SCR_TNCA_REMARK1;
+                $data['hod_ver_id'] = $data['con_rep_partiv']->SCR_HOD_VERIFY_BY;
+                $data['hod_ver_name'] = $data['con_rep_partiv']->SCR_HOD_VERIFY_BY_NAME;
+                $data['hod_ver_date'] = $data['con_rep_partiv']->SCR_HOD_VERIFY_DATE;
+                $data['tnca_ver_id'] = $data['con_rep_partiv']->SCR_TNCA_VERIFY_BY;
+                $data['tnca_ver_name'] = $data['con_rep_partiv']->SCR_TNCA_VERIFY_BY_NAME;
+                $data['tnca_app_date'] = $data['con_rep_partiv']->SCR_TNCA_VERIFY_DATE;
+            } else {
+                $data['hod_remark1'] = '';
+                $data['hod_remark2'] = '';
+                $data['hod_remark3'] = '';
+                $data['tnca_remark1'] = '';
+                $data['hod_ver_id'] = '';
+                $data['hod_ver_name'] = '';
+                $data['hod_ver_date'] = '';
+                $data['tnca_ver_id'] = '';
+                $data['tnca_ver_name'] = '';
+                $data['tnca_app_date'] = '';
+            }
+        }
+
+        $this->renderAjax($data);
+    }
+
+    // SAVE REPORT ENTRY PART III
+    public function saveRepPartIV() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['conference_id'];
+        $staff_id = $form['staff_id'];
+        // var_dump($form['conference_content']);
+        
+        if(!empty($form['certified_by_id']) && empty($form['approved_by_id'])) {
+            $rule = array(
+                'staff_id' => 'required|max_length[10]',
+                'conference_id' => 'required|max_length[20]',
+                'hod_remark_1' => 'max_length[4000]',
+                'hod_remark_2' => 'max_length[4000]',
+                'hod_remark_2' => 'max_length[4000]',
+                'certified_by_id' => 'max_length[10]',
+                'certified_by_name' => 'required|max_length[100]',
+                'date_certified' => 'max_length[11]',
+                'tnca_remark' => 'max_length[4000]',
+                'approved_by_id' => 'max_length[10]',
+                'approved_by_name' => 'max_length[100]',
+                'approved_date' => 'max_length[11]'
+            );
+        } elseif(empty($form['certified_by_id']) && !empty($form['approved_by_id'])) {
+            $rule = array(
+                'staff_id' => 'required|max_length[10]',
+                'conference_id' => 'required|max_length[20]',
+                'hod_remark_1' => 'max_length[4000]',
+                'hod_remark_2' => 'max_length[4000]',
+                'hod_remark_2' => 'max_length[4000]',
+                'certified_by_id' => 'max_length[10]',
+                'certified_by_name' => 'max_length[100]',
+                'date_certified' => 'max_length[11]',
+                'tnca_remark' => 'max_length[4000]',
+                'approved_by_id' => 'max_length[10]',
+                'approved_by_name' => 'required|max_length[100]',
+                'approved_date' => 'max_length[11]'
+            );
+        } elseif(!empty($form['certified_by_id']) && !empty($form['approved_by_id'])) {
+            $rule = array(
+                'staff_id' => 'required|max_length[10]',
+                'conference_id' => 'required|max_length[20]',
+                'hod_remark_1' => 'max_length[4000]',
+                'hod_remark_2' => 'max_length[4000]',
+                'hod_remark_2' => 'max_length[4000]',
+                'certified_by_id' => 'max_length[10]',
+                'certified_by_name' => 'required|max_length[100]',
+                'date_certified' => 'max_length[11]',
+                'tnca_remark' => 'max_length[4000]',
+                'approved_by_id' => 'max_length[10]',
+                'approved_by_name' => 'required|max_length[100]',
+                'approved_date' => 'max_length[11]'
+            );
+        }elseif(empty($form['certified_by_id']) && empty($form['approved_by_id'])) {
+            $rule = array(
+                'staff_id' => 'required|max_length[10]',
+                'conference_id' => 'required|max_length[20]',
+                'hod_remark_1' => 'max_length[4000]',
+                'hod_remark_2' => 'max_length[4000]',
+                'hod_remark_2' => 'max_length[4000]',
+                'certified_by_id' => 'max_length[10]',
+                'certified_by_name' => 'max_length[100]',
+                'date_certified' => 'max_length[11]',
+                'tnca_remark' => 'max_length[4000]',
+                'approved_by_id' => 'max_length[10]',
+                'approved_by_name' => 'max_length[100]',
+                'approved_date' => 'max_length[11]'
+            );
+        }
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $update = $this->mdl_lmp->saveRepPartIV($form);
+
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => strtoupper($staff_id));
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    /*===========================================================
+       APPROVE CONFERENCE REPORT (TNC A&A) - (ATF087)
+    =============================================================*/
+
+    // TNCA APPROVAL
+    public function tncaaApproval() {
+        $refid = $this->input->post('refid', true);
+        $crname = $this->input->post('crName', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $staff_name = $this->input->post('staff_name', true);
+
+        if(!empty($staff_id) && !empty($staff_name)) {
+            $data['staff_id'] = $staff_id;
+            $data['staff_name'] = $staff_name;
+            $data['refid'] = $refid;
+            $data['crname'] = $crname;
+
+            $data['con_rep_partiv'] = $this->mdl_lmp->getConRepDetl($refid, $staff_id);
+            $data['app_amd_rejc_by'] = $this->mdl_lmp->getAppRejcStaff();
+        } elseif(!empty($staff_id) && empty($staff_name) && empty($svc_code) && empty($svc_code)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;
+            $data['crname'] = $crname;
+
+            // GET STAFF NAME & SERVICE CODE
+            $data['stf_inf'] = $this->mdl_lmp->getStaffDetlAca($staff_id);
+            if(!empty($data['stf_inf'])) {
+                $data['staff_name'] = $data['stf_inf']->SM_STAFF_NAME;
+            } else {
+                $data['staff_name'] = '';
+            }
+
+            $data['con_rep_partiv'] = $this->mdl_lmp->getConRepDetl($refid, $staff_id);
+            $data['app_amd_rejc_by'] = $this->mdl_lmp->getAppRejcStaff();
+        }
+
+        $this->render($data);
+    }
+
+    // SAVE AMEND / APPROVAL
+    public function saveAmdAppTncaa() {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $app_amd_remark = $this->input->post('app_amd_remark', true);
+        $app_amd_by = $this->input->post('app_amd_by', true);
+        $app_amd_date = $this->input->post('app_amd_date', true);
+
+        if(!empty($staff_id) && !empty($refid)) {
+            $update = $this->mdl_lmp->saveAmdAppTncaa($refid, $staff_id, $app_amd_remark, $app_amd_by, $app_amd_date);
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'success');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Param not assigned', 'alert' => 'danger');
+        }
+        
+        echo json_encode($json);
+    }
+
+    // SAVE REJECT
+    public function saveRejcTncaa() {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $rjc_remark = $this->input->post('rjc_remark', true);
+        $rjc_by = $this->input->post('rjc_by', true);
+        $rjc_date = $this->input->post('rjc_date', true);
+
+        if(!empty($staff_id) && !empty($refid)) {
+            $update = $this->mdl_lmp->saveRejcTncaa($refid, $staff_id, $rjc_remark, $rjc_by, $rjc_date);
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'success');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Param not assigned', 'alert' => 'danger');
+        }
+        
         echo json_encode($json);
     }
 }

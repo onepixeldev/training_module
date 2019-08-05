@@ -694,6 +694,23 @@
 		var staff_id = $('#myModalis #staff_id').val();
 		search_trigger = 1;
 		// console.log(staff_id);
+		
+		if(staff_id == '') {
+			$('#myModalis .modal-content').empty();
+			$('#myModalis').modal('show');
+			$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
+				data: '',
+				success: function(res) {
+					$('#myModalis .modal-content').html(res);
+					msg.show('Please enter Staff ID / Name', 'danger', '#myModalis .modal-content #alertStfIDMD');
+				}
+			});
+			return;
+		}
 
 		$('#myModalis .modal-content').empty();
 		$('#myModalis').modal('show');

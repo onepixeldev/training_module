@@ -62,6 +62,13 @@
             <th class="text-center">Apply (Foreign)</th>
             <th class="text-center">Approved HOD (RM)</th>
             <th class="text-center">Approved HOD (Foreign)</th>
+
+            
+            <th class="text-center allwRmic hidden">Approved RMIC (RM)</th>
+            <th class="text-center allwRmic hidden">Approved RMIC (Foreign)</th>
+            <th class="text-center allwRmic hidden">Approved TNCPI (RM)</th>
+            <th class="text-center allwRmic hidden">Approved TNCPI (Foreign)</th>
+
             <th class="text-center">Approved TNCA (RM)</th>
             <th class="text-center">Approved TNCA (Foreign)</th>
             <th class="text-center">Approved VC (RM)</th>
@@ -81,6 +88,12 @@
                         <td class="text-center col-md-1">' . number_format($sca->SCA_AMOUNT_FOREIGN, 2) . '</td>
                         <td class="text-center col-md-1">' . number_format($sca->SCA_AMT_RM_APPROVE_HOD, 2) . '</td>
                         <td class="text-center col-md-1">' . number_format($sca->SCA_AMT_FOREIGN_APPROVE_HOD, 2) . '</td>
+                        
+                        <td class="text-center col-md-1 allwRmic hidden">' . number_format($sca->SCA_AMT_RM_APPROVE_RMIC, 2) . '</td>
+                        <td class="text-center col-md-1 allwRmic hidden">' . number_format($sca->SCA_AMT_FOREIGN_APPROVE_RMIC, 2) . '</td>
+                        <td class="text-center col-md-1 allwRmic hidden">' . number_format($sca->SCA_AMT_RM_APPROVE_TNCPI, 2) . '</td>
+                        <td class="text-center col-md-1 allwRmic hidden">' . number_format($sca->SCA_AMT_FOREIGN_APPROVE_TNCPI, 2) . '</td>
+
                         <td class="text-center col-md-1">' . number_format($sca->SCA_AMT_RM_APPROVE_TNCA, 2) . '</td>
                         <td class="text-center col-md-1">' . number_format($sca->SCA_AMT_FOREIGN_APPROVE_TNCA, 2) . '</td>
                         <td class="text-center col-md-1">' . number_format($sca->SCA_AMT_RM_APPROVE_VC, 2) . '</td>
@@ -104,6 +117,14 @@
                         <td class="text-center col-md-1"><b>' . number_format($total_apply_foreign, 2) . '<b></td>
                         <td class="text-center col-md-1"><b>' . number_format($total_hod, 2) . '</b></td>
                         <td class="text-center col-md-1"><b>' . number_format($total_hod_foreign, 2) . '</b></td>
+
+                        
+                        <td class="text-center col-md-1 allwRmic hidden"><b>' . number_format($total_rmic, 2) . '</b></td>
+                        <td class="text-center col-md-1 allwRmic hidden"><b>' . number_format($total_rmic_foreign, 2) . '</b></td>
+                        <td class="text-center col-md-1 allwRmic hidden"><b>' . number_format($total_tncpi, 2) . '</b></td>
+                        <td class="text-center col-md-1 allwRmic hidden"><b>' . number_format($total_tncpi_foreign, 2) . '</b></td>
+                        
+
                         <td class="text-center col-md-1"><b>' . number_format($total_tnca, 2) . '</b></td>
                         <td class="text-center col-md-1"><b>' . number_format($total_tnca_foreign, 2) . '</b></td>
                         <td class="text-center col-md-1"><b>' . number_format($total_vc, 2) . '</b></td>
@@ -142,6 +163,29 @@
         <input name="form[appl_dept_hod]" class="form-control" type="text" value="<?php echo $appl_dept_hod?>" readonly>
     </div>
 </div>
+
+<div id="allwRmicSummary" class="hidden">
+    <div class="form-group">
+        <label class="col-md-4 control-label text-right">Applied (Research) (RM)</label>
+        <div class="col-md-2 text-right">
+            <input name="form[appl_rc]" class="form-control" type="text" value="<?php echo $appl_rc?>" readonly>
+        </div>
+
+        <label class="col-md-4 control-label text-right">Approved RMIC (Research) (RM)</label>
+        <div class="col-md-2 text-right">
+            <input name="form[appr_rmic_rc]" class="form-control" type="text" value="<?php echo $appr_rmic_rc?>" readonly>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-4 control-label text-right">Approved TNCPI (RM)</label>
+        <div class="col-md-2 text-right">
+            <input name="form[appr_tncpi_rc]" class="form-control" type="text" value="<?php echo $appr_tncpi_rc?>" readonly>
+        </div>
+    </div>
+
+</div>
+
 <div class="form-group">
     <label class="col-md-4 control-label text-right">Approved TNCA (RM)</label>
     <div class="col-md-2 text-right">

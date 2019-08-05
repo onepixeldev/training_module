@@ -19,33 +19,72 @@ class Conference_lmp_model extends MY_Model
     =============================================================*/
 
     // POPULATE DEPARTMENT QUERY CONFERENCE REPORT APPLICATION
-    public function populateDeptQ() {
-        $curr_usr_id = $this->staff_id;
-        $hrd = "(SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE SM_STAFF_ID = '$curr_usr_id')";
+    public function populateDeptQ($mod = null) {
+        if($mod == 'APP_REPORT') {
+            $curr_usrname = $this->username;
 
-        $query = "SELECT '-'||'-'||'-'||'Please select'||'-'||'-'||'-' DM_DEPT_CODE, '' DM_DEPT_DESC FROM DUAL
-        UNION    
-        SELECT DM_DEPT_CODE,DM_DEPT_DESC
-        FROM DEPARTMENT_MAIN
-        WHERE NVL(DM_STATUS,'INACTIVE') = 'ACTIVE'
-        AND DM_LEVEL IN (1,2)
-        AND ($hrd IS NULL 
-        OR ($hrd IS NOT NULL 
-        AND (DM_DEPT_CODE = $hrd
-        OR $hrd IN ('PTNC-A','ICT'))))
-        ORDER BY DM_DEPT_CODE";
+            $query = "SELECT '-'||'-'||'-'||'Please select'||'-'||'-'||'-' DM_DEPT_CODE FROM DUAL
+            UNION 
+            SELECT DM_DEPT_CODE FROM DEPARTMENT_MAIN	
+            WHERE NVL(DM_STATUS,'INACTIVE') = 'ACTIVE'
+                AND DM_DEPT_CODE IN
+                (SELECT NVL(SM_DEPT_CODE,'-') 
+                  FROM STAFF_MAIN, STAFF_CONFERENCE_REP 
+                  WHERE SM_STAFF_ID = SCR_STAFF_ID
+                  AND SCR_STATUS = 'VERIFY_HOD')
+                OR DM_DEPT_CODE IN
+                (SELECT NVL(SM_DEPT_CODE,'-') 
+                  FROM STAFF_MAIN, STAFF_CONFERENCE_REP, DEPARTMENT_MAIN 
+                  WHERE SM_STAFF_ID = SCR_STAFF_ID
+                  AND DM_DIRECTOR = SM_STAFF_ID
+                  AND DM_LEVEL IN (1,2)
+                  AND NVL(DM_STATUS,'INACTIVE') = 'ACTIVE'
+                  AND SCR_STATUS = 'APPLY')	
+                OR DM_DEPT_CODE IN
+                (SELECT NVL(SM_DEPT_CODE,'PTNC-A') 
+                  FROM STAFF_MAIN 
+                  WHERE UPPER(SM_APPS_USERNAME) = UPPER('$curr_usrname'))
+                ORDER BY DM_DEPT_CODE";
+        } else {
+            $curr_usr_id = $this->staff_id;
+            $hrd = "(SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE SM_STAFF_ID = '$curr_usr_id')";
+
+            $query = "SELECT '-'||'-'||'-'||'Please select'||'-'||'-'||'-' DM_DEPT_CODE, '' DM_DEPT_DESC FROM DUAL
+            UNION    
+            SELECT DM_DEPT_CODE,DM_DEPT_DESC
+            FROM DEPARTMENT_MAIN
+            WHERE NVL(DM_STATUS,'INACTIVE') = 'ACTIVE'
+            AND DM_LEVEL IN (1,2)
+            AND ($hrd IS NULL 
+            OR ($hrd IS NOT NULL 
+            AND (DM_DEPT_CODE = $hrd
+            OR $hrd IN ('PTNC-A','ICT'))))
+            ORDER BY DM_DEPT_CODE";
+        }
+        
 
         $q = $this->db->query($query);
         return $q->result();
     }
 
     // STAFF LIST QUERY
-    public function getStaffListQ($dept) {
+    public function getStaffListQ($dept, $mod = null) {
+        
         $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_JOB_CODE, SS_SERVICE_DESC");
         $this->db->from("STAFF_MAIN");
         $this->db->join("SERVICE_SCHEME", "SS_SERVICE_CODE = SM_JOB_CODE", "LEFT");
-        $this->db->where("SM_STAFF_ID IN (SELECT DISTINCT SCR_STAFF_ID FROM STAFF_CONFERENCE_REP,STAFF_MAIN WHERE SM_DEPT_CODE = '$dept' AND SM_STAFF_ID = SCR_STAFF_ID)");
-        $this->db->order_by("SM_STAFF_NAME");
+        if($mod == 'APP_REPORT') {
+            $this->db->join("STAFF_CONFERENCE_REP", "SCR_STAFF_ID = SM_STAFF_ID", "LEFT");
+            $this->db->where("(SCR_STAFF_ID IN (SELECT SM_STAFF_ID FROM STAFF_MAIN WHERE SM_STAFF_ID = SCR_STAFF_ID AND SM_DEPT_CODE = '$dept') AND SCR_STATUS='VERIFY_HOD') 
+            OR (SCR_STAFF_ID IN (SELECT DM_DIRECTOR 
+            FROM DEPARTMENT_MAIN WHERE DM_DIRECTOR = SCR_STAFF_ID AND DM_LEVEL IN (1,2) AND DM_DEPT_CODE = '$dept') 
+            AND SCR_STATUS = 'APPLY')");
+            $this->db->order_by("SCR_APPLY_DATE, SCR_STAFF_ID");
+        } else {
+            $this->db->where("SM_STAFF_ID IN (SELECT DISTINCT SCR_STAFF_ID FROM STAFF_CONFERENCE_REP,STAFF_MAIN WHERE SM_DEPT_CODE = '$dept' AND SM_STAFF_ID = SCR_STAFF_ID)");
+            $this->db->order_by("SM_STAFF_NAME");
+        }
+        
 
         $q = $this->db->get();
         return $q->result();
@@ -75,12 +114,22 @@ class Conference_lmp_model extends MY_Model
     } 
 
     // STAFF CONFERENCE REPORT
-    public function getStaffConRepQ($staff_id)
+    public function getStaffConRepQ($staff_id, $mod = null)
     {
-        $this->db->select("SCR_REFID, SCR_STAFF_ID, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') CM_DATE_FROM, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') CM_DATE_TO, TO_CHAR(SCR_APPLY_DATE, 'DD/MM/YYYY') AS SCR_APPLY_DATE, SCR_STATUS");
+        $this->db->select("SCR_REFID, SCR_STAFF_ID, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') CM_DATE_FROM, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') CM_DATE_TO, TO_CHAR(SCR_APPLY_DATE, 'DD/MM/YYYY') AS SCR_APPLY_DATE, SCR_STATUS, SM_DEPT_CODE");
         $this->db->from("STAFF_CONFERENCE_REP");
         $this->db->join("CONFERENCE_MAIN", "CM_REFID = SCR_REFID", "LEFT");
-        $this->db->where("SCR_STAFF_ID", $staff_id);
+        $this->db->join("STAFF_MAIN", "SM_STAFF_ID = SCR_STAFF_ID", "LEFT");
+        if($mod == 'APP_REPORT') {
+            $this->db->where("SCR_STAFF_ID", $staff_id);
+            $this->db->where("(SCR_STAFF_ID IN (SELECT SM_STAFF_ID FROM STAFF_MAIN WHERE SM_STAFF_ID = SCR_STAFF_ID AND SM_DEPT_CODE = SM_DEPT_CODE) AND SCR_STATUS='VERIFY_HOD') 
+            OR (SCR_STAFF_ID IN (SELECT DM_DIRECTOR 
+            FROM DEPARTMENT_MAIN WHERE DM_DIRECTOR = SCR_STAFF_ID AND DM_LEVEL IN (1,2) AND DM_DEPT_CODE = SM_DEPT_CODE) 
+            AND SCR_STATUS = 'APPLY')");
+            $this->db->order_by("SCR_APPLY_DATE, SCR_STAFF_ID");
+        } else {
+            $this->db->where("SCR_STAFF_ID", $staff_id);
+        }
 
         $q = $this->db->get();
         return $q->result();
@@ -89,8 +138,8 @@ class Conference_lmp_model extends MY_Model
     // STAFF CONFERENCE REPORT DETAIL
     public function getConRepDetl($refid, $staff_id)
     {
-        $this->db->select("SCM_PAPER_TITLE, SCM_PAPER_TITLE2, SCR_CONTENT, SCR_EXPERIENCE, SCR_REMARK, SCR_HOD_REMARK1, SCR_HOD_REMARK2, SCR_HOD_REMARK3, SCR_HOD_VERIFY_BY, SCR_HOD_VERIFY_BY||' - '||SM1.SM_STAFF_NAME HOD_VERIFY_BY_ID_NAME,
-        TO_CHAR(SCR_HOD_VERIFY_DATE, 'DD/MM/YYYY') SCR_HOD_VERIFY_DATE, SCR_TNCA_REMARK1, SCR_TNCA_VERIFY_BY, SCR_TNCA_VERIFY_BY||' - '||SM2.SM_STAFF_NAME TNCA_VERIFY_BY_ID_NAME, TO_CHAR(SCR_TNCA_VERIFY_DATE, 'DD/MM/YYYY') SCR_TNCA_VERIFY_DATE");
+        $this->db->select("SCM_PAPER_TITLE, SCM_PAPER_TITLE2, SCR_CONTENT, SCR_EXPERIENCE, SCR_REMARK, SCR_HOD_REMARK1, SCR_HOD_REMARK2, SCR_HOD_REMARK3, SM1.SM_STAFF_NAME SCR_HOD_VERIFY_BY_NAME, SCR_HOD_VERIFY_BY, SCR_HOD_VERIFY_BY||' - '||SM1.SM_STAFF_NAME HOD_VERIFY_BY_ID_NAME,
+        TO_CHAR(SCR_HOD_VERIFY_DATE, 'DD/MM/YYYY') SCR_HOD_VERIFY_DATE, SCR_TNCA_REMARK1, SM2.SM_STAFF_NAME SCR_TNCA_VERIFY_BY_NAME, SCR_TNCA_VERIFY_BY, SCR_TNCA_VERIFY_BY||' - '||SM2.SM_STAFF_NAME TNCA_VERIFY_BY_ID_NAME, TO_CHAR(SCR_TNCA_VERIFY_DATE, 'DD/MM/YYYY') SCR_TNCA_VERIFY_DATE, SCR_TNCA_REJECT_REMARK, SCR_TNCA_REJECT_BY, TO_CHAR(SYSDATE, 'DD/MM/YYYY') AS CURR_DATE");
         $this->db->from("STAFF_CONFERENCE_REP");
         $this->db->join("STAFF_CONFERENCE_MAIN", "SCM_REFID = SCR_REFID AND SCM_STAFF_ID = SCR_STAFF_ID", "LEFT");
         $this->db->join("STAFF_MAIN SM1", "SM1.SM_STAFF_ID = SCR_HOD_VERIFY_BY", "LEFT");
@@ -144,14 +193,21 @@ class Conference_lmp_model extends MY_Model
     =============================================================*/
 
     // CONFERENCE APPLICANT LIST
-    public function getStaffListConRep($refid) {		
-        $this->db->select("SCR_STAFF_ID, SM_STAFF_NAME, SCR_STATUS, TO_CHAR(SCR_APPLY_DATE, 'DD/MM/YYYY') SCR_APPLY_DATE");
+    public function getStaffListConRep($refid, $staff_id = null) {		
+        $this->db->select("SCR_STAFF_ID, SM_STAFF_NAME, SCR_STATUS, TO_CHAR(SCR_APPLY_DATE, 'DD/MM/YYYY') SCR_APPLY_DATE, SCR_CONTENT, SCR_OTHER_TOTAL_AMT, SCR_EXPERIENCE, SCR_REMARK");
         $this->db->from("STAFF_CONFERENCE_REP");
         $this->db->join("STAFF_MAIN", "SCR_STAFF_ID = SM_STAFF_ID", "LEFT");
         $this->db->where("SCR_REFID", $refid);
-        $q = $this->db->get();
-                
-        return $q->result();
+        
+        if(!empty($staff_id)) {
+            $this->db->where("SCR_STAFF_ID = UPPER('$staff_id')");
+
+            $q = $this->db->get();
+            return $q->row();
+        } else {
+            $q = $this->db->get();
+            return $q->result();
+        }
     }
 
     // STAFF DETL INFO
@@ -191,17 +247,298 @@ class Conference_lmp_model extends MY_Model
     }
 
     // GET CONFERENCE DETAILS
-    public function getConferenceDetl($refid)
+    public function getConferenceDetlRep($refid, $staff_id)
     {
-        $this->db->select("CM_REFID, CM_NAME, CM_ADDRESS, CM_CITY, CM_POSTCODE, 
-        CM_STATE, SM_STATE_DESC, CONFERENCE_MAIN.CM_COUNTRY_CODE AS CM_COUNTRY_CODE, COUNTRY_MAIN.CM_COUNTRY_DESC AS CM_COUNTRY_DESC, 
-        TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FROM, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, CM_ORGANIZER_NAME, TO_CHAR(CM_DATE_FROM, 'YYYY') AS CM_DATE_FROM_YEAR, CM_DESC, CM_ENTER_BY, TO_CHAR(CM_ENTER_DATE, 'DD/MM/YYYY') AS CM_ENTER_DATE");
+        $this->db->select("CM_REFID, CM_NAME,  SCM_PAPER_TITLE, SCM_PAPER_TITLE2, CM_ADDRESS, CM_CITY, CM_POSTCODE, 
+        CM_STATE, SM_STATE_DESC, CONFERENCE_MAIN.CM_COUNTRY_CODE AS CM_COUNTRY_CODE, 
+        COUNTRY_MAIN.CM_COUNTRY_DESC AS CM_COUNTRY_DESC, 
+        TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FROM,
+        TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO, 
+        floor(TO_DATE (TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY'), 'dd/mm/yyyy') - TO_DATE (TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY'), 'dd/mm/yyyy')) + 1 AS DURATION_CM,
+        CM_ORGANIZER_NAME, SCM_RM_TOTAL_AMT_APPROVE_TNCA, SCM_RM_SPONSOR_TOTAL_AMT");
         $this->db->from("CONFERENCE_MAIN");
+        $this->db->join("STAFF_CONFERENCE_MAIN", "SCM_REFID = CM_REFID", "LEFT");
         $this->db->join("STATE_MAIN", "CM_STATE = STATE_MAIN.SM_STATE_CODE", "LEFT");
         $this->db->join("COUNTRY_MAIN", "CONFERENCE_MAIN.CM_COUNTRY_CODE = COUNTRY_MAIN.CM_COUNTRY_CODE", "LEFT");
         $this->db->where("CM_REFID", $refid);
+        $this->db->where("SCM_STAFF_ID", $staff_id);
 
         $q = $this->db->get();
         return $q->row();
     } 
+
+    // SAVE REPORT ENTRY PART I
+    public function saveRepPartI($form)
+    {
+        $curr_date = 'SYSDATE';
+        $curr_usr = $this->staff_id;
+
+        // SCR_OTHER_TOTAL_AMT
+        if(empty($form['fa_os'])) {
+            $fa_os = 0;
+        } else {
+            $fa_os = $form['fa_os'];
+        }
+
+        // SCR_STATUS
+        if(empty($form['status'])) {
+            $status = 'VERIFY_TNCA';
+        } else {
+            $status = $form['status'];
+        }
+        
+        $data = array(
+            "SCR_STAFF_ID" => strtoupper($form['staff_id']),
+            "SCR_REFID" => $form['conference_workshop_seminar'],
+            "SCR_OTHER_TOTAL_AMT" => $fa_os,
+            "SCR_STATUS" => $status, 
+            "SCR_ENTER_BY" => $curr_usr
+        );
+
+        if(!empty($form['report_date_submission'])) {
+            $rep_sub_date = "to_date('".$form['report_date_submission']."', 'DD/MM/YYYY')";
+            $this->db->set("SCR_APPLY_DATE", $rep_sub_date, false);
+        } else {
+            $this->db->set("SCR_APPLY_DATE", $curr_date, false);
+        }
+        
+        $this->db->set("SCR_ENTER_DATE", $curr_date, false);
+
+        $this->db->where("SCR_STAFF_ID", $form['staff_id']);
+        $this->db->where("SCR_REFID", $form['conference_workshop_seminar']);
+
+        return $this->db->insert("STAFF_CONFERENCE_REP", $data);
+    }
+
+    // SAVE EDIT REPORT ENTRY PART I
+    public function saveEditRepPartI($form)
+    {
+        $curr_date = 'SYSDATE';
+        $curr_usr = $this->staff_id;
+
+        // SCR_OTHER_TOTAL_AMT
+        if(empty($form['fa_os'])) {
+            $fa_os = 0;
+        } else {
+            $fa_os = $form['fa_os'];
+        }
+        
+        $data = array(
+            "SCR_OTHER_TOTAL_AMT" => $fa_os,
+            "SCR_STATUS" => $form['status'],
+            "SCR_UPDATE_BY" => $curr_usr
+        );
+
+        if(!empty($form['report_date_submission'])) {
+            $rep_sub_date = "to_date('".$form['report_date_submission']."', 'DD/MM/YYYY')";
+            $this->db->set("SCR_APPLY_DATE", $rep_sub_date, false);
+        } else {
+            $this->db->set("SCR_APPLY_DATE", $curr_date, false);
+        }
+        
+        $this->db->set("SCR_UPDATE_DATE", $curr_date, false);
+
+        $this->db->where("SCR_STAFF_ID", $form['staff_id']);
+        $this->db->where("SCR_REFID", $form['conference_workshop_seminar']);
+
+        return $this->db->update("STAFF_CONFERENCE_REP", $data);
+    }
+
+    // SAVE EDIT REPORT ENTRY PART II
+    public function saveRepPartII($form)
+    {
+        $curr_date = 'SYSDATE';
+        $curr_usr = $this->staff_id;
+        
+        $data = array(
+            "SCR_CONTENT" => $form['conference_content'],
+            "SCR_UPDATE_BY" => $curr_usr
+        );
+        
+        $this->db->set("SCR_UPDATE_DATE", $curr_date, false);
+
+        $this->db->where("SCR_STAFF_ID", $form['staff_id']);
+        $this->db->where("SCR_REFID", $form['conference_id']);
+
+        return $this->db->update("STAFF_CONFERENCE_REP", $data);
+    }
+
+    // SAVE EDIT REPORT ENTRY PART III
+    public function saveRepPartIII($form)
+    {
+        $curr_date = 'SYSDATE';
+        $curr_usr = $this->staff_id;
+        
+        $data = array(
+            "SCR_EXPERIENCE" => $form['conference_experience'],
+            "SCR_REMARK" => $form['conference_remark'],
+            "SCR_UPDATE_BY" => $curr_usr
+        );
+        
+        $this->db->set("SCR_UPDATE_DATE", $curr_date, false);
+
+        $this->db->where("SCR_STAFF_ID", $form['staff_id']);
+        $this->db->where("SCR_REFID", $form['conference_id']);
+
+        return $this->db->update("STAFF_CONFERENCE_REP", $data);
+    }
+
+    // SAVE EDIT REPORT ENTRY PART IV
+    public function saveRepPartIV($form)
+    {
+        $curr_date = 'SYSDATE';
+        $curr_usr = $this->staff_id;
+        
+        $data = array(
+            "SCR_HOD_REMARK1" => $form['hod_remark_1'],
+            "SCR_HOD_REMARK2" => $form['hod_remark_2'],
+            "SCR_HOD_REMARK3" => $form['hod_remark_3'],
+            "SCR_TNCA_REMARK1" => $form['tnca_remark'],
+            "SCR_HOD_VERIFY_BY" => strtoupper($form['certified_by_id']),
+            "SCR_TNCA_VERIFY_BY" => strtoupper($form['approved_by_id']),
+            "SCR_UPDATE_BY" => $curr_usr
+        );
+
+        if(!empty($form['date_certified'])) {
+            $date_certified = "to_date('".$form['date_certified']."', 'DD/MM/YYYY')";
+            $this->db->set("SCR_HOD_VERIFY_DATE", $date_certified, false);
+        } 
+
+        if(!empty($form['approved_date'])) {
+            $approved_date = "to_date('".$form['approved_date']."', 'DD/MM/YYYY')";
+            $this->db->set("SCR_TNCA_VERIFY_DATE", $approved_date, false);
+        } 
+        
+        $this->db->set("SCR_UPDATE_DATE", $curr_date, false);
+
+        $this->db->where("SCR_STAFF_ID", $form['staff_id']);
+        $this->db->where("SCR_REFID", $form['conference_id']);
+
+        return $this->db->update("STAFF_CONFERENCE_REP", $data);
+    }
+
+    // RECORD ESTABLISHED NETWORKS AND RELATIONSHIPS DETL
+    public function getScrPart1Detl($refid, $staff_id, $name, $field)
+    {
+        $this->db->select("SCRP1_NAME, SCRP1_FIELD, SCRP1_INSTITUITION, SCRP1_TELNO, SCRP1_EMAIL");
+        $this->db->from("STAFF_CONFERENCE_REP_PART1");
+        $this->db->where("SCRP1_REFID", $refid);
+        $this->db->where("SCRP1_STAFF_ID", $staff_id);
+        $this->db->where("SCRP1_NAME", $name);
+        $this->db->where("SCRP1_FIELD", $field);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // SAVE RECORD ESTABLISHED NETWORKS AND RELATIONSHIPS
+    public function saveEstNetRelay($form, $refid, $staff_id)
+    {
+        $data = array(
+            "SCRP1_REFID" => $refid,
+            "SCRP1_STAFF_ID" => $staff_id,
+            "SCRP1_NAME" => $form['name'],
+            "SCRP1_FIELD" => $form['expertise'],
+            "SCRP1_INSTITUITION" => $form['institution'],
+            "SCRP1_TELNO" => $form['tel_no'],
+            "SCRP1_EMAIL" => $form['email']
+        );
+
+        return $this->db->insert("STAFF_CONFERENCE_REP_PART1", $data);
+    }
+
+    // DELETE RECORD ESTABLISHED NETWORKS AND RELATIONSHIPS
+    public function delEstNetRelay($refid, $staff_id, $name, $field) {
+        $this->db->where('SCRP1_REFID', $refid);
+        $this->db->where('SCRP1_STAFF_ID', $staff_id);
+        $this->db->where('SCRP1_NAME', $name);
+        $this->db->where('SCRP1_FIELD', $field);
+        return $this->db->delete('STAFF_CONFERENCE_REP_PART1');
+    }
+
+    // SCR PART 2 DETL
+    public function getScrPart2Detl($refid, $staff_id, $activity)
+    {
+        $this->db->select("SCRP2_ACTIVITY, SCRP2_IMPLEMENT_DATE");
+        $this->db->from("STAFF_CONFERENCE_REP_PART2");
+        $this->db->where("SCRP2_REFID", $refid);
+        $this->db->where("SCRP2_STAFF_ID", $staff_id);
+        $this->db->where("SCRP2_ACTIVITY", $activity);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // SAVE SCR PART 2
+    public function saveScrpii($form, $refid, $staff_id)
+    { 
+        $data = array(
+            "SCRP2_REFID" => $refid,
+            "SCRP2_STAFF_ID" => $staff_id,
+            "SCRP2_ACTIVITY" => $form['activity'],
+            "SCRP2_IMPLEMENT_DATE" => $form['implementation_date'],
+        );
+
+        return $this->db->insert("STAFF_CONFERENCE_REP_PART2", $data);
+    }
+
+    // DELETE RECORD SCR PART 2
+    public function delScrpII($refid, $staff_id, $activity) {
+        $this->db->where('SCRP2_REFID', $refid);
+        $this->db->where('SCRP2_STAFF_ID', $staff_id);
+        $this->db->where('SCRP2_ACTIVITY', $activity);
+        return $this->db->delete('STAFF_CONFERENCE_REP_PART2');
+    }
+
+    /*===========================================================
+       APPROVE CONFERENCE REPORT (TNC A&A) - (ATF087)
+    =============================================================*/
+
+    // APPROVE / REJECT BY TNCAA
+    public function getAppRejcStaff() {
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, TO_CHAR(SYSDATE, 'DD/MM/YYYY') AS CURR_DATE");
+        $this->db->from("STAFF_MAIN");
+        $this->db->where("SM_ADMIN_JOBCODE = '43'");
+        $this->db->where("SM_STAFF_STATUS IN ('01','17')");
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // SAVE AMEND / APPROVAL
+    public function saveAmdAppTncaa($refid, $staff_id, $app_amd_remark, $app_amd_by, $app_amd_date)
+    { 
+        $data = array(
+            "SCR_TNCA_REMARK1" => $app_amd_remark,
+            "SCR_TNCA_VERIFY_BY" => $app_amd_by
+        );
+
+        if(!empty($app_amd_date)) {
+            $app_amd_date = "to_date('".$app_amd_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCR_TNCA_VERIFY_DATE", $app_amd_date, false);
+        }
+
+        $this->db->where("SCR_REFID", $refid);
+        $this->db->where("SCR_STAFF_ID", $staff_id);
+
+        return $this->db->update("STAFF_CONFERENCE_REP", $data);
+    }
+
+    // SAVE REJECT
+    public function saveRejcTncaa($refid, $staff_id, $rjc_remark, $rjc_by, $rjc_date)
+    { 
+        $data = array(
+            "SCR_TNCA_REJECT_REMARK" => $rjc_remark,
+            "SCR_TNCA_REJECT_BY" => $rjc_by
+        );
+
+        if(!empty($rjc_date)) {
+            $rjc_date = "to_date('".$rjc_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCR_TNCA_REJECT_DATE", $rjc_date, false);
+        }
+
+        $this->db->where("SCR_REFID", $refid);
+        $this->db->where("SCR_STAFF_ID", $staff_id);
+
+        return $this->db->update("STAFF_CONFERENCE_REP", $data);
+    }
 }

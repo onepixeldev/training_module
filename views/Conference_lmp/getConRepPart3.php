@@ -26,7 +26,12 @@
 </div>
 <form class="form-horizontal">
     <div class="form-group">
-        <label class="col-md-2 control-label">State the knowledge / understanding / a new experience has been obtained</label>
+        <div class="col-md-2"></div>
+        <label class="col-md-8 control-label text-left"><b>State the knowledge / understanding / a new experience has been obtained</b></label>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-2"></div>
         <div class="col-md-8">
             <textarea name="" class="form-control" type="text" rows="4" cols="50" readonly><?php echo $con_rep_partiii->SCR_EXPERIENCE?></textarea>
         </div>
@@ -70,8 +75,13 @@
 <br>
 <form class="form-horizontal">
     <div class="form-group">
-        <label class="col-md-4 control-label">Do you have a networking relationship when attending a Conference / Seminar / Workshop inside or outside the country? With whom? How did you create that networking relationship?</label>
-        <div class="col-md-6">
+        <div class="col-md-2"></div>
+        <label class="col-md-8 control-label text-left"><b>Do you have a networking relationship when attending a Conference / Seminar / Workshop inside or outside the country? With whom? How did you create that networking relationship?</b></label>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
             <textarea name="" class="form-control" type="text" rows="4" cols="50" readonly><?php echo $con_rep_partiii->SCR_REMARK?></textarea>
         </div>
     </div>

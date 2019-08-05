@@ -66,6 +66,40 @@
             </div>
         </div>
 
+        <div id="allwRmic" class="hidden">
+            <div class="form-group">
+                <label class="col-md-3 control-label">Approved RMIC (RM)</label>
+                <div class="col-md-3">
+                    <input name="form[approved_rmic]" placeholder="Approved RMIC (RM)" class="form-control" type="text">
+                </div>
+
+                <label class="col-md-3 control-label">Approved RMIC (Foreign)</label>
+                <div class="col-md-3">
+                    <input name="form[approved_rmic_foreign]" placeholder="Approved RMIC (Foreign)" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-3 control-label">Approved TNCPI (RM)</label>
+                <div class="col-md-3">
+                    <input name="form[approved_tncpi]" placeholder="Approved TNCPI (RM)" class="form-control" type="text">
+                </div>
+
+                <label class="col-md-3 control-label">Approved TNCPI (Foreign)</label>
+                <div class="col-md-3">
+                    <input name="form[approved_tncpi_foreign]" placeholder="Approved TNCPI (Foreign)" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group hidden">
+                <label class="col-md-3 control-label">MOD</label>
+                <div class="col-md-3">
+                    <input name="form[mod]" value="<?php echo $mod?>" class="form-control" type="text" readonly>
+                </div>
+            </div>
+        </div>
+        
+
         <div class="form-group">
             <label class="col-md-3 control-label">Approved TNCA (RM)</label>
             <div class="col-md-3">

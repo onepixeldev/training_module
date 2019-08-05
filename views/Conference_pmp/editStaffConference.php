@@ -26,7 +26,7 @@
             ?>
         </div>
         <div class="col-md-2">
-            <input name="form[staff_id]" class="form-control" type="hidden" value="<?php echo $staffID?>" readonly>
+            <input name="form[staff_id]" class="form-control" type="hidden" value="<?php echo $staffID?>" id="staff_id" readonly>
         </div>
     </div>
 
@@ -44,52 +44,101 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Venue</label>
         <div class="col-md-10">
-            <input name="form[venue]" placeholder="Venue" value="<?php echo $venue?>" class="form-control" type="text" readonly>
+            <input name="" placeholder="Venue" value="<?php echo $venue?>" class="form-control" type="text" readonly>
         </div>
     </div>
 
     <div class="form-group">    
         <label class="col-md-2 control-label">City</label>
         <div class="col-md-4">
-            <input name="form[city]" placeholder="City" value="<?php echo $city?>" class="form-control" type="text" readonly>
+            <input name="" placeholder="City" value="<?php echo $city?>" class="form-control" type="text" readonly>
         </div>
 
         <label class="col-md-2 control-label">Postcode</label>
         <div class="col-md-2">
-            <input name="form[postcode]" placeholder="Postcode" value="<?php echo $postcode?>" class="form-control" type="text" readonly>
+            <input name="" placeholder="Postcode" value="<?php echo $postcode?>" class="form-control" type="text" readonly>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-md-2 control-label">State</label>
         <div class="col-md-4">
-            <input name="form[state]" placeholder="State" value="<?php echo $state?>" class="form-control" type="text" readonly>
+            <input name="" placeholder="State" value="<?php echo $state?>" class="form-control" type="text" readonly>
         </div>
         
         <label class="col-md-2 control-label">Country</label>
         <div class="col-md-4">
-            <input name="form[country]" placeholder="Country" value="<?php echo $country?>" class="form-control" type="text" readonly>
+            <input name="" placeholder="Country" value="<?php echo $country?>" class="form-control" type="text" readonly>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-md-2 control-label">Date From</label>
         <div class="col-md-4">
-            <input name="form[date_from]" placeholder="DD/MM/YYYY" value="<?php echo $date_from?>" class="datepicker form-control" type="text" readonly>
+            <input name="" placeholder="DD/MM/YYYY" value="<?php echo $date_from?>" class="datepicker form-control" type="text" readonly>
         </div>
 
 
         <label class="col-md-2 control-label">Date To</label>
         <div class="col-md-4">
-            <input name="form[date_to]" placeholder="DD/MM/YYYY" value="<?php echo $date_to?>" class="datepicker form-control" type="text" readonly>
+            <input name="" placeholder="DD/MM/YYYY" value="<?php echo $date_to?>" class="datepicker form-control" type="text" readonly>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-md-2 control-label">Organizer</label>
         <div class="col-md-10">
-            <input name="form[organizer]" placeholder="Organizer" value="<?php echo $organizer?>" class="form-control" type="text" readonly>
+            <input name="" placeholder="Organizer" value="<?php echo $organizer?>" class="form-control" type="text" readonly>
         </div>
+    </div>
+
+    <div id="editRmicResearch" class="hidden">
+        <br>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Research Project <b><font color="red">* </font></b></label>
+            <div class="col-md-2">
+                <input name="form[research_project]" placeholder="Research project" class="form-control" type="text" value="<?php echo $stf_detl->SCM_RESEARCH_REFID?>" id="research_project" readonly>
+            </div>
+
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary search_research"><i class="fa fa-search"></i> Search</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Research Title</label>
+            <div class="col-md-10">
+                <textarea name="" placeholder="Research title" class="form-control" type="text" rows="3" cols="50" id="research_title" readonly><?php echo $rsh_title?></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Project ID</label>
+            <div class="col-md-4">
+                <input name="" placeholder="Project ID" class="form-control" type="text" value="<?php echo $rsh_info->SR_PROJECT_ID?>" id="project_id" readonly>
+            </div>
+
+            <label class="col-md-2 control-label">Grant Amount (RM)</label>
+            <div class="col-md-4">
+                <input name="" placeholder="RM" class="form-control" value="<?php echo $rsh_grant?>" type="text" id="grant_amount" readonly>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Research Date From</label>
+            <div class="col-md-4">
+                <input name="" placeholder="DD/MM/YYYY" value="<?php echo $rsh_df?>" class="form-control" type="text" id="research_date_from" readonly>
+            </div>
+
+
+            <label class="col-md-2 control-label">Research Date To</label>
+            <div class="col-md-4">
+                <input name="" placeholder="DD/MM/YYYY" value="<?php echo $rsh_dt?>" class="form-control" type="text" id="research_date_to" readonly>
+            </div>
+        </div>
+
+        <br>
     </div>
 
     <div class="form-group">
@@ -303,6 +352,65 @@
         </div>
     </div>
 
+    <div id="editRmic" class="hidden">
+        <br>
+        <div class="alert alert-info fade in">
+            <b>Head of Department RMIC Approval/Verification</b>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Remark (RMIC)</label>
+            <div class="col-md-8">
+                <textarea name="form[remark_rmic]" placeholder="Remark" class="form-control" type="text" rows="4" cols="50" id="remark_rmic"><?php echo $stf_detl->SCM_RMIC_REMARK?></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Approved By (RMIC)</label>
+            <div class="col-md-8">
+                <?php
+                    echo form_dropdown('form[approved_by_rmic]', $staff_list, $stf_detl->SCM_RMIC_APPROVE_BY, 'class="select2-filter form-control" style = "width: 100%" id="approved_by_rmic"')
+                ?>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Approved Date (RMIC)</label>
+            <div class="col-md-2">
+                <input name="form[approved_date_rmic]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" id="approved_date_rmic" value="<?php echo $stf_detl->SCM_RMIC_APPROVE_DATE?>">
+            </div>
+        </div>
+
+        <br>
+        <div class="alert alert-info fade in">
+            <b>TNC (PI) Approval/Verification</b>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Remark (TNCPI)</label>
+            <div class="col-md-8">
+                <textarea name="form[remark_tncpi]" placeholder="Remark" class="form-control" type="text" rows="4" cols="50" id="remark_tncpi"><?php echo $stf_detl->SCM_TNCPI_REMARK?></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Approved By (TNCPI)</label>
+            <div class="col-md-8">
+                <?php
+                    echo form_dropdown('form[approved_by_tncpi]', $staff_list, $stf_detl->SCM_TNCPI_APPROVE_BY, 'class="select2-filter form-control" style = "width: 100%" id="approved_by_tncpi"')
+                ?>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Approved Date (TNCPI)</label>
+            <div class="col-md-2">
+                <input name="form[approved_date_tncpi]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" id="approved_date_tncpi" value="<?php echo $stf_detl->SCM_TNCPI_APPROVE_DATE?>">
+            </div>
+        </div>
+    
+    </div>
+
     <br>
     <div class="alert alert-info fade in">
         <b>TNC (A&A) Approval/Verification</b>
@@ -370,6 +478,13 @@
         <label class="col-md-2 control-label">Received Date (TNCA)</label>
         <div class="col-md-2">
             <input name="form[received_date_vc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text" value="<?php echo $stf_detl->SCM_VC_RECEIVE_DATE?>">
+        </div>
+    </div>
+
+    <div class="form-group hidden">
+        <label class="col-md-2 control-label">MOD</label>
+        <div class="col-md-2">
+            <input name="form[mod]" class="form-control" type="text" value="<?php echo $mod?>" readonly>
         </div>
     </div>
 

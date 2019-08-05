@@ -9,10 +9,15 @@
             <div class="col-md-3">
                 <input name="form[staff_id]" placeholder="Staff ID / Name" class="form-control" type="text" value="" id="staff_id">
             </div>
+            
 
             <div class="col-md-2">
                 <button type="button" class="btn btn-primary search_staff_md"><i class="fa fa-search"></i> </button>
             </div>
+        </div>
+
+        <div class="form-group">
+            <div id="alertStfIDMD"></div>
         </div>
         <br>
 

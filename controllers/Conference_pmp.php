@@ -164,6 +164,36 @@ class Conference_pmp extends MY_Controller
         $this->render();
     }
 
+    // EDIT CONFERENCE APPLICATION FOR RMIC
+    public function ATF157()
+    {
+
+        $data['month'] = $this->mdl_pmp->getCurDate();
+        $data['year'] = $this->mdl_pmp->getCurDate();
+
+        $data['cur_month'] = $data['month']->SYSDATE_MM;  
+        $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
+
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl_pmp->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl_pmp->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // APPROVE / VERIFY CONFERENCE APPLICATION (RMIC)
+    public function ATF158()
+    {
+        $mod = 'RMIC';      
+
+        // DEPARTMENT LIST
+        $data['dept_list'] = $this->dropdown($this->mdl_pmp->populateDept($mod), 'DM_DEPT_CODE', 'DM_DEPT_CODE', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
     /*===========================================================
        CONFERENCE APPLICATION - MANUAL ENTRY (ATF075)
     =============================================================*/
@@ -198,13 +228,14 @@ class Conference_pmp extends MY_Controller
     {   
         $refid = $this->input->post('refid', true);
         $crName = $this->input->post('crName', true);
+        $mod = $this->input->post('mod', true);
 
         //$data2 = array();
 
         if(!empty($refid)) {
             $data['refid'] = $refid;
             $data['crName'] = $crName;
-            $data['staff_cr_list'] = $this->mdl_pmp->getStaffConferenceApplication($refid);
+            $data['staff_cr_list'] = $this->mdl_pmp->getStaffConferenceApplication($refid, $mod);
         } 
 
         $this->renderAjax($data);
@@ -295,7 +326,17 @@ class Conference_pmp extends MY_Controller
                 'remark_vc' => 'max_length[4000]',
                 'approved_by_vc' => 'max_length[10]',
                 'approved_date_vc' => 'max_length[11]',
-                'received_date_vc' => 'max_length[11]'
+                'received_date_vc' => 'max_length[11]', 
+
+                // RMIC
+                'research_project' => 'max_length[20]',
+                'remark_rmic' => 'max_length[4000]',
+                'approved_by_rmic' => 'max_length[10]',
+                'approved_date_rmic' => 'max_length[11]',
+                'remark_tncpi' => 'max_length[4000]',
+                'approved_by_tncpi' => 'max_length[10]',
+                'approved_date_tncpi' => 'max_length[11]',
+                'mod' => 'max_length[11]'
             );
         } else {
             // form / input validation
@@ -325,7 +366,17 @@ class Conference_pmp extends MY_Controller
                 'remark_vc' => 'max_length[4000]',
                 'approved_by_vc' => 'max_length[10]',
                 'approved_date_vc' => 'max_length[11]',
-                'received_date_vc' => 'max_length[11]'
+                'received_date_vc' => 'max_length[11]',
+
+                // RMIC
+                'research_project' => 'max_length[20]',
+                'remark_rmic' => 'max_length[4000]',
+                'approved_by_rmic' => 'max_length[10]',
+                'approved_date_rmic' => 'max_length[11]',
+                'remark_tncpi' => 'max_length[4000]',
+                'approved_by_tncpi' => 'max_length[10]',
+                'approved_date_tncpi' => 'max_length[11]',
+                'mod' => 'max_length[11]'
             );
         }
 
@@ -376,11 +427,14 @@ class Conference_pmp extends MY_Controller
         $staffID = $this->input->post('staffID', true);
         $refid = $this->input->post('refid', true);
         $crName = $this->input->post('crName', true);
+        $mod = $this->input->post('mod', true);
 
         if(!empty($staffID) && !empty($refid)) {
             $data['staffID'] = $staffID;
             $data['refid'] = $refid;
             $data['crName'] = $crName;
+
+            $data['stf_detl'] = $this->mdl_pmp->getStaffConferenceDetl($refid, $staffID);
 
             $data['cr_detl'] = $this->mdl_pmp->getConferenceDetl($refid);
             if(!empty($data['cr_detl'])) {
@@ -408,10 +462,42 @@ class Conference_pmp extends MY_Controller
             $data['cr_cat_list'] = $this->dropdown($this->mdl_pmp->getCrCategoryList(), 'CC_CODE', 'CC_CODE_DESC_CC_FROM_TO', ' ---Please select--- ');
             $data['cr_spon_list'] = array(''=>' ---Please select--- ', 'Y'=>'Yes', 'N'=>'No', 'H'=>'Half Sponsorship');
             $data['cr_budget_spon_list'] = array(''=>' ---Please select--- ', 'GRANTS'=>'Grants', 'EXTERNAL'=>'External Organization', 'SELF'=>'Self');
-            $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS');
-            $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_TNCA'=>'VERIFY_HOD', 'VERIFY_VC'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
 
-            $data['stf_detl'] = $this->mdl_pmp->getStaffConferenceDetl($refid, $staffID);
+            if($mod == 'EDIT_RMIC') {
+                $data['mod'] = 'EDIT_RMIC';
+
+                $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'RESEARCH'=>'Research', 'RESEARCH_CONFERENCE'=>'Research & Conference', 'OTHERS'=>'OTHERS');
+
+                $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_RMIC'=>'VERIFY_HOD', 'VERIFY_TNCPI'=>'VERIFY_RMIC', 'VERIFY_TNCA'=>'VERIFY_TNCPI', 'VERIFY_VC'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
+            } else {
+                $data['mod'] = '';
+
+                $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS');
+
+                $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_TNCA'=>'VERIFY_HOD', 'VERIFY_VC'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
+            }
+
+            // RESEARCH INFO
+            if(!empty($data['stf_detl'])) {
+                $p_id = $data['stf_detl']->SCM_RESEARCH_REFID;
+            } else {
+                $p_id = '';
+            }
+
+            $data['rsh_info'] = $this->mdl_pmp->researchInfo($p_id);
+            if(!empty($data['rsh_info'])) {
+                $data['rsh_title'] = $data['rsh_info']->SR_RESEARCH_TITLE;
+                $data['rsh_id'] = $data['rsh_info']->SR_PROJECT_ID;
+                $data['rsh_grant'] = number_format($data['rsh_info']->SR_GRANT_AMT,2);
+                $data['rsh_df'] = $data['rsh_info']->SR_DATE_FROM;
+                $data['rsh_dt'] = $data['rsh_info']->SR_DATE_TO;
+            } else {
+                $data['rsh_title'] = '';
+                $data['rsh_id'] = '';
+                $data['rsh_grant'] = '';
+                $data['rsh_df'] = '';
+                $data['rsh_dt'] = '';
+            }
         }
 
         $this->render($data);
@@ -475,6 +561,8 @@ class Conference_pmp extends MY_Controller
         // get parameter values
         $form = $this->input->post('form', true);
 
+        $mod = $form['mod'];
+
         // sponsor field
         $sponsor = $form['sponsor'];
 
@@ -483,65 +571,169 @@ class Conference_pmp extends MY_Controller
         $staff_id = $form['staff_id'];
 
         if(!empty($sponsor) && ($sponsor == 'Y' || $sponsor == 'H')) {
-            // form / input validation
-            $rule = array(
-                'staff_id' => 'required|max_length[10]',
-                'role' => 'required|max_length[100]',
-                'paper_title1' => 'max_length[500]',
-                'paper_title2' => 'max_length[500]',
-                'category' => 'required|max_length[10]',
-                'sponsor' => 'required|max_length[1]',
-                'sponsor_name' => 'required|max_length[200]',
-                'budget_origin_for_sponsor' => 'required|max_length[20]',
-                'total' => 'required|numeric|max_length[40]',
-                'budget_origin' => 'required|max_length[20]',
-                'apply_date' => 'max_length[11]',
-                'status' => 'required|max_length[20]',
-                'remark1' => 'max_length[4000]',
-                'remark2' => 'max_length[4000]',
-                'remark3' => 'max_length[4000]',
-                'remark4' => 'max_length[4000]',
-                'approved_by_hod' => 'max_length[10]',
-                'approved_date_hod' => 'max_length[11]',
-                'remark_tnc' => 'max_length[4000]',
-                'approved_by_tnc' => 'max_length[10]',
-                'approved_date_tnc' => 'max_length[11]',
-                'received_date_tnc' => 'max_length[11]',
-                'remark_vc' => 'max_length[4000]',
-                'approved_by_vc' => 'max_length[10]',
-                'approved_date_vc' => 'max_length[11]',
-                'received_date_vc' => 'max_length[11]'
-            );
+            if($form['mod'] == 'EDIT_RMIC') {
+                // form / input validation
+                $rule = array(
+                    'staff_id' => 'required|max_length[10]',
+                    'role' => 'required|max_length[100]',
+                    'paper_title1' => 'max_length[500]',
+                    'paper_title2' => 'max_length[500]',
+                    'category' => 'required|max_length[10]',
+                    'sponsor' => 'required|max_length[1]',
+                    'sponsor_name' => 'required|max_length[200]',
+                    'budget_origin_for_sponsor' => 'required|max_length[20]',
+                    'total' => 'required|numeric|max_length[40]',
+                    'budget_origin' => 'required|max_length[20]',
+                    'apply_date' => 'max_length[11]',
+                    'status' => 'required|max_length[20]',
+                    'remark1' => 'max_length[4000]',
+                    'remark2' => 'max_length[4000]',
+                    'remark3' => 'max_length[4000]',
+                    'remark4' => 'max_length[4000]',
+                    'approved_by_hod' => 'max_length[10]',
+                    'approved_date_hod' => 'max_length[11]',
+                    'remark_tnc' => 'max_length[4000]',
+                    'approved_by_tnc' => 'max_length[10]',
+                    'approved_date_tnc' => 'max_length[11]',
+                    'received_date_tnc' => 'max_length[11]',
+                    'remark_vc' => 'max_length[4000]',
+                    'approved_by_vc' => 'max_length[10]',
+                    'approved_date_vc' => 'max_length[11]',
+                    'received_date_vc' => 'max_length[11]',
+
+                    // RMIC
+                    'research_project' => 'required|max_length[20]',
+                    'remark_rmic' => 'max_length[4000]',
+                    'approved_by_rmic' => 'max_length[10]',
+                    'approved_date_rmic' => 'max_length[11]',
+                    'remark_tncpi' => 'max_length[4000]',
+                    'approved_by_tncpi' => 'max_length[10]',
+                    'approved_date_tncpi' => 'max_length[11]',
+                    'mod' => 'max_length[11]'
+                );
+            } else {
+                $rule = array(
+                    'staff_id' => 'required|max_length[10]',
+                    'role' => 'required|max_length[100]',
+                    'paper_title1' => 'max_length[500]',
+                    'paper_title2' => 'max_length[500]',
+                    'category' => 'required|max_length[10]',
+                    'sponsor' => 'required|max_length[1]',
+                    'sponsor_name' => 'required|max_length[200]',
+                    'budget_origin_for_sponsor' => 'required|max_length[20]',
+                    'total' => 'required|numeric|max_length[40]',
+                    'budget_origin' => 'required|max_length[20]',
+                    'apply_date' => 'max_length[11]',
+                    'status' => 'required|max_length[20]',
+                    'remark1' => 'max_length[4000]',
+                    'remark2' => 'max_length[4000]',
+                    'remark3' => 'max_length[4000]',
+                    'remark4' => 'max_length[4000]',
+                    'approved_by_hod' => 'max_length[10]',
+                    'approved_date_hod' => 'max_length[11]',
+                    'remark_tnc' => 'max_length[4000]',
+                    'approved_by_tnc' => 'max_length[10]',
+                    'approved_date_tnc' => 'max_length[11]',
+                    'received_date_tnc' => 'max_length[11]',
+                    'remark_vc' => 'max_length[4000]',
+                    'approved_by_vc' => 'max_length[10]',
+                    'approved_date_vc' => 'max_length[11]',
+                    'received_date_vc' => 'max_length[11]',
+
+                    // RMIC
+                    'research_project' => 'max_length[20]',
+                    'remark_rmic' => 'max_length[4000]',
+                    'approved_by_rmic' => 'max_length[10]',
+                    'approved_date_rmic' => 'max_length[11]',
+                    'remark_tncpi' => 'max_length[4000]',
+                    'approved_by_tncpi' => 'max_length[10]',
+                    'approved_date_tncpi' => 'max_length[11]',
+                    'mod' => 'max_length[11]'
+                );
+            }
         } else {
-            // form / input validation
-            $rule = array(
-                'staff_id' => 'required|max_length[10]',
-                'role' => 'required|max_length[100]',
-                'paper_title1' => 'max_length[500]',
-                'paper_title2' => 'max_length[500]',
-                'category' => 'required|max_length[10]',
-                'sponsor' => 'required|max_length[1]',
-                'sponsor_name' => 'max_length[200]',
-                'budget_origin_for_sponsor' => 'max_length[20]',
-                'total' => 'max_length[40]',
-                'budget_origin' => 'required|max_length[20]',
-                'apply_date' => 'max_length[11]',
-                'status' => 'required|max_length[20]',
-                'remark1' => 'max_length[4000]',
-                'remark2' => 'max_length[4000]',
-                'remark3' => 'max_length[4000]',
-                'remark4' => 'max_length[4000]',
-                'approved_by_hod' => 'max_length[10]',
-                'approved_date_hod' => 'max_length[11]',
-                'remark_tnc' => 'max_length[4000]',
-                'approved_by_tnc' => 'max_length[10]',
-                'approved_date_tnc' => 'max_length[11]',
-                'received_date_tnc' => 'max_length[11]',
-                'remark_vc' => 'max_length[4000]',
-                'approved_by_vc' => 'max_length[10]',
-                'approved_date_vc' => 'max_length[11]',
-                'received_date_vc' => 'max_length[11]'
-            );
+
+            if ($form['mod'] == 'EDIT_RMIC') {
+                // form input validation
+                $rule = array(
+                    'staff_id' => 'required|max_length[10]',
+                    'role' => 'required|max_length[100]',
+                    'paper_title1' => 'max_length[500]',
+                    'paper_title2' => 'max_length[500]',
+                    'category' => 'required|max_length[10]',
+                    'sponsor' => 'required|max_length[1]',
+                    'sponsor_name' => 'max_length[200]',
+                    'budget_origin_for_sponsor' => 'max_length[20]',
+                    'total' => 'max_length[40]',
+                    'budget_origin' => 'required|max_length[20]',
+                    'apply_date' => 'max_length[11]',
+                    'status' => 'required|max_length[20]',
+                    'remark1' => 'max_length[4000]',
+                    'remark2' => 'max_length[4000]',
+                    'remark3' => 'max_length[4000]',
+                    'remark4' => 'max_length[4000]',
+                    'approved_by_hod' => 'max_length[10]',
+                    'approved_date_hod' => 'max_length[11]',
+                    'remark_tnc' => 'max_length[4000]',
+                    'approved_by_tnc' => 'max_length[10]',
+                    'approved_date_tnc' => 'max_length[11]',
+                    'received_date_tnc' => 'max_length[11]',
+                    'remark_vc' => 'max_length[4000]',
+                    'approved_by_vc' => 'max_length[10]',
+                    'approved_date_vc' => 'max_length[11]',
+                    'received_date_vc' => 'max_length[11]',
+
+                    // RMIC
+                    'research_project' => 'required|max_length[20]',
+                    'remark_rmic' => 'max_length[4000]',
+                    'approved_by_rmic' => 'max_length[10]',
+                    'approved_date_rmic' => 'max_length[11]',
+                    'remark_tncpi' => 'max_length[4000]',
+                    'approved_by_tncpi' => 'max_length[10]',
+                    'approved_date_tncpi' => 'max_length[11]',
+                    'mod' => 'max_length[11]'
+                );
+            } else {
+                // form input validation
+                $rule = array(
+                    'staff_id' => 'required|max_length[10]',
+                    'role' => 'required|max_length[100]',
+                    'paper_title1' => 'max_length[500]',
+                    'paper_title2' => 'max_length[500]',
+                    'category' => 'required|max_length[10]',
+                    'sponsor' => 'required|max_length[1]',
+                    'sponsor_name' => 'max_length[200]',
+                    'budget_origin_for_sponsor' => 'max_length[20]',
+                    'total' => 'max_length[40]',
+                    'budget_origin' => 'required|max_length[20]',
+                    'apply_date' => 'max_length[11]',
+                    'status' => 'required|max_length[20]',
+                    'remark1' => 'max_length[4000]',
+                    'remark2' => 'max_length[4000]',
+                    'remark3' => 'max_length[4000]',
+                    'remark4' => 'max_length[4000]',
+                    'approved_by_hod' => 'max_length[10]',
+                    'approved_date_hod' => 'max_length[11]',
+                    'remark_tnc' => 'max_length[4000]',
+                    'approved_by_tnc' => 'max_length[10]',
+                    'approved_date_tnc' => 'max_length[11]',
+                    'received_date_tnc' => 'max_length[11]',
+                    'remark_vc' => 'max_length[4000]',
+                    'approved_by_vc' => 'max_length[10]',
+                    'approved_date_vc' => 'max_length[11]',
+                    'received_date_vc' => 'max_length[11]',
+
+                    // RMIC
+                    'research_project' => 'max_length[20]',
+                    'remark_rmic' => 'max_length[4000]',
+                    'approved_by_rmic' => 'max_length[10]',
+                    'approved_date_rmic' => 'max_length[11]',
+                    'remark_tncpi' => 'max_length[4000]',
+                    'approved_by_tncpi' => 'max_length[10]',
+                    'approved_date_tncpi' => 'max_length[11]',
+                    'mod' => 'max_length[11]'
+                );
+            }
         }
 
         $exclRule = null;
@@ -553,62 +745,6 @@ class Conference_pmp extends MY_Controller
             //$update = 1;
 
             if($update > 0) {
-
-                // CHECK IF STAFF_LEAVE_DETL RECORD EXIST
-
-                // ****ASSIGN PARAM****
-                // if :STAFF_CONFERENCE_MAIN.SCM_APPROVE_BY is not null and :STAFF_CONFERENCE_MAIN.SCM_TNCA_APPROVE_BY is null
-				// and :STAFF_CONFERENCE_MAIN.SCM_VC_APPROVE_BY is null then
-                // v_approver = :STAFF_CONFERENCE_MAIN.SCM_APPROVE_BY
-                // v_approved_date := :STAFF_CONFERENCE_MAIN.SCM_APPROVE_DATE;
-
-                // elsif :STAFF_CONFERENCE_MAIN.SCM_APPROVE_BY is not null and :STAFF_CONFERENCE_MAIN.SCM_TNCA_APPROVE_BY is not null
-				// and :STAFF_CONFERENCE_MAIN.SCM_VC_APPROVE_BY is null then
-                // v_approver = :STAFF_CONFERENCE_MAIN.SCM_TNCA_APPROVE_BY;
-                // v_approved_date := :STAFF_CONFERENCE_MAIN.SCM_TNCA_APPROVE_DATE;
-
-                // elsif :STAFF_CONFERENCE_MAIN.SCM_APPROVE_BY is not null and :STAFF_CONFERENCE_MAIN.SCM_TNCA_APPROVE_BY is not null
-				// and :STAFF_CONFERENCE_MAIN.SCM_VC_APPROVE_BY is not null then
-                // v_approver = :STAFF_CONFERENCE_MAIN.SCM_VC_APPROVE_BY;
-                // v_approved_date := :STAFF_CONFERENCE_MAIN.SCM_VC_APPROVE_DATE;
-
-                // ***UPDATE STAFF_LEAVE_DETL***
-                // if scm_status in APPROVE, REJECT, CANCEL
-                /*update staff_leave_detl
-                set sld_status = 'APPROVE', sld_approve_by = v_approver, 
-                    sld_approve_date = to_date(v_approved_date,'dd/mm/yyyy'), sld_cancel_approve_by = null, 
-                    sld_cancel_approve_date = null
-                where sld_ref_id = :SCM_LEAVE_REFID;*/
-
-                // if scm_status in REJECT
-                /*update staff_leave_detl
-				set sld_status = 'REJECT', sld_approve_by = v_approver, 
-					sld_approve_date = to_date(v_approved_date,'dd/mm/yyyy'), sld_cancel_approve_by = null, 
-					sld_cancel_approve_date = null
-                where sld_ref_id = :SCM_LEAVE_REFID;*/
-                
-                // if scm_status in CANCEL
-                /*update staff_leave_detl
-                set sld_status = 'CANCEL', sld_approve_by = null, 
-                    sld_approve_date = null, sld_cancel_approve_by = v_approver, 
-                    sld_cancel_approve_date = to_date(v_approved_date,'dd/mm/yyyy')
-                where sld_ref_id = :SCM_LEAVE_REFID*/
-
-                // else
-                /*update staff_leave_detl
-                set sld_status = 'APPLY', sld_approve_by = null, 
-                    sld_approve_date = null, sld_cancel_approve_by = null, 
-                    sld_cancel_approve_date = null
-                where sld_ref_id = :SCM_LEAVE_REFID;*/
-
-
-                /*update staff_conference_main
-                set scm_update_by = RES2,
-                scm_update_date = sysdate
-                where scm_refid = :SCM_REFID
-                and scm_staff_id = :SCM_STAFF_ID;*/
-
-
                 $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
@@ -698,7 +834,7 @@ class Conference_pmp extends MY_Controller
                 $ecomm_url = '';
             }
 
-            echo header('Location: '.$ecomm_url.'conferenceAttachment.jsp?action=attach&sID='.$staffID.'&admsID='.$curUser.'&apRID='.$refid.'_blank');
+            echo header('Location: '.$ecomm_url.'conferenceAttachment.jsp?action=attach&sID='.$staffID.'&admsID='.$curUser.'&apRID='.$refid);
             exit;
         } 
     }
@@ -1258,6 +1394,7 @@ class Conference_pmp extends MY_Controller
         $refid = $this->input->post('refid', true);
         $crName = $this->input->post('crName', true);
         $crStaffName = $this->input->post('crStaffName', true);
+        $mod = $this->input->post('mod', true);
         $data['total_apply'] = 0;
         $data['total_apply_foreign'] = 0;
         $data['total_hod'] = 0;
@@ -1266,6 +1403,12 @@ class Conference_pmp extends MY_Controller
         $data['total_tnca_foreign'] = 0;
         $data['total_vc'] = 0;
         $data['total_vc_foreign'] = 0;
+
+        // RMIC
+        $data['total_rmic'] = 0;
+        $data['total_rmic_foreign'] = 0;
+        $data['total_tncpi'] = 0;
+        $data['total_tncpi_foreign'] = 0;
 
         if(empty($crStaffName) && !empty($staffID)) {
             // get staff name
@@ -1307,6 +1450,11 @@ class Conference_pmp extends MY_Controller
                 $data['appl_dept'] = number_format($data['stf_cr_detl']->SCM_RM_TOTAL_AMT_DEPT, 2);
                 $data['appl_dept_hod'] = number_format($data['stf_cr_detl']->SCM_TOTAL_AMT_DEPT_APPRV_HOD, 2);
                 $data['budget_origin'] = $data['stf_cr_detl']->SCM_BUDGET_ORIGIN;
+
+                // RMIC
+                $data['appr_rmic_rc'] = number_format($data['stf_cr_detl']->SCM_RM_TOT_AMT_APPRV_RMIC, 2);
+                $data['appr_tncpi_rc'] = number_format($data['stf_cr_detl']->SCM_RM_TOT_AMT_APPRV_TNCPI, 2);
+                $data['appl_rc'] = number_format($data['stf_cr_detl']->SCM_RM_TOT_AMT_RMIC, 2);
             } else {
                 $data['budget_origin'] = '';
                 $data['appl_con_ptnca'] = '';
@@ -1316,6 +1464,11 @@ class Conference_pmp extends MY_Controller
                 $data['appl_dept'] = '';
                 $data['appl_dept_hod'] = '';
                 $data['budget_origin'] = '';
+
+                // RMIC
+                $data['appr_rmic_rc'] = '';
+                $data['appr_tncpi_rc'] = '';
+                $data['appl_rc'] = '';
             }
 
             // STAFF CONFERENCE ALLOWANCE
@@ -1330,6 +1483,12 @@ class Conference_pmp extends MY_Controller
                 $data['total_tnca_foreign'] += $sca->SCA_AMT_FOREIGN_APPROVE_TNCA;
                 $data['total_vc'] += $sca->SCA_AMT_RM_APPROVE_VC;
                 $data['total_vc_foreign'] += $sca->SCA_AMT_FOREIGN_APPROVE_VC;
+
+                // RMIC
+                $data['total_rmic'] += $sca->SCA_AMT_RM_APPROVE_RMIC;
+                $data['total_rmic_foreign'] += $sca->SCA_AMT_FOREIGN_APPROVE_RMIC;
+                $data['total_tncpi'] += $sca->SCA_AMT_RM_APPROVE_TNCPI;
+                $data['total_tncpi_foreign'] += $sca->SCA_AMT_FOREIGN_APPROVE_TNCPI;
             }
         }
 
@@ -1342,6 +1501,9 @@ class Conference_pmp extends MY_Controller
         $crStaffName = $this->input->post('staffName', true);
         $refid = $this->input->post('refid', true);
         $crName = $this->input->post('crName', true);
+        $mod = $this->input->post('mod', true);
+
+        $data['mod'] = $mod;
 
         if(!empty($refid) && !empty($staffID)) {
             $data['staff_id'] = $staffID;
@@ -1372,8 +1534,10 @@ class Conference_pmp extends MY_Controller
         $allowance_code = $form['allowance_code'];
         $insertMsg = '';
         $update1Msg = '';
+        $mod = $form['mod'];
 
         // form / input validation
+
         $rule = array(
             'staff_id' => 'required|max_length[20]',
             'apply' => 'required|numeric|max_length[40]',
@@ -1383,7 +1547,14 @@ class Conference_pmp extends MY_Controller
             'approved_tnca' => 'numeric|max_length[40]',
             'approved_tnca_foreign' => 'numeric|max_length[40]',
             'approved_vc' => 'numeric|max_length[40]',
-            'approved_vc_foreign' => 'numeric|max_length[40]'
+            'approved_vc_foreign' => 'numeric|max_length[40]',
+
+            // EDIT RMIC
+            'approved_rmic' => 'numeric|max_length[40]',
+            'approved_rmic_foreign' => 'numeric|max_length[40]',
+            'approved_tncpi' => 'numeric|max_length[40]',
+            'approved_tncpi_foreign' => 'numeric|max_length[40]',
+            'mod' => 'max_length[10]'
         );
 
         $exclRule = null;
@@ -1409,49 +1580,60 @@ class Conference_pmp extends MY_Controller
                     // var_dump($budget_origin);
 
                     // GET SUM ALLOWANCE
-                    if($budget_origin == 'CONFERENCE') {
-                        $sum_allw_con = $this->mdl_pmp->getSumAllowanceConference($refid, $staff_id);
-                        if(!empty($sum_allw_con)) {
-                            $scm_rm_total_amt = $sum_allw_con->SCA_AMOUNT_RM;
-                            $scm_foreign_total_amt = $sum_allw_con->SCA_AMOUNT_FOREIGN;
-                            $scm_rm_total_amt_dept = 0;
-                            $scm_foreign_total_amt_dept = 0;
-                            $scm_rm_total_amt_approve_hod = $sum_allw_con->SCA_AMT_RM_APPROVE_HOD;
-                            $scm_total_amt_dept_apprv_hod = 0;
-                            $scm_rm_total_amt_approve_tnca = $sum_allw_con->SCA_AMT_RM_APPROVE_TNCA;
-                            $scm_rm_total_amt_approve_vc = $sum_allw_con->SCA_AMT_RM_APPROVE_VC;
+                    if($mod == 'EDIT_RMIC' && $budget_origin == 'RESEARCH') {
+                        $sum_allw_con_rmic = $this->mdl_pmp->getSumAllowanceConferenceRmic($refid, $staff_id);
+                        if(!empty($sum_allw_con_rmic)) {
+                            $scm_rm_tot_amt_rmic = $sum_allw_con_rmic->SCM_RM_TOT_AMT_RMIC;
+                            $scm_foreign_tot_amt_rmic = $sum_allw_con_rmic->SCM_FOREIGN_TOT_AMT_RMIC;
                         } else {
-                            $scm_rm_total_amt = 0;
-                            $scm_foreign_total_amt = 0;
-                            $scm_rm_total_amt_dept = 0;
-                            $scm_foreign_total_amt_dept = 0;
-                            $scm_rm_total_amt_approve_hod = 0;
-                            $scm_total_amt_dept_apprv_hod = 0;
-                            $scm_rm_total_amt_approve_tnca = 0;
-                            $scm_rm_total_amt_approve_vc = 0;
+                            $scm_rm_tot_amt_rmic = 0;
+                            $scm_foreign_tot_amt_rmic = 0;
                         }
-                    } elseif($budget_origin == 'DEPARTMENT') {
-                        $sum_allw_dept_local = $this->mdl_pmp->getSumAllowanceDepartmentCon($refid, $staff_id);
-                        $sum_allw_dept = $this->mdl_pmp->getSumAllowanceDepartment($refid, $staff_id);
-
-                        if(!empty($sum_allw_dept_local) && !empty($sum_allw_dept)) {
-                            $scm_rm_total_amt = $sum_allw_dept_local->SCA_AMOUNT_RM;
-                            $scm_foreign_total_amt = $sum_allw_dept_local->SCA_AMOUNT_FOREIGN;
-                            $scm_rm_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_RM;
-                            $scm_foreign_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_FOREIGN;
-                            $scm_rm_total_amt_approve_hod = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_HOD;
-                            $scm_total_amt_dept_apprv_hod = $sum_allw_dept->SCA_AMT_RM_APPROVE_HOD;
-                            $scm_rm_total_amt_approve_tnca = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_TNCA;
-                            $scm_rm_total_amt_approve_vc = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_VC;
-                        } else {
-                            $scm_rm_total_amt = 0;
-                            $scm_foreign_total_amt = 0;
-                            $scm_rm_total_amt_dept = 0;
-                            $scm_foreign_total_amt_dept = 0;
-                            $scm_rm_total_amt_approve_hod = 0;
-                            $scm_total_amt_dept_apprv_hod = 0;
-                            $scm_rm_total_amt_approve_tnca = 0;
-                            $scm_rm_total_amt_approve_vc = 0;
+                    } else {
+                        if($budget_origin == 'CONFERENCE') {
+                            $sum_allw_con = $this->mdl_pmp->getSumAllowanceConference($refid, $staff_id);
+                            if(!empty($sum_allw_con)) {
+                                $scm_rm_total_amt = $sum_allw_con->SCA_AMOUNT_RM;
+                                $scm_foreign_total_amt = $sum_allw_con->SCA_AMOUNT_FOREIGN;
+                                $scm_rm_total_amt_dept = 0;
+                                $scm_foreign_total_amt_dept = 0;
+                                $scm_rm_total_amt_approve_hod = $sum_allw_con->SCA_AMT_RM_APPROVE_HOD;
+                                $scm_total_amt_dept_apprv_hod = 0;
+                                $scm_rm_total_amt_approve_tnca = $sum_allw_con->SCA_AMT_RM_APPROVE_TNCA;
+                                $scm_rm_total_amt_approve_vc = $sum_allw_con->SCA_AMT_RM_APPROVE_VC;
+                            } else {
+                                $scm_rm_total_amt = 0;
+                                $scm_foreign_total_amt = 0;
+                                $scm_rm_total_amt_dept = 0;
+                                $scm_foreign_total_amt_dept = 0;
+                                $scm_rm_total_amt_approve_hod = 0;
+                                $scm_total_amt_dept_apprv_hod = 0;
+                                $scm_rm_total_amt_approve_tnca = 0;
+                                $scm_rm_total_amt_approve_vc = 0;
+                            }
+                        } elseif($budget_origin == 'DEPARTMENT') {
+                            $sum_allw_dept_local = $this->mdl_pmp->getSumAllowanceDepartmentCon($refid, $staff_id);
+                            $sum_allw_dept = $this->mdl_pmp->getSumAllowanceDepartment($refid, $staff_id);
+    
+                            if(!empty($sum_allw_dept_local) && !empty($sum_allw_dept)) {
+                                $scm_rm_total_amt = $sum_allw_dept_local->SCA_AMOUNT_RM;
+                                $scm_foreign_total_amt = $sum_allw_dept_local->SCA_AMOUNT_FOREIGN;
+                                $scm_rm_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_RM;
+                                $scm_foreign_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_FOREIGN;
+                                $scm_rm_total_amt_approve_hod = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_HOD;
+                                $scm_total_amt_dept_apprv_hod = $sum_allw_dept->SCA_AMT_RM_APPROVE_HOD;
+                                $scm_rm_total_amt_approve_tnca = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_TNCA;
+                                $scm_rm_total_amt_approve_vc = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_VC;
+                            } else {
+                                $scm_rm_total_amt = 0;
+                                $scm_foreign_total_amt = 0;
+                                $scm_rm_total_amt_dept = 0;
+                                $scm_foreign_total_amt_dept = 0;
+                                $scm_rm_total_amt_approve_hod = 0;
+                                $scm_total_amt_dept_apprv_hod = 0;
+                                $scm_rm_total_amt_approve_tnca = 0;
+                                $scm_rm_total_amt_approve_vc = 0;
+                            }
                         }
                     }
                     
@@ -1463,7 +1645,14 @@ class Conference_pmp extends MY_Controller
                         } else {
                             $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
                         }
-                    } 
+                    } elseif($mod == 'EDIT_RMIC' && $budget_origin == 'RESEARCH') {
+                        $update1 = $this->mdl_pmp->updSumScmRmic($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_foreign_tot_amt_rmic);
+                        if($update1 > 0) { 
+                            $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
+                        } else {
+                            $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
+                        }
+                    }
 
                     $json = array('sts' => 1, 'msg' => nl2br("\r\n").$insertMsg.nl2br("\r\n").$update1Msg, 'alert' => 'success');
                 } else {
@@ -1486,6 +1675,13 @@ class Conference_pmp extends MY_Controller
         $refid = $this->input->post('refid', true);
         $crName = $this->input->post('crName', true);
         $sca_code = $this->input->post('sca_code', true);
+        $mod = $this->input->post('mod', true);
+
+        if(!empty($mod)) {
+            $data['mod'] = 'EDIT_RMIC';
+        } else {
+            $data['mod'] = '';
+        } 
 
         if(!empty($refid) && !empty($staffID) && !empty($sca_code)) {
             $data['staff_id'] = $staffID;
@@ -1506,6 +1702,12 @@ class Conference_pmp extends MY_Controller
                 $data['apprv_tnca_foreign'] = $data['stf_cr_allw']->SCA_AMT_FOREIGN_APPROVE_TNCA;
                 $data['apprv_vc'] = $data['stf_cr_allw']->SCA_AMT_RM_APPROVE_VC;
                 $data['apprv_vc_foreign'] = $data['stf_cr_allw']->SCA_AMT_FOREIGN_APPROVE_VC;
+
+                // EDIT RMIC
+                $data['apprv_rmic'] = $data['stf_cr_allw']->SCA_AMT_RM_APPROVE_RMIC;
+                $data['apprv_rmic_foreign'] = $data['stf_cr_allw']->SCA_AMT_FOREIGN_APPROVE_RMIC;
+                $data['apprv_tncpi'] = $data['stf_cr_allw']->SCA_AMT_RM_APPROVE_TNCPI;
+                $data['apprv_tncpi_foreign'] = $data['stf_cr_allw']->SCA_AMT_FOREIGN_APPROVE_TNCPI;
             } else {
                 $data['allw_code'] = '';
                 $data['apply'] = '';
@@ -1516,6 +1718,12 @@ class Conference_pmp extends MY_Controller
                 $data['apprv_tnca_foreign'] = '';
                 $data['apprv_vc'] = '';
                 $data['apprv_vc_foreign'] = '';
+
+                // EDIT RMIC
+                $data['apprv_rmic'] = '';
+                $data['apprv_rmic_foreign'] = '';
+                $data['apprv_tncpi'] = '';
+                $data['apprv_tncpi_foreign'] = '';
             }
         } else {
             $data['staff_id'] = '';
@@ -1539,6 +1747,7 @@ class Conference_pmp extends MY_Controller
         $allowance_code = $form['allowance_code'];
         $updateMsg = '';
         $update1Msg = '';
+        $mod = $form['mod'];
 
         // form / input validation
         $rule = array(
@@ -1550,7 +1759,14 @@ class Conference_pmp extends MY_Controller
             'approved_tnca' => 'numeric|max_length[40]',
             'approved_tnca_foreign' => 'numeric|max_length[40]',
             'approved_vc' => 'numeric|max_length[40]',
-            'approved_vc_foreign' => 'numeric|max_length[40]'
+            'approved_vc_foreign' => 'numeric|max_length[40]',
+
+            // EDIT RMIC
+            'approved_rmic' => 'numeric|max_length[40]',
+            'approved_rmic_foreign' => 'numeric|max_length[40]',
+            'approved_tncpi' => 'numeric|max_length[40]',
+            'approved_tncpi_foreign' => 'numeric|max_length[40]',
+            'mod' => 'max_length[10]'
         );
 
         $exclRule = array('staff_id');
@@ -1576,63 +1792,139 @@ class Conference_pmp extends MY_Controller
                 // var_dump($budget_origin);
 
                 // GET SUM ALLOWANCE
-                if($budget_origin == 'CONFERENCE') {
-                    $sum_allw_con = $this->mdl_pmp->getSumAllowanceConference($refid, $staff_id);
-                    $sum_allw_con_tnca_vc = $this->mdl_pmp->getSumAllowanceTncaVc($refid, $staff_id);
-                    if(!empty($sum_allw_con) && !empty($sum_allw_con_tnca_vc)) {
-                        $scm_rm_total_amt = $sum_allw_con->SCA_AMOUNT_RM;
-                        $scm_foreign_total_amt = $sum_allw_con->SCA_AMOUNT_FOREIGN;
-                        $scm_rm_total_amt_dept = 0;
-                        $scm_foreign_total_amt_dept = 0;
-                        $scm_rm_total_amt_approve_hod = $sum_allw_con->SCA_AMT_RM_APPROVE_HOD;
-                        $scm_total_amt_dept_apprv_hod = 0;
-                        $scm_rm_total_amt_approve_tnca = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_TNCA;
-                        $scm_rm_total_amt_approve_vc = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_VC;
-                    } else {
-                        $scm_rm_total_amt = 0;
-                        $scm_foreign_total_amt = 0;
-                        $scm_rm_total_amt_dept = 0;
-                        $scm_foreign_total_amt_dept = 0;
-                        $scm_rm_total_amt_approve_hod = 0;
-                        $scm_total_amt_dept_apprv_hod = 0;
-                        $scm_rm_total_amt_approve_tnca = 0;
-                        $scm_rm_total_amt_approve_vc = 0;
-                    }
-                } elseif($budget_origin == 'DEPARTMENT') {
-                    $sum_allw_dept_local = $this->mdl_pmp->getSumAllowanceDepartmentCon($refid, $staff_id);
-                    $sum_allw_dept = $this->mdl_pmp->getSumAllowanceDepartment($refid, $staff_id);
-                    $sum_allw_con_tnca_vc = $this->mdl_pmp->getSumAllowanceTncaVc($refid, $staff_id);
 
-                    if(!empty($sum_allw_dept_local) && !empty($sum_allw_dept) && !empty($sum_allw_con_tnca_vc)) {
-                        $scm_rm_total_amt = $sum_allw_dept_local->SCA_AMOUNT_RM;
-                        $scm_foreign_total_amt = $sum_allw_dept_local->SCA_AMOUNT_FOREIGN;
-                        $scm_rm_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_RM;
-                        $scm_foreign_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_FOREIGN;
-                        $scm_rm_total_amt_approve_hod = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_HOD;
-                        $scm_total_amt_dept_apprv_hod = $sum_allw_dept->SCA_AMT_RM_APPROVE_HOD;
-                        $scm_rm_total_amt_approve_tnca = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_TNCA;
-                        $scm_rm_total_amt_approve_vc = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_VC;
-                    } else {
-                        $scm_rm_total_amt = 0;
-                        $scm_foreign_total_amt = 0;
-                        $scm_rm_total_amt_dept = 0;
-                        $scm_foreign_total_amt_dept = 0;
-                        $scm_rm_total_amt_approve_hod = 0;
-                        $scm_total_amt_dept_apprv_hod = 0;
-                        $scm_rm_total_amt_approve_tnca = 0;
-                        $scm_rm_total_amt_approve_vc = 0;
+                if($mod == 'EDIT_RMIC') {
+                    if($budget_origin == 'RESEARCH') {
+                        $sum_allw_con_rmic = $this->mdl_pmp->getSumAllowanceConferenceRmicUpd($refid, $staff_id);
+                        if(!empty($sum_allw_con_rmic)) {
+                            $scm_rm_tot_amt_rmic = $sum_allw_con_rmic->SCA_AMOUNT_RM;
+                            $scm_total_amt_dept_apprv_hod = $sum_allw_con_rmic->SCA_AMT_RM_APPROVE_HOD;
+                            $scm_rm_tot_amt_apprv_rmic = $sum_allw_con_rmic->SCA_AMT_RM_APPROVE_RMIC;
+                            $scm_rm_tot_amt_apprv_tncpi = $sum_allw_con_rmic->SCA_AMT_RM_APPROVE_TNCPI;
+                            $scm_foreign_tot_amt_rmic = $sum_allw_con_rmic->SCA_AMOUNT_FOREIGN;
+                        } else {
+                            $scm_rm_tot_amt_rmic = 0;
+                            $scm_total_amt_dept_apprv_hod = 0;
+                            $scm_rm_tot_amt_apprv_rmic = 0;
+                            $scm_rm_tot_amt_apprv_tncpi = 0;
+                            $scm_foreign_tot_amt_rmic = 0;
+                        }
+                    } elseif($budget_origin == 'RESEARCH_CONFERENCE') {
+                        $sum_allw_con_rmic2 = $this->mdl_pmp->getSumAllowanceConferenceRmicUpd2($refid, $staff_id);
+                        $sum_allw_con_rmic3 = $this->mdl_pmp->getSumAllowanceConferenceRmicUpd3($refid, $staff_id);
+                        $sum_allw_con_rmic4 = $this->mdl_pmp->getSumAllowanceConferenceRmicUpd4($refid, $staff_id);
+
+                        if(!empty($sum_allw_con_rmic2)) {
+                            $scm_rm_tot_amt_rmic = $sum_allw_con_rmic2->SCA_AMOUNT_RM;
+                            $scm_total_amt_dept_apprv_hod = $sum_allw_con_rmic2->SCA_AMT_RM_APPROVE_HOD;
+                            $scm_rm_tot_amt_apprv_rmic = $sum_allw_con_rmic2->SCA_AMT_RM_APPROVE_RMIC;
+                            $scm_rm_tot_amt_apprv_tncpi = $sum_allw_con_rmic2->SCA_AMT_RM_APPROVE_TNCPI;
+                            $scm_rm_total_amt_approve_tnca = $sum_allw_con_rmic2->SCA_AMT_RM_APPROVE_TNCA;
+                            $scm_foreign_tot_amt_rmic = $sum_allw_con_rmic2->SCA_AMOUNT_FOREIGN;
+                        } else {
+                            $scm_rm_tot_amt_rmic = 0;
+                            $scm_total_amt_dept_apprv_hod = 0;
+                            $scm_rm_tot_amt_apprv_rmic = 0;
+                            $scm_rm_tot_amt_apprv_tncpi = 0;
+                            $scm_rm_total_amt_approve_tnca = 0;
+                            $scm_foreign_tot_amt_rmic = 0;
+                        }
+
+                        if(!empty($sum_allw_con_rmic3)) {
+                            $scm_rm_total_amt = $sum_allw_con_rmic3->SCA_AMOUNT_RM;
+                            $scm_rm_total_amt_approve_hod = $sum_allw_con_rmic3->SCA_AMT_RM_APPROVE_HOD;
+                            $scm_rm_total_amt_approve_tnca2 = $sum_allw_con_rmic3->SCA_AMT_RM_APPROVE_RMIC;
+                            $scm_foreign_total_amt = $sum_allw_con_rmic3->SCA_AMOUNT_FOREIGN;
+                        } else {
+                            $scm_rm_total_amt = 0;
+                            $scm_rm_total_amt_approve_hod = 0;
+                            $scm_rm_total_amt_approve_tnca2 = 0;
+                            $scm_foreign_total_amt = 0;
+                        }
+
+                        if(!empty($sum_allw_con_rmic4)) {
+                            $scm_rm_total_amt_approve_tnca3 = $sum_allw_con_rmic4->SCA_AMT_RM_APPROVE_TNCA;
+                            $scm_rm_total_amt_approve_vc = $sum_allw_con_rmic4->SCA_AMT_RM_APPROVE_VC;
+                        } else {
+                            $scm_rm_total_amt_approve_tnca3 = 0;
+                            $scm_rm_total_amt_approve_vc = 0;
+                        }
+                    }
+                } else {
+                    if($budget_origin == 'CONFERENCE') {
+                        $sum_allw_con = $this->mdl_pmp->getSumAllowanceConference($refid, $staff_id);
+                        $sum_allw_con_tnca_vc = $this->mdl_pmp->getSumAllowanceTncaVc($refid, $staff_id);
+                        if(!empty($sum_allw_con) && !empty($sum_allw_con_tnca_vc)) {
+                            $scm_rm_total_amt = $sum_allw_con->SCA_AMOUNT_RM;
+                            $scm_foreign_total_amt = $sum_allw_con->SCA_AMOUNT_FOREIGN;
+                            $scm_rm_total_amt_dept = 0;
+                            $scm_foreign_total_amt_dept = 0;
+                            $scm_rm_total_amt_approve_hod = $sum_allw_con->SCA_AMT_RM_APPROVE_HOD;
+                            $scm_total_amt_dept_apprv_hod = 0;
+                            $scm_rm_total_amt_approve_tnca = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_TNCA;
+                            $scm_rm_total_amt_approve_vc = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_VC;
+                        } else {
+                            $scm_rm_total_amt = 0;
+                            $scm_foreign_total_amt = 0;
+                            $scm_rm_total_amt_dept = 0;
+                            $scm_foreign_total_amt_dept = 0;
+                            $scm_rm_total_amt_approve_hod = 0;
+                            $scm_total_amt_dept_apprv_hod = 0;
+                            $scm_rm_total_amt_approve_tnca = 0;
+                            $scm_rm_total_amt_approve_vc = 0;
+                        }
+                    } elseif($budget_origin == 'DEPARTMENT') {
+                        $sum_allw_dept_local = $this->mdl_pmp->getSumAllowanceDepartmentCon($refid, $staff_id);
+                        $sum_allw_dept = $this->mdl_pmp->getSumAllowanceDepartment($refid, $staff_id);
+                        $sum_allw_con_tnca_vc = $this->mdl_pmp->getSumAllowanceTncaVc($refid, $staff_id);
+    
+                        if(!empty($sum_allw_dept_local) && !empty($sum_allw_dept) && !empty($sum_allw_con_tnca_vc)) {
+                            $scm_rm_total_amt = $sum_allw_dept_local->SCA_AMOUNT_RM;
+                            $scm_foreign_total_amt = $sum_allw_dept_local->SCA_AMOUNT_FOREIGN;
+                            $scm_rm_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_RM;
+                            $scm_foreign_total_amt_dept = $sum_allw_dept->SCA_AMOUNT_FOREIGN;
+                            $scm_rm_total_amt_approve_hod = $sum_allw_dept_local->SCA_AMT_RM_APPROVE_HOD;
+                            $scm_total_amt_dept_apprv_hod = $sum_allw_dept->SCA_AMT_RM_APPROVE_HOD;
+                            $scm_rm_total_amt_approve_tnca = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_TNCA;
+                            $scm_rm_total_amt_approve_vc = $sum_allw_con_tnca_vc->SCA_AMT_RM_APPROVE_VC;
+                        } else {
+                            $scm_rm_total_amt = 0;
+                            $scm_foreign_total_amt = 0;
+                            $scm_rm_total_amt_dept = 0;
+                            $scm_foreign_total_amt_dept = 0;
+                            $scm_rm_total_amt_approve_hod = 0;
+                            $scm_total_amt_dept_apprv_hod = 0;
+                            $scm_rm_total_amt_approve_tnca = 0;
+                            $scm_rm_total_amt_approve_vc = 0;
+                        }
                     }
                 }
                 
                 // UPDATE SUM ALLOWANCE TO STAFF_CONFERENCE_MAIN
-                if($budget_origin == 'CONFERENCE' || $budget_origin == 'DEPARTMENT') {
+                if((empty($mod) && $budget_origin == 'CONFERENCE') || (empty($mod) && $budget_origin == 'DEPARTMENT')) {
                     $update1 = $this->mdl_pmp->updSumScm($refid, $staff_id, $budget_origin, $scm_rm_total_amt, $scm_foreign_total_amt, $scm_rm_total_amt_dept, $scm_foreign_total_amt_dept, $scm_rm_total_amt_approve_hod, $scm_total_amt_dept_apprv_hod, $scm_rm_total_amt_approve_tnca, $scm_rm_total_amt_approve_vc);
                     if($update1 > 0) { 
                         $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
                     } else {
                         $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
                     }
-                } 
+                } elseif($mod == 'EDIT_RMIC') {
+                    if($budget_origin == 'RESEARCH') {
+                        $update1 = $this->mdl_pmp->updSumScmRmic2($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_total_amt_dept_apprv_hod, $scm_rm_tot_amt_apprv_rmic, $scm_rm_tot_amt_apprv_tncpi, $scm_foreign_tot_amt_rmic);
+                        if($update1 > 0) { 
+                            $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
+                        } else {
+                            $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
+                        }
+                    } else {
+                        $update1 = $this->mdl_pmp->updSumScmRmic3($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_total_amt_dept_apprv_hod, $scm_rm_tot_amt_apprv_rmic, $scm_rm_tot_amt_apprv_tncpi, $scm_rm_total_amt_approve_tnca, $scm_foreign_tot_amt_rmic, $scm_rm_total_amt, $scm_rm_total_amt_approve_hod, $scm_rm_total_amt_approve_tnca2, $scm_rm_total_amt_approve_tnca3, $scm_rm_total_amt_approve_vc, $scm_foreign_total_amt);
+                        if($update1 > 0) { 
+                            $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
+                        } else {
+                            $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
+                        }
+                    }
+                }
 
                 $json = array('sts' => 1, 'msg' => nl2br("\r\n").$updateMsg.nl2br("\r\n").$update1Msg, 'alert' => 'success');
             } else {
@@ -1838,6 +2130,8 @@ class Conference_pmp extends MY_Controller
                 $data['remark'] = $data['stf_detl']->SCM_TNCA_REMARK;
             } elseif($mod == 'VC') {
                 $data['remark'] = $data['stf_detl']->SCM_VC_REMARK;
+            } elseif($mod == 'RMIC') {
+                $data['remark'] = $data['stf_detl']->SCM_RMIC_REMARK;
             }
 
             if(!empty($data['stf_detl'])) {
@@ -1877,34 +2171,75 @@ class Conference_pmp extends MY_Controller
                 }
             }
 
-            if(empty($data['stf_detl']->SCM_TNCA_APPROVE_BY)) {
-                $data['app_rejc'] = $this->mdl_pmp->getAppRejcStaff($mod);
-                if(!empty($data['app_rejc'])) {
-                    $data['app_rejc_id'] = $data['app_rejc']->SM_STAFF_ID;
-                    $data['curr_date'] = $data['app_rejc']->CURR_DATE;
+            if($mod == 'RMIC') {
+                if(empty($data['stf_detl']->SCM_RMIC_APPROVE_BY)) {
+                    $data['app_rejc'] = $this->mdl_pmp->getAppRejcStaff($mod);
+                    if(!empty($data['app_rejc'])) {
+                        if($mod == 'RMIC') {
+                            $data['app_rejc_id'] = $data['app_rejc']->DM_DIRECTOR;
+                        } else {
+                            $data['app_rejc_id'] = $data['app_rejc']->SM_STAFF_ID;
+                        }
+                        $data['curr_date'] = $data['app_rejc']->CURR_DATE;
+                    } else {
+                        $data['app_rejc_id'] = '';
+                        $data['curr_date'] = '';
+                    }
+    
+                    $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
+    
+                    if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
+                        $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
+                    } else {
+                        $data['app_rejc_name'] = '';
+                    }
                 } else {
-                    $data['app_rejc_id'] = '';
-                    $data['curr_date'] = '';
-                }
-
-                $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
-
-                if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
-                    $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
-                } else {
-                    $data['app_rejc_name'] = '';
+                    $data['app_rejc_id'] = $data['stf_detl']->SCM_RMIC_APPROVE_BY;
+                    
+                    $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
+    
+                    if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
+                        $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
+                        $data['curr_date'] = $data['stf_app_rejc']->CURR_DATE;
+                    } else {
+                        $data['app_rejc_name'] = '';
+                        $data['curr_date'] = '';
+                    }
                 }
             } else {
-                $data['app_rejc_id'] = $data['stf_detl']->SCM_TNCA_APPROVE_BY;
-                
-                $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
-
-                if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
-                    $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
-                    $data['curr_date'] = $data['stf_app_rejc']->CURR_DATE;
+                if(empty($data['stf_detl']->SCM_TNCA_APPROVE_BY)) {
+                    $data['app_rejc'] = $this->mdl_pmp->getAppRejcStaff($mod);
+                    if(!empty($data['app_rejc'])) {
+                        if($mod == 'RMIC') {
+                            $data['app_rejc_id'] = $data['app_rejc']->DM_DIRECTOR;
+                        } else {
+                            $data['app_rejc_id'] = $data['app_rejc']->SM_STAFF_ID;
+                        }
+                        $data['curr_date'] = $data['app_rejc']->CURR_DATE;
+                    } else {
+                        $data['app_rejc_id'] = '';
+                        $data['curr_date'] = '';
+                    }
+    
+                    $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
+    
+                    if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
+                        $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
+                    } else {
+                        $data['app_rejc_name'] = '';
+                    }
                 } else {
-                    $data['app_rejc_name'] = '';
-                    $data['curr_date'] = '';
+                    $data['app_rejc_id'] = $data['stf_detl']->SCM_TNCA_APPROVE_BY;
+                    
+                    $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
+    
+                    if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
+                        $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
+                        $data['curr_date'] = $data['stf_app_rejc']->CURR_DATE;
+                    } else {
+                        $data['app_rejc_name'] = '';
+                        $data['curr_date'] = '';
+                    }
                 }
             }
         }
@@ -1988,6 +2323,9 @@ class Conference_pmp extends MY_Controller
             'approved_tnc_pi' => 'max_length[40]',
             'approved_tnc_aa' => 'max_length[40]',
             'approved_vc' => 'max_length[40]',
+
+            // RMIC
+            'approved_rmic_rm_research' => 'max_length[40]'
         );
 
         $exclRule = array('staff_id');
@@ -2832,7 +3170,6 @@ class Conference_pmp extends MY_Controller
                     $memoTitle = 'Your Conference Application Has Been Rejected By VC';
                 }
                 
-
                 // MEMO CONTENT
                 $memoContent = 'Please take note that your conference application has been rejected. Details :<br><br>'.
                                 'Staff ID : '.$staff_id.'<br>'.
@@ -4057,5 +4394,490 @@ class Conference_pmp extends MY_Controller
         }
 
         $this->render($data);
+    }
+
+    /*===========================================================
+       Edit Conference Application for RMIC (ATF157)
+    =============================================================*/
+
+    // SEARCH RESEARCH MODAL
+    public function searchResearchfMd() 
+    {
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+
+        if(!empty($staff_id) && !empty($refid)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;
+
+            $data['cr_detl'] = $this->mdl_pmp->getConferenceDetl($refid);
+
+            if(!empty($data['cr_detl'])) {
+                $dateTo = $data['cr_detl']->CM_DATE_TO;
+            } else {
+                $dateTo = '';
+            }
+
+            $data['rsh_detl'] = $this->mdl_pmp->getResearchProject($staff_id, $dateTo);
+        }
+        
+        $this->render($data);
+    }
+
+    /*===========================================================
+       Approve / Verify Conference Application (RMIC) (ATF158)
+    =============================================================*/
+
+    // RESEARCH INFO TAB
+    public function rshInfoTab() 
+    {
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+
+        if(!empty($staff_id) && !empty($refid)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;
+
+            $stf_inf = $this->mdl_pmp->getStaffList($staff_id);
+            if(!empty($stf_inf->SM_STAFF_NAME)) {
+                $data['stf_name'] = $stf_inf->SM_STAFF_NAME;
+            } else {
+                $data['stf_name'] = '';
+            }
+
+            $data['cr_detl'] = $this->mdl_pmp->getConferenceDetl($refid);
+            if(!empty($data['cr_detl'])) {
+                $data['cm_name'] = $data['cr_detl']->CM_NAME;
+                $data['date_from'] = $data['cr_detl']->CM_DATE_FROM;
+                $data['date_to'] = $data['cr_detl']->CM_DATE_TO;
+            } else {
+                $data['cm_name'] = '';
+                $data['date_from'] = '';
+                $data['date_to'] = '';
+            }
+
+            $data['stf_detl'] = $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
+
+            if(!empty($data['stf_detl'])) {
+                $p_id = $data['stf_detl']->SCM_RESEARCH_REFID;
+            } else {
+                $p_id = '';
+            }
+
+            $data['rsh_info'] = $this->mdl_pmp->researchInfo($p_id);
+            if(!empty($data['rsh_info'])) {
+                $data['rsh_title'] = $data['rsh_info']->SR_RESEARCH_TITLE;
+                $data['rsh_id'] = $data['rsh_info']->SR_PROJECT_ID;
+                $data['rsh_grant'] = number_format($data['rsh_info']->SR_GRANT_AMT,2);
+                $data['rsh_df'] = $data['rsh_info']->SR_DATE_FROM;
+                $data['rsh_dt'] = $data['rsh_info']->SR_DATE_TO;
+            } else {
+                $data['rsh_title'] = '';
+                $data['rsh_id'] = '';
+                $data['rsh_grant'] = '';
+                $data['rsh_df'] = '';
+                $data['rsh_dt'] = '';
+            }
+        }
+
+        
+
+        
+        
+        $this->render($data);
+    }
+
+    // SAVE RESEARCH INFO
+    public function saveResearchInfo()
+    {  
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        // form / input validation
+        $rule = array(
+            'staff_id' => 'required|max_length[20]',
+            'staff_name' => 'max_length[100]',
+            'conference_title' => 'required|max_length[40]',
+            'conference_name' => 'max_length[100]',
+            'date_from' => 'max_length[40]',
+            'date_to' => 'max_length[40]',
+            'research_project' => 'required|max_length[40]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+
+            if(empty($check)) {
+                $insert = $this->mdl_pmp->saveResearchInfo($form);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                } 
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // ALLOWANCE DETAIL RMIC
+    public function allowanceDetlRmic() {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $data['total_sca_amount_rm'] = 0;
+        $data['total_sca_amount_foreign'] = 0;
+        $data['total_sca_amt_rm_approve_hod'] = 0;
+        $data['total_sca_amt_foreign_approve_hod'] = 0;
+        $data['total_sca_amt_rm_approve_tnca'] = 0;
+        $data['total_sca_amt_foreign_approve_tnca'] = 0;
+        $data['total_sca_amt_rm_approve_rmic'] = 0;
+        $data['total_sca_amt_foreign_approve_rmic'] = 0;
+        
+        if(!empty($staff_id) && !empty($refid)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;  
+            $data['other_allw_detl'] = $this->mdl_pmp->getStaffConAllowance($refid, $staff_id);
+
+            if(!empty($data['other_allw_detl'])) {
+                $other_allw_detl = $data['other_allw_detl'];
+
+                foreach($other_allw_detl as $oad) {
+                    $data['total_sca_amount_rm'] += $oad->SCA_AMOUNT_RM;
+                    $data['total_sca_amount_foreign'] += $oad->SCA_AMOUNT_FOREIGN;
+                    $data['total_sca_amt_rm_approve_hod'] += $oad->SCA_AMT_RM_APPROVE_HOD;
+                    $data['total_sca_amt_foreign_approve_hod'] += $oad->SCA_AMT_FOREIGN_APPROVE_HOD;
+                    $data['total_sca_amt_rm_approve_tnca'] += $oad->SCA_AMT_RM_APPROVE_TNCA;
+                    $data['total_sca_amt_foreign_approve_tnca'] += $oad->SCA_AMT_FOREIGN_APPROVE_TNCA;
+                    $data['total_sca_amt_rm_approve_rmic'] += $oad->SCA_AMT_RM_APPROVE_RMIC;
+                    $data['total_sca_amt_foreign_approve_rmic'] += $oad->SCA_AMT_FOREIGN_APPROVE_RMIC;
+                }
+            }
+        }
+
+        $this->render($data);
+    }
+
+    // SAVE ALLOWANCE DETAIL RMIC
+    public function saveAllwDetlRmic()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $allwCodeArr = $this->input->post('allwCodeArr', true);
+        $amountArr = $this->input->post('amountArr', true);
+        $amountForArr = $this->input->post('amountForArr', true);
+
+        $appHodArr = $this->input->post('appHodArr', true);
+        $appHodForArr = $this->input->post('appHodForArr', true);
+        $appRmicArr = $this->input->post('appRmicArr', true);
+        $appRmicForArr = $this->input->post('appRmicForArr', true);
+        
+        $appTncaArr = $this->input->post('appTncaArr', true);
+        $appTncaForArr = $this->input->post('appTncaForArr', true);
+
+        $success = 0;
+        $successSave = 0;
+        $successUpdSum = 0;
+        $successUpdCat = 0;
+        $successUpdBudget = 0;
+
+        $saveMsg = '';
+        $successUpdSumMsg = '';
+        $successUpdCatMsg = '';
+        $successUpdBudgetMsg = '';
+
+        $scm_budget_origin_prev = '';
+		$scm_budget_origin = '';
+
+        if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
+            foreach ($allwCodeArr as $key => $aca) {
+                $success++;
+                $amt = $amountArr[$key];
+                $amtFor = $amountForArr[$key];
+
+                $appHod = $appHodArr[$key];
+                $appHodFor = $appHodForArr[$key];
+                $appRmic = $appRmicArr[$key];
+                $appRmicFor = $appRmicForArr[$key];
+
+                $appTnca = $appTncaArr[$key];
+                $appTncaFor = $appTncaForArr[$key];
+                
+
+                $save = $this->mdl_pmp->saveAllwDetlRmic($refid, $staff_id, $aca, $amt, $amtFor, $appHod, $appHodFor, $appRmic, $appRmicFor, $appTnca, $appTncaFor);
+
+                if ($save > 0) {
+                    $successSave++;
+                    $saveMsg = 'Record has been saved (STAFF_CONFERENCE_ALLOWANCE)';
+                } else {
+                    $successSave = 0;
+                    $saveMsg = 'Fail to save record (STAFF_CONFERENCE_ALLOWANCE)';
+                }
+            }
+
+            // SAVE TOTAL APP RMIC
+            $sumRmic = $this->mdl_pmp->sumStaffConAllwRmic($refid, $staff_id);
+            if(!empty($sumRmic)) {
+                $newSumAppRmic = $sumRmic->SCA_AMT_RM_APPROVE_RMIC;
+                $updateSum = $this->mdl_pmp->updApprvAmtSumRmic($refid, $staff_id, $newSumAppRmic);
+
+                if ($updateSum > 0) {
+                    $successUpdSum++;
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN - SUM)';
+                } else {
+                    $successUpdSum = 0;
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN - SUM)';
+                }
+            }
+
+            // SUM TNCA
+            $sumTnca = $this->mdl_pmp->getSumAllowanceTncaVc($refid, $staff_id);
+            if(!empty($sumTnca)) {
+                $newSumAppTnca = $sumTnca->SCA_AMT_RM_APPROVE_TNCA;
+            } else {
+                $newSumAppTnca = '';
+            }
+
+            // UPDATE CATEGORY
+            $newCat = $this->mdl_pmp->getCategoryBasedOnTotal($newSumAppTnca);
+            if(!empty($newCat)) {
+                $newCat = $newCat->CC_CODE;
+            } else {
+                $newCat = '';
+            }
+
+            $cr_detl = $this->mdl_pmp->getConferenceDetl($refid);
+            if(!empty($cr_detl)) {
+                $cm_country = $cr_detl->CM_COUNTRY_CODE;
+            } else {
+                $cm_country = '';
+            }
+
+            $stf_detl = $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
+
+            if(!empty($stf_detl)) {
+                $bud_org = $stf_detl->SCM_BUDGET_ORIGIN;
+                $prev_bud_org = $stf_detl->SCM_BUDGET_ORIGIN_PREV;
+
+                $scm_rm_tot_amt_apprv_rmic = $stf_detl->SCM_RM_TOT_AMT_APPRV_RMIC;
+                $oldCat = $stf_detl->SCM_CATEGORY_CODE;
+            } else {
+                $bud_org = '';
+                $prev_bud_org = '';
+                $scm_rm_tot_amt_apprv_rmic = '';
+                $oldCat = '';
+            }
+
+            $updateCategory = $this->mdl_pmp->updNewCat($refid, $staff_id, $newCat, $oldCat);
+            if ($updateCategory > 0) {
+                $successUpdCat++;
+                $successUpdCatMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN - CATEGORY CODE)';
+            } else {
+                $successUpdCat = 0;
+                $successUpdCatMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN - CATEGORY CODE)';
+            }
+
+            // SET BUDGET ORIGIN
+            if($bud_org == 'RESEARCH' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca != 0)) 
+            {
+                $scm_budget_origin_prev = 'RESEARCH';
+			    $scm_budget_origin = 'RESEARCH_CONFERENCE';
+            } 
+            elseif($bud_org == 'RESEARCH' && $scm_rm_tot_amt_apprv_rmic != 0 && (!empty($newSumAppTnca) && $newSumAppTnca != 0) && $cm_country != 'MYS')
+            {
+                $scm_budget_origin_prev = 'RESEARCH';
+			    $scm_budget_origin = 'CONFERENCE';
+            }
+            elseif($bud_org == 'RESEARCH' && $scm_rm_tot_amt_apprv_rmic != 0 && (!empty($newSumAppTnca) && $newSumAppTnca != 0) && $cm_country == 'MYS')
+            {
+                $scm_budget_origin_prev = 'RESEARCH';
+			    $scm_budget_origin = 'DEPARTMENT';
+            }
+            elseif($bud_org == 'RESEARCH' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca == 0))
+            {
+                $scm_budget_origin = 'RESEARCH';
+            }
+            elseif($bud_org == 'RESEARCH_CONFERENCE' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca == 0))
+            {
+                $scm_budget_origin_prev = 'RESEARCH_CONFERENCE';
+			    $scm_budget_origin = 'RESEARCH';
+            }
+            elseif($bud_org == 'RESEARCH_CONFERENCE' && $scm_rm_tot_amt_apprv_rmic == 0 && (!empty($newSumAppTnca) && $newSumAppTnca != 0) && $cm_country != 'MYS')
+            {
+                $scm_budget_origin_prev = 'RESEARCH_CONFERENCE';
+			    $scm_budget_origin = 'CONFERENCE';
+            }
+            elseif($bud_org == 'RESEARCH_CONFERENCE' && $scm_rm_tot_amt_apprv_rmic == 0 && (!empty($newSumAppTnca) && $newSumAppTnca != 0) && $cm_country == 'MYS')
+            {
+                $scm_budget_origin_prev = 'RESEARCH_CONFERENCE';
+			    $scm_budget_origin = 'DEPARTMENT';
+            }
+            elseif($bud_org == 'RESEARCH_CONFERENCE' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca != 0))
+            {
+			    $scm_budget_origin = 'RESEARCH_CONFERENCE';
+            }
+            elseif($bud_org == 'CONFERENCE' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca != 0))
+            {
+			    $scm_budget_origin_prev = 'CONFERENCE';
+			    $scm_budget_origin = 'RESEARCH_CONFERENCE';
+            }
+            elseif($bud_org == 'CONFERENCE' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca == 0))
+            {
+			    $scm_budget_origin_prev = 'CONFERENCE';
+			    $scm_budget_origin = 'RESEARCH';
+            }
+            elseif($bud_org == 'CONFERENCE' && $scm_rm_tot_amt_apprv_rmic == 0 && (!empty($newSumAppTnca) && $newSumAppTnca == 0) && $cm_country != 'MYS')
+            {
+			    $scm_budget_origin = 'CONFERENCE';
+            }
+            elseif($bud_org == 'DEPARTMENT' && $scm_rm_tot_amt_apprv_rmic == 0 && (!empty($newSumAppTnca) && $newSumAppTnca == 0) && $cm_country == 'MYS')
+            {
+			    $scm_budget_origin = 'DEPARTMENT';
+            }
+            // var_dump($bud_org);
+            // var_dump($scm_rm_tot_amt_apprv_rmic);
+            // var_dump($newSumAppTnca);
+            // var_dump($cm_country);
+
+            $updateBudget = $this->mdl_pmp->updNewBudget($refid, $staff_id, $scm_budget_origin, $scm_budget_origin_prev, $bud_org, $prev_bud_org);
+
+            if ($updateBudget > 0) {
+                $successUpdBudget++;
+                $successUpdBudgetMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN - BUDGET ORIGIN/PREV)';
+            } else {
+                $successUpdBudget = 0;
+                $successUpdBudgetMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN - BUDGET ORIGIN/PREV)';
+            }
+
+
+            if(($success == $successSave) && ($successUpdSum > 0) && ($successUpdCat > 0) && ($successUpdBudget > 0)) {
+                $json = array('sts' => 1, 'msg' => $saveMsg.$successUpdSumMsg.$successUpdCatMsg.$successUpdBudgetMsg, 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => $saveMsg.$successUpdSumMsg.$successUpdCatMsg.$successUpdBudgetMsg, 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // CALCULATE AMOUNT RMIC
+    public function calculateAllwRmic()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $allwCodeArr = $this->input->post('allwCodeArr', true);
+        $amountArr = $this->input->post('amountArr', true);
+        $amountForArr = $this->input->post('amountForArr', true);
+
+        $appHodArr = $this->input->post('appHodArr', true);
+        $appHodForArr = $this->input->post('appHodForArr', true);
+        $appRmicArr = $this->input->post('appRmicArr', true);
+        $appRmicForArr = $this->input->post('appRmicForArr', true);
+        
+        $appTncaArr = $this->input->post('appTncaArr', true);
+        $appTncaForArr = $this->input->post('appTncaForArr', true);
+
+        $success = 0;
+        $successCalcRmic = 0;
+        $successUpdSum = 0;
+
+        if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
+
+            foreach ($allwCodeArr as $key => $aca) {
+                $success++;
+                $amt = $amountArr[$key];
+                $amtFor = $amountForArr[$key];
+
+                $appHod = $appHodArr[$key];
+                $appHodFor = $appHodForArr[$key];
+                $appRmic = $appRmicArr[$key];
+                $appRmicFor = $appRmicForArr[$key];
+
+                $appTnca = $appTncaArr[$key];
+                $appTncaFor = $appTncaForArr[$key];
+
+                // RMIC 
+                $rmic = $this->mdl_pmp->getRmicVal($refid, $staff_id, $aca);
+                if(!empty($rmic)) {
+                    $rmicVal = $rmic->RMIC_VAL;
+                } else {
+                    $rmicVal = 0;
+                }
+                
+                if(empty($appRmic)) {
+                    $appRmic = $rmicVal;
+                } else {
+                    $appRmic = $appRmic;
+                }
+
+                // RMIC FOREIGN
+                $rmic_for = $this->mdl_pmp->getRmicForVal($refid, $staff_id, $aca);
+                if(!empty($rmic_for)) {
+                    $rmicFor = $rmic_for->RMIC_FOR_VAL;
+                } else {
+                    $rmicFor = 0;
+                }
+
+                if(empty($appRmicFor)) {
+                    $appRmicFor = $rmicFor;
+                } else {
+                    $appRmicFor = $appRmicFor;
+                }
+
+                if(empty($appTnca)) {
+                    $appTnca = 0;
+                }
+
+                if(empty($appTncaFor)) {
+                    $appTncaFor = 0;
+                } 
+
+                $save_calc_rmic = $this->mdl_pmp->calculateAllwRmic($refid, $staff_id, $aca, $appRmic, $appRmicFor, $appTnca, $appTncaFor);
+
+                if ($save_calc_rmic > 0) {
+                    $successCalcRmic++;
+                } else {
+                    $successCalcRmic = 0;
+                }
+            }
+
+            // SAVE TOTAL APP RMIC
+            $sumRmic = $this->mdl_pmp->sumStaffConAllwRmic($refid, $staff_id);
+            if(!empty($sumRmic)) {
+                $newSumAppRmic = $sumRmic->SCA_AMT_RM_APPROVE_RMIC;
+                $updateSum = $this->mdl_pmp->updApprvAmtSumRmic($refid, $staff_id, $newSumAppRmic);
+
+                if ($updateSum > 0) {
+                    $successUpdSum++;
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN - SUM)';
+                } else {
+                    $successUpdSum = 0;
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN - SUM)';
+                }
+            }
+
+            if($success == $successCalcRmic && $successUpdSum > 0) {
+                $json = array('sts' => 1, 'msg' => 'Calculate complete'.$successUpdSumMsg, 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to calculate'.$successUpdSumMsg, 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
     }
 }

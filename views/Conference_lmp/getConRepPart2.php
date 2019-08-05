@@ -26,21 +26,36 @@
 </div>
 <form class="form-horizontal">
     <div class="form-group">
-        <label class="col-md-2 control-label">Title of paper work presented (1)</label>
+        <div class="col-md-2"></div>
+        <label class="col-md-8 control-label text-left"><b>Title of paper work presented (1)</b></label>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-2"></div>
         <div class="col-md-8">
             <textarea name="" class="form-control" type="text" rows="2" cols="50" readonly><?php echo $con_rep_partii->SCM_PAPER_TITLE?></textarea>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-md-2 control-label">Title of paper work presented (2)</label>
+        <div class="col-md-2"></div>
+        <label class="col-md-8 control-label text-left"><b>Title of paper work presented (2)</b></label>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-2"></div>
         <div class="col-md-8">
             <textarea name="" class="form-control" type="text" rows="2" cols="50" readonly><?php echo $con_rep_partii->SCM_PAPER_TITLE2?></textarea>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-md-2 control-label">State the content of the Conference / Seminars / Workshops relevant to areas of expertise</label>
+        <div class="col-md-2"></div>
+        <label class="col-md-8 control-label text-left"><b>State the content of the Conference / Seminars / Workshops relevant to areas of expertise</b></label>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-2"></div>
         <div class="col-md-8">
             <textarea name="" class="form-control" type="text" rows="4" cols="50" readonly><?php echo $con_rep_partii->SCR_CONTENT?></textarea>
         </div>
