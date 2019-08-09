@@ -227,7 +227,9 @@ class Conference_pmp_model extends MY_Model
         TO_CHAR(SCM_VC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_VC_APPROVE_DATE, TO_CHAR(SCM_VC_RECEIVE_DATE, 'DD/MM/YYYY') AS SCM_VC_RECEIVE_DATE, TO_CHAR(SCM_LEAVE_DATE_FROM, 'DD/MM/YYYY') AS SCM_LEAVE_DATE_FROM, TO_CHAR(SCM_LEAVE_DATE_TO, 'DD/MM/YYYY') AS SCM_LEAVE_DATE_TO,
         SCM_RM_TOTAL_AMT, SCM_RM_TOTAL_AMT_APPROVE_HOD, SCM_RM_TOTAL_AMT_APPROVE_TNCA, SCM_RM_TOTAL_AMT_APPROVE_VC,
         SCM_RM_TOTAL_AMT_DEPT, SCM_TOTAL_AMT_DEPT_APPRV_HOD, SCM_RM_TOT_AMT_APPRV_RMIC, SCM_RM_TOT_AMT_APPRV_TNCPI, SCM_BUDGET_ORIGIN_PREV, TO_CHAR(SCM_TNCPI_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_TNCPI_APPROVE_DATE, 
-        TO_CHAR(SCM_RMIC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_RMIC_APPROVE_DATE, SCM_RESEARCH_REFID, SCM_VC_REMARK, SCM_RMIC_REMARK, CC_DESC, SCM_RMIC_APPROVE_BY, SCM_TNCPI_REMARK, SCM_TNCPI_APPROVE_BY, SCM_RM_TOT_AMT_RMIC");
+        TO_CHAR(SCM_RMIC_APPROVE_DATE, 'DD/MM/YYYY') AS SCM_RMIC_APPROVE_DATE, SCM_RESEARCH_REFID, SCM_VC_REMARK, SCM_RMIC_REMARK, CC_DESC, SCM_RMIC_APPROVE_BY, SCM_TNCPI_REMARK, SCM_TNCPI_APPROVE_BY, SCM_RM_TOT_AMT_RMIC, TRUNC(SYSDATE) CURR_DATE,
+        SCM_UPDATE_DATE, SCM_ENTRY_DATE, SCM_APPLY_BY, SCM_UPDATE_BY
+        ");
         $this->db->from("STAFF_CONFERENCE_MAIN");
         $this->db->join("CONFERENCE_CATEGORY", "SCM_CATEGORY_CODE = CC_CODE", "LEFT");
         $this->db->where("SCM_REFID", $refid);
@@ -1729,6 +1731,7 @@ class Conference_pmp_model extends MY_Model
         FROM DEPARTMENT_MAIN, STAFF_MAIN
         WHERE UPPER(SM_APPS_USERNAME) = UPPER('$curr_usr')
         AND DM_STATUS = 'ACTIVE'
+        AND DM_LEVEL <= 2
         AND ((SM_DEPT_CODE = $hrd OR SM_DEPT_CODE != $hrd AND DM_DEPT_CODE = SM_DEPT_CODE) OR (UPPER(SM_APPS_USERNAME) = 'HRA_ADMIN'))
         ORDER BY DM_DEPT_CODE";
 
@@ -1749,33 +1752,55 @@ class Conference_pmp_model extends MY_Model
     }
 
     // CONFERENCE HISTORY LIST - QUERY
-    public function conHistoryListQ($staff_id) {
-        // $this->db->select("SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, TO_CHAR(SCM_APPLY_DATE, 'DD-MM-YYYY') AS SCM_APPLY_DATE, SCM_STATUS");
-        // $this->db->from("STAFF_CONFERENCE_MAIN");
-        // $this->db->join("CONFERENCE_MAIN", "SCM_REFID = CM_REFID", "LEFT");
-        // $this->db->join("CONFERENCE_CATEGORY", "CC_CODE = SCM_CATEGORY_CODE", "LEFT");
-        // $this->db->where("SCM_STAFF_ID", $staff_id);
-        // $this->db->order_by("SCM_APPLY_DATE");
-
-        $this->db->select("SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, SCM_APPLY_DATE, SCM_STATUS,
-        CASE 
-        WHEN  COUNT_REP != 0 THEN 'Yes'
-        ELSE 'No'
-        END 
-        COUNT_REP_DESC, SCR_STATUS");
-        $this->db->from("(SELECT SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, TO_CHAR(SCM_APPLY_DATE, 'DD-MM-YYYY') AS SCM_APPLY_DATE, SCM_STATUS, SCM_STAFF_ID
-        FROM STAFF_CONFERENCE_MAIN
-        LEFT JOIN CONFERENCE_MAIN ON SCM_REFID = CM_REFID
-        LEFT JOIN CONFERENCE_CATEGORY ON CC_CODE = SCM_CATEGORY_CODE
-        WHERE SCM_STAFF_ID = '$staff_id')");
-        $this->db->join("(SELECT COUNT(SCR_REFID) COUNT_REP, SCR_STATUS, SCR_STAFF_ID, SCR_REFID
-        FROM STAFF_CONFERENCE_REP
-        WHERE SCR_STAFF_ID = '$staff_id'
-        GROUP BY SCR_STATUS, SCR_STAFF_ID, SCR_REFID)", "SCR_STAFF_ID = SCM_STAFF_ID AND SCR_REFID = SCM_REFID", "LEFT");
-        // $this->db->order_by("SCM_APPLY_DATE");
-        // $this->db->join("CONFERENCE_CATEGORY", "CC_CODE = SCM_CATEGORY_CODE", "LEFT");
-        // $this->db->where("SCM_STAFF_ID", $staff_id);
-        // $this->db->order_by("SCM_APPLY_DATE");
+    public function conHistoryListQ($staff_id, $mod = null) {
+        if($mod == 'STAFF_MAINTENANCE') {
+            $this->db->select("SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, SCM_APPLY_DATE, SCM_STATUS,
+            CASE 
+            WHEN  COUNT_REP != 0 THEN 'Yes'
+            ELSE 'No'
+            END 
+            COUNT_REP_DESC, SCR_STATUS");
+            $this->db->from("(SELECT SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, TO_CHAR(SCM_APPLY_DATE, 'DD-MM-YYYY') AS SCM_APPLY_DATE, SCM_STATUS, SCM_STAFF_ID
+            FROM STAFF_CONFERENCE_MAIN
+            LEFT JOIN CONFERENCE_MAIN ON SCM_REFID = CM_REFID
+            LEFT JOIN CONFERENCE_CATEGORY ON CC_CODE = SCM_CATEGORY_CODE
+            WHERE SCM_STAFF_ID = '$staff_id'
+            AND SCM_REFID NOT IN
+            (
+            SELECT SCR_REFID 
+            FROM STAFF_CONFERENCE_REP
+            WHERE SCR_STAFF_ID = '$staff_id'
+            )
+            AND SCM_STATUS NOT IN ('REJECT','CANCEL')
+            AND SCM_REFID IN
+            (
+            SELECT CM_REFID 
+            FROM CONFERENCE_MAIN
+            WHERE TO_CHAR(CM_DATE_FROM,'YYYY') = TO_CHAR(SYSDATE,'YYYY') 
+            )
+            
+            )");
+            $this->db->join("(SELECT COUNT(SCR_REFID) COUNT_REP, SCR_STATUS, SCR_STAFF_ID, SCR_REFID
+            FROM STAFF_CONFERENCE_REP
+            WHERE SCR_STAFF_ID = '$staff_id'
+            GROUP BY SCR_STATUS, SCR_STAFF_ID, SCR_REFID)", "SCR_STAFF_ID = SCM_STAFF_ID AND SCR_REFID = SCM_REFID", "LEFT");
+        } else {
+            $this->db->select("SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, SCM_APPLY_DATE, SCM_STATUS,
+            CASE 
+            WHEN  COUNT_REP != 0 THEN 'Yes'
+            ELSE 'No'
+            END 
+            COUNT_REP_DESC, SCR_STATUS");
+            $this->db->from("(SELECT SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, TO_CHAR(SCM_APPLY_DATE, 'DD-MM-YYYY') AS SCM_APPLY_DATE, SCM_STATUS, SCM_STAFF_ID
+            FROM STAFF_CONFERENCE_MAIN
+            LEFT JOIN CONFERENCE_MAIN ON SCM_REFID = CM_REFID
+            LEFT JOIN CONFERENCE_CATEGORY ON CC_CODE = SCM_CATEGORY_CODE
+            WHERE SCM_STAFF_ID = '$staff_id')");
+            $this->db->join("(SELECT COUNT(SCR_REFID) COUNT_REP, SCR_STATUS, SCR_STAFF_ID, SCR_REFID
+            FROM STAFF_CONFERENCE_REP
+            WHERE SCR_STAFF_ID = '$staff_id'
+            GROUP BY SCR_STATUS, SCR_STAFF_ID, SCR_REFID)", "SCR_STAFF_ID = SCM_STAFF_ID AND SCR_REFID = SCM_REFID", "LEFT");
+        }
 
         $q = $this->db->get();
         return $q->result();
@@ -2315,7 +2340,6 @@ class Conference_pmp_model extends MY_Model
         return $q->row();
     }
 
-
     // CALCULATE ALLOWANCE RMIC
     public function calculateAllwRmic($refid, $staff_id, $aca, $appRmic, $appRmicFor, $appTnca, $appTncaFor)
     {
@@ -2336,5 +2360,184 @@ class Conference_pmp_model extends MY_Model
         $this->db->where('SCA_ALLOWANCE_CODE', $aca);
 
         return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
+    }
+
+    /*===============================================================
+       Staff Conference Maintenance (ATF168)
+    ================================================================*/
+
+    // RMIC FOR VALUE CALCULATE
+    public function getStaffLeaveDetlM($staff_id, $leave_refid) {
+        $this->db->select("TO_CHAR(SLD_DATE_FROM,'YYYY') SLD_DATE_FROM, TO_CHAR(SLD_DATE_TO,'YYYY') SLD_DATE_TO, SLD_TOTAL_DAY");
+        $this->db->from("STAFF_LEAVE_DETL");
+        $this->db->where("SLD_STAFF_ID", $staff_id);
+        $this->db->where("SLD_REF_ID", $leave_refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // INSERT STAFF CONFERENCE DELETE
+    public function insertStfConDel($refid, $staff_id, $scmDetl)
+    {
+        // var_dump($scmDetl);
+        $curDate = 'SYSDATE';
+        $curUsr = $this->staff_id;
+
+        $data = array(
+            "SCD_REFID" => $refid,
+            "SCD_STAFF_ID" => $staff_id,
+            "SCD_LEAVE_REFID" => $scmDetl->SCM_LEAVE_REFID,
+            // "SCD_LEAVE_DATE_FROM" => $scmDetl->SCM_LEAVE_DATE_FROM,
+            // "SCD_LEAVE_DATE_TO" => $scmDetl->SCM_LEAVE_DATE_TO,
+            "SCD_STATUS" => $scmDetl->SCM_STATUS,
+            "SCD_CATEGORY_CODE" => $scmDetl->SCM_CATEGORY_CODE,
+            "SCD_BUDGET_ORIGIN" => $scmDetl->SCM_BUDGET_ORIGIN,
+            "SCD_RESEARCH_REFID" => $scmDetl->SCM_RESEARCH_REFID,
+            "SCD_BUDGET_ORIGIN_PREV" => $scmDetl->SCM_BUDGET_ORIGIN_PREV,
+            "SCD_PARTICIPANT_ROLE" => $scmDetl->SCM_PARTICIPANT_ROLE,
+            "SCD_SPONSOR" => $scmDetl->SCM_SPONSOR,
+            "SCD_RM_SPONSOR_TOTAL_AMT" => $scmDetl->SCM_RM_SPONSOR_TOTAL_AMT,
+            "SCD_RM_TOTAL_AMT" => $scmDetl->SCM_RM_TOTAL_AMT,
+            "SCD_RM_TOTAL_AMT_DEPT" => $scmDetl->SCM_RM_TOTAL_AMT_DEPT,
+            "SCD_RM_TOT_AMT_RMIC" => $scmDetl->SCM_RM_TOT_AMT_RMIC,
+            "SCD_RM_TOTAL_AMT_APPROVE_HOD" => $scmDetl->SCM_RM_TOTAL_AMT_APPROVE_HOD,
+            "SCD_TOTAL_AMT_DEPT_APPRV_HOD" => $scmDetl->SCM_TOTAL_AMT_DEPT_APPRV_HOD,
+            "SCD_RM_TOT_AMT_APPRV_RMIC" => $scmDetl->SCM_RM_TOT_AMT_APPRV_RMIC,
+            "SCD_RM_TOT_AMT_APPRV_TNCPI" => $scmDetl->SCM_RM_TOT_AMT_APPRV_TNCPI,
+            "SCD_RM_TOTAL_AMT_APPROVE_TNCA" => $scmDetl->SCM_RM_TOTAL_AMT_APPROVE_TNCA,
+            "SCD_RM_TOTAL_AMT_APPROVE_VC" => $scmDetl->SCM_RM_TOTAL_AMT_APPROVE_VC,
+            "SCD_UPDATE_BY" => $scmDetl->SCM_UPDATE_BY,
+            // "SCD_UPDATE_DATE" => $scmDetl->SCM_UPDATE_DATE,
+            // "SCD_ENTRY_DATE" => $scmDetl->SCM_ENTRY_DATE,
+            "SCD_APPLY_BY" => $scmDetl->SCM_APPLY_BY,
+            // "SCD_APPLY_DATE" => $scmDetl->SCM_APPLY_DATE,
+            "SCD_RECOMMEND_BY" => $scmDetl->SCM_RECOMMEND_BY,
+            // "SCD_RECOMMEND_DATE" => $scmDetl->SCM_RECOMMEND_DATE,
+            "SCD_APPROVE_BY" => $scmDetl->SCM_APPROVE_BY,
+            // "SCD_APPROVE_DATE" => $scmDetl->SCM_APPROVE_DATE,
+            "SCD_RMIC_APPROVE_BY" => $scmDetl->SCM_RMIC_APPROVE_BY,
+            // "SCD_RMIC_APPROVE_DATE" => $scmDetl->SCM_RMIC_APPROVE_DATE,
+            "SCD_TNCPI_APPROVE_BY" => $scmDetl->SCM_TNCPI_APPROVE_BY,
+            // "SCD_TNCPI_APPROVE_DATE" => $scmDetl->SCM_TNCPI_APPROVE_DATE,
+            "SCD_TNCA_APPROVE_BY" => $scmDetl->SCM_TNCA_APPROVE_BY,
+            // "SCD_TNCA_APPROVE_DATE" => $scmDetl->SCM_TNCA_APPROVE_DATE,
+            "SCD_VC_APPROVE_BY" => $scmDetl->SCM_VC_APPROVE_BY,
+            // "SCD_VC_APPROVE_DATE" => $scmDetl->SCM_VC_APPROVE_DATE,
+            "SCD_DELETE_BY" => $curUsr,
+            // "SCD_DELETE_DATE" => $scmDetl->SCM_CATEGORY_CODE,
+        );
+
+        if(!empty($scmDetl->SCM_LEAVE_DATE_FROM)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_LEAVE_DATE_FROM."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_LEAVE_DATE_FROM", $theDate, false);
+        }
+
+        if(!empty($scmDetl->SCM_LEAVE_DATE_TO)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_LEAVE_DATE_TO."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_LEAVE_DATE_TO", $theDate, false);
+        }
+
+        if(!empty($scmDetl->SCM_UPDATE_DATE)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_UPDATE_DATE."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_UPDATE_DATE", $theDate, false);
+        }
+
+        if(!empty($scmDetl->SCM_ENTRY_DATE)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_ENTRY_DATE."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_ENTRY_DATE", $theDate, false);
+        }
+
+        if(!empty($scmDetl->SCM_APPLY_DATE)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_APPLY_DATE."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_APPLY_DATE", $theDate, false);
+        }
+
+        if(!empty($scmDetl->SCM_RECOMMEND_DATE)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_RECOMMEND_DATE."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_RECOMMEND_DATE", $theDate, false);
+        }
+
+        if(!empty($scmDetl->SCM_APPROVE_DATE)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_APPROVE_DATE."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_APPROVE_DATE", $theDate, false);
+        }
+
+        if(!empty($scmDetl->SCM_RMIC_APPROVE_DATE)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_RMIC_APPROVE_DATE."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_RMIC_APPROVE_DATE", $theDate, false);
+        }
+
+        if(!empty($scmDetl->SCM_TNCPI_APPROVE_DATE)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_TNCPI_APPROVE_DATE."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_TNCPI_APPROVE_DATE", $theDate, false);
+        }
+
+        if(!empty($scmDetl->SCM_TNCA_APPROVE_DATE)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_TNCA_APPROVE_DATE."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_TNCA_APPROVE_DATE", $theDate, false);
+        }
+
+        if(!empty($scmDetl->SCM_VC_APPROVE_DATE)) {
+            $theDate = "TO_DATE('".$scmDetl->SCM_VC_APPROVE_DATE."', 'DD/MM/YYYY')";
+            $this->db->set("SCD_VC_APPROVE_DATE", $theDate, false);
+        }
+        
+        $this->db->set("SCD_DELETE_DATE", $curDate, false);
+
+        return $this->db->insert("STAFF_CONFERENCE_DELETE", $data);
+    }
+
+    // UPDATE STAFF_LEAVE_DETL
+    public function updateStafflvDetl($staff_id, $leave_refid, $sld_total_day)
+    {
+        $curDate = 'SYSDATE';
+        $curUsr = $this->staff_id;
+
+        $data = array(
+            "SLD_STATUS" => 'CANCEL',
+            "SLD_TOTAL_CANCEL_DAY" => $sld_total_day,
+            "SLD_CANCEL_REASON" => 'Change budget origin',
+            "SLD_APPROVE_BY" => null,
+            "SLD_APPROVE_DATE" => null,
+            "SLD_CANCEL_APPROVE_BY" => $curUsr
+            // "SLD_CANCEL_APPROVE_DATE" => $appTncaFor
+        );
+        $this->db->set("SLD_CANCEL_APPROVE_DATE", $curDate, false);
+
+        $this->db->where("SLD_REF_ID", $leave_refid);
+        $this->db->where("SLD_STAFF_ID", $staff_id);
+        $this->db->where("SLD_LEAVE_TYPE = '014'");
+
+        return $this->db->update("STAFF_LEAVE_DETL", $data);
+    }
+
+    // DELETE FROM STAFF_APPL_ATTACH
+    public function delStfApplAttach($refid, $staff_id) {
+        $this->db->where("SAA_STAFF_ID", $refid);
+        $this->db->where("SAA_REFID", $staff_id);
+        $this->db->where("SAA_FORMNAME = 'CONFERENCE'");
+        return $this->db->delete('STAFF_APPL_ATTACH');
+    }
+
+    // DELETE FROM STAFF_CONFERENCE_ALLOWANCE
+    public function delStfConfAllw($refid, $staff_id) {
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+        return $this->db->delete('STAFF_CONFERENCE_ALLOWANCE');
+    }
+
+    // DELETE FROM STAFF_CONFERENCE_DETL
+    public function delStfConfDetl($refid, $staff_id) {
+        $this->db->where("SCD_STAFF_ID", $staff_id);
+        $this->db->where("SCD_REFID", $refid);
+        return $this->db->delete('STAFF_CONFERENCE_DETL');
+    }
+
+    // DELETE FROM STAFF_CONFERENCE_MAIN
+    public function delStfConfMain($refid, $staff_id) {
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+        return $this->db->delete('STAFF_CONFERENCE_MAIN');
     }
 }

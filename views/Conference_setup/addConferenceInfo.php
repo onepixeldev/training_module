@@ -62,7 +62,7 @@
             <label class="col-md-3 control-label">State <b><font color="red">* </font></b></label>
             <div class="col-md-8">
                 <?php
-                    echo form_dropdown('form[state]', $state_list, '', 'class="select2-filter form-control" style="width: 100%"')
+                    echo form_dropdown('form[state]', $state_list, '', 'class="form-control" style="width: 100%"')
                 ?>
             </div>
         </div>
@@ -71,7 +71,7 @@
             <label class="col-md-3 control-label">Country <b><font color="red">* </font></b></label>
             <div class="col-md-8">
                 <?php
-                    echo form_dropdown('form[country]', $country_list, '', 'class="select2-filter form-control" style="width: 100%"')
+                    echo form_dropdown('form[country]', $country_list, '', 'class="form-control" style="width: 100%"')
                 ?>
             </div>
         </div>

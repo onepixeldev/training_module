@@ -212,7 +212,15 @@
                 echo "$('.nav-tabs li:eq(0) a').tab('show');";
             }
 		}
-        ?>
+		?>
+		
+		$("#myModalis").draggable({
+			handle: ".modal-content"
+		});
+
+		$("#myModalis2").draggable({
+			handle: ".modal-content"
+		});
 	});
 
 	$(".nav-tabs a").click(function(){
@@ -733,7 +741,8 @@
 	});
 
 	// SAVE INSERT STAFF TO CONFERENCE
-	$('#conference_application').on('click', '.ins_stf_cr', function () {
+	$('#conference_application').on('click', '.ins_stf_cr', function (e) {
+		e.preventDefault();
 		var data = $('#addStaffConference').serialize();
 		msg.wait('#alertStaffConference');
         msg.wait('#alertStaffConferenceFooter');
@@ -854,7 +863,8 @@
 	});
 
 	// SAVE EDIT STAFF TO CONFERENCE
-	$('#conference_application').on('click', '.edit_stf_cr', function () {
+	$('#conference_application').on('click', '.edit_stf_cr', function (e) {
+		e.preventDefault();
 		var data = $('#editStaffConference').serialize();
 		msg.wait('#alertEditStaffConference');
         msg.wait('#alertEditStaffConferenceFooter');
@@ -1253,7 +1263,8 @@
     });
 
 	// SAVE ADD/EDIT CONFERENCE LEAVE
-	$('#conference_leave').on('click', '.ins_con_leave', function () {
+	$('#conference_leave').on('click', '.ins_con_leave', function (e) {
+		e.preventDefault();
 		balance = $('#balanceLeave').val();
 		if(balance < 0) {
 			$.alert({
@@ -1420,7 +1431,8 @@
 	});	
 
 	// SAVE INSERT NEW STAFF CONFERENCE ALLOWANCE
-	$('#myModalis').on('click', '.ins_stf_con_allw', function () {
+	$('#myModalis').on('click', '.ins_stf_con_allw', function (e) {
+		e.preventDefault();
 		var staffId = $('#staff_id').val();
 		var staffName = $('#staff_name').val();
 		var crRefID = $('#crRefid').val();
@@ -1497,7 +1509,8 @@
 	});
 
 	// SAVE UPDATE STAFF CONFERENCE ALLOWANCE
-	$('#myModalis').on('click', '.upd_stf_con_allw', function () {
+	$('#myModalis').on('click', '.upd_stf_con_allw', function (e) {
+		e.preventDefault();
 		var staffId = $('#staff_id').val();
 		var staffName = $('#staff_name').val();
 		var crRefID = $('#crRefid').val();

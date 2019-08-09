@@ -13,6 +13,35 @@ class Conference_lmp_model extends MY_Model
         $this->staff_id = $this->lib->userid();
         $this->username = $this->lib->username();
     }
+
+    // CREATE MEMO
+    public function createMemo($from, $sendTO, $cc = null, $memoTitle, $memoContent, $memoID) {
+        if($memoID == 1) {
+            $sql = oci_parse($this->db->conn_id, "begin create_memo(:bind1,:bind2,null,:bind3,:bind4); end;");
+            oci_bind_by_name($sql, ":bind1", $from);				//IN
+            oci_bind_by_name($sql, ":bind2", $sendTO);				//IN
+            oci_bind_by_name($sql, ":bind3", $memoTitle, 255);		//IN
+            oci_bind_by_name($sql, ":bind4", $memoContent, 4000);	//IN
+            $q = oci_execute($sql, OCI_DEFAULT); 
+        }
+
+        if($memoID == 2) {
+            $sql = oci_parse($this->db->conn_id, "begin create_memo(:bind1,:bind2,:bind3,:bind4,:bind5); end;");
+            oci_bind_by_name($sql, ":bind1", $from);				//IN
+            oci_bind_by_name($sql, ":bind2", $sendTO);				//IN
+            oci_bind_by_name($sql, ":bind3", $cc);			        //IN
+            oci_bind_by_name($sql, ":bind4", $memoTitle, 255);		//IN
+            oci_bind_by_name($sql, ":bind5", $memoContent, 4000);	//IN
+            $q = oci_execute($sql, OCI_DEFAULT); 
+        }
+		
+		
+        if ($q === FALSE) {
+			return 0;
+		}
+		
+		return 1;	
+    } 
     
     /*===========================================================
        QUERY CONFERENCE REPORT APPLICATION - ATF088
@@ -541,4 +570,98 @@ class Conference_lmp_model extends MY_Model
 
         return $this->db->update("STAFF_CONFERENCE_REP", $data);
     }
+
+    // REJECT CONFERENCE REPORT
+    public function rejectConferenceReport($refid, $staff_id, $rjc_remark, $rjc_by, $rjc_date)
+    { 
+        $data = array(
+            "SCR_STATUS" => 'REJECTED',
+            "SCR_TNCA_REJECT_REMARK" => $rjc_remark,
+            "SCR_TNCA_REJECT_BY" => $rjc_by
+        );
+
+        if(!empty($rjc_date)) {
+            $rjc_date = "to_date('".$rjc_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCR_TNCA_REJECT_DATE", $rjc_date, false);
+        }
+
+        $this->db->where("SCR_REFID", $refid);
+        $this->db->where("SCR_STAFF_ID", $staff_id);
+
+        return $this->db->update("STAFF_CONFERENCE_REP", $data);
+    }
+
+    // CONTENT REJECT MEMO DETAILS
+    public function getRejectRepMemContent($refid, $staff_id, $rjc_by) {
+
+        $query = "SELECT DISTINCT SCM_REFID,CM_NAME,CM_ADDRESS,CM_POSTCODE,CM_CITY,
+        CM_STATE,SM_STATE_DESC,CONFERENCE_MAIN.CM_COUNTRY_CODE CM_COUNTRY_CODE,CM_COUNTRY_DESC,
+        TO_CHAR(CM_DATE_FROM,'dd/mm/yyyy') CM_DATE_FROM2,TO_CHAR(CM_DATE_TO,'dd/mm/yyyy') CM_DATE_TO2,
+        SM_STAFF_ID,SM_STAFF_NAME,TO_CHAR(SYSDATE,'dd/mm/yyyy') APPROVE_DATE,SCR_TNCA_REJECT_REMARK
+        FROM STAFF_CONFERENCE_MAIN,CONFERENCE_MAIN,COUNTRY_MAIN,STATE_MAIN,STAFF_MAIN APPROVER,STAFF_CONFERENCE_REP
+        WHERE SCM_REFID = CM_REFID
+        AND APPROVER.SM_STAFF_ID = UPPER('$rjc_by')
+        AND SCM_STAFF_ID = UPPER('$staff_id')
+        AND SM_STATE_CODE(+) = CM_STATE
+        AND COUNTRY_MAIN.CM_COUNTRY_CODE(+) = CONFERENCE_MAIN.CM_COUNTRY_CODE
+        AND CM_REFID = '$refid'
+        AND SCM_REFID = SCR_REFID
+        AND SCM_STAFF_ID = SCR_STAFF_ID";
+
+        $q = $this->db->query($query);
+        return $q->row();
+    }
+
+    // GET HOD
+    public function getHod($staff_id) {
+        $query = "SELECT DISTINCT DM_DIRECTOR
+        FROM DEPARTMENT_MAIN,STAFF_MAIN
+        WHERE SM_DEPT_CODE = DM_DEPT_CODE
+        AND SM_STAFF_ID = '$staff_id'";
+
+        $q = $this->db->query($query);
+        return $q->row();
+    }
+
+    // AMEND CONFERENCE REPORT
+    public function amendApproveConferenceReport($refid, $staff_id, $app_amd_remark, $app_amd_by, $app_amd_date, $repSts)
+    { 
+        $data = array(
+            "SCR_STATUS" => $repSts,
+            "SCR_TNCA_REMARK1" => $app_amd_remark,
+            "SCR_TNCA_VERIFY_BY" => $app_amd_by
+        );
+
+        if(!empty($app_amd_date)) {
+            $app_amd_date = "to_date('".$app_amd_date."', 'DD/MM/YYYY')";
+            $this->db->set("SCR_TNCA_VERIFY_DATE", $app_amd_date, false);
+        }
+
+        $this->db->where("SCR_REFID", $refid);
+        $this->db->where("SCR_STAFF_ID", $staff_id);
+
+        return $this->db->update("STAFF_CONFERENCE_REP", $data);
+    }
+
+    // CONTENT AMEND / APPROVE MEMO DETAILS
+    public function getAmdAppRepMemContent($refid, $staff_id, $app_amd_by) {
+
+        $query = "SELECT DISTINCT SCM_REFID,CM_NAME,CM_ADDRESS,CM_POSTCODE,CM_CITY,
+        CM_STATE,SM_STATE_DESC,CONFERENCE_MAIN.CM_COUNTRY_CODE CM_COUNTRY_CODE,CM_COUNTRY_DESC,
+        TO_CHAR(CM_DATE_FROM,'dd/mm/yyyy') CM_DATE_FROM2,TO_CHAR(CM_DATE_TO,'dd/mm/yyyy') CM_DATE_TO2,
+        SM_STAFF_ID,SM_STAFF_NAME,TO_CHAR(SYSDATE,'dd/mm/yyyy') APPROVE_DATE,SCR_TNCA_REMARK1
+        FROM STAFF_CONFERENCE_MAIN,CONFERENCE_MAIN,COUNTRY_MAIN,STATE_MAIN,STAFF_MAIN APPROVER,STAFF_CONFERENCE_REP
+        WHERE SCM_REFID = CM_REFID
+        AND APPROVER.SM_STAFF_ID = UPPER('$app_amd_by')
+        AND SCM_STAFF_ID = UPPER('$staff_id')
+        AND SM_STATE_CODE(+) = CM_STATE
+        AND COUNTRY_MAIN.CM_COUNTRY_CODE(+) = CONFERENCE_MAIN.CM_COUNTRY_CODE
+        AND CM_REFID = '$refid'
+        AND SCM_REFID = SCR_REFID
+        AND SCM_STAFF_ID = SCR_STAFF_ID";
+
+        $q = $this->db->query($query);
+        return $q->row();
+    }
+
 }

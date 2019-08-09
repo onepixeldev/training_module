@@ -56,7 +56,7 @@
                         <td class="text-center">' . $ci->COUNT_REP_DESC . '</td>
                         <td class="text-center">' . $ci->SCR_STATUS . '</td>
 						<td class="text-center">
-							<div class="btn-group">
+							<div class="btn-group" id=menuBtn>
 								<button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button>
 								<div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn">
 									<button type="button" class="btn btn-primary text-left btn-block btn-xs detl_btn" value=""><i class="fa fa-info-circle"></i> Detail</button>
@@ -93,7 +93,7 @@
 				<a style="color:#000 !important" href="#s3a" data-toggle="tab" aria-expanded="false">Conference Leave</a>
 			</li>
 			<li class="">
-				<a style="color:#000 !important" href="#s4a" data-toggle="tab" aria-expanded="false">Alowances</a>
+				<a style="color:#000 !important" href="#s4a" data-toggle="tab" aria-expanded="false">Allowances</a>
 			</li>
 		</ul>
 		<!-- myTabContent1 -->

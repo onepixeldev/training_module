@@ -6,7 +6,7 @@
     <div id="conSetAlert">
         <!--<b>Note : </b> ( <b><font color="red">*</font></b> ) <b><font color="red">compulsory fields</font></b><br>&nbsp; <span id="note"></span>-->
     </div>
-    <div style="max-height:700px;overflow-y:auto;overflow-x:hidden">
+    <div style="">
         <table class="table table-bordered table-hover">
         <tbody> 
             <tr>

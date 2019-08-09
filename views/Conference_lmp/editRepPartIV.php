@@ -101,7 +101,7 @@
 
     <br>
     <div class="alert alert-info fade in">
-        <b>Certificate and Review of Head of PTj</b>
+        <b>Certificate and Review of TNC (AA)</b>
     </div>
     <br>
 

@@ -133,6 +133,17 @@
 	var ca_row = '';
 	var b_row = '';
 
+	$(document).ready(function(){
+
+		$("#myModalis").draggable({
+			handle: ".modal-content"
+		});
+
+		$("#myModalis2").draggable({
+			handle: ".modal-content"
+		});
+	});
+
 	$(".nav-tabs a").click(function(){
 		$(this).tab('show');
     });

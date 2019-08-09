@@ -158,16 +158,14 @@
 	var b_row  = '';
 	
 	$(document).ready(function(){
-		// navigate to selected tab
-		<?php
-        $currtab = $this->session->tabID;
-    
-        if (!empty($currtab)) {
-            if ($currtab == 's1'){
-                echo "$('.nav-tabs li:eq(0) a').tab('show');";
-            }
-		}
-        ?>
+		
+		$("#myModalis").draggable({
+			handle: ".modal-content"
+		});
+
+		$("#myModalis2").draggable({
+			handle: ".modal-content"
+		});
 	});
 
 	$(".nav-tabs a").click(function(){
@@ -748,7 +746,8 @@
 	///// SEARCH STAFF//////
 
 	// SAVE STAFF DETAIL
-	$('#details').on('click', '.save_stf_detl', function () {
+	$('#details').on('click', '.save_stf_detl', function (e) {
+		e.preventDefault();
 		var data = $('#staffConDetlAppVer').serialize();
 		staff_id = $('#staff_id').val();
 		refid = $('#crRefid').val();
@@ -1679,7 +1678,8 @@
     });
 
 	// SAVE ADD/EDIT CONFERENCE LEAVE
-	$('#conference_leave').on('click', '.ins_con_leave', function () {
+	$('#conference_leave').on('click', '.ins_con_leave', function (e) {
+		e.preventDefault();
 		balance = $('#balanceLeave').val();
 		if(balance < 0) {
 			$.alert({

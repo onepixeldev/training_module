@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Conference / Query Staff Conference', $screen_id) ?>
+<?php echo $this->lib->title('Conference / Staff Conference Maintenance', $screen_id) ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">
@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>ATF068 - Query Staff Conference</h2>				
+            <h2>ATF168 - Staff Conference Maintenance</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -123,7 +123,17 @@
 	var b_row = '';
 	
 	$(document).ready(function(){
-
+		// // navigate to selected tab
+		// <?php
+        // $currtab = $this->session->tabID;
+    
+        // if (!empty($currtab)) {
+        //     if ($currtab == 's1'){
+        //         echo "$('.nav-tabs li:eq(0) a').tab('show');";
+        //     }
+		// }
+		// ?>
+		
 		$("#myModalis").draggable({
 			handle: ".modal-content"
 		});
@@ -185,12 +195,13 @@
 		var staff_id = td.eq(0).html().trim();
 		var staff_name = td.eq(1).html().trim();
 		var svc_code = td.eq(2).html().trim();
-		var svc_desc = td.eq(3).html().trim();
+        var svc_desc = td.eq(3).html().trim();
+        var mod = 'STAFF_MAINTENANCE';
 
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('conHistoryListQ')?>',
-			data: {'staff_id':staff_id, 'staff_name':staff_name, 'svc_code':svc_code, 'svc_desc':svc_desc},
+			data: {'staff_id':staff_id, 'staff_name':staff_name, 'svc_code':svc_code, 'svc_desc':svc_desc, 'mod':mod},
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
 				$('#conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
@@ -199,13 +210,25 @@
 				$('#conference').html(res);
 				b_row = $('#tbl_chl_list').DataTable({
                     "ordering":false,
+                    drawCallback: function(){
+                        $(function() {
+                            $('#tbl_chl_list').each(function() {
+                            var Cell = $(this).find('td:eq(8)');
+                            //debugger;
+                                if (Cell.text() !== 'error') {
+                                    //$(this).find('btn').hide();
+                                    $('#tbl_chl_list tbody #menuBtn').replaceWith('<div class="btn-group"><button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button><div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn"><button type="button" class="btn btn-primary text-left btn-block btn-xs detl_btn" value=""><i class="fa fa-info-circle"></i> Detail</button><button type="button" class="btn btn-danger text-left btn-block btn-xs del_staff_maint"><i class="fa fa-trash"></i> Delete</button></div></div>');
+                                }
+                            });
+                        });
+                    }
                 });
 			}
 		});
 	});	
 
 	/*-----------------------------
-	TAB 2 - DETAILS
+	TAB 2 - CONFERENCE
 	-----------------------------*/
 
 	// DETL BTN
@@ -301,38 +324,55 @@
 		});
 	});
 
-	// MEMO TNCA
-	$('#conference').on('click','.memo_tnca_btn', function () {
+	// DELETE STAFF CONFERENCE MAINTENANCE
+	$('#conference').on('click', '.del_staff_maint', function(e) {
+		e.preventDefault();
 		var thisBtn = $(this);
 		var td = thisBtn.closest("tr");
 		var refid = td.find(".refid").text();
-		var scm_status = td.find(".scm_status").text();
+		var crName = td.find(".cr_name").text();
 		var staff_id = $("#staff_id").val();
-		var repCode = '';
-		var sts_set = ['ENTRY','APPLY','VERIFY_TNCA','REJECT','CANCEL', ''];
-		// console.log(refid+' '+staff_id+' '+scm_status);
+		var mod = 'STAFF_MAINTENANCE';
+		// alert(staffId+' '+crRefID);
 
-		if(jQuery.inArray(scm_status, sts_set) != -1) {
-			$.alert({
-				title: 'Alert!',
-				content: 'This application has not yet been approved.',
-				type: 'red',
-			});
-
-			return;
-		} else {
-			repCode = 'ATR270';
-			// console.log('APPROVE!');
-		}
-
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('setRepParam')?>',
-			data: {'refid' : refid, 'staff_id' : staff_id, 'repCode' : repCode},
-			dataType: 'JSON',
-			success: function(res) {
-				window.open("report?r="+res.report,"mywin","width=800,height=600");
-			}
+		$.confirm({
+		    title: 'Delete Conference',
+		    content: 'Are you sure to delete this record? <br> <b>'+refid+' - '+crName+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('deleteStaffConMaintenance')?>',
+						data: {'staff_id' : staff_id, 'refid' : refid},
+						dataType: 'JSON',
+						beforeSend: function() {
+							show_loading();
+						},
+						success: function(res) {
+							if (res.sts==1) {
+								hide_loading();
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+							} else {
+								hide_loading();
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Canceled Delete Record!');
+		        }
+		    }
 		});
 	});
 

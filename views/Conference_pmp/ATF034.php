@@ -220,26 +220,13 @@
 	var ca_row = '';
 	
 	$(document).ready(function(){
-		// navigate to selected tab
-		<?php
-        $currtab = $this->session->tabID;
-    
-        if (!empty($currtab)) {
-            if($currtab == 's2') {
-                echo "$('.nav-tabs li:eq(1) a').tab('show');";
-            } else if($currtab == 's3') {
-                echo "$('.nav-tabs li:eq(2) a').tab('show');";
-            } else if($currtab == 's4') {
-                echo "$('.nav-tabs li:eq(3) a').tab('show');";
-            } else if($currtab == 's5') {
-                echo "$('.nav-tabs li:eq(4) a').tab('show');";
-            } else if($currtab == 's6') {
-                echo "$('.nav-tabs li:eq(5) a').tab('show');";
-            } else {
-                echo "$('.nav-tabs li:eq(0) a').tab('show');";
-            }
-		}
-        ?>
+		$("#myModalis").draggable({
+			handle: ".modal-content"
+		});
+
+		$("#myModalis2").draggable({
+			handle: ".modal-content"
+		});
 	});
 
 	$(".nav-tabs a").click(function(){
@@ -503,7 +490,7 @@
 			success: function(res) {
 				if(res.sts == 1) {
 					var ecommURL = '<?php echo $this->lib->class_url('fileAttachmentDload') ?>';
-					var newWin = window.open(ecommURL, 'title', 'width=800, height=300');
+					var newWin = window.open(ecommURL, '_blank', 'width=800, height=300');
 				} else {
 					$.alert({
 						title: 'Alert!',

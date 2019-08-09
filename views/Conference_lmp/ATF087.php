@@ -192,6 +192,17 @@
 	var a_row = '';
 	var b_row = '';
 
+	$(document).ready(function(){
+
+		$("#myModalis").draggable({
+			handle: ".modal-content"
+		});
+
+		$("#myModalis2").draggable({
+			handle: ".modal-content"
+		});
+	});
+
 	$(".nav-tabs a").click(function(){
 		$(this).tab('show');
     });
@@ -708,7 +719,7 @@
 		var app_amd_date = $("#tncaa_amd_app_date").val();
 		
 		var crName = $("#cr_name").val();
-		var staff_name = $("#staff_id").val();
+		var staff_name = $("#staff_name").val();
 		// console.log(refid+' '+staff_id+' '+app_amd_remark+' '+app_amd_by+' '+app_amd_date);
 		if(app_amd_remark == '') {
 			$.alert({
@@ -774,12 +785,12 @@
 		var rjc_date = $("#tncaa_rjc_date").val();
 		
 		var crName = $("#cr_name").val();
-		var staff_name = $("#staff_id").val();
+		var staff_name = $("#staff_name").val();
 		// console.log(refid+' '+staff_id+' '+rjc_remark+' '+rjc_by+' '+rjc_date);
 		if(rjc_remark == '') {
 			$.alert({
 				title: 'Alert!',
-				content: 'Please enter remark',
+				content: 'Please enter reject remark',
 				type: 'red',
 			});
 			return;
@@ -829,7 +840,265 @@
 				}
 			}
 		});
-    });
+	});
+	
+	// REJECT REPORT
+	$('#tncaa_approval').on('click','.tncaa_reject', function(){
+		var refid = $("#refid").val();
+		var staff_id = $("#staff_id").val();
+		var rjc_remark = $("#remark_tnca_reject").val();
+		var rjc_by = $("#rjc_by_tnc").val();
+		var rjc_by_name = $("#rjc_by_tnc_name").val();
+		var rjc_date = $("#tncaa_rjc_date").val();
+
+		var crName = $("#cr_name").val();
+		var staff_name = $("#staff_name").val();
+		// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
+
+		if(rjc_remark == '') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter reject remark',
+				type: 'red',
+			});
+			return;
+		}
+
+		if(rjc_by == '') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter valid staff ID in reject by field',
+				type: 'red',
+			});
+			return;
+		}
+
+		if(rjc_by_name == '') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter valid staff ID in reject by field',
+				type: 'red',
+			});
+			return;
+		}
+
+		$.confirm({
+		    title: 'Reject conference report?',
+		    content: 'Press <b>YES</b> to continue <br> Staff ID: <br><b>'+staff_id+' - '+staff_name+'</b>',
+			type: 'red',
+		    buttons: {
+		        yes: function () {
+					$('.btn').attr('disabled', 'disabled');
+					show_loading();
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('rejectConferenceReport')?>',
+						data: {'refid' : refid, 'staff_id' : staff_id, 'rjc_remark' : rjc_remark, 'rjc_by' : rjc_by, 'rjc_date' : rjc_date},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('.btn').removeAttr('disabled');
+								hide_loading();
+								
+								setTimeout(function () {
+									location = '<?php echo $this->lib->class_url('viewTabFilter','s1','ATF087')?>';
+								}, 2000);
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+								$('.btn').removeAttr('disabled');
+								hide_loading();
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Process cancelled!');
+		        }
+		    }
+		});
+	});
+
+	// AMEND REPORT
+	$('#tncaa_approval').on('click','.tncaa_amend', function(){
+		var refid = $("#refid").val();
+		var staff_id = $("#staff_id").val();
+		var app_amd_remark = $("#remark_tnca").val();
+		var app_amd_by = $("#approved_rjc_by_tnc").val();
+		var app_amd_by_name = $("#approved_rjc_by_tnc_name").val();
+		var app_amd_date = $("#tncaa_amd_app_date").val();
+
+		var crName = $("#cr_name").val();
+		var staff_name = $("#staff_name").val();
+		// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
+
+		if(app_amd_remark == '') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter remark field',
+				type: 'red',
+			});
+			return;
+		}
+
+		if(app_amd_by == '') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter valid staff ID in approve by field',
+				type: 'red',
+			});
+			return;
+		}
+
+		if(app_amd_by_name == '') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter valid staff ID in approve by field',
+				type: 'red',
+			});
+			return;
+		}
+
+		$.confirm({
+		    title: 'Amend conference report?',
+		    content: 'Press <b>YES</b> to continue <br> Staff ID: <br><b>'+staff_id+' - '+staff_name+'</b>',
+			type: 'orange',
+		    buttons: {
+		        yes: function () {
+					$('.btn').attr('disabled', 'disabled');
+					show_loading();
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('amendConferenceReport')?>',
+						data: {'refid' : refid, 'staff_id' : staff_id, 'app_amd_remark' : app_amd_remark, 'app_amd_by' : app_amd_by, 'app_amd_date' : app_amd_date},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('.btn').removeAttr('disabled');
+								hide_loading();
+								
+								setTimeout(function () {
+									location = '<?php echo $this->lib->class_url('viewTabFilter','s1','ATF087')?>';
+								}, 2000);
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+								$('.btn').removeAttr('disabled');
+								hide_loading();
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Process cancelled!');
+		        }
+		    }
+		});
+	});
+
+	// APPROVE REPORT
+	$('#tncaa_approval').on('click','.tncaa_approve', function(){
+		var refid = $("#refid").val();
+		var staff_id = $("#staff_id").val();
+		var app_amd_remark = $("#remark_tnca").val();
+		var app_amd_by = $("#approved_rjc_by_tnc").val();
+		var app_amd_by_name = $("#approved_rjc_by_tnc_name").val();
+		var app_amd_date = $("#tncaa_amd_app_date").val();
+
+		var crName = $("#cr_name").val();
+		var staff_name = $("#staff_name").val();
+		// alert(remark+' '+appr_rej_by+' '+appr_rej_date);
+
+		if(app_amd_remark == '') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter remark field',
+				type: 'red',
+			});
+			return;
+		}
+
+		if(app_amd_by == '') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter valid staff ID in approve by field',
+				type: 'red',
+			});
+			return;
+		}
+
+		if(app_amd_by_name == '') {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please enter valid staff ID in approve by field',
+				type: 'red',
+			});
+			return;
+		}
+
+		$.confirm({
+		    title: 'Approve conference report?',
+		    content: 'Press <b>YES</b> to continue <br> Staff ID: <br><b>'+staff_id+' - '+staff_name+'</b>',
+			type: 'green',
+		    buttons: {
+		        yes: function () {
+					$('.btn').attr('disabled', 'disabled');
+					show_loading();
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('approveConferenceReport')?>',
+						data: {'refid' : refid, 'staff_id' : staff_id, 'app_amd_remark' : app_amd_remark, 'app_amd_by' : app_amd_by, 'app_amd_date' : app_amd_date},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('.btn').removeAttr('disabled');
+								hide_loading();
+								
+								setTimeout(function () {
+									location = '<?php echo $this->lib->class_url('viewTabFilter','s1','ATF087')?>';
+								}, 2000);
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+								$('.btn').removeAttr('disabled');
+								hide_loading();
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Process cancelled!');
+		        }
+		    }
+		});
+	});
 
 	/*-----------------------------
 	TAB 6 - PART III

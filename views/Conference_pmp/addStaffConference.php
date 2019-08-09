@@ -356,7 +356,7 @@
     </div>
 
     <div class="form-group">
-        <label class="col-md-2 control-label">Received Date (TNCA)</label>
+        <label class="col-md-2 control-label">Received Date (VC)</label>
         <div class="col-md-2">
             <input name="form[received_date_vc]" placeholder="DD/MM/YYYY" class="datepicker form-control" type="text">
         </div>

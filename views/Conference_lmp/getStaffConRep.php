@@ -90,7 +90,7 @@
 				<a style="color:#000 !important" href="#s3a" data-toggle="tab" aria-expanded="false">Conference Leave</a>
 			</li>
 			<li class="">
-				<a style="color:#000 !important" href="#s4a" data-toggle="tab" aria-expanded="false">Alowances</a>
+				<a style="color:#000 !important" href="#s4a" data-toggle="tab" aria-expanded="false">Allowances</a>
 			</li>
 		</ul>
 		<!-- myTabContent1 -->

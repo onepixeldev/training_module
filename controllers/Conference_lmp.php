@@ -12,9 +12,23 @@ class Conference_lmp extends MY_Controller
         parent::__construct();
         $this->load->model('Conference_lmp_model', 'mdl_lmp');
         $this->load->model('Conference_pmp_model', 'mdl_pmp');
-        $this->load->library('../controllers/conference_pmp');
+        $this->load->library('../modules/training/controllers/Conference_pmp.php');
         $this->staff_id = $this->lib->userid();
         $this->username = $this->lib->username();
+    }
+
+    // View Page Filter
+    public function viewTabFilter($tabID, $scID)
+    {
+        // set session
+        $this->session->set_userdata('tabID', $tabID);
+
+        // $scID = $scID;
+        
+        if($scID == 'ATF087') {
+            redirect($this->class_uri('ATF087')); 
+        } 
+        
     }
 
     // QUERY CONFERENCE REPORT APPLICATION
@@ -949,6 +963,8 @@ class Conference_lmp extends MY_Controller
 
     // FILE ATTACHMENT PARAM
     public function fileAttParam() {
+        $this->isAjax();
+
         $staff_id = $this->input->post('staff_id', true);
         $refid = $this->input->post('refid', true);
 
@@ -1172,11 +1188,14 @@ class Conference_lmp extends MY_Controller
 
     // SAVE AMEND / APPROVAL
     public function saveAmdAppTncaa() {
+        $this->isAjax();
+        
         $staff_id = $this->input->post('staff_id', true);
         $refid = $this->input->post('refid', true);
         $app_amd_remark = $this->input->post('app_amd_remark', true);
-        $app_amd_by = $this->input->post('app_amd_by', true);
+        $app_amd_by = strtoupper($this->input->post('app_amd_by', true));
         $app_amd_date = $this->input->post('app_amd_date', true);
+        
 
         if(!empty($staff_id) && !empty($refid)) {
             $update = $this->mdl_lmp->saveAmdAppTncaa($refid, $staff_id, $app_amd_remark, $app_amd_by, $app_amd_date);
@@ -1194,10 +1213,12 @@ class Conference_lmp extends MY_Controller
 
     // SAVE REJECT
     public function saveRejcTncaa() {
+        $this->isAjax();
+
         $staff_id = $this->input->post('staff_id', true);
         $refid = $this->input->post('refid', true);
         $rjc_remark = $this->input->post('rjc_remark', true);
-        $rjc_by = $this->input->post('rjc_by', true);
+        $rjc_by = strtoupper($this->input->post('rjc_by', true));
         $rjc_date = $this->input->post('rjc_date', true);
 
         if(!empty($staff_id) && !empty($refid)) {
@@ -1206,6 +1227,259 @@ class Conference_lmp extends MY_Controller
                 $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success');
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'success');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Param not assigned', 'alert' => 'danger');
+        }
+        
+        echo json_encode($json);
+    }
+
+    // REJECT CONFERENCE REPORT
+    public function rejectConferenceReport() {
+        $this->isAjax();
+
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $rjc_remark = $this->input->post('rjc_remark', true);
+        $rjc_by = strtoupper($this->input->post('rjc_by', true));
+        $rjc_date = $this->input->post('rjc_date', true);
+
+        $rejectSts = 0;
+        $successMemo = 0;
+        $rejectMsg = '';
+        $memoMsg = '';
+        // tnca_reject_send_memo (:SCR_STAFF_ID,:SCR_REFID,:SCR_TNCA_REJECT_BY,:SCR_HOD_VERIFY_BY);
+
+        if(!empty($staff_id) && !empty($refid) && !empty($rjc_by)) {
+            $update = $this->mdl_lmp->getRejectRepMemContent($refid, $staff_id, $rjc_remark, $rjc_by, $rjc_date);
+
+            if($update > 0) {
+                $rejectSts++;
+                $rejectMsg = 'Conference report has been rejected';
+
+                // SENDER
+                $from = $rjc_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+
+                // CONTENT REJECT MEMO DETAILS
+                $memoDetl = $this->mdl_lmp->getRepMemContent($refid, $staff_id, $rjc_by);
+
+                // GET HOD & CC MEMO
+                $hod = $this->mdl_lmp->getHod($staff_id);
+                if(!empty($hod)) {
+                    $cc = $hod->DM_DIRECTOR.',';
+                } else {
+                    $cc = '';
+                }
+
+                // MEMO TITLE
+                $memoTitle = 'Conference Report Application Has Been Rejected By TNC(A&A)';
+                
+                // MEMO CONTENT
+                $memoContent = 'Please take note that your conference report application has been rejected. Details :<br><br>'.
+                                'Staff ID : '.$staff_id.'<br>'.
+                                'Name : '.$staff_name.'<br>'.
+                                'Conference Title : '.$memoDetl->CM_NAME.' ('.$memoDetl->CM_DATE_FROM2.'-'.$memoDetl->CM_DATE_TO2.')'.'<br><br>'.
+                                'Reason for Reject  : '.$memoDetl->SCR_TNCA_REJECT_REMARK.'<br>'.
+                                '<br> --System Generated Memo--';
+                
+                $memoID = 2;
+
+                $sendMemo = $this->mdl_lmp->createMemo($from, $sendTO, $cc, $memoTitle, $memoContent, $memoID);
+
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = nl2br("\r\n").'Reject conference report memo has been sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = nl2br("\r\n").'Failed to send memo';
+                }
+                
+            } else {
+                $rejectSts = 0;
+                $rejectMsg = 'Fail to reject conference report';
+            }
+
+            if(($rejectSts > 0 && $successMemo > 0) || ($rejectSts > 0 && $successMemo == 0) ) {
+                $json = array('sts' => 1, 'msg' => $rejectMsg.$memoMsg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' => $rejectMsg.$memoMsg, 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Param not assigned', 'alert' => 'danger');
+        }
+        
+        echo json_encode($json);
+    }
+
+    // AMEND CONFERENCE REPORT
+    public function amendConferenceReport() {
+        $this->isAjax();
+
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $app_amd_remark = $this->input->post('app_amd_remark', true);
+        $app_amd_by = strtoupper($this->input->post('app_amd_by', true));
+        $app_amd_date = $this->input->post('app_amd_date', true);
+
+        $amendSts = 0;
+        $successMemo = 0;
+        $amendMsg = '';
+        $memoMsg = '';
+        // tnca_reject_send_memo (:SCR_STAFF_ID,:SCR_REFID,:SCR_TNCA_REJECT_BY,:SCR_HOD_VERIFY_BY);
+
+        if(!empty($staff_id) && !empty($refid) && !empty($app_amd_by)) {
+            $repSts = 'ENTRY';
+
+            $update = $this->mdl_lmp->amendApproveConferenceReport($refid, $staff_id, $app_amd_remark, $app_amd_by, $app_amd_date, $repSts);
+
+            if($update > 0) {
+                $amendSts++;
+                $amendMsg = 'Conference report has been amended';
+
+                // SENDER
+                $from = $app_amd_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+
+                // CONTENT REJECT MEMO DETAILS
+                $memoDetl = $this->mdl_lmp->getAmdAppRepMemContent($refid, $staff_id, $app_amd_by);
+
+                // MEMO TITLE
+                $memoTitle = 'Conference Report Approval';
+                
+                // MEMO CONTENT
+                $memoContent = 'Please resubmit conference report by fulfill the information needed :<br><br>'.
+                                'Staff ID : '.$staff_id.'<br>'.
+                                'Name : '.$staff_name.'<br>'.
+                                'Conference Title : '.$memoDetl->CM_NAME.' ('.$memoDetl->CM_DATE_FROM2.'-'.$memoDetl->CM_DATE_TO2.')'.'<br><br>'.
+                                'Amendment Remark : '.$memoDetl->SCR_TNCA_REMARK1.'<br>'.
+                                'Click here to proceed :'.'<a href="training.jsp?action=view_conference_rep&TrainingMenu=CONFERENCE&conference_status=ENTRY">Amend</a> '.'<br><br>';
+                                '<br> --System Generated Memo--';
+                
+                $memoID = 1;
+
+                $sendMemo = $this->mdl_lmp->createMemo($from, $sendTO, $cc = null, $memoTitle, $memoContent, $memoID);
+
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = nl2br("\r\n").'Amend conference report memo has been sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = nl2br("\r\n").'Failed to send memo';
+                }
+                
+            } else {
+                $amendSts = 0;
+                $amendMsg = 'Fail to amend conference report';
+            }
+
+            if(($amendSts > 0 && $successMemo > 0) || ($amendSts > 0 && $successMemo == 0) ) {
+                $json = array('sts' => 1, 'msg' => $amendMsg.$memoMsg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' => $amendMsg.$memoMsg, 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Param not assigned', 'alert' => 'danger');
+        }
+        
+        echo json_encode($json);
+    }
+
+    // APPROVE CONFERENCE REPORT
+    public function approveConferenceReport() {
+        $this->isAjax();
+
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $app_amd_remark = $this->input->post('app_amd_remark', true);
+        $app_amd_by = strtoupper($this->input->post('app_amd_by', true));
+        $app_amd_date = $this->input->post('app_amd_date', true);
+
+        $approveSts = 0;
+        $successMemo = 0;
+        $approveMsg = '';
+        $memoMsg = '';
+        // tnca_reject_send_memo (:SCR_STAFF_ID,:SCR_REFID,:SCR_TNCA_REJECT_BY,:SCR_HOD_VERIFY_BY);
+
+        if(!empty($staff_id) && !empty($refid) && !empty($app_amd_by)) {
+            $repSts = 'VERIFY_TNCA';
+
+            $update = $this->mdl_lmp->amendApproveConferenceReport($refid, $staff_id, $app_amd_remark, $app_amd_by, $app_amd_date, $repSts);
+
+            if($update > 0) {
+                $approveSts++;
+                $approveMsg = 'Conference report has been approve';
+
+                // SENDER
+                $from = $app_amd_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+
+                // CONTENT REJECT MEMO DETAILS
+                $memoDetl = $this->mdl_lmp->getAmdAppRepMemContent($refid, $staff_id, $app_amd_by);
+
+                // MEMO TITLE
+                $memoTitle = 'Conference Report Application Has Been Approved By TNC (A&A)';
+                
+                // MEMO CONTENT
+                $memoContent = 'Please take note that your conference report application has been Approved. Details :<br><br>'.
+                                'Staff ID : '.$staff_id.'<br>'.
+                                'Name : '.$staff_name.'<br>'.
+                                'Conference Title : '.$memoDetl->CM_NAME.' ('.$memoDetl->CM_DATE_FROM2.'-'.$memoDetl->CM_DATE_TO2.')'.'<br><br>'.
+                                'Approved Remark : '.$memoDetl->SCR_TNCA_REMARK1.'<br>'.
+                                '<br> --System Generated Memo--';
+                
+                $memoID = 1;
+
+                $sendMemo = $this->mdl_lmp->createMemo($from, $sendTO, $cc = null, $memoTitle, $memoContent, $memoID);
+
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = nl2br("\r\n").'Approve conference report memo has been sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = nl2br("\r\n").'Failed to send memo';
+                }
+                
+            } else {
+                $approveSts = 0;
+                $approveMsg = 'Fail to approve conference report';
+            }
+
+            if(($approveSts > 0 && $successMemo > 0) || ($approveSts > 0 && $successMemo == 0) ) {
+                $json = array('sts' => 1, 'msg' => $approveMsg.$memoMsg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' => $approveMsg.$memoMsg, 'alert' => 'danger');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Param not assigned', 'alert' => 'danger');

@@ -163,7 +163,15 @@
                 echo "$('.nav-tabs li:eq(0) a').tab('show');";
             }
 		}
-        ?>
+		?>
+		
+		$("#myModalis").draggable({
+			handle: ".modal-content"
+		});
+
+		$("#myModalis2").draggable({
+			handle: ".modal-content"
+		});
 	});
 
 	$(".nav-tabs a").click(function(){
@@ -208,7 +216,8 @@
 	});	
 
 	// SAVE INSERT CONFERENCE CATEGORY
-	$('#myModalis2').on('click', '.ins_cc', function () {
+	$('#myModalis2').on('click', '.ins_cc', function (e) {
+		e.preventDefault();
 		var data = $('#addConferenceCat').serialize();
 		msg.wait('#conferenceCatAlert');
 		//alert(data);
@@ -262,7 +271,8 @@
 	});
 
 	// SAVE UPDATE CONFERENCE CATEGORY
-	$('#myModalis2').on('click', '.save_edit_cc_btn', function () {
+	$('#myModalis2').on('click', '.save_edit_cc_btn', function (e) {
+		e.preventDefault();
 		var data = $('#editConferenceCat').serialize();
 		msg.wait('#editConferenceCatAlert');
 		//alert(data);
@@ -361,7 +371,8 @@
 	});	
 
 	// SAVE UPDATE CONFERENCE SETUP
-	$('#conference_setup').on('click', '.save_con_setup', function () {
+	$('#conference_setup').on('click', '.save_con_setup', function (e) {
+		e.preventDefault();
 		var data = $('#saveConSet').serialize();
 		msg.wait('#conSetAlert');
 		msg.wait('#conSetAlertFoot');
@@ -394,7 +405,8 @@
 	});
 
 	// SAVE UPDATE GUIDELINE URL
-	$('#conference_setup').on('click', '.save_gui_url', function () {
+	$('#conference_setup').on('click', '.save_gui_url', function (e) {
+		e.preventDefault();
 		var data = $('#saveGuidelineURL').serialize();
 		msg.wait('#conURLAlert');
 		// alert(data);
@@ -440,7 +452,8 @@
 	});	
 
 	// SAVE INSERT CONFERENCE CATEGORY
-	$('#myModalis2').on('click', '.save_con_set_ovsea', function () {
+	$('#myModalis2').on('click', '.save_con_set_ovsea', function (e) {
+		e.preventDefault();
 		var data = $('#addConSetOversea').serialize();
 		msg.wait('#addConSetOverseaAlert');
 		// alert(data);
@@ -531,7 +544,8 @@
 	});	
 
 	// SAVE STAFF CONTACT INFO
-	$('#myModalis2').on('click', '.save_staff_contact_info', function () {
+	$('#myModalis2').on('click', '.save_staff_contact_info', function (e) {
+		e.preventDefault();
 		var data = $('#addStfConInfo').serialize();
 		msg.wait('#addStfConInfoAlert');
 		// alert(data);
@@ -584,7 +598,8 @@
 	});	
 
 	// SAVE UPDATE STAFF CONTACT INFO
-	$('#myModalis2').on('click', '.save_upd_staff_contact_info', function () {
+	$('#myModalis2').on('click', '.save_upd_staff_contact_info', function (e) {
+		e.preventDefault();
 		var data = $('#editStfConInfo').serialize();
 		msg.wait('#editStfConInfoAlert');
 		// alert(data);
@@ -660,7 +675,8 @@
 	});
 
 	// SAVE UPDATE REMINDER SETUP
-	$('#conference_setup').on('click', '.save_reminder_setup', function () {
+	$('#conference_setup').on('click', '.save_reminder_setup', function (e) {
+		e.preventDefault();
 		var data = $('#saveRemSet').serialize();
 		msg.wait('#remSetAlert');
 		//alert(data);
@@ -741,7 +757,8 @@
 	});	
 
 	// SAVE STAFF ADMIN HIER
-	$('#myModalis2').on('click', '.ins_sah', function () {
+	$('#myModalis2').on('click', '.ins_sah', function (e) {
+		e.preventDefault();
 		var data = $('#addStfAdminHier').serialize();
 		msg.wait('#addStfAdminHierAlert');
 		// alert(data);
@@ -837,7 +854,8 @@
 	});
 
 	// SAVE UPDATE STAFF ADMIN HIER
-	$('#myModalis2').on('click', '.upd_sah', function () {
+	$('#myModalis2').on('click', '.upd_sah', function (e) {
+		e.preventDefault();
 		var data = $('#editStfAdminHier').serialize();
 		msg.wait('#editStfAdminHierAlert');
 		//alert(data);
@@ -884,7 +902,8 @@
 	});	
 
 	// SAVE CERTIFIED OFFICER FOR HEAD OF PTJ
-	$('#myModalis2').on('click', '.ins_cohp', function () {
+	$('#myModalis2').on('click', '.ins_cohp', function (e) {
+		e.preventDefault();
 		var data = $('#addCerOfficer').serialize();
 		msg.wait('#addCerOfficerAlert');
 		// alert(data);
@@ -981,7 +1000,8 @@
 	});
 
 	// SAVE UPDATE CERTIFIED OFFICER FOR HEAD OF PTJ
-	$('#myModalis2').on('click', '.upd_cohp', function () {
+	$('#myModalis2').on('click', '.upd_cohp', function (e) {
+		e.preventDefault();
 		var data = $('#editCerOfficer').serialize();
 		msg.wait('#editCerOfficerAlert');
 		// alert(data);
@@ -1041,7 +1061,8 @@
 	});		
 
 	// SAVE UPDATE NOTIFICATION SETUP
-	$('#notification_setup').on('click', '.save_noti_setup', function () {
+	$('#notification_setup').on('click', '.save_noti_setup', function (e) {
+		e.preventDefault();
 		var data = $('#saveNotiSet').serialize();
 		msg.wait('#notiSetAlert');
 		msg.wait('#notiSetAlertFoot');
@@ -1089,7 +1110,8 @@
 	});	
 
 	// SAVE STAFF REMINDER
-	$('#myModalis2').on('click', '.save_stf_rem_btn', function () {
+	$('#myModalis2').on('click', '.save_stf_rem_btn', function (e) {
+		e.preventDefault();
 		var data = $('#addStaffReminder').serialize();
 		msg.wait('#addStaffReminderAlert');
 		// alert(data);
@@ -1199,7 +1221,8 @@
 	});	
 
 	// SAVE CONFERENCE ALLOWANCE
-	$('#myModalis2').on('click', '.ins_ca', function () {
+	$('#myModalis2').on('click', '.ins_ca', function (e) {
+		e.preventDefault();
 		var data = $('#addConAllow').serialize();
 		msg.wait('#addConAllowAlert');
 		// alert(data);
@@ -1295,7 +1318,8 @@
 	});
 
 	// SAVE UPDATE CONFERENCE ALLOWANCE
-	$('#myModalis2').on('click', '.upd_ca', function () {
+	$('#myModalis2').on('click', '.upd_ca', function (e) {
+		e.preventDefault();
 		var data = $('#editConAllow').serialize();
 		msg.wait('#editConAllowAlert');
 		//alert(data);
@@ -1361,7 +1385,8 @@
 	});	
 
 	// SAVE COUNTRY SETUP
-	$('#myModalis2').on('click', '.ins_ccs', function () {
+	$('#myModalis2').on('click', '.ins_ccs', function (e) {
+		e.preventDefault();
 		var data = $('#addConCountry').serialize();
 		msg.wait('#addConCountryAlert');
 		// alert(data);
@@ -1471,7 +1496,8 @@
 	});	
 
 	// SAVE PARTICIPANT ROLE
-	$('#myModalis2').on('click', '.ins_pr', function () {
+	$('#myModalis2').on('click', '.ins_pr', function (e) {
+		e.preventDefault();
 		var data = $('#addConPartRole').serialize();
 		msg.wait('#addConPartRoleAlert');
 		msg.wait('#addConPartRoleAlertFoot');
@@ -1546,7 +1572,8 @@
 	});
 
 	// SAVE UPDATE CONFERENCE ALLOWANCE
-	$('#myModalis2').on('click', '.upd_pr', function () {
+	$('#myModalis2').on('click', '.upd_pr', function (e) {
+		e.preventDefault();
 		var data = $('#updConPartRole').serialize();
 		msg.wait('#updConPartRoleAlert');
 		msg.wait('#updConPartRoleAlertFoot');

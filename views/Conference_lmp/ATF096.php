@@ -212,6 +212,17 @@
 	var stf_row = '';
 	var crs_row = '';
 
+	$(document).ready(function(){
+
+		$("#myModalis").draggable({
+			handle: ".modal-content"
+		});
+
+		$("#myModalis2").draggable({
+			handle: ".modal-content"
+		});
+	});
+
 	$(".nav-tabs a").click(function(){
 		$(this).tab('show');
     });
@@ -682,7 +693,8 @@
 	});
 
 	// SAVE REPORT ENTRY PART I
-	$('#part_i').on('click', '.ins_rep_ent_pt_i', function () {
+	$('#part_i').on('click', '.ins_rep_ent_pt_i', function (e) {
+		e.preventDefault();
 		var data = $('#addNewReportPartI').serialize();
 		msg.wait('#alertAddNewReportPartI');
         msg.wait('#alertAddNewReportPartIFooter');
@@ -773,7 +785,8 @@
 	});
 	
 	// SAVE EDIT REPORT ENTRY PART I
-	$('#part_i').on('click', '.edit_rep_ent_pt_i', function () {
+	$('#part_i').on('click', '.edit_rep_ent_pt_i', function (e) {
+		e.preventDefault();
 		var data = $('#editReportPartI').serialize();
 		msg.wait('#alertEditReportPartI');
         msg.wait('#alertEditReportPartIFooter');
@@ -829,7 +842,8 @@
 	-----------------------------*/
 
 	// SAVE EDIT REPORT ENTRY PART II
-	$('#part_ii').on('click', '.edit_rep_part_ii', function () {
+	$('#part_ii').on('click', '.edit_rep_part_ii', function (e) {
+		e.preventDefault();
 		var data = $('#editReportPartII').serialize();
 		msg.wait('#alertEditReportPartII');
         // msg.wait('#alertEditReportPartIIFooter');
@@ -898,7 +912,8 @@
 	});
 
 	// SAVE RECORD ESTABLISHED NETWORKS AND RELATIONSHIPS
-	$('#myModalis2').on('click', '.ins_net_relay', function () {
+	$('#myModalis2').on('click', '.ins_net_relay', function (e) {
+		e.preventDefault();
 		var data = $('#addEstNetRelayMd').serialize();
 		msg.wait('#addEstNetRelayMdAlert');
 		
@@ -995,7 +1010,8 @@
 	-----------------------------*/
 
 	// SAVE EDIT REPORT ENTRY PART III
-	$('#part_iii').on('click', '.edit_rep_part_iii', function () {
+	$('#part_iii').on('click', '.edit_rep_part_iii', function (e) {
+		e.preventDefault();
 		var data = $('#editReportPartIII').serialize();
 		msg.wait('#alertEditReportPartIII');
         msg.wait('#alertEditReportPartIIIFooter');
@@ -1065,7 +1081,8 @@
 	});
 
 	// SAVE RECORD SCR PART 2
-	$('#myModalis2').on('click', '.save_scrpii', function () {
+	$('#myModalis2').on('click', '.save_scrpii', function (e) {
+		e.preventDefault();
 		var data = $('#addScrPartIIMd').serialize();
 		msg.wait('#addScrPartIIMdAlert');
 		
@@ -1420,7 +1437,8 @@
 	///// SEARCH STAFF APPROVED BY//////
 
 	// SAVE EDIT REPORT ENTRY PART II
-	$('#part_iv').on('click', '.edit_rep_part_iv', function () {
+	$('#part_iv').on('click', '.edit_rep_part_iv', function (e) {
+		e.preventDefault();
 		var data = $('#editReportPartIV').serialize();
 		msg.wait('#alertEditReportPartIV');
         msg.wait('#alertEditReportPartIVFooter');

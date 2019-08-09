@@ -221,7 +221,7 @@ class Conference_setup extends MY_Controller
                     $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
                 }
             } else {
-                $json = array('sts' => 0, 'msg' => 'Could not remove record.'.nl2br("\r\n Please remove child record from <b>STAFF_CONFERENCE_MAIN</b>"), 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => 'Could not remove record.'.nl2br("\r\n Please remove child record from <b>STAFF CONFERENCE</b>"), 'alert' => 'danger');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');

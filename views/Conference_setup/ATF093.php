@@ -56,7 +56,7 @@
 
                             <ul id="myTab1" class="nav nav-tabs bordered">
                                 <li class="active">
-                                    <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Conference Category</a>
+                                    <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Conference Info</a>
                                 </li>
                             </ul>
 							<!-- myTabContent1 -->
@@ -115,7 +115,15 @@
                 echo "$('.nav-tabs li:eq(0) a').tab('show');";
             }
 		}
-        ?>
+		?>
+		
+		$("#myModalis").draggable({
+			handle: ".modal-content"
+		});
+
+		$("#myModalis2").draggable({
+			handle: ".modal-content"
+		});
 	});
 
 	$(".nav-tabs a").click(function(){
@@ -186,7 +194,8 @@
 	});	
 
 	// SAVE INSERT CONFERENCE INFORMATION
-	$('#myModalis').on('click', '.ins_con_info', function () {
+	$('#myModalis').on('click', '.ins_con_info', function (e) {
+		e.preventDefault();
 		var data = $('#addConInfo').serialize();
 		msg.wait('#addConInfoAlert');
         msg.wait('#addConInfoAlertFoot');
@@ -265,7 +274,8 @@
 	});
 
 	// SAVE UPDATE CONFERENCE INFORMATION
-	$('#myModalis').on('click', '.edit_con_info', function () {
+	$('#myModalis').on('click', '.edit_con_info', function (e) {
+		e.preventDefault();
 		var data = $('#editConInfo').serialize();
 		msg.wait('#editConInfoAlert');
 		msg.wait('#editConInfoAlertFoot');

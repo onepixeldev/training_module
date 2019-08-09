@@ -194,6 +194,16 @@ class Conference_pmp extends MY_Controller
         $this->render($data);
     }
 
+    // QUERY CONFERENCE REPORT APPLICATION
+    public function ATF168()
+    { 
+        // DEPARTMENT LIST
+        $data['dept_list'] = $this->dropdown($this->mdl_pmp->populateDeptQ(), 'DM_DEPT_CODE', 'DM_DEPT_CODE', '');
+        
+
+        $this->render($data);
+    }
+
     /*===========================================================
        CONFERENCE APPLICATION - MANUAL ENTRY (ATF075)
     =============================================================*/
@@ -396,7 +406,7 @@ class Conference_pmp extends MY_Controller
                 if($insert > 0) {
                     $insertStaffConDetl = $this->mdl_pmp->insStaffConDetl($refid, $staff_id);
                     if($insertStaffConDetl > 0) { 
-                        $insConDetlMsg = 'Successfully saved on STAFF_CONFERENCE_DETL';
+                        $insConDetlMsg = 'Successfully saved on Staff Conference Detail';
                     } else {
                         $insConDetlMsg = '';
                     }
@@ -770,19 +780,19 @@ class Conference_pmp extends MY_Controller
             // CHECK STAFF_CONFERENCE_ALLOWANCE RECORD
             $checkDel1 = $this->mdl_pmp->checkDelStfConAllw($staffId, $crRefID);
             if(!empty($checkDel1)) {
-                $msgCheckDel1 = '<b>STAFF_CONREFENCE_ALLOWANCE</b>'.nl2br("\r\n");
+                $msgCheckDel1 = '<b>Conference allowance for staff</b>'.nl2br("\r\n");
             }
 
             // CHECK STAFF_APPL_ATTACH RECORD
             $checkDel2 = $this->mdl_pmp->checkDelStfApplAtt($staffId, $crRefID);
             if(!empty($checkDel2)) {
-                $msgCheckDel2 = '<b>STAFF_APPL_ATTACH</b>'.nl2br("\r\n");
+                $msgCheckDel2 = '<b>Staff attachment</b>'.nl2br("\r\n");
             }
             
             // CHECK STAFF_LEAVE_DETL RECORD
             $checkDel3 = $this->mdl_pmp->checkDelStfLevDetl($staffId);
             if(!empty($checkDel3)) {
-                $msgCheckDel3 = '<b>STAFF_LEAVE_DETL</b>'.nl2br("\r\n");
+                $msgCheckDel3 = '<b>Leave detail for staff</b>'.nl2br("\r\n");
             }
 
             if(empty($checkDel1) && empty($checkDel2) && empty($checkDel3)) {
@@ -805,6 +815,8 @@ class Conference_pmp extends MY_Controller
 
     // FILE ATTACHMENT PARAM
     public function fileAttParam() {
+        $this->isAjax();
+
         $staffID = $this->input->post('staffID', true);
         $refid = $this->input->post('refid', true);
 
@@ -841,6 +853,7 @@ class Conference_pmp extends MY_Controller
 
     // PARAM PMP
     public function setParamPmpAtt() {
+        $this->isAjax();
 		// clear filter for report
         $this->session->set_userdata('repCode','');
         $this->session->set_userdata('crStaffID','');
@@ -1060,6 +1073,7 @@ class Conference_pmp extends MY_Controller
 
     // COUNT TOTAL DAY APPLIED
     public function countTotalDayApplied() {
+        $this->isAjax();
         $app_date_fr = $this->input->post('app_date_fr', true);
         $app_date_to = $this->input->post('app_date_to', true);
         $app_date_fr_arr = explode('/', $app_date_fr);
@@ -1091,6 +1105,8 @@ class Conference_pmp extends MY_Controller
 
     // GET LEAVE BALANCE
     public function getLeaveBalance() {
+        $this->isAjax();
+
         $total_day_applied = $this->input->post('total_day_applied', true);
         $crRefid = $this->input->post('crRefid', true);
         $staffID = $this->input->post('staffID', true);
@@ -1293,12 +1309,12 @@ class Conference_pmp extends MY_Controller
 
                 if($upd_staff_leave_detl > 0) {
                     $successUpdStfLvDetl++;
-                    $msg_staff_leave_detl = 'Record succesfully updated (STAFF_LEAVE_DETL)';
+                    $msg_staff_leave_detl = 'Record succesfully updated (Leave detail for staff)';
 
                     $upd_stf_con_main = $this->mdl_pmp->updStaffConMain($form, $cr_refid, $staff_id);
                     if($upd_stf_con_main > 0) {
                         $successUpdStfConMain++;
-                        $msg_staff_con_main = 'Record succesfully updated (STAFF_CONFERENCE_MAIN)';
+                        $msg_staff_con_main = 'Record succesfully updated (Staff conference)';
                     } 
                 } 
             } else {
@@ -1314,12 +1330,12 @@ class Conference_pmp extends MY_Controller
 
                 if($ins_staff_leave_detl > 0) {
                     $successInsStfLvDetl++;
-                    $msg_staff_leave_detl = 'Record succesfully saved (STAFF_LEAVE_DETL)';
+                    $msg_staff_leave_detl = 'Record succesfully saved (Leave detail for staff)';
 
                     $upd_stf_con_main = $this->mdl_pmp->updStaffConMainLvRefid($form, $cr_refid, $staff_id, $sld_refid);
                     if($upd_stf_con_main > 0) {
                         $successUpdStfConMain++;
-                        $msg_staff_con_main = 'Record succesfully updated (STAFF_CONFERENCE_MAIN)';
+                        $msg_staff_con_main = 'Record succesfully updated (Staff conference)';
                     }
                 } 
             }
@@ -1345,7 +1361,7 @@ class Conference_pmp extends MY_Controller
 
                 if($upd_staff_leave_rec > 0) {
                     $successUpdStfLvRec++;
-                    $msg_staff_leave_rec = 'Record succesfully updated (STAFF_LEAVE_RECORD)';
+                    $msg_staff_leave_rec = 'Record succesfully updated (Leave record for staff)';
                 }
             } else {
 
@@ -1360,7 +1376,7 @@ class Conference_pmp extends MY_Controller
 
                 if($ins_staff_leave_rec > 0) {
                     $successInsStfLvRec++;
-                    $msg_staff_leave_rec = 'Record succesfully saved (STAFF_LEAVE_RECORD)';
+                    $msg_staff_leave_rec = 'Record succesfully saved (Leave record for staff)';
                 }
             }
 
@@ -1568,7 +1584,7 @@ class Conference_pmp extends MY_Controller
                 $insert = $this->mdl_pmp->saveNewStfConAllowance($form, $refid, $staff_id, $allowance_code);
 
                 if($insert > 0) {
-                    $insertMsg = 'Record successfully saved (STAFF_CONFERENCE_ALLOWANCE)';
+                    $insertMsg = 'Record successfully saved (Conference allowance for staff)';
 
                     // GET STAFF CONFERENCE DETL
                     $staff_detl = $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
@@ -1641,16 +1657,16 @@ class Conference_pmp extends MY_Controller
                     if($budget_origin == 'CONFERENCE' || $budget_origin == 'DEPARTMENT') {
                         $update1 = $this->mdl_pmp->updSumScm($refid, $staff_id, $budget_origin, $scm_rm_total_amt, $scm_foreign_total_amt, $scm_rm_total_amt_dept, $scm_foreign_total_amt_dept, $scm_rm_total_amt_approve_hod, $scm_total_amt_dept_apprv_hod, $scm_rm_total_amt_approve_tnca, $scm_rm_total_amt_approve_vc);
                         if($update1 > 0) { 
-                            $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
+                            $update1Msg = 'Record successfully updated (Staff conference)';
                         } else {
-                            $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
+                            $update1Msg = 'Fail to update record (Staff conference)';
                         }
                     } elseif($mod == 'EDIT_RMIC' && $budget_origin == 'RESEARCH') {
                         $update1 = $this->mdl_pmp->updSumScmRmic($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_foreign_tot_amt_rmic);
                         if($update1 > 0) { 
-                            $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
+                            $update1Msg = 'Record successfully updated (Staff conference)';
                         } else {
-                            $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
+                            $update1Msg = 'Fail to update record (Staff conference)';
                         }
                     }
 
@@ -1780,7 +1796,7 @@ class Conference_pmp extends MY_Controller
             $update = $this->mdl_pmp->saveUpdStfConAllowance($form, $refid, $staff_id, $allowance_code);
 
             if($update > 0) {
-                $updateMsg = 'Record successfully saved (STAFF_CONFERENCE_ALLOWANCE)';
+                $updateMsg = 'Record successfully saved (Conference allowance for staff)';
 
                 // GET STAFF CONFERENCE DETL
                 $staff_detl = $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
@@ -1904,24 +1920,24 @@ class Conference_pmp extends MY_Controller
                 if((empty($mod) && $budget_origin == 'CONFERENCE') || (empty($mod) && $budget_origin == 'DEPARTMENT')) {
                     $update1 = $this->mdl_pmp->updSumScm($refid, $staff_id, $budget_origin, $scm_rm_total_amt, $scm_foreign_total_amt, $scm_rm_total_amt_dept, $scm_foreign_total_amt_dept, $scm_rm_total_amt_approve_hod, $scm_total_amt_dept_apprv_hod, $scm_rm_total_amt_approve_tnca, $scm_rm_total_amt_approve_vc);
                     if($update1 > 0) { 
-                        $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
+                        $update1Msg = 'Record successfully updated (Staff conference)';
                     } else {
-                        $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
+                        $update1Msg = 'Fail to update record (Staff conference)';
                     }
                 } elseif($mod == 'EDIT_RMIC') {
                     if($budget_origin == 'RESEARCH') {
                         $update1 = $this->mdl_pmp->updSumScmRmic2($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_total_amt_dept_apprv_hod, $scm_rm_tot_amt_apprv_rmic, $scm_rm_tot_amt_apprv_tncpi, $scm_foreign_tot_amt_rmic);
                         if($update1 > 0) { 
-                            $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
+                            $update1Msg = 'Record successfully updated (Staff conference)';
                         } else {
-                            $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
+                            $update1Msg = 'Fail to update record (Staff conference)';
                         }
                     } else {
                         $update1 = $this->mdl_pmp->updSumScmRmic3($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_total_amt_dept_apprv_hod, $scm_rm_tot_amt_apprv_rmic, $scm_rm_tot_amt_apprv_tncpi, $scm_rm_total_amt_approve_tnca, $scm_foreign_tot_amt_rmic, $scm_rm_total_amt, $scm_rm_total_amt_approve_hod, $scm_rm_total_amt_approve_tnca2, $scm_rm_total_amt_approve_tnca3, $scm_rm_total_amt_approve_vc, $scm_foreign_total_amt);
                         if($update1 > 0) { 
-                            $update1Msg = 'Record successfully updated (STAFF_CONFERENCE_MAIN)';
+                            $update1Msg = 'Record successfully updated (Staff conference)';
                         } else {
-                            $update1Msg = 'Fail to update record (STAFF_CONFERENCE_MAIN)';
+                            $update1Msg = 'Fail to update record (Staff conference)';
                         }
                     }
                 }
@@ -2041,6 +2057,8 @@ class Conference_pmp extends MY_Controller
 
     // DOWNLAOD FILE ATTACHMENT PARAM
     public function dloadFileAttParam() {
+        $this->isAjax();
+        
         $staff_id = $this->input->post('staff_id', true);
         $cr_refid = $this->input->post('cr_refid', true);
         $file_name = $this->input->post('file_name', true);
@@ -2568,10 +2586,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($save > 0) {
                     $successSave++;
-                    $saveMsg = 'Record has been saved (STAFF_CONFERENCE_ALLOWANCE)';
+                    $saveMsg = 'Record has been saved (Conference allowance for staff)';
                 } else {
                     $successSave = 0;
-                    $saveMsg = 'Fail to save record (STAFF_CONFERENCE_ALLOWANCE)';
+                    $saveMsg = 'Fail to save record (Conference allowance for staff)';
                 }
             }
 
@@ -2582,10 +2600,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($updateSum > 0) {
                     $successUpdSum++;
-                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN)';
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (Staff conference)';
                 } else {
                     $successUpdSum = 0;
-                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN)';
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (Staff conference)';
                 }
             }
 
@@ -2623,10 +2641,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($clear > 0) {
                     $successClear++;
-                    $clearMsg = 'Record has been cleared (STAFF_CONFERENCE_ALLOWANCE)';
+                    $clearMsg = 'Record has been cleared (Conference allowance staff)';
                 } else {
                     $successClear = 0;
-                    $clearMsg = 'Fail to clear record (STAFF_CONFERENCE_ALLOWANCE)';
+                    $clearMsg = 'Fail to clear record (Conference allowance staff)';
                 }
             }
 
@@ -2635,10 +2653,10 @@ class Conference_pmp extends MY_Controller
 
             if ($clearSum > 0) {
                 $successClearSum++;
-                $successClearSumMsg = nl2br("\r\n").'Record has been cleared (STAFF_CONFERENCE_MAIN)';
+                $successClearSumMsg = nl2br("\r\n").'Record has been cleared (Staff conference)';
             } else {
                 $successClearSum = 0;
-                $successClearSumMsg = nl2br("\r\n").'Fail to clear record (STAFF_CONFERENCE_MAIN)';
+                $successClearSumMsg = nl2br("\r\n").'Fail to clear record (Staff conference)';
             }
 
             if($success == $successClear && $successClearSum > 0) {
@@ -2752,10 +2770,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($updateSum > 0) {
                     $successUpdSum++;
-                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN)';
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (Staff conference)';
                 } else {
                     $successUpdSum = 0;
-                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN)';
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (Staff conference)';
                 }
             }
 
@@ -3322,10 +3340,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($updateSum > 0) {
                     $successUpdSum++;
-                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN)';
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (Staff conference)';
                 } else {
                     $successUpdSum = 0;
-                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN)';
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (Staff conference)';
                 }
             }
 
@@ -3385,10 +3403,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($save > 0) {
                     $successSave++;
-                    $saveMsg = 'Record has been saved (STAFF_CONFERENCE_ALLOWANCE)';
+                    $saveMsg = 'Record has been saved (Conference allowance for staff)';
                 } else {
                     $successSave = 0;
-                    $saveMsg = 'Fail to save record (STAFF_CONFERENCE_ALLOWANCE)';
+                    $saveMsg = 'Fail to save record (Conference allowance for staff)';
                 }
             }
 
@@ -3400,10 +3418,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($updateSum > 0) {
                     $successUpdSum++;
-                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN)';
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (Staff conference)';
                 } else {
                     $successUpdSum = 0;
-                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN)';
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (Staff conference)';
                 }
             }
 
@@ -3455,10 +3473,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($save > 0) {
                     $successSave++;
-                    $saveMsg = 'Record has been saved (STAFF_CONFERENCE_ALLOWANCE)';
+                    $saveMsg = 'Record has been saved (Conference allowance for staff)';
                 } else {
                     $successSave = 0;
-                    $saveMsg = 'Fail to save record (STAFF_CONFERENCE_ALLOWANCE)';
+                    $saveMsg = 'Fail to save record (Conference allowance for staff)';
                 }
             }
 
@@ -3470,10 +3488,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($updateSum > 0) {
                     $successUpdSum++;
-                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN)';
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (Staff conference)';
                 } else {
                     $successUpdSum = 0;
-                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN)';
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (Staff conference)';
                 }
             }
 
@@ -3960,13 +3978,14 @@ class Conference_pmp extends MY_Controller
         $staff_name = $this->input->post('staff_name', true);
         $svc_code = $this->input->post('svc_code', true);
         $svc_desc = $this->input->post('svc_desc', true);
+        $mod = $this->input->post('mod', true);
 
         if(!empty($staff_id) && !empty($staff_name) && !empty($svc_code) && !empty($svc_code)) {
             $data['staff_id'] = $staff_id;
             $data['staff_name'] = $staff_name;
             $data['svc_code'] = $svc_code;
             $data['svc_desc'] = $svc_desc;
-            $data['con_inf'] = $this->mdl_pmp->conHistoryListQ($staff_id);
+            $data['con_inf'] = $this->mdl_pmp->conHistoryListQ($staff_id, $mod);
         } elseif(!empty($staff_id) && empty($staff_name) && empty($svc_code) && empty($svc_code)) {
             $data['staff_id'] = $staff_id;
 
@@ -3982,7 +4001,7 @@ class Conference_pmp extends MY_Controller
                 $data['svc_desc'] = '';
             }
 
-            $data['con_inf'] = $this->mdl_pmp->conHistoryListQ($staff_id);
+            $data['con_inf'] = $this->mdl_pmp->conHistoryListQ($staff_id, $mod);
         }
 
         $this->render($data);
@@ -4479,11 +4498,7 @@ class Conference_pmp extends MY_Controller
                 $data['rsh_dt'] = '';
             }
         }
-
-        
-
-        
-        
+  
         $this->render($data);
     }
 
@@ -4617,10 +4632,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($save > 0) {
                     $successSave++;
-                    $saveMsg = 'Record has been saved (STAFF_CONFERENCE_ALLOWANCE)';
+                    $saveMsg = 'Record has been saved (Conference allowance for staff)';
                 } else {
                     $successSave = 0;
-                    $saveMsg = 'Fail to save record (STAFF_CONFERENCE_ALLOWANCE)';
+                    $saveMsg = 'Fail to save record (Conference allowance for staff)';
                 }
             }
 
@@ -4632,10 +4647,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($updateSum > 0) {
                     $successUpdSum++;
-                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN - SUM)';
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (Staff conference - SUM)';
                 } else {
                     $successUpdSum = 0;
-                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN - SUM)';
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (Staff conference - SUM)';
                 }
             }
 
@@ -4680,10 +4695,10 @@ class Conference_pmp extends MY_Controller
             $updateCategory = $this->mdl_pmp->updNewCat($refid, $staff_id, $newCat, $oldCat);
             if ($updateCategory > 0) {
                 $successUpdCat++;
-                $successUpdCatMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN - CATEGORY CODE)';
+                $successUpdCatMsg = nl2br("\r\n").'Record has been saved (Staff conference - CATEGORY CODE)';
             } else {
                 $successUpdCat = 0;
-                $successUpdCatMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN - CATEGORY CODE)';
+                $successUpdCatMsg = nl2br("\r\n").'Fail to save record (Staff conference - CATEGORY CODE)';
             }
 
             // SET BUDGET ORIGIN
@@ -4752,10 +4767,10 @@ class Conference_pmp extends MY_Controller
 
             if ($updateBudget > 0) {
                 $successUpdBudget++;
-                $successUpdBudgetMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN - BUDGET ORIGIN/PREV)';
+                $successUpdBudgetMsg = nl2br("\r\n").'Record has been saved (Staff conference - BUDGET ORIGIN/PREV)';
             } else {
                 $successUpdBudget = 0;
-                $successUpdBudgetMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN - BUDGET ORIGIN/PREV)';
+                $successUpdBudgetMsg = nl2br("\r\n").'Fail to save record (Staff conference - BUDGET ORIGIN/PREV)';
             }
 
 
@@ -4862,10 +4877,10 @@ class Conference_pmp extends MY_Controller
 
                 if ($updateSum > 0) {
                     $successUpdSum++;
-                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (STAFF_CONFERENCE_MAIN - SUM)';
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (Staff conference - SUM)';
                 } else {
                     $successUpdSum = 0;
-                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (STAFF_CONFERENCE_MAIN - SUM)';
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (Staff conference - SUM)';
                 }
             }
 
@@ -4876,6 +4891,177 @@ class Conference_pmp extends MY_Controller
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    /*===============================================================
+       Staff Conference Maintenance (ATF168)
+    ================================================================*/
+
+    // DELETE STAFF CONFERENCE MAINTENANCE
+    public function deleteStaffConMaintenance()
+    {  
+        $this->isAjax();
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $v_approver = '';
+        $v_approved_date = null;
+
+        $successInsConDel = 0;
+        $successUpdSld = 0;
+        $successUpdSlr = 0;
+
+        $msgInsConDel = '';
+        $msgUpdSld = '';
+        $msgUpdSlr = '';
+
+        $msgStfApplAttach = '';
+        $msgStfConfAllw = '';
+        $msgStfConfDetl = '';
+        $msgStfConfMain = '';
+
+        if(!empty($refid) && !empty($staff_id)) {
+
+            $scmDetl = $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
+            if(!empty($scmDetl)) {
+                if(!empty($scmDetl->SCM_LEAVE_REFID)) {
+                    $leave_refid = $scmDetl->SCM_LEAVE_REFID;
+
+                    // GET STAFF_LEAVE_DETL
+                    $leaveDetl = $this->mdl_pmp->getStaffLeaveDetlM($staff_id, $leave_refid);
+                    if(!empty($leaveDetl)) {
+                        $sld_date_from = $leaveDetl->SLD_DATE_FROM;
+                        $sld_date_to = $leaveDetl->SLD_DATE_TO;
+                        $sld_total_day = $leaveDetl->SLD_TOTAL_DAY;
+                    } else {
+                        $sld_date_from = '';
+                        $sld_date_to = '';
+                        $sld_total_day = '';
+                    }
+
+                    $v_approver = '';
+                    $v_approved_date = null;
+                    
+                    if(empty($v_approver)) {
+                        $v_approver = $this->staff_id;
+                    }
+
+                    if(empty($v_approved_date)) {
+                        $v_approved_date = $scmDetl->CURR_DATE;
+                    }
+
+                    // INSERT STAFF CONFERENCE DELETE
+                    $insertStfConDel = $this->mdl_pmp->insertStfConDel($refid, $staff_id, $scmDetl);
+                    if($insertStfConDel > 0) {
+                        // success++
+                        // msg
+                        $successInsConDel++;
+                        $msgInsConDel = nl2br("\r\n").'Record has been saved (Delete Staff conference)';
+                    } else {
+                        // success = 0
+                        // msg
+                        $successInsConDel = 0;
+                        $msgInsConDel = nl2br("\r\n").'Fail to save record (Delete Staff conference)';
+                    }
+
+                    // UPDATE STAFF_LEAVE_DETL
+                    $updStaffLvDetl = $this->mdl_pmp->updateStafflvDetl($staff_id, $leave_refid, $sld_total_day);
+                    if($updStaffLvDetl > 0) {
+                        $successUpdSld++;
+                        $msgUpdSld = nl2br("\r\n").'Record has been saved (Staff leave detail)';
+                    } else {
+                        $successUpdSld = 0;
+                        $msgUpdSld = nl2br("\r\n").'Fail to save record (Staff leave detail)';
+                    }
+
+                    // UPDATE STAFF LEAVE RECORD
+                    if($sld_date_from == $sld_date_to && (!empty($sld_date_from) && !empty($sld_date_from))) {
+                        $leave_year = $sld_date_from;
+                        $updStaffLvRec = $this->mdl_pmp->updateRejSLR($sld_total_day, $staff_id, $leave_year);
+                        if($updStaffLvDetl > 0) {
+                            $successUpdSlr++;
+                            $msgUpdSlr = nl2br("\r\n").'Record has been saved (Staff leave record)';
+                        } else {
+                            $successUpdSlr = 0;
+                            $msgUpdSlr = nl2br("\r\n").'Fail to save record (Staff leave record)';
+                        }
+                    }
+
+                    // DELETE FROM STAFF_APPL_ATTACH
+                    $delStfApplAttach = $this->mdl_pmp->delStfApplAttach($refid, $staff_id);
+                    if($delStfApplAttach > 0) {
+                        $msgStfApplAttach = nl2br("\r\n").'Record has been deleted (Staff attachment)';
+                    } else {
+                        $msgStfApplAttach = nl2br("\r\n").'Fail to delete record (Staff attachment)';
+                    }
+
+                    // DELETE FROM STAFF_CONFERENCE_ALLOWANCE
+                    $delStfConfAllw = $this->mdl_pmp->delStfConfAllw($refid, $staff_id);
+                    if($delStfConfAllw > 0) {
+                        $msgStfConfAllw= nl2br("\r\n").'Record has been deleted (Conference allowance for staff)';
+                    } else {
+                        $msgStfConfAllw = nl2br("\r\n").'Fail to delete record (Conference allowance for staff)';
+                    }
+
+                    // DELETE FROM STAFF_CONFERENCE_DETL
+                    $delStfConfDetl = $this->mdl_pmp->delStfConfDetl($refid, $staff_id);
+                    if($delStfConfDetl > 0) {
+                        $msgStfConfDetl = nl2br("\r\n").'Record has been deleted (Staff conference detail)';
+                    } else {
+                        $msgStfConfDetl = nl2br("\r\n").'Fail to delete record (Staff conference detail)';
+                    }
+
+                    // DELETE FROM STAFF_CONFERENCE_MAIN
+                    $delStfConfMain = $this->mdl_pmp->delStfConfMain($refid, $staff_id);
+                    if($delStfConfMain > 0) {
+                        $msgStfConfMain = nl2br("\r\n").'Record has been deleted (Staff conference)';
+                    } else {
+                        $msgStfConfMain = nl2br("\r\n").'Fail to delete record (Staff conference)';
+                    }
+                } else {
+                    // DELETE FROM STAFF_APPL_ATTACH
+                    $delStfApplAttach = $this->mdl_pmp->delStfApplAttach($refid, $staff_id);
+                    if($delStfApplAttach > 0) {
+                        $msgStfApplAttach = nl2br("\r\n").'Record has been deleted (Staff attachment)';
+                    } else {
+                        $msgStfApplAttach = nl2br("\r\n").'Fail to delete record (Staff attachment)';
+                    }
+
+                    // DELETE FROM STAFF_CONFERENCE_ALLOWANCE
+                    $delStfConfAllw = $this->mdl_pmp->delStfConfAllw($refid, $staff_id);
+                    if($delStfConfAllw > 0) {
+                        $msgStfConfAllw= nl2br("\r\n").'Record has been deleted (Conference allowance for staff)';
+                    } else {
+                        $msgStfConfAllw = nl2br("\r\n").'Fail to delete record (Conference allowance for staff)';
+                    }
+
+                    // DELETE FROM STAFF_CONFERENCE_DETL
+                    $delStfConfDetl = $this->mdl_pmp->delStfConfDetl($refid, $staff_id);
+                    if($delStfConfDetl > 0) {
+                        $msgStfConfDetl = nl2br("\r\n").'Record has been deleted (Staff conference detail)';
+                    } else {
+                        $msgStfConfDetl = nl2br("\r\n").'Fail to delete record (Staff conference detail)';
+                    }
+
+                    // DELETE FROM STAFF_CONFERENCE_MAIN
+                    $delStfConfMain = $this->mdl_pmp->delStfConfMain($refid, $staff_id);
+                    if($delStfConfMain > 0) {
+                        $msgStfConfMain = nl2br("\r\n").'Record has been deleted (Staff conference)';
+                    } else {
+                        $msgStfConfMain = nl2br("\r\n").'Fail to delete record (Staff conference)';
+                    }
+                }
+            }
+
+            if((($successInsConDel > 0 && $successUpdSld > 0 && $successUpdSld > 0) && ($delStfApplAttach > 0 && $delStfConfAllw > 0 && $delStfConfDetl > 0 && $delStfConfMain > 0)) || ($delStfApplAttach > 0 && $delStfConfAllw > 0 && $delStfConfDetl > 0 && $delStfConfMain > 0)) {
+                $json = array('sts' => 1, 'msg' => $msgInsConDel.$msgUpdSld.$msgUpdSlr.$msgStfApplAttach.$msgStfConfAllw.$msgStfConfDetl.$msgStfConfMain, 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => $msgInsConDel.$msgUpdSld.$msgUpdSlr.$msgStfApplAttach.$msgStfConfAllw.$msgStfConfDetl.$msgStfConfMain, 'alert' => 'danger');
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
         }
          
         echo json_encode($json);
