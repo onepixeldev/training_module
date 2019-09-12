@@ -38,6 +38,10 @@ class Conference_pmp extends MY_Controller
             redirect($this->class_uri('ATF035'));
         } elseif($scID == 'ATF043') {
             redirect($this->class_uri('ATF043'));
+        } elseif($scID == 'ATF158') {
+            redirect($this->class_uri('ATF158'));
+        } elseif($scID == 'ATF170') {
+            redirect($this->class_uri('ATF170'));
         }
         
     }
@@ -194,12 +198,51 @@ class Conference_pmp extends MY_Controller
         $this->render($data);
     }
 
+    // APPROVE / VERIFY CONFERENCE APPLICATION (TNCPI)
+    public function ATF170()
+    {
+        $mod = 'TNCPI';      
+
+        // DEPARTMENT LIST
+        $data['dept_list'] = $this->dropdown($this->mdl_pmp->populateDept($mod), 'DM_DEPT_CODE', 'DM_DEPT_CODE', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
     // QUERY CONFERENCE REPORT APPLICATION
     public function ATF168()
     { 
         // DEPARTMENT LIST
         $data['dept_list'] = $this->dropdown($this->mdl_pmp->populateDeptQ(), 'DM_DEPT_CODE', 'DM_DEPT_CODE', '');
-        
+       
+        $this->render($data);
+    }
+
+    // QUERY STAFF CONFERENCE (RMIC)
+    public function ATF160()
+    {   
+        $mod = 'RMIC';
+
+        // DEPARTMENT LIST
+        $data['dept_list'] = $this->dropdown($this->mdl_pmp->populateDeptQ($mod), 'DM_DEPT_CODE', 'DM_DEPT_CODE', '');
+
+        $this->render($data);
+    }
+
+    // CONFERENCE SETUP RMIC
+    public function ASF151()
+    {
+        $this->render();
+    }
+
+    // CPD SETUP
+    public function ATF098()
+    {
+        $data['year'] = $this->mdl_pmp->getCurDate(); 
+        $data['cur_year'] = $data['year']->SYSDATE_YYYY;       
+
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl_pmp->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
 
         $this->render($data);
     }
@@ -214,6 +257,7 @@ class Conference_pmp extends MY_Controller
         $sMonth = $this->input->post('sMonth', true);
         $sYear = $this->input->post('sYear', true);
         $refidTitle = $this->input->post('refid_title', true);
+        $mod = $this->input->post('mod', true);
         // var_dump($sMonth);
 
         if($sMonth == 'CURR_M' && $sYear = 'CURR_Y') {
@@ -228,7 +272,7 @@ class Conference_pmp extends MY_Controller
         }
 
         // get available records
-        $data['conference_inf_list'] = $this->mdl_pmp->getConferenceInfoList($curMonth, $curYear, $refidTitle);
+        $data['conference_inf_list'] = $this->mdl_pmp->getConferenceInfoList($curMonth, $curYear, $refidTitle, $mod);
 
         $this->render($data);
     }
@@ -286,7 +330,7 @@ class Conference_pmp extends MY_Controller
             $data['cr_cat_list'] = $this->dropdown($this->mdl_pmp->getCrCategoryList(), 'CC_CODE', 'CC_CODE_DESC_CC_FROM_TO', ' ---Please select--- ');
             $data['cr_spon_list'] = array(''=>' ---Please select--- ', 'Y'=>'Yes', 'N'=>'No', 'H'=>'Half Sponsorship');
             $data['cr_budget_spon_list'] = array(''=>' ---Please select--- ', 'GRANTS'=>'Grants', 'EXTERNAL'=>'External Organization', 'SELF'=>'Self');
-            $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS');
+            $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'RESEARCH'=>'RESEARCH', 'RESEARCH_CONFERENCE'=>'RESEARCH_CONFERENCE', 'OTHERS'=>'OTHERS');
             $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_TNCA'=>'VERIFY_HOD', 'VERIFY_VC'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
         }
 
@@ -482,7 +526,7 @@ class Conference_pmp extends MY_Controller
             } else {
                 $data['mod'] = '';
 
-                $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'OTHERS'=>'OTHERS');
+                $data['cr_budget_origin_list'] = array(''=>' ---Please select--- ', 'DEPARTMENT'=>'DEPARTMENT', 'CONFERENCE'=>'CONFERENCE', 'RESEARCH'=>'RESEARCH', 'RESEARCH_CONFERENCE'=>'RESEARCH_CONFERENCE', 'OTHERS'=>'OTHERS');
 
                 $data['cr_status_list'] = array(''=>' ---Please select--- ', 'APPLY'=>'APPLY', 'VERIFY_TNCA'=>'VERIFY_HOD', 'VERIFY_VC'=>'VERIFY_TNCA', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL', 'ENTRY'=>'ENTRY');
             }
@@ -526,11 +570,13 @@ class Conference_pmp extends MY_Controller
             $check = $this->mdl_pmp->getStaffConferenceDetl($refid, $staffID);
             if(!empty($check)) {
                 $sponsor = $check->SCM_SPONSOR;
+                $status = $check->SCM_STATUS;
             } else {
                 $sponsor = '';
+                $status = '';
             }
 
-            $json = array('sts' => 1, 'msg' => 'SCM_SPONSOR value', 'alert' => 'success', 'sponsor' => $sponsor); 
+            $json = array('sts' => 1, 'msg' => 'SCM_SPONSOR value', 'alert' => 'success', 'sponsor' => $sponsor, 'status' => $status); 
         } else {
             $json = array('sts' => 0, 'msg' => 'Failed to get SCM_SPONSOR value', 'alert' => 'danger');
         }
@@ -546,6 +592,7 @@ class Conference_pmp extends MY_Controller
         // get parameter values
         $staffID = $this->input->post('staffID', true);
         $refid = $this->input->post('refid', true);
+        $status = '';
 
         if (!empty($staffID) && !empty($refid)) {
             $check = $this->mdl_pmp->getStaffConferenceDetl($refid, $staffID);
@@ -557,7 +604,36 @@ class Conference_pmp extends MY_Controller
 
             $json = array('sts' => 1, 'msg' => 'SCM_STATUS value', 'alert' => 'success', 'status' => $status); 
         } else {
-            $json = array('sts' => 0, 'msg' => 'Failed to get SCM_STATUS value', 'alert' => 'danger');
+            $json = array('sts' => 0, 'msg' => 'Failed to get SCM_STATUS value', 'alert' => 'danger', 'status' => $status);
+        }
+         
+        echo json_encode($json);
+    }
+
+    // CHECK STAFF TNCPI
+    public function getStaffTncpi() 
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $staffID = $this->input->post('staffID', true);
+        // $refid = $this->input->post('refid', true);
+
+        if (!empty($staffID)) {
+            $check = $this->mdl_pmp->getStaffTncpi($staffID);
+            if(!empty($check)) {
+                $tncpi = $check->SM_STAFF_ID;
+            } else {
+                $tncpi = '';
+            }
+
+            if($staffID == $tncpi) {
+                $json = array('sts' => 1, 'msg' => 'STAFF TNCPI', 'alert' => 'success', 'tncpi' => 'Yes');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'STAFF TNCPI', 'alert' => 'success', 'tncpi' => 'No');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Failed to get STAFF TNCPI', 'alert' => 'danger');
         }
          
         echo json_encode($json);
@@ -1596,14 +1672,20 @@ class Conference_pmp extends MY_Controller
                     // var_dump($budget_origin);
 
                     // GET SUM ALLOWANCE
-                    if($mod == 'EDIT_RMIC' && $budget_origin == 'RESEARCH') {
+                    if($mod == 'EDIT_RMIC') {
                         $sum_allw_con_rmic = $this->mdl_pmp->getSumAllowanceConferenceRmic($refid, $staff_id);
                         if(!empty($sum_allw_con_rmic)) {
                             $scm_rm_tot_amt_rmic = $sum_allw_con_rmic->SCM_RM_TOT_AMT_RMIC;
                             $scm_foreign_tot_amt_rmic = $sum_allw_con_rmic->SCM_FOREIGN_TOT_AMT_RMIC;
+                            $scm_total_amt_dept_apprv_hod = $sum_allw_con_rmic->SCM_TOTAL_AMT_DEPT_APPRV_HOD;
+                            $scm_rm_tot_amt_apprv_rmic = $sum_allw_con_rmic->SCM_RM_TOT_AMT_APPRV_RMIC;
+                            $scm_rm_tot_amt_apprv_tncpi = $sum_allw_con_rmic->SCM_RM_TOT_AMT_APPRV_TNCPI;
                         } else {
                             $scm_rm_tot_amt_rmic = 0;
                             $scm_foreign_tot_amt_rmic = 0;
+                            $scm_total_amt_dept_apprv_hod = 0;
+                            $scm_rm_tot_amt_apprv_rmic = 0;
+                            $scm_rm_tot_amt_apprv_tncpi = 0;
                         }
                     } else {
                         if($budget_origin == 'CONFERENCE') {
@@ -1661,8 +1743,8 @@ class Conference_pmp extends MY_Controller
                         } else {
                             $update1Msg = 'Fail to update record (Staff conference)';
                         }
-                    } elseif($mod == 'EDIT_RMIC' && $budget_origin == 'RESEARCH') {
-                        $update1 = $this->mdl_pmp->updSumScmRmic($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_foreign_tot_amt_rmic);
+                    } elseif($mod == 'EDIT_RMIC') {
+                        $update1 = $this->mdl_pmp->updSumScmRmic($refid, $staff_id, $scm_rm_tot_amt_rmic, $scm_foreign_tot_amt_rmic, $scm_total_amt_dept_apprv_hod, $scm_rm_tot_amt_apprv_rmic, $scm_rm_tot_amt_apprv_tncpi);
                         if($update1 > 0) { 
                             $update1Msg = 'Record successfully updated (Staff conference)';
                         } else {
@@ -1961,14 +2043,51 @@ class Conference_pmp extends MY_Controller
         $staffId = $this->input->post('staffId', true);
         $crRefID = $this->input->post('crRefID', true);
         $sca_code = $this->input->post('sca_code', true);
+
+        $successDel = 0;
+        $successUpd = 0;
+        $msgDel = '';
+        $updateMsg = '';
         
         if (!empty($staffId) && !empty($crRefID) && !empty($sca_code)) {
-        	$del = $this->mdl_pmp->delStfConAllowance($staffId, $crRefID, $sca_code);
+            $del = $this->mdl_pmp->delStfConAllowance($staffId, $crRefID, $sca_code);
             
-        	if ($del > 0) {
-          		$json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+            if ($del > 0) {
+                $successDel++;
+                $msgDel = 'Record has been deleted';
+
+                $sum_allw_con_rmic = $this->mdl_pmp->getSumAllowanceConferenceRmic($crRefID, $staffId);
+                if(!empty($sum_allw_con_rmic)) {
+                    $scm_rm_tot_amt_rmic = $sum_allw_con_rmic->SCM_RM_TOT_AMT_RMIC;
+                    $scm_foreign_tot_amt_rmic = $sum_allw_con_rmic->SCM_FOREIGN_TOT_AMT_RMIC;
+                    $scm_total_amt_dept_apprv_hod = $sum_allw_con_rmic->SCM_TOTAL_AMT_DEPT_APPRV_HOD;
+                    $scm_rm_tot_amt_apprv_rmic = $sum_allw_con_rmic->SCM_RM_TOT_AMT_APPRV_RMIC;
+                    $scm_rm_tot_amt_apprv_tncpi = $sum_allw_con_rmic->SCM_RM_TOT_AMT_APPRV_TNCPI;
+                } else {
+                    $scm_rm_tot_amt_rmic = 0;
+                    $scm_foreign_tot_amt_rmic = 0;
+                    $scm_total_amt_dept_apprv_hod = 0;
+                    $scm_rm_tot_amt_apprv_rmic = 0;
+                    $scm_rm_tot_amt_apprv_tncpi = 0;
+                }
+
+                $update = $this->mdl_pmp->updSumScmRmic($crRefID, $staffId, $scm_rm_tot_amt_rmic, $scm_foreign_tot_amt_rmic, $scm_total_amt_dept_apprv_hod, $scm_rm_tot_amt_apprv_rmic, $scm_rm_tot_amt_apprv_tncpi);
+                if($update > 0) { 
+                    $successUpd++;
+                    $updateMsg = nl2br("\r\n").'Record successfully updated (Staff conference)';
+                } else {
+                    $successUpd = 0;
+                    $updateMsg = nl2br("\r\n").'Fail to update record (Staff conference)';
+                }
+            } else {
+                $successDel = 0;
+                $msgDel = 'Fail to delete record';
+            }
+            
+        	if ($successDel > 0 && $successUpd > 0) {
+          		$json = array('sts' => 1, 'msg' => $msgDel.$updateMsg, 'alert' => 'success');
         	} else {
-          		$json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+          		$json = array('sts' => 0, 'msg' => $msgDel.$updateMsg, 'alert' => 'danger');
         	}
         } else {
             $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
@@ -2007,7 +2126,7 @@ class Conference_pmp extends MY_Controller
             }
             
         	if (!empty($getDept)) {
-          		$json = array('sts' => 1, 'msg' => 'Success', 'alert' => 'success', 'dept_desc' => $dept_desc);
+          		$json = array('sts' => 1, 'msg' => 'Success', 'alert' => 'success', 'dept_desc' => $dept_desc, 'deptCode' => $deptCode);
         	} else {
           		$json = array('sts' => 0, 'msg' => 'Fail', 'alert' => 'danger');
         	}
@@ -2150,6 +2269,8 @@ class Conference_pmp extends MY_Controller
                 $data['remark'] = $data['stf_detl']->SCM_VC_REMARK;
             } elseif($mod == 'RMIC') {
                 $data['remark'] = $data['stf_detl']->SCM_RMIC_REMARK;
+            } elseif($mod == 'TNCPI') {
+                $data['remark'] = $data['stf_detl']->SCM_TNCPI_REMARK;
             }
 
             if(!empty($data['stf_detl'])) {
@@ -2224,8 +2345,8 @@ class Conference_pmp extends MY_Controller
                         $data['curr_date'] = '';
                     }
                 }
-            } else {
-                if(empty($data['stf_detl']->SCM_TNCA_APPROVE_BY)) {
+            } elseif($mod == 'TNCPI') {
+                if(empty($data['stf_detl']->SCM_TNCPI_APPROVE_BY)) {
                     $data['app_rejc'] = $this->mdl_pmp->getAppRejcStaff($mod);
                     if(!empty($data['app_rejc'])) {
                         if($mod == 'RMIC') {
@@ -2247,7 +2368,69 @@ class Conference_pmp extends MY_Controller
                         $data['app_rejc_name'] = '';
                     }
                 } else {
+                    $data['app_rejc_id'] = $data['stf_detl']->SCM_TNCPI_APPROVE_BY;
+                    
+                    $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
+    
+                    if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
+                        $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
+                        $data['curr_date'] = $data['stf_app_rejc']->CURR_DATE;
+                    } else {
+                        $data['app_rejc_name'] = '';
+                        $data['curr_date'] = '';
+                    }
+                }
+            } elseif($mod == 'TNCA') {
+                if(empty($data['stf_detl']->SCM_TNCA_APPROVE_BY)) {
+                    $data['app_rejc'] = $this->mdl_pmp->getAppRejcStaff($mod);
+                    if(!empty($data['app_rejc'])) {
+                        $data['app_rejc_id'] = $data['app_rejc']->SM_STAFF_ID;
+                        $data['curr_date'] = $data['app_rejc']->CURR_DATE;
+                    } else {
+                        $data['app_rejc_id'] = '';
+                        $data['curr_date'] = '';
+                    }
+    
+                    $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
+    
+                    if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
+                        $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
+                    } else {
+                        $data['app_rejc_name'] = '';
+                    }
+                } else {
                     $data['app_rejc_id'] = $data['stf_detl']->SCM_TNCA_APPROVE_BY;
+                    
+                    $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
+    
+                    if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
+                        $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
+                        $data['curr_date'] = $data['stf_app_rejc']->CURR_DATE;
+                    } else {
+                        $data['app_rejc_name'] = '';
+                        $data['curr_date'] = '';
+                    }
+                }
+            } elseif($mod == 'VC') {
+                if(empty($data['stf_detl']->SCM_VC_APPROVE_BY)) {
+                    $data['app_rejc'] = $this->mdl_pmp->getAppRejcStaff($mod);
+                    if(!empty($data['app_rejc'])) {
+                        $data['app_rejc_id'] = $data['app_rejc']->SM_STAFF_ID;
+                        $data['curr_date'] = $data['app_rejc']->CURR_DATE;
+                    } else {
+                        $data['app_rejc_id'] = '';
+                        $data['curr_date'] = '';
+                    }
+    
+                    $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
+    
+                    if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
+                        $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
+                    } else {
+                        $data['app_rejc_name'] = '';
+                    }
+                } else {
+                    $data['app_rejc_id'] = $data['stf_detl']->SCM_VC_APPROVE_BY;
                     
                     $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
     
@@ -2343,7 +2526,8 @@ class Conference_pmp extends MY_Controller
             'approved_vc' => 'max_length[40]',
 
             // RMIC
-            'approved_rmic_rm_research' => 'max_length[40]'
+            'approved_rmic_rm_research' => 'max_length[40]',
+            'applied_rm_research' => 'max_length[40]'
         );
 
         $exclRule = array('staff_id');
@@ -4188,13 +4372,34 @@ class Conference_pmp extends MY_Controller
             
 
 			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','DATE_FROM' => $year,'DEPT_CODE' => $fac,'SCM_STATUS' => $sts,'MONTH' => $month));
+        } elseif($repCode == 'ATR272') {
+            $crStaffID = $this->input->post('crStaffID', true);
+            $crRefID = $this->input->post('crRefID', true);
+            $repFormat = 'PDF';
+            
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','STAFF_ID' => $crStaffID,'CONFERENCE_ID' => $crRefID));
+        } elseif($repCode == 'ATR273') {
+			$refid = $this->input->post('refid', true);
+			$staff_id = $this->input->post('staff_id', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','REFID'=>$refid,'STAFFID'=>$staff_id));
+        } elseif($repCode == 'ATR274') {
+			$refid = $this->input->post('refid', true);
+            $staff_id = $this->input->post('staff_id', true);
+            $status = $this->input->post('scm_status', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','REFID'=>$refid,'STAFFID'=>$staff_id, 'STATUS'=>$status));
         }
 		
 		$json = array('report' => $param);
 		
 		echo json_encode($json);		
     } 
-     // GENERATE REPORT
+    
+    // GENERATE REPORT
     public function report(){
 		$report = $this->encryption->decrypt_array($this->input->get('r'));
 		$this->lib->generate_report($report, false);
@@ -4526,16 +4731,13 @@ class Conference_pmp extends MY_Controller
         list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
 
         if ($status == 1) {
+            $insert = $this->mdl_pmp->saveResearchInfo($form);
 
-            if(empty($check)) {
-                $insert = $this->mdl_pmp->saveResearchInfo($form);
-
-                if($insert > 0) {
-                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success');
-                } else {
-                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
-                } 
-            }
+            if($insert > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            } 
         } else {
             $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
         }
@@ -4702,59 +4904,71 @@ class Conference_pmp extends MY_Controller
             }
 
             // SET BUDGET ORIGIN
+            // 1
             if($bud_org == 'RESEARCH' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca != 0)) 
             {
                 $scm_budget_origin_prev = 'RESEARCH';
 			    $scm_budget_origin = 'RESEARCH_CONFERENCE';
             } 
-            elseif($bud_org == 'RESEARCH' && $scm_rm_tot_amt_apprv_rmic != 0 && (!empty($newSumAppTnca) && $newSumAppTnca != 0) && $cm_country != 'MYS')
+            // 2
+            elseif($bud_org == 'RESEARCH' && $scm_rm_tot_amt_apprv_rmic == 0 && (!empty($newSumAppTnca) && $newSumAppTnca != 0) && $cm_country != 'MYS')
             {
                 $scm_budget_origin_prev = 'RESEARCH';
 			    $scm_budget_origin = 'CONFERENCE';
             }
-            elseif($bud_org == 'RESEARCH' && $scm_rm_tot_amt_apprv_rmic != 0 && (!empty($newSumAppTnca) && $newSumAppTnca != 0) && $cm_country == 'MYS')
+            // 3
+            elseif($bud_org == 'RESEARCH' && $scm_rm_tot_amt_apprv_rmic == 0 && (!empty($newSumAppTnca) && $newSumAppTnca != 0) && $cm_country == 'MYS')
             {
                 $scm_budget_origin_prev = 'RESEARCH';
 			    $scm_budget_origin = 'DEPARTMENT';
             }
-            elseif($bud_org == 'RESEARCH' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca == 0))
+            // 4
+            elseif($bud_org == 'RESEARCH' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (empty($newSumAppTnca) || $newSumAppTnca == 0))
             {
                 $scm_budget_origin = 'RESEARCH';
             }
-            elseif($bud_org == 'RESEARCH_CONFERENCE' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca == 0))
+            // 5
+            elseif($bud_org == 'RESEARCH_CONFERENCE' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (empty($newSumAppTnca) || $newSumAppTnca == 0))
             {
                 $scm_budget_origin_prev = 'RESEARCH_CONFERENCE';
 			    $scm_budget_origin = 'RESEARCH';
             }
+            // 6
             elseif($bud_org == 'RESEARCH_CONFERENCE' && $scm_rm_tot_amt_apprv_rmic == 0 && (!empty($newSumAppTnca) && $newSumAppTnca != 0) && $cm_country != 'MYS')
             {
                 $scm_budget_origin_prev = 'RESEARCH_CONFERENCE';
 			    $scm_budget_origin = 'CONFERENCE';
             }
+            // 7
             elseif($bud_org == 'RESEARCH_CONFERENCE' && $scm_rm_tot_amt_apprv_rmic == 0 && (!empty($newSumAppTnca) && $newSumAppTnca != 0) && $cm_country == 'MYS')
             {
                 $scm_budget_origin_prev = 'RESEARCH_CONFERENCE';
 			    $scm_budget_origin = 'DEPARTMENT';
             }
+            // 8
             elseif($bud_org == 'RESEARCH_CONFERENCE' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca != 0))
             {
 			    $scm_budget_origin = 'RESEARCH_CONFERENCE';
             }
+            // 9
             elseif($bud_org == 'CONFERENCE' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca != 0))
             {
 			    $scm_budget_origin_prev = 'CONFERENCE';
 			    $scm_budget_origin = 'RESEARCH_CONFERENCE';
             }
-            elseif($bud_org == 'CONFERENCE' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (!empty($newSumAppTnca) && $newSumAppTnca == 0))
+            // 10
+            elseif($bud_org == 'CONFERENCE' && (!empty($scm_rm_tot_amt_apprv_rmic) && $scm_rm_tot_amt_apprv_rmic != 0) && (empty($newSumAppTnca) || $newSumAppTnca == 0))
             {
 			    $scm_budget_origin_prev = 'CONFERENCE';
 			    $scm_budget_origin = 'RESEARCH';
             }
-            elseif($bud_org == 'CONFERENCE' && $scm_rm_tot_amt_apprv_rmic == 0 && (!empty($newSumAppTnca) && $newSumAppTnca == 0) && $cm_country != 'MYS')
+            // 11
+            elseif($bud_org == 'CONFERENCE' && $scm_rm_tot_amt_apprv_rmic == 0 && (empty($newSumAppTnca) || $newSumAppTnca == 0) && $cm_country != 'MYS')
             {
 			    $scm_budget_origin = 'CONFERENCE';
             }
-            elseif($bud_org == 'DEPARTMENT' && $scm_rm_tot_amt_apprv_rmic == 0 && (!empty($newSumAppTnca) && $newSumAppTnca == 0) && $cm_country == 'MYS')
+            // 12
+            elseif($bud_org == 'DEPARTMENT' && $scm_rm_tot_amt_apprv_rmic == 0 && (empty($newSumAppTnca) || $newSumAppTnca == 0) && $cm_country == 'MYS')
             {
 			    $scm_budget_origin = 'DEPARTMENT';
             }
@@ -4888,6 +5102,487 @@ class Conference_pmp extends MY_Controller
                 $json = array('sts' => 1, 'msg' => 'Calculate complete'.$successUpdSumMsg, 'alert' => 'green');
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to calculate'.$successUpdSumMsg, 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // AMEND STAFF RMIC
+    public function ammendConferenceRmic()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $remark = $this->input->post('remark', true);
+        $appr_rej_by = $this->input->post('appr_rej_by', true);
+        $appr_rej_date = $this->input->post('appr_rej_date', true);
+
+        $updConAllwRmic = 0;
+        $updScmRmic2 = 0;
+        $updScmRmic1 = 0;
+        $successMemo = 0;
+        $updConAllwRmicMsg = '';
+        $updScmRmic2Msg = '';
+        $updScmRmic1Msg = '';
+        $memoMsg = '';
+
+        if (!empty($refid) && !empty($staff_id)) {
+
+            $scmDetl = $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
+            if(!empty($scmDetl)) {
+                $bud_org = $scmDetl->SCM_BUDGET_ORIGIN;
+            } else {
+                $bud_org = '';
+            }
+
+            if($bud_org == 'DEPARTMENT' ) {
+                // UPDATE CONFERENCE ALLOWANCE RMIC
+                $updateConAllwRmic = $this->mdl_pmp->updateConAllwRmic($refid, $staff_id);
+                if($updateConAllwRmic > 0) {
+                    $updConAllwRmic++;
+                    $updConAllwRmicMsg = nl2br("\r\n").'Record has been updated (Conference allowance)';
+                } else {
+                    $updConAllwRmic = 0;
+                    $updConAllwRmicMsg = nl2br("\r\n").'Fail to update record (Conference allowance)';
+                }
+
+                // UPDATE SCM RMIC 2
+                $updateScmRmic2 = $this->mdl_pmp->updateScmRmic2($refid, $staff_id);
+                if($updateScmRmic2 > 0) {
+                    $updScmRmic2++;
+                    $updScmRmic2Msg = nl2br("\r\n").'Record has been updated (Staff conference)';
+                } else {
+                    $updScmRmic2 = 0;
+                    $updScmRmic2Msg = nl2br("\r\n").'Fail to update record (Staff conference)';
+                }
+            }
+
+            // AMEND RMIC
+            $amend = $this->mdl_pmp->updateScmRmic1($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date);
+
+            if($amend > 0) {
+                $updScmRmic1++;
+                $updScmRmic1Msg = 'Amendment success';
+
+                // SENDER
+                $from = $appr_rej_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+
+                // CONFERENCE DETAILS DISTINCT
+                $conDetl = $this->mdl_pmp->conDetlDis($refid, $staff_id);
+                if(!empty($conDetl)) {
+                    $cm_name = $conDetl->CM_NAME;
+                    $cm_date_from = $conDetl->CM_DATE_FROM2;
+                    $cm_date_to = $conDetl->CM_DATE_TO2;
+                    $cm_budget_origin = $conDetl->SCM_BUDGET_ORIGIN;
+                } else {
+                    $cm_name = '';
+                    $cm_date_from = '';
+                    $cm_date_to = '';
+                    $cm_budget_origin = '';
+                }
+
+                // MEMO TITLE
+                $memoTitle = 'Conference Application Should be Amended';
+
+                // MEMO CONTENT
+                $memoContent = 'Please resubmit conference application by fulfill the information needed :<br><br>'.
+                            'Staff ID : '.$staff_id.'<br>'.
+                            'Name : '.$staff_name.'<br>'.
+                            'Conference Title : '.$cm_name.' ('.$cm_date_from.'-'.$cm_date_to.')'.'<br><br>'.
+                            'Amendment Remark  : '.$remark.'<br>'.
+                            'Click here to proceed  : '.'<a href="training.jsp?action=view_conference&TrainingMenu=CONFERENCE&conference_status=ENTRY">Amend</a> '.'<br><br>'.
+                            '<br> -- system generated memo --';
+
+                $memoID = 1;
+                $sendMemo = $this->mdl_pmp->createMemo($from, $sendTO, $rmic_staff = null, $memoTitle, $memoContent, $memoID);
+
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = nl2br("\r\n").'Amendment memo sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = nl2br("\r\n").'Failed to send amendment memo';
+                }
+            } else {
+                $updScmRmic1 = 0;
+                $updScmRmic1Msg = 'Amendment failed';
+            }
+
+            if($updScmRmic1 > 0 && $successMemo > 0 || ($updConAllwRmic > 0 && $updScmRmic2 > 0)) {
+                $json = array('sts' => 1, 'msg' => $updScmRmic1Msg.$memoMsg.$updConAllwRmicMsg.$updScmRmic2Msg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' => $updScmRmic1Msg.$memoMsg.$updConAllwRmicMsg.$updScmRmic2Msg, 'alert' => 'danger');
+            }
+            
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // APPROVE STAFF CONFERENCE RMIC
+    public function approveConferenceRmic()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $remark = $this->input->post('remark', true);
+        $bud_org = $this->input->post('bud_org', true);
+        // $cat_code = $this->input->post('cat_code', true);
+        $appr_rej_by = $this->input->post('appr_rej_by', true);
+        $appr_rej_date = $this->input->post('appr_rej_date', true);
+        // $rec_date = $this->input->post('rec_date', true);
+
+        $total_amt_app_rmic = $this->input->post('total_amt_app_rmic', true);
+        // $hod_amount = $this->input->post('hod_amount', true);
+        // $rmic_amount = $this->input->post('rmic_amount', true);
+        // $tncpi_amount = $this->input->post('tncpi_amount', true);
+
+        $memoID = 0;
+        $successAppr = 0;
+        $successMemo = 0;
+        
+        $apprMsg = '';
+        $memoMsg = '';
+
+        $scm_sts = '';
+
+        $total_sca_amt_rm_approve_tnca = 0;
+
+        $ccTncaIDArr = array();
+        $cc_tnca = '';
+        
+        if (!empty($refid) && !empty($staff_id)) {
+
+            $other_allw_detl = $this->mdl_pmp->getStaffConAllowance($refid, $staff_id);
+
+            if(!empty($other_allw_detl)) {
+                foreach($other_allw_detl as $oad) {
+                    $total_sca_amt_rm_approve_tnca += $oad->SCA_AMT_RM_APPROVE_TNCA;
+                }
+            }
+
+            // STAFF CONFERENCE MAIN DETL
+            $stf_con_detl= $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
+            if(!empty($stf_con_detl->SCM_LEAVE_REFID)) {
+                $leave_ref = $stf_con_detl->SCM_LEAVE_REFID;
+            } else {
+                $leave_ref = '';
+            }
+
+            // GET STAFF TNCPI
+            $tncpi = $this->mdl_pmp->getTncpiRmic();
+
+            // GET TNCPI ONLINE
+            $tncpiOnline = $this->mdl_pmp->getTncpiOnline();
+
+            // SET SCM_STATUS
+            if ($bud_org == 'RESEARCH' || $bud_org == 'RESEARCH_CONFERENCE' && $staff_id != $tncpi->DM_DIRECTOR && $total_amt_app_rmic != '0') {
+                $scm_sts = 'VERIFY_TNCPI';
+            } elseif($staff_id == $tncpi->DM_DIRECTOR) {
+                $scm_sts = 'VERIFY_TNCA';
+            }
+
+            // APPROVE STAFF
+            $approve = $this->mdl_pmp->approveConferenceRmic($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date, $total_amt_app_rmic, $scm_sts);
+            if($approve > 0) {
+                $successAppr++;
+                $apprMsg = 'Approve success';
+            } else {
+                $successAppr = 0;
+                $apprMsg = 'Approve failed';
+            }
+
+            if($scm_sts == 'VERIFY_TNCPI' && $tncpiOnline->HP_PARM_DESC == 'Y') {
+
+                // SENDER
+                $from = $appr_rej_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+                
+                // CONFERENCE DETAILS APPROVE TNCAA
+                $conDetl = $this->mdl_pmp->getConferenceDetlAppTncaa($appr_rej_by, $staff_id, $refid);
+                if(!empty($conDetl)) {
+                    $cm_name = $conDetl->CM_NAME;
+                    $cm_date_from = $conDetl->CM_DATE_FROM2;
+                    $cm_date_to = $conDetl->CM_DATE_TO2;
+                    $cm_budget_origin = $conDetl->SCM_BUDGET_ORIGIN;
+                } else {
+                    $cm_name = '';
+                    $cm_date_from = '';
+                    $cm_date_to = '';
+                    $cm_budget_origin = '';
+                }
+
+                // MEMO TITLE
+                $memoTitle = 'New Conference Application To Be Recommended';
+
+                if($bud_org == 'RESEARCH') {
+                    // MEMO CONTENT
+                    $memoContent = 'Please take note that Conference Application Has Been Verified By Research Management and Innovation Centre (RMIC). Details :<br><br>'.
+                    'Staff ID : '.$staff_id.'<br>'.
+                    'Name : '.$staff_name.'<br>'.
+                    'Conference Title : '.$cm_name.'<br>'.
+                    'Conference Date : '.$cm_date_from.'-'.$cm_date_to.'<br><br>'.
+                    'RMIC Remark  : '.$remark.'<br>'.
+                    'Total Amount Approved RMIC  : (RM)'.number_format($total_amt_app_rmic, 2).'<br>'.
+                    'Click here to proceed  : '.'<a href="training.jsp?action=approve_conference&TrainingMenu=CONFERENCE">Recommend/Reject</a> '.'<br><br>'.
+                    '-- system generated memo --';
+
+                } elseif($bud_org == 'RESEARCH_CONFERENCE') {
+                    // MEMO CONTENT
+                    $memoContent = 'Please take note that Conference Application Has Been Verified By Research Management and Innovation Centre (RMIC). Details :<br><br>'.
+                    'Staff ID : '.$staff_id.'<br>'.
+                    'Name : '.$staff_name.'<br>'.
+                    'Conference Title : '.$cm_name.'<br>'.
+                    'Conference Date : '.$cm_date_from.' - '.$cm_date_to.'<br><br>'.
+                    'RMIC Remark  : '.$remark.'<br>'.
+                    'Total Amount Approved RMIC  : (RM)'.number_format($total_amt_app_rmic, 2).'<br>'.
+                    'Total Amount Apply from TNC(A&A) : (RM)'.number_format($total_sca_amt_rm_approve_tnca, 2).'<br><br>'.
+                    'Click here to proceed  : '.'<a href="training.jsp?action=approve_conference&TrainingMenu=CONFERENCE">Recommend/Reject</a> '.'<br><br>'.
+                    '-- system generated memo --';
+                }
+                
+                $memoID = 1;
+                $sendMemo = $this->mdl_pmp->createMemo($from, $sendTO, $rmic_staff = null, $memoTitle, $memoContent, $memoID);
+
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = nl2br("\r\n").'Approve memo sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = nl2br("\r\n").'Failed to send approval memo';
+                }
+            } elseif($scm_sts == 'VERIFY_TNCA') {
+
+                // SENDER
+                $from = $appr_rej_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+                 
+                // CONFERENCE DETAILS APPROVE TNCAA
+                $conDetl = $this->mdl_pmp->getConferenceDetlAppTncaa($appr_rej_by, $staff_id, $refid);
+                if(!empty($conDetl)) {
+                    $cm_name = $conDetl->CM_NAME;
+                    $cm_date_from = $conDetl->CM_DATE_FROM2;
+                    $cm_date_to = $conDetl->CM_DATE_TO2;
+                    $cm_state_desc = $conDetl->SM_STATE_DESC;
+                    $cm_country_desc = $conDetl->CM_COUNTRY_DESC;
+                } else {
+                    $cm_name = '';
+                    $cm_date_from = '';
+                    $cm_date_to = '';
+                    $cm_state_desc = '';
+                    $cm_country_desc = '';
+                }
+
+                // MEMO TITLE
+                $memoTitle = 'Conference Application Recommendation';
+ 
+                // MEMO CONTENT
+                $memoContent = 'Please take note that your PMP application has been recommended. Details :<br><br>'.
+                'Staff ID : '.$staff_id.'<br>'.
+                'Name : '.$staff_name.'<br>'.
+                'Conference Title : '.$cm_name.' ('.$cm_date_from.'-'.$cm_date_to.')'.'<br>'.
+                'Country/State : '.$cm_state_desc.'/'.$cm_country_desc.'<br><br>'.
+                'Amendment Remark  : '.$remark.'<br><br>'.
+                '-- system generated memo --';
+
+                $memoID = 2;
+
+                // GET STAFF REMINDER
+                $stfTnca = $this->mdl_pmp->getStaffReminderTnca();
+                if(!empty($stfTnca)) {
+                    foreach($stfTnca as $key => $st) {
+                        $remID = $st->SR_STAFF_ID;
+                        $ccTncaIDArr [] = $remID;
+                    }
+                    $cc_tnca = implode(",",$ccTncaIDArr);
+                }
+
+                $sendMemo = $this->mdl_pmp->createMemo($from, $sendTO, $cc_tnca, $memoTitle, $memoContent, $memoID);
+                
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = nl2br("\r\n").'Approve memo sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = nl2br("\r\n").'Failed to send approval memo';
+                }
+            }
+
+            if(($successAppr > 0 && $successMemo > 0) || $successAppr > 0) {
+                $json = array('sts' => 1, 'msg' => $apprMsg.$memoMsg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' =>  $apprMsg.$memoMsg, 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // REJECT STAFF CONFERENCE RMIC
+    public function rejectConferenceRmic()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $remark = $this->input->post('remark', true);
+        $appr_rej_by = $this->input->post('appr_rej_by', true);
+        $appr_rej_date = $this->input->post('appr_rej_date', true);
+        
+        $remIDArr = array();
+        $memoID = 0;
+        $successReject = 0;
+        $successMemo = 0;
+        $successUpdSLR = 0;
+        $successUpdSLD = 0;
+        $rmic_staff = '';
+
+
+        if (!empty($refid) && !empty($staff_id)) {
+
+            $reject = $this->mdl_pmp->rejectConferenceRmic($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date);
+
+            if($reject > 0) {
+                $successReject++;
+                $rejectMsg = 'Staff has been rejected';
+
+                // SENDER
+                $from = $appr_rej_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+
+                // CONFERENCE DETAILS APPROVE TNCAA/VC
+                $conDetl = $this->mdl_pmp->getConferenceDetlAppTncaa($appr_rej_by, $staff_id, $refid);
+               
+                // MEMO TITLE
+                $memoTitle = 'Your Conference Application Has Been Rejected By RMIC';
+                
+                // MEMO CONTENT
+                $memoContent = 'Please take note that your conference application has been rejected. Details :<br><br>'.
+                                'Staff ID : '.$staff_id.'<br>'.
+                                'Name : '.$staff_name.'<br>'.
+                                'Conference Title : '.$conDetl->CM_NAME.' ('.$conDetl->CM_DATE_FROM2.'-'.$conDetl->CM_DATE_TO2.')'.'<br><br>'.
+                                'Rejected Remark  : '.$remark.'<br><br>'.
+                                '<br> --System Generated Memo--';
+
+                $memoID = 1;
+                $sendMemo = $this->mdl_pmp->createMemo($from, $sendTO, $cc = null, $memoTitle, $memoContent, $memoID);
+
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = nl2br("\r\n").'Rejected staff memo has been sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = nl2br("\r\n").'Failed to send memo to rejected staff';
+                }
+
+                // REJECT LEAVE AND RETURN LEAVE BALANCE
+                // STAFF CONFERENCE MAIN DETL
+                $stf_con_detl= $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
+                if(!empty($stf_con_detl->SCM_LEAVE_REFID)) {
+                    $leave_ref = $stf_con_detl->SCM_LEAVE_REFID;
+                } else {
+                    $leave_ref = '';
+                }
+
+                if(!empty($leave_ref)) {
+                    $sld_status = 'REJECT';
+                    $leaveDetl = $this->mdl_pmp->getLeaveDetl($leave_ref, $staff_id);
+                    $ldTotalDay = $leaveDetl->SLD_TOTAL_DAY;
+                    $sld_date_from = $leaveDetl->SLD_DATE_FROM;
+                    $sld_date_from_year_split = explode('/', $sld_date_from);
+                    $sld_date_from_year = $sld_date_from_year_split[2];
+
+                    if(empty($ldTotalDay)) {
+                        $ldTotalDay = 0;
+                    }
+
+                    $updRejSLR = $this->mdl_pmp->updateRejSLR($ldTotalDay, $staff_id, $sld_date_from_year);
+                    $updRejSLD = $this->mdl_pmp->updateRejSLD($leave_ref, $sld_status);
+
+                    if($updRejSLR > 0 && $updRejSLD > 0) {
+                        $successUpdSLR++;
+                        $updSLRMsg = nl2br("\r\n").'Staff Leave Record updated';
+                    } else {
+                        $successUpdSLR = 0;
+                        $updSLRMsg = nl2br("\r\n").'Fail to update Staff Leave Record';
+                    }
+
+                    if($updRejSLD > 0) {
+                        $successUpdSLD++;
+                        $updSLDMsg = nl2br("\r\n").'Staff Leave Detail updated';
+                    } else {
+                        $successUpdSLD = 0;
+                        $updSLDMsg = nl2br("\r\n").'Fail to update Staff Leave Detail';
+                    }
+                } else {
+                    $successUpdSLR = 3;
+                    $successUpdSLD = 3;
+                    $updSLRMsg = '';
+                    $updSLDMsg = '';
+                }
+
+
+            } else {
+                $successReject = 0;
+                $rejectMsg = 'Faill to reject staff';
+            }
+
+            if($successReject == $successMemo && (($successUpdSLR == 3 && $successUpdSLD == 3) || ($successUpdSLR == $successReject && $successUpdSLD == $successReject))) {
+                $json = array('sts' => 1, 'msg' => $rejectMsg.$memoMsg.$updSLRMsg.$updSLDMsg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' => $rejectMsg.$memoMsg.$updSLRMsg.$updSLDMsg, 'alert' => 'danger');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
@@ -5065,5 +5760,490 @@ class Conference_pmp extends MY_Controller
         }
          
         echo json_encode($json);
+    }
+
+    /*===============================================================
+       Approve / Verify Conference Application (TNCPI) (ATF170)
+    ================================================================*/
+
+    // REJECT STAFF CONFERENCE TNCPI
+    public function rejectConferenceTncpi()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $remark = $this->input->post('remark', true);
+        $appr_rej_by = $this->input->post('appr_rej_by', true);
+        $appr_rej_date = $this->input->post('appr_rej_date', true);
+        
+        $memoID = 0;
+        $successReject = 0;
+        $successMemo = 0;
+        $successUpdSLR = 0;
+        $successUpdSLD = 0;
+
+        if (!empty($refid) && !empty($staff_id)) {
+
+            $reject = $this->mdl_pmp->rejectConferenceTncpi($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date);
+
+            if($reject > 0) {
+                $successReject++;
+                $rejectMsg = 'Staff has been rejected';
+
+                // SENDER
+                $from = $appr_rej_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+
+                // CONFERENCE DETAILS APPROVE TNCAA/VC
+                $conDetl = $this->mdl_pmp->getConferenceDetlAppTncaa($appr_rej_by, $staff_id, $refid);
+               
+                // MEMO TITLE
+                $memoTitle = 'Conference Application Rejected';
+                
+                // MEMO CONTENT
+                $memoContent = 'Please take note that your PMP application has been rejected. Details :<br><br>'.
+                                'Staff ID : '.$staff_id.'<br>'.
+                                'Name : '.$staff_name.'<br>'.
+                                'Conference Title : '.$conDetl->CM_NAME.' ('.$conDetl->CM_DATE_FROM2.'-'.$conDetl->CM_DATE_TO2.')'.'<br><br>'.
+                                'Rejected Remark  : '.$remark.'<br><br>'.
+                                '<br> --System Generated Memo--';
+
+                $memoID = 1;
+                $sendMemo = $this->mdl_pmp->createMemo($from, $sendTO, $cc = null, $memoTitle, $memoContent, $memoID);
+
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = nl2br("\r\n").'Rejected staff memo has been sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = nl2br("\r\n").'Failed to send memo to rejected staff';
+                }
+
+                // REJECT LEAVE AND RETURN LEAVE BALANCE
+                // STAFF CONFERENCE MAIN DETL
+                $stf_con_detl= $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
+                if(!empty($stf_con_detl->SCM_LEAVE_REFID)) {
+                    $leave_ref = $stf_con_detl->SCM_LEAVE_REFID;
+                } else {
+                    $leave_ref = '';
+                }
+
+                if(!empty($leave_ref)) {
+                    $sld_status = 'REJECT';
+                    $leaveDetl = $this->mdl_pmp->getLeaveDetl($leave_ref, $staff_id);
+                    $ldTotalDay = $leaveDetl->SLD_TOTAL_DAY;
+                    $sld_date_from = $leaveDetl->SLD_DATE_FROM;
+                    $sld_date_from_year_split = explode('/', $sld_date_from);
+                    $sld_date_from_year = $sld_date_from_year_split[2];
+
+                    if(empty($ldTotalDay)) {
+                        $ldTotalDay = 0;
+                    }
+
+                    $updRejSLR = $this->mdl_pmp->updateRejSLR($ldTotalDay, $staff_id, $sld_date_from_year);
+                    $updRejSLD = $this->mdl_pmp->updateRejSLD($leave_ref, $sld_status);
+
+                    if($updRejSLR > 0 && $updRejSLD > 0) {
+                        $successUpdSLR++;
+                        $updSLRMsg = nl2br("\r\n").'Staff Leave Record updated';
+                    } else {
+                        $successUpdSLR = 0;
+                        $updSLRMsg = nl2br("\r\n").'Fail to update Staff Leave Record';
+                    }
+
+                    if($updRejSLD > 0) {
+                        $successUpdSLD++;
+                        $updSLDMsg = nl2br("\r\n").'Staff Leave Detail updated';
+                    } else {
+                        $successUpdSLD = 0;
+                        $updSLDMsg = nl2br("\r\n").'Fail to update Staff Leave Detail';
+                    }
+                } else {
+                    $successUpdSLR = 3;
+                    $successUpdSLD = 3;
+                    $updSLRMsg = '';
+                    $updSLDMsg = '';
+                }
+
+
+            } else {
+                $successReject = 0;
+                $rejectMsg = 'Faill to reject staff';
+            }
+
+            if($successReject == $successMemo && (($successUpdSLR == 3 && $successUpdSLD == 3) || ($successUpdSLR == $successReject && $successUpdSLD == $successReject))) {
+                $json = array('sts' => 1, 'msg' => $rejectMsg.$memoMsg.$updSLRMsg.$updSLDMsg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' => $rejectMsg.$memoMsg.$updSLRMsg.$updSLDMsg, 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // APPROVE STAFF CONFERENCE TNCPI
+    public function approveConferenceTncpi()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $remark = $this->input->post('remark', true);
+        $appr_rej_by = $this->input->post('appr_rej_by', true);
+        $appr_rej_date = $this->input->post('appr_rej_date', true);
+        $total_amt_app_tncpi = $this->input->post('total_amt_app_tncpi', true);
+
+        $memoID = 0;
+        $successAppr = 0;
+        $successMemo = 0;
+        
+        $apprMsg = '';
+        $memoMsg = '';
+
+        $scm_sts = '';
+
+        $ccTncaIDArr = array();
+        $cc_tnca = '';
+        
+        if (!empty($refid) && !empty($staff_id)) {
+
+            // APPROVE STAFF
+            $approve = $this->mdl_pmp->approveConferenceTncpi($refid, $staff_id, $remark, $appr_rej_by, $appr_rej_date, $total_amt_app_tncpi);
+
+            if($approve > 0) {
+                $successAppr++;
+                $apprMsg = 'Approve success';
+
+                // SENDER
+                $from = $appr_rej_by;
+
+                // TO
+                $sendTO = $staff_id;
+
+                // STAFF DETAILS
+                $staffDetl = $this->mdl_pmp->getStaffList($staff_id);
+                if(!empty($staffDetl)) {
+                    $staff_name = $staffDetl->SM_STAFF_NAME;
+                } else {
+                    $staff_name = '';
+                }
+                    
+                // CONFERENCE DETAILS APPROVE TNCAA
+                $conDetl = $this->mdl_pmp->getConferenceDetlAppTncaa($appr_rej_by, $staff_id, $refid);
+                if(!empty($conDetl)) {
+                    $cm_name = $conDetl->CM_NAME;
+                    $cm_date_from = $conDetl->CM_DATE_FROM2;
+                    $cm_date_to = $conDetl->CM_DATE_TO2;
+                    $cm_state_desc = $conDetl->SM_STATE_DESC;
+                    $cm_country_desc = $conDetl->CM_COUNTRY_DESC;
+                } else {
+                    $cm_name = '';
+                    $cm_date_from = '';
+                    $cm_date_to = '';
+                    $cm_state_desc = '';
+                    $cm_country_desc = '';
+                }
+
+                // MEMO TITLE
+                $memoTitle = 'Conference Application Recommendation';
+
+                // MEMO CONTENT
+                $memoContent = 'Please take note that your PMP application has been recommended. Details :<br><br>'.
+                'Staff ID : '.$staff_id.'<br>'.
+                'Name : '.$staff_name.'<br>'.
+                'Conference Title : '.$cm_name.' ('.$cm_date_from.'-'.$cm_date_to.')'.'<br>'.
+                'Country/State : '.$cm_state_desc.'/'.$cm_country_desc.'<br><br>'.
+                'Amendment Remark  : '.$remark.'<br><br>'.
+                '-- system generated memo --';
+
+                $memoID = 2;
+                // GET STAFF REMINDER
+                $stfTnca = $this->mdl_pmp->getStaffReminderTnca();
+                if(!empty($stfTnca)) {
+                    foreach($stfTnca as $key => $st) {
+                        $remID = $st->SR_STAFF_ID;
+                        $ccTncaIDArr [] = $remID;
+                    }
+                    $cc_tnca = implode(",",$ccTncaIDArr);
+                }
+
+                $sendMemo = $this->mdl_pmp->createMemo($from, $sendTO, $cc_tnca, $memoTitle, $memoContent, $memoID);
+                
+                if ($sendMemo > 0) {
+                    $successMemo++;
+                    $memoMsg = nl2br("\r\n").'Approve memo sent';
+                } else {
+                    $successMemo = 0;
+                    $memoMsg = nl2br("\r\n").'Failed to send approval memo';
+                }
+            } else {
+                $successAppr = 0;
+                $apprMsg = 'Approve failed';
+            }
+
+            if($successAppr > 0 && $successMemo > 0) {
+                $json = array('sts' => 1, 'msg' => $apprMsg.$memoMsg, 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' =>  $apprMsg.$memoMsg, 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // ALLOWANCE DETAIL TNCPI
+    public function allowanceDetlTncpi() {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $data['total_sca_amount_rm'] = 0;
+        $data['total_sca_amount_foreign'] = 0;
+        $data['total_sca_amt_rm_approve_hod'] = 0;
+        $data['total_sca_amt_foreign_approve_hod'] = 0;
+        $data['sca_amt_rm_approve_tncpi'] = 0;
+        $data['sca_amt_foreign_approve_tncpi'] = 0;
+        $data['total_sca_amt_rm_approve_rmic'] = 0;
+        $data['total_sca_amt_foreign_approve_rmic'] = 0;
+        
+        if(!empty($staff_id) && !empty($refid)) {
+            $data['staff_id'] = $staff_id;
+            $data['refid'] = $refid;  
+            $data['other_allw_detl'] = $this->mdl_pmp->getStaffConAllowance($refid, $staff_id);
+
+            if(!empty($data['other_allw_detl'])) {
+                $other_allw_detl = $data['other_allw_detl'];
+
+                foreach($other_allw_detl as $oad) {
+                    $data['total_sca_amount_rm'] += $oad->SCA_AMOUNT_RM;
+                    $data['total_sca_amount_foreign'] += $oad->SCA_AMOUNT_FOREIGN;
+                    $data['total_sca_amt_rm_approve_hod'] += $oad->SCA_AMT_RM_APPROVE_HOD;
+                    $data['total_sca_amt_foreign_approve_hod'] += $oad->SCA_AMT_FOREIGN_APPROVE_HOD;
+                    $data['sca_amt_rm_approve_tncpi'] += $oad->SCA_AMT_RM_APPROVE_TNCPI;
+                    $data['sca_amt_foreign_approve_tncpi'] += $oad->SCA_AMT_FOREIGN_APPROVE_TNCPI;
+                    $data['total_sca_amt_rm_approve_rmic'] += $oad->SCA_AMT_RM_APPROVE_RMIC;
+                    $data['total_sca_amt_foreign_approve_rmic'] += $oad->SCA_AMT_FOREIGN_APPROVE_RMIC;
+                }
+            }
+        }
+
+        $this->render($data);
+    }
+
+    // CALCULATE AMOUNT TNCPI
+    public function calculateAllwTncpi()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $allwCodeArr = $this->input->post('allwCodeArr', true);
+        $amountArr = $this->input->post('amountArr', true);
+        $amountForArr = $this->input->post('amountForArr', true);
+
+        $appHodArr = $this->input->post('appHodArr', true);
+        $appHodForArr = $this->input->post('appHodForArr', true);
+        $appRmicArr = $this->input->post('appRmicArr', true);
+        $appRmicForArr = $this->input->post('appRmicForArr', true);
+        
+        $appTncpiArr = $this->input->post('appTncpiArr', true);
+        $appTncpiForArr = $this->input->post('appTncpiForArr', true);
+
+        $success = 0;
+        $successCalcTncpi = 0;
+        $successUpdSum = 0;
+        $successUpdSumMsg = '';
+
+        if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
+
+            foreach ($allwCodeArr as $key => $aca) {
+                $success++;
+                $amt = $amountArr[$key];
+                $amtFor = $amountForArr[$key];
+
+                $appHod = $appHodArr[$key];
+                $appHodFor = $appHodForArr[$key];
+                $appRmic = $appRmicArr[$key];
+                $appRmicFor = $appRmicForArr[$key];
+
+                $appTncpi = $appTncpiArr[$key];
+                $appTncpiFor = $appTncpiForArr[$key];
+
+                // TNCPI 
+                $tncpi = $this->mdl_pmp->getTncpiVal($refid, $staff_id, $aca);
+                if(!empty($tncpi)) {
+                    $tncpiVal = $tncpi->TNCPI_VAL;
+                } else {
+                    $tncpiVal = 0;
+                }
+                
+                if(empty($appTncpi)) {
+                    $appTncpi = $tncpiVal;
+                } else {
+                    $appTncpi = $appTncpi;
+                }
+
+                // TNCPI FOREIGN
+                $tncpi_for = $this->mdl_pmp->getTncpiForVal($refid, $staff_id, $aca);
+                if(!empty($tncpi_for)) {
+                    $tncpiFor = $tncpi_for->TNCPI_FOR_VAL;
+                } else {
+                    $tncpiFor = 0;
+                }
+
+                if(empty($appTncpiFor)) {
+                    $appTncpiFor = $tncpiFor;
+                } else {
+                    $appTncpiFor = $appTncpiFor;
+                }
+
+                $save_calc_tncpi = $this->mdl_pmp->calculateAllwTncpi($refid, $staff_id, $aca, $appTncpi, $appTncpiFor);
+
+                if ($save_calc_tncpi > 0) {
+                    $successCalcTncpi++;
+                } else {
+                    $successCalcTncpi = 0;
+                }
+            }
+
+            // SAVE TOTAL APP TNCPI
+            $sumTncpi = $this->mdl_pmp->sumStaffConAllwTncpi($refid, $staff_id);
+            if(!empty($sumTncpi)) {
+                $newSumAppTncpi = $sumTncpi->SCA_AMT_RM_APPROVE_TNCPI;
+                $updateSum = $this->mdl_pmp->updApprvAmtSumTncpi($refid, $staff_id, $newSumAppTncpi);
+
+                if ($updateSum > 0) {
+                    $successUpdSum++;
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (Staff conference - SUM)';
+                } else {
+                    $successUpdSum = 0;
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (Staff conference - SUM)';
+                }
+            } 
+
+            if($success == $successCalcTncpi && $successUpdSum > 0) {
+                $json = array('sts' => 1, 'msg' => 'Calculate complete'.$successUpdSumMsg, 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to calculate'.$successUpdSumMsg, 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // SAVE ALLOWANCE DETAIL TNCPI
+    public function saveAllwDetlTncpi()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $allwCodeArr = $this->input->post('allwCodeArr', true);
+        $amountArr = $this->input->post('amountArr', true);
+        $amountForArr = $this->input->post('amountForArr', true);
+
+        $appHodArr = $this->input->post('appHodArr', true);
+        $appHodForArr = $this->input->post('appHodForArr', true);
+        $appRmicArr = $this->input->post('appRmicArr', true);
+        $appRmicForArr = $this->input->post('appRmicForArr', true);
+        
+        $appTncpiArr = $this->input->post('appTncpiArr', true);
+        $appTncpiForArr = $this->input->post('appTncpiForArr', true);
+
+        $success = 0;
+        $successSave = 0;
+        $successUpdSum = 0;
+
+        $saveMsg = '';
+        $successUpdSumMsg = '';
+
+        if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
+            foreach ($allwCodeArr as $key => $aca) {
+                $success++;
+                $amt = $amountArr[$key];
+                $amtFor = $amountForArr[$key];
+
+                $appHod = $appHodArr[$key];
+                $appHodFor = $appHodForArr[$key];
+                $appRmic = $appRmicArr[$key];
+                $appRmicFor = $appRmicForArr[$key];
+
+                $appTncpi = $appTncpiArr[$key];
+                $appTncpiFor = $appTncpiForArr[$key];
+                
+
+                $save = $this->mdl_pmp->saveAllwDetlTncpi($refid, $staff_id, $aca, $amt, $amtFor, $appHod, $appHodFor, $appRmic, $appRmicFor, $appTncpi, $appTncpiFor);
+
+                if ($save > 0) {
+                    $successSave++;
+                    $saveMsg = 'Record has been saved (Conference allowance for staff)';
+                } else {
+                    $successSave = 0;
+                    $saveMsg = 'Fail to save record (Conference allowance for staff)';
+                }
+            }
+
+            // SAVE TOTAL APP TNCPI
+            $sumTncpi = $this->mdl_pmp->sumStaffConAllwTncpi($refid, $staff_id);
+            if(!empty($sumTncpi)) {
+                $newSumAppTncpi = $sumTncpi->SCA_AMT_RM_APPROVE_TNCPI;
+                $updateSum = $this->mdl_pmp->updApprvAmtSumTncpi($refid, $staff_id, $newSumAppTncpi);
+
+                if ($updateSum > 0) {
+                    $successUpdSum++;
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (Staff conference - SUM)';
+                } else {
+                    $successUpdSum = 0;
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (Staff conference - SUM)';
+                }
+            } 
+
+            if(($success == $successSave) && ($successUpdSum > 0)) {
+                $json = array('sts' => 1, 'msg' => $saveMsg.$successUpdSumMsg, 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => $saveMsg.$successUpdSumMsg, 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    /*===============================================================
+       CPD SETUP (ATF098)
+    ================================================================*/
+
+    // CPD CATEGORY
+    public function cpdCategoryList()
+    {
+        $data['cpd_cat'] = $this->mdl_pmp->cpdCategoryList();
+
+        $this->render($data);
+    }
+
+    // CPD POINT
+    public function cpdPointList()
+    {
+        $sYear = $this->input->post('sYear', true);
+
+        $data['cpd_pts'] = $this->mdl_pmp->cpdPointList($sYear);
+
+        $this->render($data);
     }
 }

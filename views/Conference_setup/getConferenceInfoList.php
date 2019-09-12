@@ -23,8 +23,8 @@
                     <tr>
 						<td class="text-center col-md-2">' . $cil->CM_REFID . '</td>
                         <td class="text-left">' . html_entity_decode($cil->CM_NAME) . '</td>
-                        <td class="text-center col-md-1">' . $cil->CM_DATE_FROM . '</td>
-                        <td class="text-center col-md-1">' . $cil->CM_DATE_TO . '</td>
+                        <td class="text-center col-md-1">' . $cil->CM_DATE_FROM2 . '</td>
+                        <td class="text-center col-md-1">' . $cil->CM_DATE_TO2 . '</td>
 						<td class="text-center col-md-3">
 							<button type="button" class="btn btn-info btn-xs con_inf_detl_btn"><i class="fa fa-info-circle"></i> Details</button>
 							<button type="button" class="btn btn-success btn-xs con_inf_edit_btn"><i class="fa fa-pencil-square-o"></i> Edit</button>

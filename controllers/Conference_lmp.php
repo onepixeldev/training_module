@@ -1033,10 +1033,19 @@ class Conference_lmp extends MY_Controller
                 $data['tnca_remark1'] = $data['con_rep_partiv']->SCR_TNCA_REMARK1;
                 $data['hod_ver_id'] = $data['con_rep_partiv']->SCR_HOD_VERIFY_BY;
                 $data['hod_ver_name'] = $data['con_rep_partiv']->SCR_HOD_VERIFY_BY_NAME;
-                $data['hod_ver_date'] = $data['con_rep_partiv']->SCR_HOD_VERIFY_DATE;
+                // $data['hod_ver_date'] = $data['con_rep_partiv']->SCR_HOD_VERIFY_DATE;
                 $data['tnca_ver_id'] = $data['con_rep_partiv']->SCR_TNCA_VERIFY_BY;
                 $data['tnca_ver_name'] = $data['con_rep_partiv']->SCR_TNCA_VERIFY_BY_NAME;
-                $data['tnca_app_date'] = $data['con_rep_partiv']->SCR_TNCA_VERIFY_DATE;
+
+                // SYSDATE
+                $data['hod_ver_date'] = $data['con_rep_partiv']->CURR_DATE;
+                $data['tnca_app_date'] = $data['con_rep_partiv']->CURR_DATE;
+                // if(empty($data['con_rep_partiv']->SCR_TNCA_VERIFY_DATE)) {
+                //     $data['tnca_app_date'] = $data['con_rep_partiv']->CURR_DATE;
+                // } else {
+                //     $data['tnca_app_date'] = $data['con_rep_partiv']->SCR_TNCA_VERIFY_DATE;
+                // }
+                
             } else {
                 $data['hod_remark1'] = '';
                 $data['hod_remark2'] = '';
@@ -1165,7 +1174,38 @@ class Conference_lmp extends MY_Controller
             $data['crname'] = $crname;
 
             $data['con_rep_partiv'] = $this->mdl_lmp->getConRepDetl($refid, $staff_id);
-            $data['app_amd_rejc_by'] = $this->mdl_lmp->getAppRejcStaff();
+            $data['def_app_amd_rejc_by'] = $this->mdl_lmp->getAppRejcStaff();
+            
+            // TNC (A&A) Amendment / Approval
+            if(empty($data['con_rep_partiv']->SCR_TNCA_VERIFY_BY)) {
+                $data['app_amd_by_id'] = $data['def_app_amd_rejc_by']->SM_STAFF_ID;
+                $data['app_amd_by_name'] = $data['def_app_amd_rejc_by']->SM_STAFF_NAME;
+            } else {
+                $data['app_amd_by_id'] = $data['con_rep_partiv']->SCR_TNCA_VERIFY_BY;
+
+                $data['stf_inf'] = $this->mdl_lmp->getStaffDetlAca($data['app_amd_by_id']);
+                if(!empty($data['stf_inf'])) {
+                    $data['app_amd_by_name'] = $data['stf_inf']->SM_STAFF_NAME;
+                } else {
+                    $data['app_amd_by_name'] = '';
+                }
+            }
+
+            // TNC (A&A) Reject
+            if(empty($data['con_rep_partiv']->SCR_TNCA_REJECT_BY)) {
+                $data['rejc_by_id'] = $data['def_app_amd_rejc_by']->SM_STAFF_ID;
+                $data['rejc_by_name'] = $data['def_app_amd_rejc_by']->SM_STAFF_NAME;
+            } else {
+                $data['rejc_by_id'] = $data['con_rep_partiv']->SCR_TNCA_REJECT_BY;
+
+                $data['stf_inf'] = $this->mdl_lmp->getStaffDetlAca($data['rejc_by_id']);
+                if(!empty($data['stf_inf'])) {
+                    $data['rejc_by_name'] = $data['stf_inf']->SM_STAFF_NAME;
+                } else {
+                    $data['rejc_by_name'] = '';
+                }
+            }
+
         } elseif(!empty($staff_id) && empty($staff_name) && empty($svc_code) && empty($svc_code)) {
             $data['staff_id'] = $staff_id;
             $data['refid'] = $refid;
@@ -1181,6 +1221,36 @@ class Conference_lmp extends MY_Controller
 
             $data['con_rep_partiv'] = $this->mdl_lmp->getConRepDetl($refid, $staff_id);
             $data['app_amd_rejc_by'] = $this->mdl_lmp->getAppRejcStaff();
+
+            // TNC (A&A) Amendment / Approval
+            if(empty($data['con_rep_partiv']->SCR_TNCA_VERIFY_BY)) {
+                $data['app_amd_by_id'] = $data['def_app_amd_rejc_by']->SM_STAFF_ID;
+                $data['app_amd_by_name'] = $data['def_app_amd_rejc_by']->SM_STAFF_NAME;
+            } else {
+                $data['app_amd_by_id'] = $data['con_rep_partiv']->SCR_TNCA_VERIFY_BY;
+
+                $data['stf_inf'] = $this->mdl_lmp->getStaffDetlAca($data['app_amd_by_id']);
+                if(!empty($data['stf_inf'])) {
+                    $data['app_amd_by_name'] = $data['stf_inf']->SM_STAFF_NAME;
+                } else {
+                    $data['app_amd_by_name'] = '';
+                }
+            }
+
+            // TNC (A&A) Reject
+            if(empty($data['con_rep_partiv']->SCR_TNCA_REJECT_BY)) {
+                $data['rejc_by_id'] = $data['def_app_amd_rejc_by']->SM_STAFF_ID;
+                $data['rejc_by_name'] = $data['def_app_amd_rejc_by']->SM_STAFF_NAME;
+            } else {
+                $data['rejc_by_id'] = $data['con_rep_partiv']->SCR_TNCA_REJECT_BY;
+
+                $data['stf_inf'] = $this->mdl_lmp->getStaffDetlAca($data['rejc_by_id']);
+                if(!empty($data['stf_inf'])) {
+                    $data['rejc_by_name'] = $data['stf_inf']->SM_STAFF_NAME;
+                } else {
+                    $data['rejc_by_name'] = '';
+                }
+            }
         }
 
         $this->render($data);

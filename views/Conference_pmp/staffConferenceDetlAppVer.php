@@ -57,7 +57,7 @@
     <div class="form-group" id="prev_bud_org">
         <label class="col-md-2 control-label">Previous Budget Origin</label>
         <div class="col-md-4">
-            <input name="form[previous_budget_origin]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_BUDGET_ORIGIN_PREV?>" readonly>
+            <input name="form[previous_budget_origin]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_BUDGET_ORIGIN_PREV?>" id="prev_bug_org" readonly>
         </div>
     </div>
 
@@ -74,19 +74,19 @@
     <div class="form-group hidden" id="app_research">
         <label class="col-md-3 control-label">Applied (RM) (Research)</label>
         <div class="col-md-2">
-            <input name="form[applied_rm_research]" placeholder="Total (RM)" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOT_AMT_RMIC, 2)?>" readonly>
+            <input name="form[applied_rm_research]" placeholder="Total (RM)" class="form-control" type="text" value="<?php echo $stf_detl->SCM_RM_TOT_AMT_RMIC?>" readonly>
         </div>
     </div>
 
     <div class="form-group" id="app_dept_con_ptnca">
         <label class="col-md-3 control-label">Applied (RM) (Conference/PTNCA)</label>
         <div class="col-md-2">
-            <input name="form[applied_rm_conference_ptnca]" placeholder="Total (RM)" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOTAL_AMT, 2)?>" readonly id="total_rm2">
+            <input name="form[applied_rm_conference_ptnca]" placeholder="Total (RM)" class="form-control" type="text" value="<?php echo $stf_detl->SCM_RM_TOTAL_AMT?>" readonly id="total_rm2">
         </div>
 
         <label class="col-md-3 control-label">Applied (RM) (Department)</label>
         <div class="col-md-2">
-            <input name="form[applied_rm_department]" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOTAL_AMT_DEPT, 2)?>" readonly>
+            <input name="form[applied_rm_department]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_RM_TOTAL_AMT_DEPT?>" readonly>
         </div>
     </div>
 
@@ -94,27 +94,27 @@
         <div id="app_hod">
             <label class="col-md-3 control-label">Approved HOD (RM) (Conference/PTNCA)</label>
             <div class="col-md-2">
-                <input name="form[approved_hod_rm_conference_ptnca]" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOTAL_AMT_APPROVE_HOD, 2)?>" readonly id="hod_amount">
+                <input name="form[approved_hod_rm_conference_ptnca]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_RM_TOTAL_AMT_APPROVE_HOD?>" readonly id="hod_amount">
             </div>
         </div>
         
 
         <label class="col-md-3 control-label">Approved HOD (RM) (Department/Research)</label>
         <div class="col-md-2">
-            <input name="form[approved_hod_rm_department_research]" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_TOTAL_AMT_DEPT_APPRV_HOD, 2)?>" readonly>
+            <input name="form[approved_hod_rm_department_research]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_TOTAL_AMT_DEPT_APPRV_HOD?>" readonly>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-md-3 control-label">Approved RMIC (RM) (Research)</label>
         <div class="col-md-2">
-            <input name="form[approved_rmic_rm_research]" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOT_AMT_APPRV_RMIC, 2)?>" readonly id="rmic_amount">
+            <input name="form[approved_rmic_rm_research]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_RM_TOT_AMT_APPRV_RMIC?>" readonly id="rmic_amount">
         </div>
 
         <div id="tncPIf">
             <label class="col-md-3 control-label">Approved TNC P&I (RM)</label>
             <div class="col-md-2">
-                <input name="form[approved_tnc_pi]" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOT_AMT_APPRV_TNCPI, 2)?>" readonly id="tncpi_amount">
+                <input name="form[approved_tnc_pi]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_RM_TOT_AMT_APPRV_TNCPI?>" readonly id="tncpi_amount">
             </div>
         </div>
     </div>
@@ -123,7 +123,7 @@
         <div id="app_tncaa">
             <label class="col-md-3 control-label">Approved TNC A&A (RM)</label>
             <div class="col-md-2">
-                <input name="form[approved_tnc_aa]" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOTAL_AMT_APPROVE_TNCA, 2)?>" readonly id="approved_tnc_aa">
+                <input name="form[approved_tnc_aa]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_RM_TOTAL_AMT_APPROVE_TNCA?>" readonly id="approved_tnc_aa">
             </div>
         </div>
         
@@ -138,7 +138,7 @@
     <div class="form-group hidden" id="app_vc">
         <label class="col-md-3 control-label">Approved VC (RM)</label>
         <div class="col-md-2">
-            <input name="form[approved_vc]" class="form-control" type="text" value="<?php echo number_format($stf_detl->SCM_RM_TOTAL_AMT_APPROVE_VC, 2)?>" readonly id="approved_vc">
+            <input name="form[approved_vc]" class="form-control" type="text" value="<?php echo $stf_detl->SCM_RM_TOTAL_AMT_APPROVE_VC?>" readonly id="approved_vc">
         </div>
 
         <div class="col-md-2 hidden" id="allw_detl_vc">

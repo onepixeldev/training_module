@@ -156,6 +156,20 @@
 	var ca_row = '';
 
 	$(document).ready(function(){
+
+		// PREVENT SUBMIT RELOAD
+		$('#myModalis').on('submit', function(e){
+			e.preventDefault();
+		});
+
+		// ENTER BUTTON NOT ALLOWED
+		$('#myModalis').on('keyup', '#staff_id', function (e) {
+			if (e.keyCode === 13) {
+				e.preventDefault();
+				msg.show('Enter button are not allowed', 'warning', '#myModalis .modal-content #alertStfIDMD');
+				return;
+			}
+		});
 		
 		$("#myModalis").draggable({
 			handle: ".modal-content"
@@ -698,19 +712,7 @@
 		// console.log(staff_id);
 
 		if(staff_id == '') {
-			$('#myModalis .modal-content').empty();
-			$('#myModalis').modal('show');
-			$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-		
-			$.ajax({
-				type: 'POST',
-				url: '<?php echo $this->lib->class_url('searchStaffMd')?>',
-				data: '',
-				success: function(res) {
-					$('#myModalis .modal-content').html(res);
-					msg.show('Please enter Staff ID / Name', 'danger', '#myModalis .modal-content #alertStfIDMD');
-				}
-			});
+			msg.show('Please enter Staff ID / Name', 'warning', '#myModalis .modal-content #alertStfIDMD');
 			return;
 		}
 

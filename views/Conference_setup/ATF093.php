@@ -256,7 +256,9 @@
 		var td = thisBtn.parent().siblings();
 		var refid = td.eq(0).html().trim();
 		var title = td.eq(1).html().trim();
-		//alert(ccCode);
+		// var month = $('#sMonth').val();
+		// var year = $('#sYear').val();
+		// alert(year);
 
 		srow = $(this).closest("tr");
 		$('#myModalis .modal-content').empty();
@@ -276,6 +278,9 @@
 	// SAVE UPDATE CONFERENCE INFORMATION
 	$('#myModalis').on('click', '.edit_con_info', function (e) {
 		e.preventDefault();
+		var sMonth = $('#sMonth').val();
+		var sYear = $('#sYear').val();
+
 		var data = $('#editConInfo').serialize();
 		msg.wait('#editConInfoAlert');
 		msg.wait('#editConInfoAlertFoot');
@@ -293,9 +298,27 @@
 				
 				if (res.sts == 1) {
 					setTimeout(function () {
-						$('#myModalis2').modal('hide');
+						$('#myModalis').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilterATF093','s1')?>';
+
+						// REFRESH
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('getConferenceInfoList')?>',
+							data: {'sMonth' : sMonth, 'sYear' : sYear},
+							beforeSend: function() {
+								$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#conference_info_list').html(res);
+								cf_row = $('#tbl_cil_list').DataTable({
+									"ordering":false,
+								});
+							},
+							complete: function(){
+								$('#loader').hide();
+							},
+						});
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');

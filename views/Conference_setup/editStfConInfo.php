@@ -1,6 +1,6 @@
 <form id="editStfConInfo" class="form-horizontal" method="post">
     <div class="modal-header btn-success">
-        <h4 class="modal-title txt-color-white" id="myModalLabel">Add Staff Contact Info</h4>
+        <h4 class="modal-title txt-color-white" id="myModalLabel">Edit Staff Contact Info</h4>
     </div>
     <div class="modal-body">
         <div id="editStfConInfoAlert">

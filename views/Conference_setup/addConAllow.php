@@ -32,7 +32,11 @@
             <label class="col-md-3 control-label">Budget Origin (Local)</label>
             <div class="col-md-4">
                 <?php
-                    echo form_dropdown('form[budget_origin_local]', array(''=>'---Please Select---', 'CONFERENCE'=>'CONFERENCE', 'DEPARTMENT'=>'DEPARTMENT', 'PTNCA'=>'PTNCA', 'OTHERS'=>'OTHERS'), '', 'class="form-control width-50"')
+                if ($mod == 'RMIC') {
+                    echo form_dropdown('form[budget_origin_local]', array(''=>'---Please Select---', 'RESEARCH'=>'RESEARCH', 'CONFERENCE'=>'CONFERENCE', 'DEPARTMENT'=>'DEPARTMENT', 'PTNCA'=>'PTNCA'), '', 'class="form-control width-50"');
+                } else {
+                    echo form_dropdown('form[budget_origin_local]', array(''=>'---Please Select---', 'CONFERENCE'=>'CONFERENCE', 'DEPARTMENT'=>'DEPARTMENT', 'PTNCA'=>'PTNCA', 'OTHERS'=>'OTHERS'), '', 'class="form-control width-50"');
+                }
                 ?>
             </div>
         </div>
@@ -41,7 +45,12 @@
             <label class="col-md-3 control-label">Budget Origin (oversea)</label>
             <div class="col-md-4">
                 <?php
-                    echo form_dropdown('form[budget_origin_oversea]', array(''=>'---Please Select---', 'CONFERENCE'=>'CONFERENCE', 'DEPARTMENT'=>'DEPARTMENT', 'PTNCA'=>'PTNCA', 'OTHERS'=>'OTHERS'), '', 'class="form-control width-50"')
+                if ($mod == 'RMIC') {
+                    echo form_dropdown('form[budget_origin_oversea]', array(''=>'---Please Select---', 'RESEARCH'=>'RESEARCH', 'CONFERENCE'=>'CONFERENCE', 'DEPARTMENT'=>'DEPARTMENT', 'PTNCA'=>'PTNCA'), '', 'class="form-control width-50"');
+                } else {
+                    echo form_dropdown('form[budget_origin_oversea]', array(''=>'---Please Select---', 'CONFERENCE'=>'CONFERENCE', 'DEPARTMENT'=>'DEPARTMENT', 'PTNCA'=>'PTNCA', 'OTHERS'=>'OTHERS'), '', 'class="form-control width-50"');
+                }
+                
                 ?>
             </div>
         </div>
@@ -51,6 +60,15 @@
             <div class="col-md-4">
                 <?php
                     echo form_dropdown('form[status]', array(''=>'---Please Select---', 'ACTIVE'=>'ACTIVE', 'INACTIVE'=>'INACTIVE'), '', 'class="form-control width-50"')
+                ?>
+            </div>
+        </div>
+
+        <div class="form-group hidden" id="dRmic">
+            <label class="col-md-3 control-label">Display RMIC?</label>
+            <div class="col-md-4">
+                <?php
+                    echo form_dropdown('form[display_rmic]', array(''=>'---Please Select---', 'Y'=>'Yes', 'N'=>'No'), '', 'class="form-control width-50"')
                 ?>
             </div>
         </div>

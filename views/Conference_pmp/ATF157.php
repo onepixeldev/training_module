@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Conference / Edit Conference Application for RMIC', $screen_id) ?>
+<?php echo $this->lib->title('Conference RMIC / Edit Conference Application for RMIC', $screen_id) ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">
@@ -203,16 +203,14 @@
 	var ca_row = '';
 	
 	$(document).ready(function(){
-		// navigate to selected tab
-		<?php
-        $currtab = $this->session->tabID;
-    
-        if (!empty($currtab)) {
-            if ($currtab == 's1'){
-                echo "$('.nav-tabs li:eq(0) a').tab('show');";
-            }
-		}
-        ?>
+		
+		$("#myModalis").draggable({
+			handle: ".modal-content"
+		});
+
+		$("#myModalis2").draggable({
+			handle: ".modal-content"
+		});
 	});
 
 	$(".nav-tabs a").click(function(){
@@ -318,6 +316,7 @@
 			success: function(res) {
                 $('#staff_list_conference').html(res);
                 $('#staff_list_conference .con_app_add_btn').addClass('hidden');
+				$('#staff_list_conference .stacr_del_btn').addClass('hidden');
 				
 				ca_row = $('#tbl_list_sta_cr').DataTable({
 					"ordering":false,
@@ -362,6 +361,7 @@
 					dataType: 'JSON',
 					success: function(res) {
 						var sponsor = res.sponsor;
+						var scm_status = res.status;
 						
 						if(sponsor != "" && (sponsor == 'Y' || sponsor == 'H')) {
 							$('#spName').html('Sponsor Name <b><font color="red">* </font></b>').show();
@@ -386,6 +386,12 @@
 
 							$('#totalAmtInput').prop('readonly', true);
 						}
+
+						if(scm_status == 'VERIFY_VC' || scm_status == 'APPROVE') {
+							$('#statusUpd').attr('disabled', 'disabled');
+							$('#statusUpdDummy').removeAttr('disabled');
+							// console.log('GG');
+						} 
 					}
 				});
 
@@ -399,6 +405,12 @@
 					},
 					success: function(res) {
 						$('#conference_leave').html(res);
+						$('#conference_leave .ins_con_leave').addClass('hidden');
+						$('#conference_leave #appliedDateFrom').prop('readonly', true);
+						$('#conference_leave #appliedDateTo').prop('readonly', true);
+						$('#conference_leave #approveDateFrom').prop('readonly', true);
+						$('#conference_leave #approveDateTo').prop('readonly', true);
+
 					}
 				});
 
@@ -576,203 +588,198 @@
 	});
 
 	// STATUS FIELD ALERT ADD NEW STAFF
-	$('#conference_application').on('change', '#status', function () {
-		status = $('#status').val();
-		approveByHod = $('#approveByHod').val();
-		approveDateHod = $('#approveDateHod').val();
-		tncaRemark = $('#tncaRemark').val();
-		approveByTnca = $('#approveByTnca').val();
-		approveDateTnca = $('#approveDateTnca').val();
-		// alert(status);
+	// $('#conference_application').on('change', '#status', function () {
+	// 	status = $('#status').val();
+	// 	approveByHod = $('#approveByHod').val();
+	// 	approveDateHod = $('#approveDateHod').val();
+	// 	tncaRemark = $('#tncaRemark').val();
+	// 	approved_by_rmic = $('#approved_by_rmic').val();
+	// 	approved_date_rmic = $('#approved_date_rmic').val();
+	// 	approved_by_tncpi = $('#approved_by_tncpi').val();
+	// 	approved_date_tncpi = $('#approved_date_tncpi').val();
 
-		if(status != "" && status == 'VERIFY_TNCA') {
-			if(approveByHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			}
-		} else if(status != "" && status == 'VERIFY_VC') {
-			if(tncaRemark == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Remark (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveByTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			}
-		} else if(status != "" && status == 'APPROVE') {
-			if(approveByHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(tncaRemark == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Remark (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveByTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			}
-		}
-	});
+	// 	if(status != "" && status == 'VERIFY_RMIC') {
+	// 		if(approveByHod == '') {
+	// 			$.alert({
+	// 				title: 'Alert',
+	// 				content: 'Please fill in <b>Approved By (HOD)</b>',
+	// 				type: 'red',
+	// 			});
+	// 			$('#status').val('');
+	// 		} else if(approveDateHod == '') {
+	// 			$.alert({
+	// 				title: 'Alert',
+	// 				content: 'Please fill in <b>Approved Date (HOD)</b>',
+	// 				type: 'red',
+	// 			});
+	// 			$('#status').val('');
+	// 		}
+	// 	} else if(status != "" && status == 'VERIFY_TNCPI') {
+	// 		if(approved_by_rmic == '') {
+	// 			$.alert({
+	// 				title: 'Alert',
+	// 				content: 'Please fill in <b>Approved By (RMIC)</b>',
+	// 				type: 'red',
+	// 			});
+	// 			$('#status').val('');
+	// 		} else if(approved_date_rmic == '') {
+	// 			$.alert({
+	// 				title: 'Alert',
+	// 				content: 'Please fill in <b>Approved Date (RMIC)</b>',
+	// 				type: 'red',
+	// 			});
+	// 			$('#status').val('');
+	// 		}
+	// 	} else if(status != "" && status == 'VERIFY_TNCA') {
+	// 		alert(approved_by_tncpi);
+	// 		if(approved_by_tncpi == '') {
+	// 			$.alert({
+	// 				title: 'Alert',
+	// 				content: 'Please fill in <b>Approved By (TNCPI)</b>',
+	// 				type: 'red',
+	// 			});
+	// 			$('#status').val('');
+	// 		} else if(approved_date_tncpi == '') {
+	// 			$.alert({
+	// 				title: 'Alert',
+	// 				content: 'Please fill in <b>Approved Date (TNCPI)</b>',
+	// 				type: 'red',
+	// 			});
+	// 			$('#status').val('');
+	// 		} 
+	// 	}
+	// });
 
 	// STATUS FIELD ALERT UPDATE STAFF
 	$('#conference_application').on('change', '#statusUpd', function () {
 		status = $('#statusUpd').val();
+		// approveByHod = $('#approveByHod').val();
+		// approveDateHod = $('#approveDateHod').val();
+		// tncaRemark = $('#tncaRemark').val();
+		// approveByTnca = $('#approveByTnca').val();
+		// approveDateTnca = $('#approveDateTnca').val();
 		approveByHod = $('#approveByHod').val();
 		approveDateHod = $('#approveDateHod').val();
-		tncaRemark = $('#tncaRemark').val();
-		approveByTnca = $('#approveByTnca').val();
-		approveDateTnca = $('#approveDateTnca').val();
+		approved_by_rmic = $('#approved_by_rmic').val();
+		approved_date_rmic = $('#approved_date_rmic').val();
+		approved_by_tncpi = $('#approved_by_tncpi').val();
+		approved_date_tncpi = $('#approved_date_tncpi').val();
+		
 		staff_id = $('#staffID').val();
 		refid = $('#crRefid').val();
+		tncpi = '';
+		resTncpi = '';
 		currStatus = '';
 		resSts = '';
 		// alert(staff_id);
 
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('getStaffConStatus')?>',
-			data: {'staffID' : staff_id, 'refid' : refid},
+			url: '<?php echo $this->lib->class_url('getStaffTncpi')?>',
+			data: {'staffID' : staff_id},
 			dataType: 'JSON',
 			success: function(res) {
-				if(res.sts == 1) {
+				tncpi = res.sts;
+				// console.log(tncpi);
+			}
+		}).done(function(tncpi) {
+
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getStaffConStatus')?>',
+				data: {'staffID' : staff_id, 'refid' : refid},
+				dataType: 'JSON',
+				success: function(res) {
 					currStatus = res.status;
 				}
-			}
-		}).done(function(currStatus) {
-			resSts = currStatus.status;
-			// alert(resSts);
-			if(status != "" && status == 'VERIFY_TNCA') {
-				if(approveByHod == '') {
+			}).done(function(currStatus) { 
+				resSts = currStatus.status;
+				resTncpi = tncpi.sts;
+				// console.log(resSts+' '+resTncpi);
+				
+				if(status != "" && status == 'VERIFY_RMIC') {
 					$.alert({
 						title: 'Alert',
-						content: 'Please fill in <b>Approved By (HOD)</b>',
+						content: 'Please fill in <b>Head of Department Approval/Verification</b> section',
 						type: 'red',
 					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateHod == '') {
+					
+					// if(approveByHod == '') {
+					// 	$.alert({
+					// 		title: 'Alert',
+					// 		content: 'Please fill in <b>Approved By (HOD)</b>',
+					// 		type: 'red',
+					// 	});
+					// 	$('#status').val('');
+					// } else if(approveDateHod == '') {
+					// 	$.alert({
+					// 		title: 'Alert',
+					// 		content: 'Please fill in <b>Approved Date (HOD)</b>',
+					// 		type: 'red',
+					// 	});
+					// 	$('#status').val('');
+					// }
+				} else if(status != "" && status == 'VERIFY_TNCPI') {
 					$.alert({
 						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (HOD)</b>',
+						content: 'Please fill in <b>Head of Department RMIC Approval/Verification</b> section',
+						type: 'red',
+					});
+
+					// if(approved_by_rmic == '') {
+					// 	$.alert({
+					// 		title: 'Alert',
+					// 		content: 'Please fill in <b>Approved By (RMIC)</b>',
+					// 		type: 'red',
+					// 	});
+					// 	$('#statusUpd').val('');
+					// } else if(approved_date_rmic == '') {
+					// 	$.alert({
+					// 		title: 'Alert',
+					// 		content: 'Please fill in <b>Approved Date (RMIC)</b>',
+					// 		type: 'red',
+					// 	});
+					// 	$('#statusUpd').val('');
+					// }
+				} else if(resTncpi != 1 && status == 'VERIFY_TNCA') {
+					// alert(approved_by_tncpi);
+					$.alert({
+						title: 'Alert',
+						content: 'Please fill in <b>TNC (PI) Approval/Verification</b> section',
+						type: 'red',
+					});
+
+					// if(approved_by_tncpi == '') {
+					// 	$.alert({
+					// 		title: 'Alert',
+					// 		content: 'Please fill in <b>Approved By (TNCPI)</b>',
+					// 		type: 'red',
+					// 	});
+					// 	$('#statusUpd').val('');
+					// } else if(approved_date_tncpi == '') {
+					// 	$.alert({
+					// 		title: 'Alert',
+					// 		content: 'Please fill in <b>Approved Date (TNCPI)</b>',
+					// 		type: 'red',
+					// 	});
+					// 	$('#statusUpd').val('');
+					// } 
+				} else if(status == 'VERIFY_VC' || status == 'APPROVE') {
+					// alert(approved_by_tncpi);
+					$.alert({
+						title: 'Alert',
+						content: 'Cannot change this status',
 						type: 'red',
 					});
 					$('#statusUpd').val(resSts);
 				}
-			} else if(status != "" && status == 'VERIFY_VC') {
-				if(tncaRemark == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Remark (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveByTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				}
-			} else if(status != "" && status == 'APPROVE') {
-				if(approveByHod == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (HOD)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateHod == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (HOD)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(tncaRemark == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Remark (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveByTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				}
-			}
+			});
 		});
 	});
 
 	// SAVE EDIT STAFF TO CONFERENCE
-	$('#conference_application').on('click', '.edit_stf_cr', function () {
+	$('#conference_application').on('click', '.edit_stf_cr', function (e) {
+		e.preventDefault();
 		var data = $('#editStaffConference').serialize();
 		msg.wait('#alertEditStaffConference');
         msg.wait('#alertEditStaffConferenceFooter');
@@ -810,6 +817,7 @@
 							success: function(res) {
 								$('#staff_list_conference').html(res);
 								$('#staff_list_conference .con_app_add_btn').addClass('hidden');
+								$('#staff_list_conference .stacr_del_btn').addClass('hidden');
 								
 								ca_row = $('#tbl_list_sta_cr').DataTable({
 									"ordering":false,
@@ -836,6 +844,7 @@
 									dataType: 'JSON',
 									success: function(res) {
 										var sponsor = res.sponsor;
+										var scm_status = res.status;
 										
 										if(sponsor != "" && (sponsor == 'Y' || sponsor == 'H')) {
 											$('#spName').html('Sponsor Name <b><font color="red">* </font></b>').show();
@@ -860,6 +869,12 @@
 
 											$('#totalAmtInput').prop('readonly', true);
 										}
+
+										if(scm_status == 'VERIFY_TNCA' || scm_status == 'APPROVE') {
+											$('#statusUpd').attr('disabled', 'disabled');
+											$('#statusUpdDummy').removeAttr('disabled');
+											// console.log('GG');
+										} 
 									}
 								});
 
@@ -880,6 +895,11 @@
 							},
 							success: function(res) {
 								$('#conference_leave').html(res);
+								$('#conference_leave .ins_con_leave').addClass('hidden');
+								$('#conference_leave #appliedDateFrom').prop('readonly', true);
+								$('#conference_leave #appliedDateTo').prop('readonly', true);
+								$('#conference_leave #approveDateFrom').prop('readonly', true);
+								$('#conference_leave #approveDateTo').prop('readonly', true);
 							}
 						});
 
@@ -1152,154 +1172,163 @@
 		}
     });
 
-	// SAVE ADD/EDIT CONFERENCE LEAVE
-	$('#conference_leave').on('click', '.ins_con_leave', function () {
-		balance = $('#balanceLeave').val();
-		if(balance < 0) {
-			$.alert({
-				title: 'Alert!',
-				content: 'The leave applied exceeds the conference leave balance. Please apply for annual leave.',
-				type: 'red',
-			});
+	// // SAVE ADD/EDIT CONFERENCE LEAVE
+	// $('#conference_leave').on('click', '.ins_con_leave', function (e) {
+	// 	e.preventDefault();
+	// 	balance = $('#balanceLeave').val();
+	// 	if(balance < 0) {
+	// 		$.alert({
+	// 			title: 'Alert!',
+	// 			content: 'The leave applied exceeds the conference leave balance. Please apply for annual leave.',
+	// 			type: 'red',
+	// 		});
 
-			return;
-		}
+	// 		return;
+	// 	}
 
-		var data = $('#addConferenceLeave').serialize();
-		msg.wait('#alertConferenceLeave');
-        msg.wait('#alertConferenceLeaveFooter');
-		//alert(data);
-		crStaffID = $('#staff_id').val();
-		crRefID = $('#crRefid').val();
-		crName = $('#crName').val();
-		crStaffName = $('#staff_name').val();
-		mod = 'EDIT_RMIC';
-		//alert(crStaffID);
+	// 	var data = $('#addConferenceLeave').serialize();
+	// 	msg.wait('#alertConferenceLeave');
+    //     msg.wait('#alertConferenceLeaveFooter');
+	// 	//alert(data);
+	// 	crStaffID = $('#staff_id').val();
+	// 	crRefID = $('#crRefid').val();
+	// 	crName = $('#crName').val();
+	// 	crStaffName = $('#staff_name').val();
+	// 	mod = 'EDIT_RMIC';
+	// 	//alert(crStaffID);
 		
-		$('.btn').attr('disabled', 'disabled');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveInsEditConLeave')?>',
-			data: data,
-			dataType: 'JSON',
-			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertConferenceLeave');
-                msg.show(res.msg, res.alert, '#alertConferenceLeaveFooter');
+	// 	$('.btn').attr('disabled', 'disabled');
+	// 	$.ajax({
+	// 		type: 'POST',
+	// 		url: '<?php echo $this->lib->class_url('saveInsEditConLeave')?>',
+	// 		data: data,
+	// 		dataType: 'JSON',
+	// 		success: function(res) {
+	// 			msg.show(res.msg, res.alert, '#alertConferenceLeave');
+    //             msg.show(res.msg, res.alert, '#alertConferenceLeaveFooter');
 
-				if (res.sts == 1) {
-					setTimeout(function () {
-						$('.btn').removeAttr('disabled');
+	// 			if (res.sts == 1) {
+	// 				setTimeout(function () {
+	// 					$('.btn').removeAttr('disabled');
 
-						// refresh staff list tab
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('getStaffConferenceApplication')?>',
-							data: {'refid' : crRefID, 'crName' : crName, 'mod' : mod},
-							beforeSend: function() {
-								$('#staff_list_conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#staff_list_conference').html(res);
-								$('#staff_list_conference .con_app_add_btn').addClass('hidden');
+	// 					// refresh staff list tab
+	// 					$.ajax({
+	// 						type: 'POST',
+	// 						url: '<?php echo $this->lib->class_url('getStaffConferenceApplication')?>',
+	// 						data: {'refid' : crRefID, 'crName' : crName, 'mod' : mod},
+	// 						beforeSend: function() {
+	// 							$('#staff_list_conference').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+	// 						},
+	// 						success: function(res) {
+	// 							$('#staff_list_conference').html(res);
+	// 							$('#staff_list_conference .con_app_add_btn').addClass('hidden');
+	// 							$('#staff_list_conference .stacr_del_btn').addClass('hidden');
 								
-								ca_row = $('#tbl_list_sta_cr').DataTable({
-									"ordering":false,
-								});
-							}
-						});
+	// 							ca_row = $('#tbl_list_sta_cr').DataTable({
+	// 								"ordering":false,
+	// 							});
+	// 						}
+	// 					});
 						
-						// refresh edit conference application
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('editStaffConference')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'mod' : mod},
-							beforeSend: function() {
-								$('#conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								// MODIFY INPUT FIELD RELATED TO SPONSOR
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('checkSponsor')?>',
-									data: {'staffID' : crStaffID, 'refid' : crRefID},
-									dataType: 'JSON',
-									success: function(res) {
-										var sponsor = res.sponsor;
+	// 					// refresh edit conference application
+	// 					$.ajax({
+	// 						type: 'POST',
+	// 						url: '<?php echo $this->lib->class_url('editStaffConference')?>',
+	// 						data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'mod' : mod},
+	// 						beforeSend: function() {
+	// 							$('#conference_application').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+	// 						},
+	// 						success: function(res) {
+	// 							// MODIFY INPUT FIELD RELATED TO SPONSOR
+	// 							$.ajax({
+	// 								type: 'POST',
+	// 								url: '<?php echo $this->lib->class_url('checkSponsor')?>',
+	// 								data: {'staffID' : crStaffID, 'refid' : crRefID},
+	// 								dataType: 'JSON',
+	// 								success: function(res) {
+	// 									var sponsor = res.sponsor;
+	// 									var scm_status = res.status;
 										
-										if(sponsor != "" && (sponsor == 'Y' || sponsor == 'H')) {
-											$('#spName').html('Sponsor Name <b><font color="red">* </font></b>').show();
-											$('#budSp').html('Budget Origin for Sponsor <b><font color="red">* </font></b>').show();
-											$('#totalAmt').html('Total (RM) <b><font color="red">* </font></b>').show();
+	// 									if(sponsor != "" && (sponsor == 'Y' || sponsor == 'H')) {
+	// 										$('#spName').html('Sponsor Name <b><font color="red">* </font></b>').show();
+	// 										$('#budSp').html('Budget Origin for Sponsor <b><font color="red">* </font></b>').show();
+	// 										$('#totalAmt').html('Total (RM) <b><font color="red">* </font></b>').show();
 
-											$('#spNameInput').prop('readonly', false);
+	// 										$('#spNameInput').prop('readonly', false);
 
-											$('.budSpInput').removeAttr('disabled');
-											$('#spNameInputDummy').attr('disabled', 'disabled');
+	// 										$('.budSpInput').removeAttr('disabled');
+	// 										$('#spNameInputDummy').attr('disabled', 'disabled');
 
-											$('#totalAmtInput').prop('readonly', false);
-										} else {
-											$('#spName').html('Sponsor Name').show();
-											$('#budSp').html('Budget Origin for Sponsor').show();
-											$('#totalAmt').html('Total (RM)').show();
+	// 										$('#totalAmtInput').prop('readonly', false);
+	// 									} else {
+	// 										$('#spName').html('Sponsor Name').show();
+	// 										$('#budSp').html('Budget Origin for Sponsor').show();
+	// 										$('#totalAmt').html('Total (RM)').show();
 
-											$('#spNameInput').prop('readonly', true);
+	// 										$('#spNameInput').prop('readonly', true);
 
-											$('.budSpInput').attr('disabled', 'disabled');
-											$('#spNameInputDummy').removeAttr('disabled');
+	// 										$('.budSpInput').attr('disabled', 'disabled');
+	// 										$('#spNameInputDummy').removeAttr('disabled');
 
-											$('#totalAmtInput').prop('readonly', true);
-										}
-									}
-								});
+	// 										$('#totalAmtInput').prop('readonly', true);
+	// 									}
 
-								$('#conference_application').html(res);
-								$('#conference_application .print_att_btn').addClass('hidden');
-								$('#conference_application #editRmicResearch').removeClass('hidden');
-								$('#conference_application #editRmic').removeClass('hidden');
-							}
-						});
+	// 									if(scm_status == 'VERIFY_TNCA' || scm_status == 'APPROVE') {
+	// 										$('#statusUpd').attr('disabled', 'disabled');
+	// 										$('#statusUpdDummy').removeAttr('disabled');
+	// 										// console.log('GG');
+	// 									} 
+	// 								}
+	// 							});
+
+	// 							$('#conference_application').html(res);
+	// 							$('#conference_application .print_att_btn').addClass('hidden');
+	// 							$('#conference_application #editRmicResearch').removeClass('hidden');
+	// 							$('#conference_application #editRmic').removeClass('hidden');
+	// 						}
+	// 					});
 						
-						// refresh leave conference
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('addConferenceLeave')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
-							beforeSend: function() {
-								$('#conference_leave').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#conference_leave').html(res);
-								// $('.nav-tabs li:eq(3) a').tab('show');
-							}
-						});
+	// 					// refresh leave conference
+	// 					$.ajax({
+	// 						type: 'POST',
+	// 						url: '<?php echo $this->lib->class_url('addConferenceLeave')?>',
+	// 						data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName},
+	// 						beforeSend: function() {
+	// 							$('#conference_leave').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+	// 						},
+	// 						success: function(res) {
+	// 							$('#conference_leave').html(res);
+	// 							// $('.nav-tabs li:eq(3) a').tab('show');
+	// 						}
+	// 					});
 
-						// REDIRECT ADD STAFF CONFERENCE ALLOWANCE RECORD
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('staffConferenceAllowance')?>',
-							data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
-							beforeSend: function() {
-								$('#allowances').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#allowances').html(res);
-								$('.nav-tabs li:eq(4) a').tab('show');
-								$('#allowances #tbl_stf_cr_allw_list .allwRmic').removeClass('hidden');
-								$('#allowances #allwRmicSummary').removeClass('hidden');
-							}
-						});
-					}, 1000);
-				} else {
-					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alertEditStaffConference');
-				msg.danger('Please contact administrator.', '#alertEditStaffConferenceFooter');
-			}
-		});	
-	});
+	// 					// REDIRECT ADD STAFF CONFERENCE ALLOWANCE RECORD
+	// 					$.ajax({
+	// 						type: 'POST',
+	// 						url: '<?php echo $this->lib->class_url('staffConferenceAllowance')?>',
+	// 						data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
+	// 						beforeSend: function() {
+	// 							$('#allowances').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+	// 						},
+	// 						success: function(res) {
+	// 							$('#allowances').html(res);
+	// 							$('.nav-tabs li:eq(4) a').tab('show');
+	// 							$('#allowances #tbl_stf_cr_allw_list .allwRmic').removeClass('hidden');
+	// 							$('#allowances #allwRmicSummary').removeClass('hidden');
+	// 						}
+	// 					});
+	// 				}, 1000);
+	// 			} else {
+	// 				$('.btn').removeAttr('disabled');
+	// 			}
+	// 		},
+	// 		error: function() {
+	// 			$('.btn').removeAttr('disabled');
+	// 			msg.danger('Please contact administrator.', '#alertEditStaffConference');
+	// 			msg.danger('Please contact administrator.', '#alertEditStaffConferenceFooter');
+	// 		}
+	// 	});	
+	// });
 
 	/*-----------------------------
 	TAB 5 - ALLOWANCES
@@ -1329,7 +1358,8 @@
 	});	
 
 	// SAVE INSERT NEW STAFF CONFERENCE ALLOWANCE
-	$('#myModalis').on('click', '.ins_stf_con_allw', function () {
+	$('#myModalis').on('click', '.ins_stf_con_allw', function (e) {
+		e.preventDefault();
 		var staffId = $('#staff_id').val();
 		var staffName = $('#staff_name').val();
 		var crRefID = $('#crRefid').val();
@@ -1412,7 +1442,8 @@
 	});
 
 	// SAVE UPDATE STAFF CONFERENCE ALLOWANCE
-	$('#myModalis').on('click', '.upd_stf_con_allw', function () {
+	$('#myModalis').on('click', '.upd_stf_con_allw', function (e) {
+		e.preventDefault();
 		var staffId = $('#staff_id').val();
 		var staffName = $('#staff_name').val();
 		var crRefID = $('#crRefid').val();

@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Conference / Staff Conference Maintenance', $screen_id) ?>
+<?php echo $this->lib->title('Conference RMIC / Query Staff Conference (RMIC)', $screen_id) ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">
@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>ATF168 - Staff Conference Maintenance</h2>				
+            <h2>ATF160 - Query Staff Conference (RMIC)</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -123,17 +123,7 @@
 	var b_row = '';
 	
 	$(document).ready(function(){
-		// // navigate to selected tab
-		// <?php
-        // $currtab = $this->session->tabID;
-    
-        // if (!empty($currtab)) {
-        //     if ($currtab == 's1'){
-        //         echo "$('.nav-tabs li:eq(0) a').tab('show');";
-        //     }
-		// }
-		// ?>
-		
+
 		$("#myModalis").draggable({
 			handle: ".modal-content"
 		});
@@ -169,13 +159,10 @@
 						data: {'deptCode' : deptCode},
 						dataType: 'JSON',
 						success: function(res) {
-							console.log(deptCode);
 							if(res.sts == 1) {
 								$('#dept_name').val(res.dept_desc);
-							} else if(deptCode == '---') {
-								$('#dept_name').val('Please select department');
 							} else {
-								$('#dept_name').val('All department');
+								$('#dept_name').val('Please select department');
 							}
 						}
 					});
@@ -198,8 +185,8 @@
 		var staff_id = td.eq(0).html().trim();
 		var staff_name = td.eq(1).html().trim();
 		var svc_code = td.eq(2).html().trim();
-        var svc_desc = td.eq(3).html().trim();
-        var mod = 'STAFF_MAINTENANCE';
+		var svc_desc = td.eq(3).html().trim();
+        var mod = 'RMIC';
 
 		$.ajax({
 			type: 'POST',
@@ -220,7 +207,16 @@
                             //debugger;
                                 if (Cell.text() !== 'error') {
                                     //$(this).find('btn').hide();
-                                    $('#tbl_chl_list tbody #menuBtn').replaceWith('<div class="btn-group"><button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button><div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn"><button type="button" class="btn btn-primary text-left btn-block btn-xs detl_btn" value=""><i class="fa fa-info-circle"></i> Detail</button><button type="button" class="btn btn-danger text-left btn-block btn-xs del_staff_maint"><i class="fa fa-trash"></i> Delete</button></div></div>');
+                                    $('#tbl_chl_list thead #boHead').addClass('hidden');
+                                    $('#tbl_chl_list tbody #boBody').addClass('hidden');
+
+                                    $('#tbl_chl_list thead #rsHead').addClass('hidden');
+                                    $('#tbl_chl_list tbody #rsBody').addClass('hidden');
+
+                                    $('#tbl_chl_list thead #srHead').addClass('hidden');
+                                    $('#tbl_chl_list tbody #srBody').addClass('hidden');
+
+                                    $('#tbl_chl_list tbody #menuBtn').replaceWith('<div class="btn-group dropup"><button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button><div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn"><button type="button" class="btn btn-primary text-left btn-block btn-xs detl_btn" value=""><i class="fa fa-info-circle"></i> Detail</button><button type="button" class="btn btn-danger text-left btn-block btn-xs report_btn"><i class="fa fa-file-pdf-o"></i> Report</button><button type="button" class="btn btn-danger text-left btn-block btn-xs memo_tncpi_btn"><i class="fa fa-print"></i> Memo TNCPI</button>   </div></div>');
                                 }
                             });
                         });
@@ -231,7 +227,7 @@
 	});	
 
 	/*-----------------------------
-	TAB 2 - CONFERENCE
+	TAB 2 - DETAILS
 	-----------------------------*/
 
 	// DETL BTN
@@ -327,57 +323,61 @@
 		});
 	});
 
-	// DELETE STAFF CONFERENCE MAINTENANCE
-	$('#conference').on('click', '.del_staff_maint', function(e) {
-		e.preventDefault();
+	// MEMO TNCA
+	$('#conference').on('click','.memo_tncpi_btn', function () {
 		var thisBtn = $(this);
 		var td = thisBtn.closest("tr");
 		var refid = td.find(".refid").text();
-		var crName = td.find(".cr_name").text();
+		var scm_status = td.find(".scm_status").text();
 		var staff_id = $("#staff_id").val();
-		var mod = 'STAFF_MAINTENANCE';
-		// alert(staffId+' '+crRefID);
+		var repCode = '';
+		var sts_set = ['ENTRY','APPLY','VERIFY_RMIC', 'VERIFY_TNCPI','REJECT','CANCEL', ''];
+		// console.log(refid+' '+staff_id+' '+scm_status);
 
-		$.confirm({
-		    title: 'Delete Conference',
-		    content: 'Are you sure to delete this record? <br> <b>'+refid+' - '+crName+'</b>',
-			type: 'red',
-		    buttons: {
-		        yes: function () {
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('deleteStaffConMaintenance')?>',
-						data: {'staff_id' : staff_id, 'refid' : refid},
-						dataType: 'JSON',
-						beforeSend: function() {
-							show_loading();
-						},
-						success: function(res) {
-							if (res.sts==1) {
-								hide_loading();
-								$.alert({
-									title: 'Success!',
-									content: res.msg,
-									type: 'green',
-								});
-								thisBtn.parents('tr').fadeOut().delay(1000).remove();
-							} else {
-								hide_loading();
-								$.alert({
-									title: 'Alert!',
-									content: res.msg,
-									type: 'red',
-								});
-							}
-						}
-					});			
-		        },
-		        cancel: function () {
-		            $.alert('Canceled Delete Record!');
-		        }
-		    }
+		if(jQuery.inArray(scm_status, sts_set) != -1) {
+			$.alert({
+				title: 'Alert!',
+				content: 'This application has not yet been approved.',
+				type: 'red',
+			});
+
+			return;
+		} else {
+			repCode = 'ATR273';
+			// console.log('APPROVE!');
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setRepParam')?>',
+			data: {'refid' : refid, 'staff_id' : staff_id, 'repCode' : repCode},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
 		});
 	});
+
+    // REPORT
+	$('#conference').on('click','.report_btn', function () {
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var refid = td.find(".refid").text();
+		var scm_status = td.find(".scm_status").text();
+		var staff_id = $("#staff_id").val();
+		var repCode = 'ATR274';
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setRepParam')?>',
+			data: {'refid' : refid, 'staff_id' : staff_id, 'repCode' : repCode, 'scm_status' : scm_status},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
+	});
+
 
 	/*-----------------------------
 	DETL QUERY

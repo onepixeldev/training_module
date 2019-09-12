@@ -64,7 +64,7 @@
             <label class="col-md-3 control-label">State <b><font color="red">* </font></b></label>
             <div class="col-md-8">
                 <?php
-                    echo form_dropdown('form[state]', $state_list, $detl->CM_STATE, 'class="select2-filter form-control" style="width: 100%"')
+                    echo form_dropdown('form[state]', $state_list, $detl->CM_STATE, 'class="form-control" style="width: 100%"')
                 ?>
             </div>
         </div>
@@ -73,7 +73,7 @@
             <label class="col-md-3 control-label">Country <b><font color="red">* </font></b></label>
             <div class="col-md-8">
                 <?php
-                    echo form_dropdown('form[country]', $country_list, $detl->CM_COUNTRY_CODE, 'class="select2-filter form-control" style="width: 100%"')
+                    echo form_dropdown('form[country]', $country_list, $detl->CM_COUNTRY_CODE, 'class="form-control" style="width: 100%"')
                 ?>
             </div>
         </div>
@@ -118,24 +118,3 @@
         <button type="submit" class="btn btn-primary edit_con_info"><i class="fa fa-save"></i> Save</button>
     </div>
 </form>
-
-<script>
-    $(document).ready(function(){
-        $('.select2-filter').select2({
-            dropdownParent: $('#myModalis'),
-            tags: 'true',
-            // placeholder: 'Select an option',
-            width: 'resolve'
-        });
-
-        $('.datepicker').datetimepicker({
-            format: 'L',
-            format: 'DD/MM/YYYY'
-        });
-    });
-
-    $(document).click(function() {
-        $('.select2-drop-mask').remove();
-        $("#myModalis").select2('close');
-    });
-</script>

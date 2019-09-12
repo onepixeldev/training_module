@@ -116,7 +116,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Project ID</label>
             <div class="col-md-4">
-                <input name="" placeholder="Project ID" class="form-control" type="text" value="<?php echo $rsh_info->SR_PROJECT_ID?>" id="project_id" readonly>
+                <input name="" placeholder="Project ID" class="form-control" type="text" value="<?php echo $rsh_id?>" id="project_id" readonly>
             </div>
 
             <label class="col-md-2 control-label">Grant Amount (RM)</label>
@@ -224,6 +224,7 @@
             <?php
                 echo form_dropdown('form[status]', $cr_status_list, $stf_detl->SCM_STATUS, 'class="form-control width-50" id="statusUpd"')
             ?>
+            <input name="form[status]" value="<?php echo $stf_detl->SCM_STATUS?>" class="form-control" type="hidden" id="statusUpdDummy" readonly disabled>
         </div>
     </div>
 

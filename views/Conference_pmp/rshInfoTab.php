@@ -65,7 +65,7 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Project ID</label>
         <div class="col-md-4">
-            <input name="" placeholder="Project ID" class="form-control" type="text" value="<?php echo $rsh_info->SR_PROJECT_ID?>" id="project_id" readonly>
+            <input name="" placeholder="Project ID" class="form-control" type="text" value="<?php echo $rsh_id?>" id="project_id" readonly>
         </div>
 
         <label class="col-md-2 control-label">Grant Amount (RM)</label>

@@ -368,6 +368,7 @@
 			data: {'staffID' : crStaffID, 'refid' : crRefID, 'crName' : crName},
 			success: function(res) {
 				$('#conference_application').html(res);
+				$('.print_att_btn').addClass('hidden');
 				
 				// MODIFY INPUT FIELD RELATED TO SPONSOR
 				$.ajax({
@@ -555,81 +556,98 @@
 		// alert(status);
 
 		if(status != "" && status == 'VERIFY_TNCA') {
-			if(approveByHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			}
+			$.alert({
+				title: 'Alert',
+				content: 'Please fill in <b>Head of Department Approval/Verification</b> section',
+				type: 'red',
+			});
+
+			// if(approveByHod == '') {
+			// 	$.alert({
+			// 		title: 'Alert',
+			// 		content: 'Please fill in <b>Approved By (HOD)</b>',
+			// 		type: 'red',
+			// 	});
+			// 	// $('#status').val('');
+			// } else if(approveDateHod == '') {
+			// 	$.alert({
+			// 		title: 'Alert',
+			// 		content: 'Please fill in <b>Approved Date (HOD)</b>',
+			// 		type: 'red',
+			// 	});
+			// 	// $('#status').val('');
+			// }
 		} else if(status != "" && status == 'VERIFY_VC') {
-			if(tncaRemark == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Remark (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveByTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			}
+			$.alert({
+				title: 'Alert',
+				content: 'Please fill in <b>TNC (A&A) Approval/Verification</b> section',
+				type: 'red',
+			});
+			// if(tncaRemark == '') {
+			// 	$.alert({
+			// 		title: 'Alert',
+			// 		content: 'Please fill in <b>Remark (TNCA)</b>',
+			// 		type: 'red',
+			// 	});
+			// 	// $('#status').val('');
+			// } else if(approveByTnca == '') {
+			// 	$.alert({
+			// 		title: 'Alert',
+			// 		content: 'Please fill in <b>Approved By (TNCA)</b>',
+			// 		type: 'red',
+			// 	});
+			// 	// $('#status').val('');
+			// } else if(approveDateTnca == '') {
+			// 	$.alert({
+			// 		title: 'Alert',
+			// 		content: 'Please fill in <b>Approved Date (TNCA)</b>',
+			// 		type: 'red',
+			// 	});
+			// 	// $('#status').val('');
+			// }
 		} else if(status != "" && status == 'APPROVE') {
-			if(approveByHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateHod == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (HOD)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(tncaRemark == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Remark (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveByTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved By (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			} else if(approveDateTnca == '') {
-				$.alert({
-					title: 'Alert',
-					content: 'Please fill in <b>Approved Date (TNCA)</b>',
-					type: 'red',
-				});
-				$('#status').val('');
-			}
+			$.alert({
+				title: 'Alert',
+				content: 'Please fill in <b>Head of Department Approval/Verification</b> and <b>TNC (A&A) Approval/Verification</b> section',
+				type: 'red',
+			});
+			
+			// if(approveByHod == '') {
+			// 	$.alert({
+			// 		title: 'Alert',
+			// 		content: 'Please fill in <b>Approved By (HOD)</b>',
+			// 		type: 'red',
+			// 	});
+			// 	// $('#status').val('');
+			// } else if(approveDateHod == '') {
+			// 	$.alert({
+			// 		title: 'Alert',
+			// 		content: 'Please fill in <b>Approved Date (HOD)</b>',
+			// 		type: 'red',
+			// 	});
+			// 	// $('#status').val('');
+			// } else if(tncaRemark == '') {
+			// 	$.alert({
+			// 		title: 'Alert',
+			// 		content: 'Please fill in <b>Remark (TNCA)</b>',
+			// 		type: 'red',
+			// 	});
+			// 	// $('#status').val('');
+			// } else if(approveByTnca == '') {
+			// 	$.alert({
+			// 		title: 'Alert',
+			// 		content: 'Please fill in <b>Approved By (TNCA)</b>',
+			// 		type: 'red',
+			// 	});
+			// 	// $('#status').val('');
+			// } else if(approveDateTnca == '') {
+			// 	$.alert({
+			// 		title: 'Alert',
+			// 		content: 'Please fill in <b>Approved Date (TNCA)</b>',
+			// 		type: 'red',
+			// 	});
+			// 	// $('#status').val('');
+			// }
 		}
 	});
 
@@ -661,81 +679,97 @@
 			resSts = currStatus.status;
 			// alert(resSts);
 			if(status != "" && status == 'VERIFY_TNCA') {
-				if(approveByHod == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (HOD)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateHod == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (HOD)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				}
+				$.alert({
+					title: 'Alert',
+					content: 'Please fill in <b>Head of Department Approval/Verification</b> section',
+					type: 'red',
+				});
+
+				// if(approveByHod == '') {
+				// 	$.alert({
+				// 		title: 'Alert',
+				// 		content: 'Please fill in <b>Approved By (HOD)</b> first',
+				// 		type: 'red',
+				// 	});
+				// 	$('#statusUpd').val(resSts);
+				// } else if(approveDateHod == '') {
+				// 	$.alert({
+				// 		title: 'Alert',
+				// 		content: 'Please fill in <b>Approved Date (HOD)</b> first',
+				// 		type: 'red',
+				// 	});
+				// 	$('#statusUpd').val(resSts);
+				// }
 			} else if(status != "" && status == 'VERIFY_VC') {
-				if(tncaRemark == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Remark (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveByTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				}
+				$.alert({
+					title: 'Alert',
+					content: 'Please fill in <b>TNC (A&A) Approval/Verification</b> section',
+					type: 'red',
+				});
+				// if(tncaRemark == '') {
+				// 	$.alert({
+				// 		title: 'Alert',
+				// 		content: 'Please fill in <b>Remark (TNCA)</b>',
+				// 		type: 'red',
+				// 	});
+				// 	$('#statusUpd').val(resSts);
+				// } else if(approveByTnca == '') {
+				// 	$.alert({
+				// 		title: 'Alert',
+				// 		content: 'Please fill in <b>Approved By (TNCA)</b>',
+				// 		type: 'red',
+				// 	});
+				// 	$('#statusUpd').val(resSts);
+				// } else if(approveDateTnca == '') {
+				// 	$.alert({
+				// 		title: 'Alert',
+				// 		content: 'Please fill in <b>Approved Date (TNCA)</b>',
+				// 		type: 'red',
+				// 	});
+				// 	$('#statusUpd').val(resSts);
+				// }
 			} else if(status != "" && status == 'APPROVE') {
-				if(approveByHod == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (HOD)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateHod == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (HOD)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(tncaRemark == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Remark (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveByTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved By (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				} else if(approveDateTnca == '') {
-					$.alert({
-						title: 'Alert',
-						content: 'Please fill in <b>Approved Date (TNCA)</b>',
-						type: 'red',
-					});
-					$('#statusUpd').val(resSts);
-				}
+				$.alert({
+					title: 'Alert',
+					content: 'Please fill in <b>Head of Department Approval/Verification</b> and <b>TNC (A&A) Approval/Verification</b> section',
+					type: 'red',
+				});
+				// if(approveByHod == '') {
+				// 	$.alert({
+				// 		title: 'Alert',
+				// 		content: 'Please fill in <b>Approved By (HOD)</b>',
+				// 		type: 'red',
+				// 	});
+				// 	$('#statusUpd').val(resSts);
+				// } else if(approveDateHod == '') {
+				// 	$.alert({
+				// 		title: 'Alert',
+				// 		content: 'Please fill in <b>Approved Date (HOD)</b>',
+				// 		type: 'red',
+				// 	});
+				// 	$('#statusUpd').val(resSts);
+				// } else if(tncaRemark == '') {
+				// 	$.alert({
+				// 		title: 'Alert',
+				// 		content: 'Please fill in <b>Remark (TNCA)</b>',
+				// 		type: 'red',
+				// 	});
+				// 	$('#statusUpd').val(resSts);
+				// } else if(approveByTnca == '') {
+				// 	$.alert({
+				// 		title: 'Alert',
+				// 		content: 'Please fill in <b>Approved By (TNCA)</b>',
+				// 		type: 'red',
+				// 	});
+				// 	$('#statusUpd').val(resSts);
+				// } else if(approveDateTnca == '') {
+				// 	$.alert({
+				// 		title: 'Alert',
+				// 		content: 'Please fill in <b>Approved Date (TNCA)</b>',
+				// 		type: 'red',
+				// 	});
+				// 	$('#statusUpd').val(resSts);
+				// }
 			}
 		});
 	});

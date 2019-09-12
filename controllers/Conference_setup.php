@@ -25,12 +25,18 @@ class Conference_setup extends MY_Controller
     }
 
     // View Page Filter
-    public function viewTabFilter($tabID)
+    public function viewTabFilter($tabID, $sid)
     {
         // set session
         $this->session->set_userdata('tabID', $tabID);
         
-        redirect($this->class_uri('ASF032'));
+        if($sid == 'ASF032') {
+            redirect($this->class_uri('ASF032'));
+        } elseif($sid == 'ASF151') {
+            redirect($this->class_uri('ASF151'));
+        }
+        
+
     }
 
     public function viewTabFilterATF093($tabID)
@@ -63,6 +69,12 @@ class Conference_setup extends MY_Controller
         $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
 
         $this->render($data);
+    }
+
+    // CONFERENCE SETUP RMIC
+    public function ASF151()
+    {
+        $this->render();
     }
 
     /*===========================================================
@@ -283,6 +295,21 @@ class Conference_setup extends MY_Controller
         $parmCode8 = "CONF_MAX_DAYS_REC_LOCAL";
         $parmCode9 = "CONF_MAX_DAYS_REC_OVERSEA";
 
+        $parmCodeRmic1 = "MIN_DAYS_SUBMIT_LOCAL_RMIC";
+        $parmCodeRmic2 = "MIN_DAYS_SUBMIT_OVERSEA_RMIC";
+        $parmCodeRmic3 = "CONFERENCE_APPROVAL_TNCPI_ONLINE";
+
+        $updateTempOpen = 0;
+        $updateMinDaysSubmitLocal = 0;
+        $updateMinDaysSubmitOversea = 0;
+        $updateCheckSubmitLmp = 0;
+        $updateMaxDaysEditLmp = 0;
+        $updateConOverseas2yrs = 0;
+        $updateConAsean1yrs = 0;
+        $updateConMaxDaysRecLoc = 0;
+        $updateConMaxDaysRecOve = 0;
+        $approveTncpiOnline = 0;
+
         // form / input validation
         $rule = array(
             'temp_open' => 'max_length[3]',
@@ -301,27 +328,38 @@ class Conference_setup extends MY_Controller
         list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
 
         if ($status == 1) {
-            $tempOpen = $form['temp_open'];
-            $minDaysSubmitLocal = $form['min_days_submit_local'];
-            $minDaysSubmitOversea = $form['min_days_submit_oversea'];
-            $checkSubmitLmp = $form['check_submit_lmp'];
-            $maxDaysEditLmp = $form['max_days_edit_lmp'];
-            $conOverseas2yrs = $form['conference_overseas_2yrs'];
-            $conAsean1yrs = $form['conference_asean_1yrs'];
-            $conMaxDaysRecLoc = $form['conf_max_days_rec_local'];
-            $conMaxDaysRecOve = $form['conf_max_days_rec_oversea'];
+            if($form['mod'] == 'RMIC') {
+                $minDaysSubmitLocal = $form['min_days_submit_local'];
+                $minDaysSubmitOversea = $form['min_days_submit_oversea'];
+                $appTncpiOnline = $form['approval_tncpi_online'];
 
-            $updateTempOpen = $this->mdl->saveConferenceSet($parmCode1, $tempOpen);
-            $updateMinDaysSubmitLocal = $this->mdl->saveConferenceSet($parmCode2, $minDaysSubmitLocal);
-            $updateMinDaysSubmitOversea = $this->mdl->saveConferenceSet($parmCode3, $minDaysSubmitOversea);
-            $updateCheckSubmitLmp = $this->mdl->saveConferenceSet($parmCode4, $checkSubmitLmp);
-            $updateMaxDaysEditLmp = $this->mdl->saveConferenceSet($parmCode5, $maxDaysEditLmp);
-            $updateConOverseas2yrs = $this->mdl->saveConferenceSet($parmCode6, $conOverseas2yrs);
-            $updateConAsean1yrs = $this->mdl->saveConferenceSet($parmCode7, $conAsean1yrs);
-            $updateConMaxDaysRecLoc = $this->mdl->saveConferenceSet($parmCode8, $conMaxDaysRecLoc);
-            $updateConMaxDaysRecOve = $this->mdl->saveConferenceSet($parmCode9, $conMaxDaysRecOve);
+                $updateMinDaysSubmitLocal = $this->mdl->saveConferenceSet($parmCodeRmic1, $minDaysSubmitLocal);
+                $updateMinDaysSubmitOversea = $this->mdl->saveConferenceSet($parmCodeRmic2, $minDaysSubmitOversea);
+                $approveTncpiOnline = $this->mdl->saveConferenceSet($parmCodeRmic3, $appTncpiOnline);
+            } else {
+                $tempOpen = $form['temp_open'];
+                $minDaysSubmitLocal = $form['min_days_submit_local'];
+                $minDaysSubmitOversea = $form['min_days_submit_oversea'];
+                $checkSubmitLmp = $form['check_submit_lmp'];
+                $maxDaysEditLmp = $form['max_days_edit_lmp'];
+                $conOverseas2yrs = $form['conference_overseas_2yrs'];
+                $conAsean1yrs = $form['conference_asean_1yrs'];
+                $conMaxDaysRecLoc = $form['conf_max_days_rec_local'];
+                $conMaxDaysRecOve = $form['conf_max_days_rec_oversea'];
 
-            if($updateTempOpen > 0 && $updateMinDaysSubmitLocal > 0 && $updateMinDaysSubmitOversea > 0 && $updateCheckSubmitLmp > 0 && $updateMaxDaysEditLmp > 0 && $updateConOverseas2yrs > 0 && $updateConAsean1yrs > 0 && $updateConMaxDaysRecLoc > 0 && $updateConMaxDaysRecOve > 0) {
+                $updateTempOpen = $this->mdl->saveConferenceSet($parmCode1, $tempOpen);
+                $updateMinDaysSubmitLocal = $this->mdl->saveConferenceSet($parmCode2, $minDaysSubmitLocal);
+                $updateMinDaysSubmitOversea = $this->mdl->saveConferenceSet($parmCode3, $minDaysSubmitOversea);
+                $updateCheckSubmitLmp = $this->mdl->saveConferenceSet($parmCode4, $checkSubmitLmp);
+                $updateMaxDaysEditLmp = $this->mdl->saveConferenceSet($parmCode5, $maxDaysEditLmp);
+                $updateConOverseas2yrs = $this->mdl->saveConferenceSet($parmCode6, $conOverseas2yrs);
+                $updateConAsean1yrs = $this->mdl->saveConferenceSet($parmCode7, $conAsean1yrs);
+                $updateConMaxDaysRecLoc = $this->mdl->saveConferenceSet($parmCode8, $conMaxDaysRecLoc);
+                $updateConMaxDaysRecOve = $this->mdl->saveConferenceSet($parmCode9, $conMaxDaysRecOve);
+            }
+            
+
+            if(($updateTempOpen > 0 && $updateMinDaysSubmitLocal > 0 && $updateMinDaysSubmitOversea > 0 && $updateCheckSubmitLmp > 0 && $updateMaxDaysEditLmp > 0 && $updateConOverseas2yrs > 0 && $updateConAsean1yrs > 0 && $updateConMaxDaysRecLoc > 0 && $updateConMaxDaysRecOve > 0) || ($updateMinDaysSubmitLocal > 0 && $updateMinDaysSubmitOversea > 0 && $approveTncpiOnline > 0)) {
                 $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
@@ -441,7 +479,12 @@ class Conference_setup extends MY_Controller
         // get parameter values
         $form = $this->input->post('form', true);
 
-        $parmCode11 = "CONFERENCE_ADMIN_EXT";
+        if($form['mod'] == 'RMIC') {
+            $parmCode11 = "CONFERENCE_ADMIN_EXT_RMIC";
+        } else {
+            $parmCode11 = "CONFERENCE_ADMIN_EXT";
+        }
+       
 
         // form / input validation
         $rule = array(
@@ -490,7 +533,11 @@ class Conference_setup extends MY_Controller
         // get parameter values
         $form = $this->input->post('form', true);
 
-        $parmCode11 = "CONFERENCE_ADMIN_EXT";
+        if($form['mod'] == 'RMIC') {
+            $parmCode11 = "CONFERENCE_ADMIN_EXT_RMIC";
+        } else {
+            $parmCode11 = "CONFERENCE_ADMIN_EXT";
+        }
 
         $parmNo = $form['parm_no'];
 
@@ -522,9 +569,16 @@ class Conference_setup extends MY_Controller
     // DELETE STAFF CONTACT INFO
     public function  deleteStfConInfo() {
         $this->isAjax();
-        
-        $parmCode = "CONFERENCE_ADMIN_EXT";
+
         $parmNo = $this->input->post('parmNo', true);
+        $mod = $this->input->post('mod', true);
+
+        if($mod == 'RMIC') {
+            $parmCode = "CONFERENCE_ADMIN_EXT_RMIC";
+        } else {
+            $parmCode = "CONFERENCE_ADMIN_EXT";
+        }
+       
 
         if (!empty($parmNo)) {
             $del = $this->mdl->deleteConSet($parmCode, $parmNo);
@@ -903,7 +957,14 @@ class Conference_setup extends MY_Controller
     // ADD STAFF REMINDER
     public function addStaffReminder()
     {
-        $data['staff_tnca'] = $this->dropdown($this->mdl->getStaffTnca(), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
+        $mod = $this->input->post('mod', true);
+        if($mod == 'RMIC') {
+            $data['mod'] = 'RMIC';
+        } else {
+            $data['mod'] = '';
+        }
+
+        $data['staff_tnca'] = $this->dropdown($this->mdl->getStaffTnca($mod), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
 
         $this->render($data);
     }
@@ -927,7 +988,7 @@ class Conference_setup extends MY_Controller
         list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
 
         if ($status == 1) {
-            $checkExist = $this->mdl->getStfRemDetl($form['staff_id']);
+            $checkExist = $this->mdl->getStfRemDetl($form['staff_id'], $form['mod']);
 
             if(empty($checkExist)) {
                 $insert = $this->mdl->saveStaffReminder($form);
@@ -954,9 +1015,10 @@ class Conference_setup extends MY_Controller
         $this->isAjax();
         
         $stfID = $this->input->post('stfID', true);
+        $mod = $this->input->post('mod', true);
 
         if (!empty($stfID)) {
-            $del = $this->mdl->deleteStaffReminder($stfID);
+            $del = $this->mdl->deleteStaffReminder($stfID, $mod);
                 
             if ($del > 0) {
                 $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
@@ -972,6 +1034,12 @@ class Conference_setup extends MY_Controller
     // CONFERENCE ALLOWANCE
     public function conferenceAllowance()
     {
+        $mod = $this->input->post('mod', true);
+        if($mod == 'RMIC') {
+            $data['mod'] = 'RMIC';
+        } else {
+            $data['mod'] = '';
+        }
         // $data['staff_tnca'] = $this->dropdown($this->mdl->getStaffTnca(), 'SM_STAFF_ID', 'STAFF_ID_NAME', ' ---Please select--- ');
         $data['con_allow'] = $this->mdl->getConAllow();
 
@@ -981,8 +1049,14 @@ class Conference_setup extends MY_Controller
     // ADD CONFERENCE ALLOWANCE
     public function addConAllow()
     {
-        // $data['admin_list'] = $this->dropdown($this->mdl->getAdmin(), 'APM_CODE', 'APM_CODE_DESC', ' ---Please select--- ');
-        $this->render();
+        $mod = $this->input->post('mod', true);
+        if($mod == 'RMIC') {
+            $data['mod'] = 'RMIC';
+        } else {
+            $data['mod'] = '';
+        }
+        
+        $this->render($data);
     }
 
     // SAVE CONFERENCE ALLOWANCE
@@ -992,6 +1066,7 @@ class Conference_setup extends MY_Controller
 
         // get parameter values
         $form = $this->input->post('form', true);
+        // var_dump($form['mod']);
 
         // form / input validation
         $rule = array(
@@ -1000,7 +1075,8 @@ class Conference_setup extends MY_Controller
             'max_amount' => 'numeric|max_length[40]',
             'budget_origin_local' => 'max_length[20]',
             'budget_origin_oversea' => 'max_length[20]',
-            'status' => 'max_length[10]'
+            'status' => 'max_length[10]',
+            'display_rmic' => 'max_length[10]'
         );
 
         $exclRule = null;
@@ -1037,12 +1113,19 @@ class Conference_setup extends MY_Controller
         $caCode = $this->input->post('caCode', true);
 
         if (!empty($caCode)) {
-            $del = $this->mdl->deleteConAllow($caCode);
+            // CHECK
+            $check = $this->mdl->getStaffConAllowance($caCode);
+
+            if(empty($check)) {
+                $del = $this->mdl->deleteConAllow($caCode);
                 
-            if ($del > 0) {
-                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+                if ($del > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+                }
             } else {
-                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => 'Cannot delete master record while sub-record exist', 'alert' => 'danger');
             }
         } else {
             $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
@@ -1054,7 +1137,14 @@ class Conference_setup extends MY_Controller
     public function editConAllow()
     {
         $caCode = $this->input->post('caCode', true);
+        $mod = $this->input->post('mod', true);
         
+        if($mod == 'RMIC') {
+            $data['mod'] = 'RMIC';
+        } else {
+            $data['mod'] = '';
+        }
+
         if(!empty($caCode)) {
             $data['ca_detl'] = $this->mdl->getConAllow($caCode);
         } else {
@@ -1078,7 +1168,8 @@ class Conference_setup extends MY_Controller
             'max_amount' => 'numeric|max_length[40]',
             'budget_origin_local' => 'max_length[20]',
             'budget_origin_oversea' => 'max_length[20]',
-            'status' => 'max_length[10]'
+            'status' => 'max_length[10]',
+            'display_rmic' => 'max_length[10]'
         );
         $exclRule = null;
         
@@ -1178,6 +1269,15 @@ class Conference_setup extends MY_Controller
     // PARTICIPANT ROLE LIST
     public function conParticipantRole()
     {
+        $mod = $this->input->post('mod', true);
+        if($mod == 'RMIC') {
+            $data['mod'] = 'RMIC';
+        } elseif($mod == 'CPD') {
+            $data['mod'] = 'CPD';
+        } else {
+            $data['mod'] = '';
+        }
+
         $data['part_role'] = $this->mdl->getConParticipantRole();
 
         $this->render($data);
@@ -1188,6 +1288,12 @@ class Conference_setup extends MY_Controller
     {
         $cprCode = $this->input->post('cprCode', true);
         $cprDesc = $this->input->post('cprDesc', true);
+        $mod = $this->input->post('mod', true);
+        if($mod == 'RMIC') {
+            $data['mod'] = 'RMIC';
+        } else {
+            $data['mod'] = '';
+        }
 
         if(!empty($cprCode)) {
             $data['cpr_code'] = $cprCode;
@@ -1283,6 +1389,12 @@ class Conference_setup extends MY_Controller
     public function updateConPartRole()
     {
         $cprCode = $this->input->post('cprCode', true);
+        $mod = $this->input->post('mod', true);
+        if($mod == 'RMIC') {
+            $data['mod'] = 'RMIC';
+        } else {
+            $data['mod'] = '';
+        }
 
         if(!empty($cprCode)) {
             $data['cpr_code'] = $cprCode;
@@ -1304,20 +1416,49 @@ class Conference_setup extends MY_Controller
 
         // get parameter values
         $form = $this->input->post('form', true);
-
+        $mod = $form['mod'];
+        
         // form / input validation
-        $rule = array(
-            'participant_role' => 'required|max_length[100]',
-            'ref_code' => 'max_length[10]',
-            'order_by' => 'max_length[40]',
-            'cpd_counted_academic' => 'max_length[1]',
-            'cpd_counted_non_academic' => 'max_length[1]',
-            'display_conference' => 'max_length[1]',
-            'prosiding' => 'max_length[1]',
-            'number_of_attachment' => 'max_length[40]',
-            'checklist_bm' => 'max_length[300]',
-            'checklist_bi' => 'max_length[300]'
-        );
+        if($mod == 'CPD') {
+            $rule = array(
+                'participant_role' => 'required|max_length[100]',
+                'ref_code' => 'max_length[10]',
+                'order_by' => 'max_length[40]',
+                'cpd_counted_academic' => 'max_length[1]',
+                'cpd_counted_non_academic' => 'max_length[1]',
+                'prosiding' => 'max_length[1]',
+                'display_rmic' => 'max_length[1]',
+                'number_of_attachment' => 'max_length[40]',
+                'checklist_bm' => 'max_length[300]',
+                'checklist_bi' => 'max_length[300]'
+            );
+        } elseif($mod == 'RMIC') {
+            $rule = array(
+                'participant_role' => 'required|max_length[100]',
+                'order_by' => 'max_length[40]',
+                'display_conference' => 'max_length[1]',
+                'prosiding' => 'max_length[1]',
+                'display_rmic' => 'required|max_length[1]',
+                'number_of_attachment' => 'required|max_length[40]',
+                'checklist_bm' => 'required|max_length[300]',
+                'checklist_bi' => 'required|max_length[300]'
+            );
+        } else {
+            $rule = array(
+                'participant_role' => 'required|max_length[100]',
+                'ref_code' => 'max_length[10]',
+                'order_by' => 'max_length[40]',
+                'cpd_counted_academic' => 'max_length[1]',
+                'cpd_counted_non_academic' => 'max_length[1]',
+                'display_conference' => 'max_length[1]',
+                'prosiding' => 'max_length[1]',
+                'display_rmic' => 'max_length[1]',
+                'number_of_attachment' => 'max_length[40]',
+                'checklist_bm' => 'max_length[300]',
+                'checklist_bi' => 'max_length[300]'
+            );
+        }
+        
 
         $exclRule = null;
         
@@ -1452,6 +1593,20 @@ class Conference_setup extends MY_Controller
     {
         $refid = $this->input->post('refid', true);
         $title = $this->input->post('title', true);
+        // $month = $this->input->post('month', true);
+        // $year = $this->input->post('year', true);
+
+        // if(!empty($month)) {
+        //     $data['month'] = $month;
+        // } else {
+        //     $data['month'] = '';
+        // }
+
+        // if(!empty($year)) {
+        //     $data['year'] = $year;
+        // } else {
+        //     $data['year'] = '';
+        // }
 
         if(!empty($refid)) {
             $data['refid'] = $refid;
@@ -1532,16 +1687,47 @@ class Conference_setup extends MY_Controller
         $refid = $this->input->post('refid', true);
 
         if (!empty($refid)) {
-            $del = $this->mdl->deleteConInfo($refid);
+            $check = $this->mdl->checkChildRecScm($refid);
+
+            if(empty($check)) {
+                $del = $this->mdl->deleteConInfo($refid);
                 
-            if ($del > 0) {
-                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+                if ($del > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+                }
             } else {
-                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+                $json = array('sts' => 0, 'msg' => 'Cannot delete master record while sub-record exist', 'alert' => 'danger');
             }
+            
         } else {
             $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
         }
         echo json_encode($json);
+    }
+
+    /*===============================================================
+       CONFERENCE SETUP FOR RMIC (ASF151)
+    ================================================================*/
+
+    // NOTIFICATION SETUP
+    public function notificationSetupRmic()
+    {
+        $mod = 'RMIC';
+        $parmCode1 = "MIN_DAYS_SUBMIT_LOCAL_RMIC";
+        $parmCode2 = "MIN_DAYS_SUBMIT_OVERSEA_RMIC";
+        $parmCode3 = "CONFERENCE_ADMIN_EXT_RMIC";
+        $parmCode4 = "CONFERENCE_APPROVAL_TNCPI_ONLINE";
+        
+        // get available records
+        $data['min_days_submit_local_rmic'] = $this->mdl->getHpParmConSet($parmCode1);
+        $data['min_days_submit_oversea_rmic'] = $this->mdl->getHpParmConSet($parmCode2);
+        $data['conference_admin_ext'] = $this->mdl->getHpParmConSet($parmCode3);
+        $data['approval_tncpi_online'] = $this->mdl->getHpParmConSet($parmCode4);
+
+        $data['staff_reminder'] = $this->mdl->getStaffReminder($mod);
+
+        $this->render($data);
     }
 }

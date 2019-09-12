@@ -38,11 +38,11 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Approved By</label>
         <div class="col-md-2">
-            <input name="" class="form-control" type="text" value="<?php echo $app_amd_rejc_by->SM_STAFF_ID?>" id="approved_rjc_by_tnc">
+            <input name="" class="form-control" type="text" value="<?php echo $app_amd_by_id?>" id="approved_rjc_by_tnc">
         </div>
 
         <div class="col-md-6">
-            <input name="" class="form-control" type="text" value="<?php echo $app_amd_rejc_by->SM_STAFF_NAME?>" id="approved_rjc_by_tnc_name" readonly>
+            <input name="" class="form-control" type="text" value="<?php echo $app_amd_by_name?>" id="approved_rjc_by_tnc_name" readonly>
         </div>
 
         <div class="col-md-2">
@@ -85,11 +85,11 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Reject By</label>
         <div class="col-md-2">
-            <input name="form[rjc_by_tnc]" class="form-control" type="text" value="<?php echo $app_amd_rejc_by->SM_STAFF_ID?>" id="rjc_by_tnc">
+            <input name="form[rjc_by_tnc]" class="form-control" type="text" value="<?php echo $rejc_by_id?>" id="rjc_by_tnc">
         </div>
 
         <div class="col-md-6">
-            <input name="" class="form-control" type="text" value="<?php echo $app_amd_rejc_by->SM_STAFF_NAME?>" id="rjc_by_tnc_name" readonly>
+            <input name="" class="form-control" type="text" value="<?php echo $rejc_by_name?>" id="rjc_by_tnc_name" readonly>
         </div>
 
         <div class="col-md-2">

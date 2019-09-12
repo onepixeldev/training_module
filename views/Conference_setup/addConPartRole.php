@@ -55,7 +55,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="display_conference">
             <label class="col-md-3 control-label">Display Conference?</label>
             <div class="col-md-4">
                 <?php
@@ -64,11 +64,20 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="display_conference">
             <label class="col-md-3 control-label">Prosiding?</label>
             <div class="col-md-4">
                 <?php
                     echo form_dropdown('form[prosiding]', array(''=>'---Please Select---', 'Y'=>'Yes', 'N'=>'No'), '', 'class="form-control width-50"')
+                ?>
+            </div>
+        </div>
+
+        <div class="form-group hidden" id="display_rmic">
+            <label class="col-md-3 control-label">Display RMIC?</label>
+            <div class="col-md-4">
+                <?php
+                    echo form_dropdown('form[display_rmic]', array(''=>'---Please Select---', 'Y'=>'Yes', 'N'=>'No'), '', 'class="form-control width-50"')
                 ?>
             </div>
         </div>

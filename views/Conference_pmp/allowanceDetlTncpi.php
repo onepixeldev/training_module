@@ -15,8 +15,8 @@
             <th class="text-center">Approved HOD - Foreign (RM)</th>
             <th class="text-center">Approved RMIC (RM)</th>
             <th class="text-center">Approved RMIC - Foreign (RM)</th>
-            <th class="text-center">Approved TNCA (RM)</th>
-            <th class="text-center">Approved TNCA - Foreign (RM)</th>
+            <th class="text-center">Approved TNCPI (RM)</th>
+            <th class="text-center">Approved TNCPI - Foreign (RM)</th>
             <th class="text-center">Select</th>
 		</tr>
 		</thead>
@@ -49,10 +49,10 @@
                         </td>
 
                         <td class="text-center col-md-1">
-                            <input name="sca_amt_rm_approve_tnca" class="form-control" type="number" id="amountAppTnca" value="' . $oad->SCA_AMT_RM_APPROVE_TNCA . '">
+                            <input name="sca_amt_rm_approve_tncpi" class="form-control" type="number" id="amountAppTnca" value="' . $oad->SCA_AMT_RM_APPROVE_TNCPI . '">
                         </td>
                         <td class="text-center col-md-1">
-                            <input name="sca_amt_foreign_approve_tnca" class="form-control" type="number" id="amountAppTncaFor" value="' . $oad->SCA_AMT_FOREIGN_APPROVE_TNCA . '">
+                            <input name="sca_amt_foreign_approve_tncpi" class="form-control" type="number" id="amountAppTncaFor" value="' . $oad->SCA_AMT_FOREIGN_APPROVE_TNCPI . '">
                         </td>
                         <td class="text-center col-md-1">
 							<div class="form-check text-center">
@@ -73,8 +73,8 @@
                         <td class="text-center col-md-1"><b>' . number_format($total_sca_amt_rm_approve_rmic, 2) . '</b></td>
                         <td class="text-center col-md-1"><b>' . number_format($total_sca_amt_foreign_approve_rmic, 2) . '</b></td>
 
-                        <td class="text-center col-md-1"><b>' . number_format($total_sca_amt_rm_approve_tnca, 2) . '</b></td>
-                        <td class="text-center col-md-1"><b>' . number_format($total_sca_amt_foreign_approve_tnca, 2) . '</b></td>
+                        <td class="text-center col-md-1"><b>' . number_format($sca_amt_rm_approve_tncpi, 2) . '</b></td>
+                        <td class="text-center col-md-1"><b>' . number_format($sca_amt_foreign_approve_tncpi, 2) . '</b></td>
                         
                     </tr>
                     ';

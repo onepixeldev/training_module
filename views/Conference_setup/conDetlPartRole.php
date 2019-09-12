@@ -7,15 +7,27 @@
             <tbody>
                 <tr>
                     <td class="text-left col-md-3"><b>No. of attachment</b></td>
-                    <td class="text-left"><?php echo $part_role_detl->CPR_TOTAL_ATTACHMENTS?></td>
+                    <td class="text-left"><?php if($mod == 'RMIC') {
+                        echo $part_role_detl->CPR_TOTAL_ATTACH_RMIC;
+                    } else {
+                        echo $part_role_detl->CPR_TOTAL_ATTACHMENTS;
+                    }?></td>
                 </tr>
                 <tr>
                     <td class="text-left col-md-3"><b>Checklist (BM)</b></td>
-                    <td class="text-left"><?php echo $part_role_detl->CPR_CHECKLIST?></td>
+                    <td class="text-left"><?php if($mod == 'RMIC') {
+                        echo $part_role_detl->CPR_CHECKLIST_RMIC;
+                    } else {
+                        echo $part_role_detl->CPR_CHECKLIST;
+                    }?></td>
                 </tr>
                 <tr>
                     <td class="text-left col-md-3"><b>Checklist (BI)</b></td>
-                    <td class="text-left"><?php echo $part_role_detl->CPR_CHECKLIST_ENG?></td>
+                    <td class="text-left"><?php if($mod == 'RMIC') {
+                        echo $part_role_detl->CPR_CHECKLIST_ENG_RMIC;
+                    } else {
+                        echo $part_role_detl->CPR_CHECKLIST_ENG;
+                    }?></td>
                 </tr>
             </tbody>
             </table>

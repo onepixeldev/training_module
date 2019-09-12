@@ -33,11 +33,11 @@
 			<th class="text-center col-md-2 refid">Refid</th>
             <th class="text-left col-md-4">Name</th>
             <th class="text-left col-md-2">Category</th>
-            <th class="text-center col-md-1">Budget Origin</th>
+            <th class="text-center col-md-1" id="boHead">Budget Origin</th>
             <th class="text-center col-md-2">Apply Date</th>
             <th class="text-center col-md-1">Status</th>
-            <th class="text-center col-md-1">Report Submission</th>
-            <th class="text-center col-md-1">Status REP</th>
+            <th class="text-center col-md-1" id="rsHead">Report Submission</th>
+            <th class="text-center col-md-1" id="srHead">Status REP</th>
 			<th class="text-center col-md-1">Action</th>
 		</tr>
 		</thead>
@@ -50,11 +50,11 @@
 						<td class="text-center refid">' . $ci->SCM_REFID . '</td>
                         <td class="text-left cr_name">' . $ci->CM_NAME . '</td>
                         <td class="text-left">' . $ci->CC_DESC . '</td>
-                        <td class="text-center">' . $ci->SCM_BUDGET_ORIGIN . '</td>
+                        <td class="text-center" id="boBody">' . $ci->SCM_BUDGET_ORIGIN . '</td>
                         <td class="text-center">' . $ci->SCM_APPLY_DATE . '</td>
                         <td class="text-center scm_status">' . $ci->SCM_STATUS . '</td>
-                        <td class="text-center">' . $ci->COUNT_REP_DESC . '</td>
-                        <td class="text-center">' . $ci->SCR_STATUS . '</td>
+                        <td class="text-center" id="rsBody">' . $ci->COUNT_REP_DESC . '</td>
+                        <td class="text-center" id="srBody">' . $ci->SCR_STATUS . '</td>
 						<td class="text-center">
 							<div class="btn-group" id=menuBtn>
 								<button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button>

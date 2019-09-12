@@ -129,7 +129,7 @@ class Conference_setup_model extends MY_Model
         $this->db->where("HP_PARM_CODE", $parmCode);
         $q = $this->db->get();
         
-        if($parmCode == 'CONFERENCE_ADMIN_EMAIL' || $parmCode == 'CONFERENCE_ADMIN_EXT') {
+        if($parmCode == 'CONFERENCE_ADMIN_EMAIL' || $parmCode == 'CONFERENCE_ADMIN_EXT' || $parmCode == 'CONFERENCE_ADMIN_EXT_RMIC') {
             return $q->result();
         } else {
             return $q->row();
@@ -170,6 +170,15 @@ class Conference_setup_model extends MY_Model
                         SELECT MAX(HP_PARM_NO)+1 AS HP_PARM_NO
                         FROM HRADMIN_PARMS
                         WHERE HP_PARM_CODE = 'CONFERENCE_ADMIN_EXT'))";
+        } elseif ($parmCode == 'CONFERENCE_ADMIN_EXT_RMIC') {
+            $parmNo = "(SELECT CASE 
+                        WHEN HP_PARM_NO IS NULL THEN 1
+                        WHEN HP_PARM_NO IS NOT NULL THEN HP_PARM_NO
+                        END AS HP_PARM_NO
+                        FROM(
+                        SELECT MAX(HP_PARM_NO)+1 AS HP_PARM_NO
+                        FROM HRADMIN_PARMS
+                        WHERE HP_PARM_CODE = 'CONFERENCE_ADMIN_EXT_RMIC'))";
         }
         
         $data = array(
@@ -432,7 +441,7 @@ class Conference_setup_model extends MY_Model
     }
 
     // STAFF REMINDER
-    public function getStaffReminder()
+    public function getStaffReminder($mod = null)
     {
         $this->db->select("SR_STAFF_ID, SM_STAFF_NAME,
                             CASE 
@@ -442,7 +451,11 @@ class Conference_setup_model extends MY_Model
                             SR_STATUS");
         $this->db->from("STAFF_REMINDER");
         $this->db->join("STAFF_MAIN", "SM_STAFF_ID = SR_STAFF_ID");
-        $this->db->where("SR_MODULE = 'CONFERENCE'");
+        if($mod == 'RMIC') {
+            $this->db->where("SR_MODULE = 'CONFERENCE_RMIC'");
+        } else {
+            $this->db->where("SR_MODULE = 'CONFERENCE'");
+        }
         $this->db->order_by("SR_STAFF_ID");
         $q = $this->db->get();
         
@@ -450,24 +463,33 @@ class Conference_setup_model extends MY_Model
     }
 
     // STAFF LIST TNCA
-    public function getStaffTnca()
+    public function getStaffTnca($mod = null)
     {
         $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID||' - '||SM_STAFF_NAME AS STAFF_ID_NAME");
         $this->db->from("STAFF_MAIN");
-        $this->db->where("SM_STAFF_STATUS = '01' 
-        AND SM_DEPT_CODE = 'PTNC-A'");
+        if($mod == 'RMIC') {
+            $this->db->where("SM_STAFF_STATUS = '01' AND SM_DEPT_CODE = 'PPP'");
+        } else {
+            $this->db->where("SM_STAFF_STATUS = '01' AND SM_DEPT_CODE = 'PTNC-A'");
+        }
+        
         $q = $this->db->get();
         
         return $q->result();
     }
 
     // GET STAFF REMINDER DETL
-    public function getStfRemDetl($staffID)
+    public function getStfRemDetl($staffID, $mod)
     {
         $this->db->select("*");
         $this->db->from("STAFF_REMINDER");
         $this->db->where("SR_STAFF_ID", $staffID);
-        $this->db->where("SR_MODULE = 'CONFERENCE'");
+        if($mod == 'RMIC') {
+            $this->db->where("SR_MODULE = 'CONFERENCE_RMIC'");
+        } else {
+            $this->db->where("SR_MODULE = 'CONFERENCE'");
+        }
+        
         $q = $this->db->get();
         
         return $q->row();
@@ -476,27 +498,45 @@ class Conference_setup_model extends MY_Model
     // SAVE INSERT STAFF REMINDER
     public function saveStaffReminder($form)
     {
-        $data = array(
-            "SR_STAFF_ID" => $form['staff_id'],
-            "SR_MODULE" => 'CONFERENCE',
-            "SR_STATUS" => $form['status']
-        );
+        if($form['mod'] == 'RMIC') {
+            $data = array(
+                "SR_STAFF_ID" => $form['staff_id'],
+                "SR_MODULE" => 'CONFERENCE_RMIC',
+                "SR_STATUS" => $form['status']
+            );
+        } else {
+            $data = array(
+                "SR_STAFF_ID" => $form['staff_id'],
+                "SR_MODULE" => 'CONFERENCE',
+                "SR_STATUS" => $form['status']
+            );
+        }
 
         return $this->db->insert("STAFF_REMINDER", $data);
     }
 
     // DELETE STAFF REMINDER
-    public function deleteStaffReminder($stfID) 
+    public function deleteStaffReminder($stfID, $mod) 
     {
         $this->db->where("SR_STAFF_ID", $stfID);
-        $this->db->where("SR_MODULE = 'CONFERENCE'");
+        
+        if($mod == 'RMIC') {
+            $this->db->where("SR_MODULE = 'CONFERENCE_RMIC'");
+        } else {
+            $this->db->where("SR_MODULE = 'CONFERENCE'");
+        }
+       
         return $this->db->delete("STAFF_REMINDER");
     }
 
     // GET CONFERENCE ALLOWANCE LIST
     public function getConAllow($caCode = null)
     {
-        $this->db->select("CA_CODE, CA_DESC, CA_RM_MAX_AMOUNT, CA_BUDGET_ORIGIN_LOCAL, CA_BUDGET_ORIGIN_OVERSEAS, CA_STATUS");
+        $this->db->select("CA_CODE, CA_DESC, CA_RM_MAX_AMOUNT, CA_BUDGET_ORIGIN_LOCAL, CA_BUDGET_ORIGIN_OVERSEAS, CA_STATUS, CA_BUDGET_ORIGIN_OVERSEAS_RMIC, CA_BUDGET_ORIGIN_LOCAL_RMIC, CA_RMIC, 
+        CASE CA_RMIC
+            WHEN 'Y' THEN 'Yes'
+            WHEN 'N' THEN 'No'
+        END AS CA_RMIC_DESC");
         $this->db->from("CONFERENCE_ALLOWANCE");
 
         if(!empty($caCode)) {
@@ -513,17 +553,40 @@ class Conference_setup_model extends MY_Model
 
     // SAVE INSERT CONFERENCE ALLOWANCE
     public function saveConAllow($form)
-    {
-        $data = array(
-            "CA_CODE" => $form['code'],
-            "CA_DESC" => $form['description'],
-            "CA_RM_MAX_AMOUNT" => $form['max_amount'],
-            "CA_BUDGET_ORIGIN_LOCAL" => $form['budget_origin_local'],
-            "CA_BUDGET_ORIGIN_OVERSEAS" => $form['budget_origin_oversea'],
-            "CA_STATUS" => $form['status']
-        );
+    {   
+        if($form['mod'] == 'RMIC') { 
+            $data = array(
+                "CA_CODE" => $form['code'],
+                "CA_DESC" => $form['description'],
+                "CA_RM_MAX_AMOUNT" => $form['max_amount'],
+                "CA_BUDGET_ORIGIN_LOCAL_RMIC" => $form['budget_origin_local'],
+                "CA_BUDGET_ORIGIN_OVERSEAS_RMIC" => $form['budget_origin_oversea'],
+                "CA_STATUS" => $form['status'],
+                "CA_RMIC" => $form['display_rmic']
+            );
+        } else {
+            $data = array(
+                "CA_CODE" => $form['code'],
+                "CA_DESC" => $form['description'],
+                "CA_RM_MAX_AMOUNT" => $form['max_amount'],
+                "CA_BUDGET_ORIGIN_LOCAL" => $form['budget_origin_local'],
+                "CA_BUDGET_ORIGIN_OVERSEAS" => $form['budget_origin_oversea'],
+                "CA_STATUS" => $form['status']
+            );
+        }
 
         return $this->db->insert("CONFERENCE_ALLOWANCE", $data);
+    }
+
+    // STAFF CONFERENCE ALLOWANCE
+    public function getStaffConAllowance($caCode) {
+        $this->db->select("*");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE");
+        $this->db->join("CONFERENCE_ALLOWANCE", "SCA_ALLOWANCE_CODE = CA_CODE", "LEFT");
+        $this->db->where("SCA_ALLOWANCE_CODE", $caCode);
+
+        $q = $this->db->get();
+        return $q->result();
     }
 
     // DELETE CONFERENCE ALLOWANCE
@@ -535,15 +598,26 @@ class Conference_setup_model extends MY_Model
 
     // SAVE UPDATE CONFERENCE ALLOWANCE
     public function updateConAllow($form)
-    {
-        $data = array(
-            "CA_DESC" => $form['description'],
-            "CA_RM_MAX_AMOUNT" => $form['max_amount'],
-            "CA_BUDGET_ORIGIN_LOCAL" => $form['budget_origin_local'],
-            "CA_BUDGET_ORIGIN_OVERSEAS" => $form['budget_origin_oversea'],
-            "CA_STATUS" => $form['status']
-        );
-
+    {   
+        if($form['mod'] == 'RMIC') {
+            $data = array(
+                // "CA_DESC" => $form['description'],
+                // "CA_RM_MAX_AMOUNT" => $form['max_amount'],
+                "CA_BUDGET_ORIGIN_LOCAL_RMIC" => $form['budget_origin_local'],
+                "CA_BUDGET_ORIGIN_OVERSEAS_RMIC" => $form['budget_origin_oversea'],
+                // "CA_STATUS" => $form['status'],
+                "CA_RMIC" => $form['display_rmic']
+            );
+        } else {
+            $data = array(
+                "CA_DESC" => $form['description'],
+                "CA_RM_MAX_AMOUNT" => $form['max_amount'],
+                "CA_BUDGET_ORIGIN_LOCAL" => $form['budget_origin_local'],
+                "CA_BUDGET_ORIGIN_OVERSEAS" => $form['budget_origin_oversea'],
+                "CA_STATUS" => $form['status']
+            );
+        }
+        
         $this->db->where("CA_CODE", $form['code']);
         return $this->db->update("CONFERENCE_ALLOWANCE", $data);
     }
@@ -626,7 +700,12 @@ class Conference_setup_model extends MY_Model
                                 WHEN 'Y' THEN 'Yes'
                                 WHEN 'N' THEN 'No'
                                 ELSE ''
-                            END AS CPR_PROCEEDING");
+                            END AS CPR_PROCEEDING, 
+                            CASE CPR_RMIC
+                                WHEN 'Y' THEN 'Yes'
+                                WHEN 'N' THEN 'No'
+                                ELSE ''
+                            END AS CPR_RMIC");
         $this->db->from("CONFERENCE_PARTICIPANT_ROLE");
         $this->db->join("CV_TRAINING_ROLE", "CTR_CODE = CPR_ASSE_ROLE_CODE", "LEFT");
         $this->db->order_by("CPR_ORDER_BY");
@@ -661,20 +740,35 @@ class Conference_setup_model extends MY_Model
 
     // SAVE INSERT PARTICIPANT ROLE
     public function saveConPartRole($form)
-    {
-        $data = array(
-            "CPR_CODE" => $form['code'],
-            "CPR_DESC" => $form['participant_role'],
-            "CPR_ASSE_ROLE_CODE" => $form['ref_code'],
-            "CPR_ORDER_BY" => $form['order_by'],
-            "CPR_CPD_COUNTED_ACAD" => $form['cpd_counted_academic'],
-            "CPR_CPD_COUNTED_NACAD" => $form['cpd_counted_non_academic'],
-            "CPR_DISPLAY" => $form['display_conference'],
-            "CPR_PROCEEDING" => $form['prosiding'],
-            "CPR_TOTAL_ATTACHMENTS" => $form['number_of_attachment'],
-            "CPR_CHECKLIST" => $form['checklist_bm'],
-            "CPR_CHECKLIST_ENG" => $form['checklist_bi']
-        );
+    {   
+        if ($form['mod'] == 'RMIC') {
+            $data = array(
+                "CPR_CODE" => $form['code'],
+                "CPR_DESC" => $form['participant_role'],
+                "CPR_ASSE_ROLE_CODE" => $form['ref_code'],
+                "CPR_ORDER_BY" => $form['order_by'],
+                "CPR_CPD_COUNTED_ACAD" => $form['cpd_counted_academic'],
+                "CPR_CPD_COUNTED_NACAD" => $form['cpd_counted_non_academic'],
+                "CPR_RMIC" => $form['display_rmic'],
+                "CPR_TOTAL_ATTACH_RMIC" => $form['number_of_attachment'],
+                "CPR_CHECKLIST_RMIC" => $form['checklist_bm'],
+                "CPR_CHECKLIST_ENG_RMIC" => $form['checklist_bi']
+            );
+        } else {
+            $data = array(
+                "CPR_CODE" => $form['code'],
+                "CPR_DESC" => $form['participant_role'],
+                "CPR_ASSE_ROLE_CODE" => $form['ref_code'],
+                "CPR_ORDER_BY" => $form['order_by'],
+                "CPR_CPD_COUNTED_ACAD" => $form['cpd_counted_academic'],
+                "CPR_CPD_COUNTED_NACAD" => $form['cpd_counted_non_academic'],
+                "CPR_DISPLAY" => $form['display_conference'],
+                "CPR_PROCEEDING" => $form['prosiding'],
+                "CPR_TOTAL_ATTACHMENTS" => $form['number_of_attachment'],
+                "CPR_CHECKLIST" => $form['checklist_bm'],
+                "CPR_CHECKLIST_ENG" => $form['checklist_bi']
+            );
+        }
 
         return $this->db->insert("CONFERENCE_PARTICIPANT_ROLE", $data);
     }
@@ -689,18 +783,37 @@ class Conference_setup_model extends MY_Model
     // SAVE UPDATE PARTICIPANT ROLE
     public function saveUpdConPartRole($form)
     {
-        $data = array(
-            "CPR_DESC" => $form['participant_role'],
-            "CPR_ASSE_ROLE_CODE" => $form['ref_code'],
-            "CPR_ORDER_BY" => $form['order_by'],
-            "CPR_CPD_COUNTED_ACAD" => $form['cpd_counted_academic'],
-            "CPR_CPD_COUNTED_NACAD" => $form['cpd_counted_non_academic'],
-            "CPR_DISPLAY" => $form['display_conference'],
-            "CPR_PROCEEDING" => $form['prosiding'],
-            "CPR_TOTAL_ATTACHMENTS" => $form['number_of_attachment'],
-            "CPR_CHECKLIST" => $form['checklist_bm'],
-            "CPR_CHECKLIST_ENG" => $form['checklist_bi']
-        );
+        if ($form['mod'] == 'RMIC') {
+            $data = array(
+                // "CPR_DESC" => $form['participant_role'],
+                // "CPR_ASSE_ROLE_CODE" => $form['ref_code'],
+                // "CPR_ORDER_BY" => $form['order_by'],
+                // "CPR_CPD_COUNTED_ACAD" => $form['cpd_counted_academic'],
+                // "CPR_CPD_COUNTED_NACAD" => $form['cpd_counted_non_academic'],
+                "CPR_RMIC" => $form['display_rmic'],
+                "CPR_TOTAL_ATTACH_RMIC" => $form['number_of_attachment'],
+                "CPR_CHECKLIST_RMIC" => $form['checklist_bm'],
+                "CPR_CHECKLIST_ENG_RMIC" => $form['checklist_bi']
+            );
+        } elseif($form['mod'] == 'CPD') {
+            $data = array(
+                "CPR_CPD_COUNTED_ACAD" => $form['cpd_counted_academic'],
+                "CPR_CPD_COUNTED_NACAD" => $form['cpd_counted_non_academic'],
+            );
+        } else {
+            $data = array(
+                "CPR_DESC" => $form['participant_role'],
+                "CPR_ASSE_ROLE_CODE" => $form['ref_code'],
+                "CPR_ORDER_BY" => $form['order_by'],
+                "CPR_CPD_COUNTED_ACAD" => $form['cpd_counted_academic'],
+                "CPR_CPD_COUNTED_NACAD" => $form['cpd_counted_non_academic'],
+                "CPR_DISPLAY" => $form['display_conference'],
+                "CPR_PROCEEDING" => $form['prosiding'],
+                "CPR_TOTAL_ATTACHMENTS" => $form['number_of_attachment'],
+                "CPR_CHECKLIST" => $form['checklist_bm'],
+                "CPR_CHECKLIST_ENG" => $form['checklist_bi']
+            );
+        }
 
         $this->db->where("CPR_CODE", $form['code']);
 
@@ -744,7 +857,7 @@ class Conference_setup_model extends MY_Model
 
     // GET CONFERENCE INFO LIST
     public function getConferenceInfoList($month = null, $year = null) {		
-        $this->db->select("CM_REFID, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FROM, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO");
+        $this->db->select("CM_REFID, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') AS CM_DATE_FROM2, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') AS CM_DATE_TO2, CM_DATE_FROM");
         $this->db->from("CONFERENCE_MAIN");
         if(!empty($month) && empty($year)) {
             $this->db->where("TO_CHAR(CM_DATE_FROM, 'MM') = '$month'");
@@ -756,7 +869,7 @@ class Conference_setup_model extends MY_Model
             $this->db->where("TO_CHAR(CM_DATE_FROM, 'MM') = '$month'");
             $this->db->where("TO_CHAR(CM_DATE_FROM, 'YYYY') = '$year'");
         }
-        $this->db->order_by("CM_DATE_FROM DESC");
+        $this->db->order_by("CM_DATE_FROM DESC, CM_NAME");
         $q = $this->db->get();
                 
         return $q->result();
@@ -918,6 +1031,17 @@ class Conference_setup_model extends MY_Model
         $this->db->where("CM_REFID", $refid);
         
         return $this->db->update("CONFERENCE_MAIN", $data);
+    }
+
+    // CHECK STAFF CONFERENCE MAIN CHILD RECORD
+    public function checkChildRecScm($refid)
+    {
+        $this->db->select("*");
+        $this->db->from("STAFF_CONFERENCE_MAIN");
+        $this->db->where("SCM_REFID", $refid);
+        $q = $this->db->get();
+        
+        return $q->result();
     }
 
     // DELETE CONFERENCE INFORMATION

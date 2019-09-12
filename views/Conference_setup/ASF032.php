@@ -373,7 +373,7 @@
 	// SAVE UPDATE CONFERENCE SETUP
 	$('#conference_setup').on('click', '.save_con_setup', function (e) {
 		e.preventDefault();
-		var data = $('#saveConSet').serialize();
+		var data = $('#saveConSet').append('<input name="form[mod]" value="CON" class="hidden">').serialize();
 		msg.wait('#conSetAlert');
 		msg.wait('#conSetAlertFoot');
 		//alert(data);
@@ -391,7 +391,7 @@
 				if (res.sts == 1) {
 					setTimeout(function () {
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s2')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s2','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -423,7 +423,7 @@
 				if (res.sts == 1) {
 					setTimeout(function () {
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s2')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s2','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -471,7 +471,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s2')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s2','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -546,7 +546,7 @@
 	// SAVE STAFF CONTACT INFO
 	$('#myModalis2').on('click', '.save_staff_contact_info', function (e) {
 		e.preventDefault();
-		var data = $('#addStfConInfo').serialize();
+		var data = $('#addStfConInfo').append('<input name="form[mod]" value="CON" class="hidden">').serialize();
 		msg.wait('#addStfConInfoAlert');
 		// alert(data);
 		
@@ -563,7 +563,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s2')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s2','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -600,7 +600,7 @@
 	// SAVE UPDATE STAFF CONTACT INFO
 	$('#myModalis2').on('click', '.save_upd_staff_contact_info', function (e) {
 		e.preventDefault();
-		var data = $('#editStfConInfo').serialize();
+		var data = $('#editStfConInfo').append('<input name="form[mod]" value="CON" class="hidden">').serialize();
 		msg.wait('#editStfConInfoAlert');
 		// alert(data);
 		
@@ -617,7 +617,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s2')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s2','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -693,7 +693,7 @@
 				if (res.sts == 1) {
 					setTimeout(function () {
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s2')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s2','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -776,7 +776,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s3')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s3','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -873,7 +873,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s3')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s3','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -921,7 +921,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s3')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s3','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1019,7 +1019,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s3')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s3','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1046,19 +1046,7 @@
 		success: function(res) {
 			$('#notification_setup').html(res);
 		}
-	});
-
-	// STAFF REMINDER (TNC A&A STAFF ONLY)
-	$('#notification_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-	
-	$.ajax({
-		type: 'POST',
-		url: '<?php echo $this->lib->class_url('notificationSetup')?>',
-		data: '',
-		success: function(res) {
-			$('#notification_setup').html(res);
-		}
-	});		
+	});	
 
 	// SAVE UPDATE NOTIFICATION SETUP
 	$('#notification_setup').on('click', '.save_noti_setup', function (e) {
@@ -1081,7 +1069,7 @@
 				if (res.sts == 1) {
 					setTimeout(function () {
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s4')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s4','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1112,7 +1100,7 @@
 	// SAVE STAFF REMINDER
 	$('#myModalis2').on('click', '.save_stf_rem_btn', function (e) {
 		e.preventDefault();
-		var data = $('#addStaffReminder').serialize();
+		var data = $('#addStaffReminder').append('<input name="form[mod]" value="CON" class="hidden">').serialize();
 		msg.wait('#addStaffReminderAlert');
 		// alert(data);
 		
@@ -1129,7 +1117,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s4')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s4','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1223,7 +1211,7 @@
 	// SAVE CONFERENCE ALLOWANCE
 	$('#myModalis2').on('click', '.ins_ca', function (e) {
 		e.preventDefault();
-		var data = $('#addConAllow').serialize();
+		var data = $('#addConAllow').append('<input name="form[mod]" value="CON" class="hidden">').serialize();
 		msg.wait('#addConAllowAlert');
 		// alert(data);
 		
@@ -1240,7 +1228,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s5')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s5','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1320,7 +1308,7 @@
 	// SAVE UPDATE CONFERENCE ALLOWANCE
 	$('#myModalis2').on('click', '.upd_ca', function (e) {
 		e.preventDefault();
-		var data = $('#editConAllow').serialize();
+		var data = $('#editConAllow').append('<input name="form[mod]" value="CON" class="hidden">').serialize();
 		msg.wait('#editConAllowAlert');
 		//alert(data);
 		
@@ -1337,7 +1325,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s5')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s5','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1404,7 +1392,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s6')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s6','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1498,7 +1486,7 @@
 	// SAVE PARTICIPANT ROLE
 	$('#myModalis2').on('click', '.ins_pr', function (e) {
 		e.preventDefault();
-		var data = $('#addConPartRole').serialize();
+		var data = $('#addConPartRole').append('<input name="form[mod]" value="CON" class="hidden">').serialize();
 		msg.wait('#addConPartRoleAlert');
 		msg.wait('#addConPartRoleAlertFoot');
 		// alert(data);
@@ -1517,7 +1505,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s7')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s7','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -1571,10 +1559,10 @@
 		});
 	});
 
-	// SAVE UPDATE CONFERENCE ALLOWANCE
+	// SAVE UPDATE PARTICIPANT ROLE
 	$('#myModalis2').on('click', '.upd_pr', function (e) {
 		e.preventDefault();
-		var data = $('#updConPartRole').serialize();
+		var data = $('#updConPartRole').append('<input name="form[mod]" value="CON" class="hidden">').serialize();
 		msg.wait('#updConPartRoleAlert');
 		msg.wait('#updConPartRoleAlertFoot');
 		//alert(data);
@@ -1593,7 +1581,7 @@
 					setTimeout(function () {
 						$('#myModalis2').modal('hide');
 						$('.btn').removeAttr('disabled');
-						location = '<?php echo $this->lib->class_url('viewTabFilter','s7')?>';
+						location = '<?php echo $this->lib->class_url('viewTabFilter','s7','ASF032')?>';
 					}, 1000);
 				} else {
 					$('.btn').removeAttr('disabled');
