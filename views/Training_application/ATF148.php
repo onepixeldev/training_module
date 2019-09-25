@@ -1274,4 +1274,84 @@
 	$('#staff_training_application').on('click','.unselect_all_btn', function() {
 		$(".checkitem").prop('checked', false);
 	});	
+
+
+	/*-----------------------------
+	TAB UPDATE CPD INFO - ATF123
+	-----------------------------*/
+
+	// CPD POINT ATF123
+	$('#training_list').on('click','.cpd_pts_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo site_url('training/cpd/ATF123')?>',
+			data: {'refid' : refid},
+			beforeSend: function() {
+				$('.nav-tabs li:eq(8) a').tab('show');
+				$('#update_cpd_info').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			},
+			success: function(res) {
+				$('#update_cpd_info').html(res);
+				tr_row = $('#tbl_stf_cpd_list').DataTable({
+					"ordering":false,
+				});
+			}
+		}); 
+	});
+	
+	// SAVE UPDATE STAFF CPD MARK
+	$('#myModalis').on('click', '.upd_staff_cpd_mark', function (e) {
+		e.preventDefault();
+		var refid = $('#refid').val(); 
+
+		var data = $('#updCpdMarkStaff').serialize();
+		msg.wait('#updCpdMarkStaffAlert');
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			//url: '<?php echo $this->lib->class_url('saveStaffUpdateCpdMark')?>',
+			url: '<?php echo site_url('training/cpd/saveStaffUpdateCpdMark')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#updCpdMarkStaffAlert');
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis').modal('hide');
+
+						// REFRESH
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo site_url('training/cpd/ATF123')?>',
+							data: {'refid' : refid},
+							beforeSend: function() {
+								$('.nav-tabs li:eq(8) a').tab('show');
+								$('#update_cpd_info').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#update_cpd_info').html(res);
+								tr_row = $('#tbl_stf_cpd_list').DataTable({
+									"ordering":false,
+								});
+							}
+						});
+						
+						$('.btn').removeAttr('disabled');
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#updCpdMarkStaffAlert');
+			}
+		});	
+	});
 </script>

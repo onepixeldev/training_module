@@ -89,6 +89,12 @@
 										<button type="button" class="btn btn-primary search_refid_title_btn"><i class="fa fa-search"></i> Search</button>
 									</div>
 
+									<div class="row">
+										<div class="col-sm-3 text-right"></div>
+										<div class="col-sm-3 text-right" id="loaderCS">
+										</div>
+									</div>
+
 									<div id="conference_list">
 									</div>
                                 </div>
@@ -356,6 +362,7 @@
                 });
             }
         });
+		$('#loaderCS').hide();
 	});
 
 	// SEARCH CONFERENCE
@@ -393,6 +400,7 @@
                 });
             },
         });
+		$('#loaderCS').hide();
     });
     
     // APPLICANT LIST REPORT
@@ -534,6 +542,16 @@
 				});
 			}
 		});
+	});
+
+	// ENTER BUTTON NOT ALLOWED
+	$('#refidTitle').keyup(function (e) {
+		if (e.keyCode === 13) {
+            e.preventDefault();
+			$('#loaderCS').show();
+			msg.show('Enter button are not allowed', 'warning', '#loaderCS');
+			return;
+        }
 	});
 
 	/*-----------------------------

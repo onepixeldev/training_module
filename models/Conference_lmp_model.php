@@ -145,20 +145,21 @@ class Conference_lmp_model extends MY_Model
     // STAFF CONFERENCE REPORT
     public function getStaffConRepQ($staff_id, $mod = null)
     {
+        $deptCode = "(SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE SM_STAFF_ID = '$staff_id')";
+
         $this->db->select("SCR_REFID, SCR_STAFF_ID, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') CM_DATE_FROM, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') CM_DATE_TO, TO_CHAR(SCR_APPLY_DATE, 'DD/MM/YYYY') AS SCR_APPLY_DATE, SCR_STATUS, SM_DEPT_CODE");
         $this->db->from("STAFF_CONFERENCE_REP");
         $this->db->join("CONFERENCE_MAIN", "CM_REFID = SCR_REFID", "LEFT");
         $this->db->join("STAFF_MAIN", "SM_STAFF_ID = SCR_STAFF_ID", "LEFT");
+        $this->db->where("SCR_STAFF_ID", $staff_id);
         if($mod == 'APP_REPORT') {
-            $this->db->where("SCR_STAFF_ID", $staff_id);
-            $this->db->where("(SCR_STAFF_ID IN (SELECT SM_STAFF_ID FROM STAFF_MAIN WHERE SM_STAFF_ID = SCR_STAFF_ID AND SM_DEPT_CODE = SM_DEPT_CODE) AND SCR_STATUS='VERIFY_HOD') 
+            $this->db->where("(SCR_STAFF_ID IN (SELECT SM_STAFF_ID FROM STAFF_MAIN WHERE SM_STAFF_ID = SCR_STAFF_ID AND SM_DEPT_CODE = $deptCode) AND SCR_STATUS='VERIFY_HOD') 
             OR (SCR_STAFF_ID IN (SELECT DM_DIRECTOR 
-            FROM DEPARTMENT_MAIN WHERE DM_DIRECTOR = SCR_STAFF_ID AND DM_LEVEL IN (1,2) AND DM_DEPT_CODE = SM_DEPT_CODE) 
+            FROM DEPARTMENT_MAIN WHERE DM_DIRECTOR = SCR_STAFF_ID AND DM_LEVEL IN (1,2) AND DM_DEPT_CODE = $deptCode) 
             AND SCR_STATUS = 'APPLY')");
-            $this->db->order_by("SCR_APPLY_DATE, SCR_STAFF_ID");
-        } else {
-            $this->db->where("SCR_STAFF_ID", $staff_id);
         }
+        $this->db->order_by("SCR_APPLY_DATE, SCR_STAFF_ID");
+        
 
         $q = $this->db->get();
         return $q->result();

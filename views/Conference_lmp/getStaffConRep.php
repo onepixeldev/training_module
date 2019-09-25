@@ -55,7 +55,7 @@
 							<div class="btn-group">
 								<button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button>
 								<div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn">
-									<button type="button" class="btn btn-primary text-left btn-block btn-xs selc_con" value=""><i class="fa fa-chevron-right"></i> Select</button>
+									<button type="button" class="btn btn-primary text-left btn-block btn-xs selc_con" value=""><i class="fa fa-chevron-right"></i> Approval</button>
 									<button type="button" class="btn btn-info text-left btn-block btn-xs detl_btn" value=""><i class="fa fa-info-circle"></i> Detail</button>
 									<button type="button" class="btn btn-danger text-left btn-block btn-xs print_rep_btn"><i class="fa fa-print"></i> Print</button>
 								</div>

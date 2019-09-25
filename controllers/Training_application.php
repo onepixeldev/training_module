@@ -1384,7 +1384,7 @@ class Training_application extends MY_Controller
     _____________________*/
 
     // update training head
-    public function editTraining()
+    public function editTraining($refID = null)
     {
         $refID = $this->input->post('refID',true);
         $countCode = $this->input->post('countryCode',true);
