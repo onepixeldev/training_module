@@ -456,7 +456,8 @@ class Training_application extends MY_Controller
     }
 
     // Populate organizer info
-    public function organizerInfo(){
+    public function organizerInfo()
+    {
         $this->isAjax();
         
         $organizerCode = $this->input->post('orgCode', true);
