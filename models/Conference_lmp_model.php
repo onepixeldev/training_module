@@ -147,7 +147,7 @@ class Conference_lmp_model extends MY_Model
     {
         $deptCode = "(SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE SM_STAFF_ID = '$staff_id')";
 
-        $this->db->select("SCR_REFID, SCR_STAFF_ID, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') CM_DATE_FROM, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') CM_DATE_TO, TO_CHAR(SCR_APPLY_DATE, 'DD/MM/YYYY') AS SCR_APPLY_DATE, SCR_STATUS, SM_DEPT_CODE");
+        $this->db->select("SCR_REFID, SCR_STAFF_ID, CM_NAME, TO_CHAR(CM_DATE_FROM, 'DD/MM/YYYY') CM_DATE_FROM, TO_CHAR(CM_DATE_TO, 'DD/MM/YYYY') CM_DATE_TO, TO_CHAR(SCR_APPLY_DATE, 'DD/MM/YYYY') AS SCR_APPLY_DATE2, SCR_STATUS, SM_DEPT_CODE");
         $this->db->from("STAFF_CONFERENCE_REP");
         $this->db->join("CONFERENCE_MAIN", "CM_REFID = SCR_REFID", "LEFT");
         $this->db->join("STAFF_MAIN", "SM_STAFF_ID = SCR_STAFF_ID", "LEFT");
@@ -158,7 +158,7 @@ class Conference_lmp_model extends MY_Model
             FROM DEPARTMENT_MAIN WHERE DM_DIRECTOR = SCR_STAFF_ID AND DM_LEVEL IN (1,2) AND DM_DEPT_CODE = $deptCode) 
             AND SCR_STATUS = 'APPLY')");
         }
-        $this->db->order_by("SCR_APPLY_DATE, SCR_STAFF_ID");
+        $this->db->order_by("SCR_APPLY_DATE DESC");
         
 
         $q = $this->db->get();

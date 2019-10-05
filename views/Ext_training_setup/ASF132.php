@@ -47,7 +47,7 @@
 												<label><b>State</b></label>
 											</div>
 										</div>
-										<div class="col-sm-3">
+										<div class="col-sm-4">
 											<div class="form-group text-left">
 												<?php echo form_dropdown('fState', $state_dd, '', 'class="form-control listFilter" id="fState"'); ?>
 											</div>

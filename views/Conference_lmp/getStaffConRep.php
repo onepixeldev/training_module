@@ -33,7 +33,7 @@
 			<th class="text-center col-md-2">Refid</th>
             <th class="text-left col-md-4">Name</th>
             <th class="text-center col-md-1">Date From</th>
-            <th class="text-center col-md-2">Date To</th>
+            <th class="text-center col-md-1">Date To</th>
             <th class="text-center col-md-1">Apply Date</th>
             <th class="text-center col-md-1">Status</th>
 			<th class="text-center col-md-1">Action</th>
@@ -47,9 +47,9 @@
                     <tr>
 						<td class="text-center refid">' . $cr->SCR_REFID . '</td>
                         <td class="text-left cr_name">' . $cr->CM_NAME . '</td>
-                        <td class="text-left">' . $cr->CM_DATE_FROM . '</td>
+                        <td class="text-center">' . $cr->CM_DATE_FROM . '</td>
                         <td class="text-center">' . $cr->CM_DATE_TO . '</td>
-                        <td class="text-center">' . $cr->SCR_APPLY_DATE . '</td>
+                        <td class="text-center">' . $cr->SCR_APPLY_DATE2 . '</td>
                         <td class="text-center">' . $cr->SCR_STATUS . '</td>
 						<td class="text-center">
 							<div class="btn-group">

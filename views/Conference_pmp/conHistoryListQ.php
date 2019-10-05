@@ -51,7 +51,7 @@
                         <td class="text-left cr_name">' . $ci->CM_NAME . '</td>
                         <td class="text-left">' . $ci->CC_DESC . '</td>
                         <td class="text-center" id="boBody">' . $ci->SCM_BUDGET_ORIGIN . '</td>
-                        <td class="text-center">' . $ci->SCM_APPLY_DATE . '</td>
+                        <td class="text-center">' . $ci->SCM_APPLY_DATE2 . '</td>
                         <td class="text-center scm_status">' . $ci->SCM_STATUS . '</td>
                         <td class="text-center" id="rsBody">' . $ci->COUNT_REP_DESC . '</td>
                         <td class="text-center" id="srBody">' . $ci->SCR_STATUS . '</td>

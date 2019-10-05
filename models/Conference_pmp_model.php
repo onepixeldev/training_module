@@ -1862,22 +1862,27 @@ class Conference_pmp_model extends MY_Model
             WHERE SCR_STAFF_ID = '$staff_id'
             GROUP BY SCR_STATUS, SCR_STAFF_ID, SCR_REFID)", "SCR_STAFF_ID = SCM_STAFF_ID AND SCR_REFID = SCM_REFID", "LEFT");
         } else {
-            $this->db->select("SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, SCM_APPLY_DATE, SCM_STATUS,
+            $this->db->select("SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, SCM_APPLY_DATE2, SCM_STATUS,
             CASE 
             WHEN  COUNT_REP != 0 THEN 'Yes'
             ELSE 'No'
             END 
             COUNT_REP_DESC, SCR_STATUS");
-            $this->db->from("(SELECT SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, TO_CHAR(SCM_APPLY_DATE, 'DD-MM-YYYY') AS SCM_APPLY_DATE, SCM_STATUS, SCM_STAFF_ID
+            $this->db->from("(SELECT SCM_REFID, CM_NAME, CC_DESC, SCM_BUDGET_ORIGIN, TO_CHAR(SCM_APPLY_DATE, 'DD-MM-YYYY') AS SCM_APPLY_DATE2, SCM_STATUS, SCM_STAFF_ID
             FROM STAFF_CONFERENCE_MAIN
             LEFT JOIN CONFERENCE_MAIN ON SCM_REFID = CM_REFID
             LEFT JOIN CONFERENCE_CATEGORY ON CC_CODE = SCM_CATEGORY_CODE
-            WHERE SCM_STAFF_ID = '$staff_id')");
+            WHERE SCM_STAFF_ID = '$staff_id'
+            ORDER BY SCM_APPLY_DATE DESC
+            )");
             $this->db->join("(SELECT COUNT(SCR_REFID) COUNT_REP, SCR_STATUS, SCR_STAFF_ID, SCR_REFID
             FROM STAFF_CONFERENCE_REP
             WHERE SCR_STAFF_ID = '$staff_id'
             GROUP BY SCR_STATUS, SCR_STAFF_ID, SCR_REFID)", "SCR_STAFF_ID = SCM_STAFF_ID AND SCR_REFID = SCM_REFID", "LEFT");
+            //$this->db->order_by("SCM_APPLY_DATE");
         }
+
+        
 
         $q = $this->db->get();
         return $q->result();

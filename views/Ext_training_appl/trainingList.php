@@ -22,8 +22,8 @@
 				foreach ($tr_list as $tl) {
 					echo '
                     <tr>
-						<td class="text-center col-md-2">' . $tl->TH_REF_ID . '</td>
-                        <td class="text-left">' . $tl->TH_TRAINING_TITLE . '</td>
+						<td class="text-center col-md-2 refid">' . $tl->TH_REF_ID . '</td>
+                        <td class="text-left title">' . $tl->TH_TRAINING_TITLE . '</td>
                         <td class="text-center col-md-1">' . $tl->TH_DATE_FROM2 . '</td>
                         <td class="text-center col-md-1">' . $tl->TH_DATE_TO2 . '</td>
                         <td class="text-center col-md-1">

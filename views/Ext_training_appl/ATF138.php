@@ -66,7 +66,7 @@
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please select training from Training Info</th>
+													<th class="text-center">Please select training from Training List</th>
 												</tr>
 												</thead>
 											</table>
@@ -80,7 +80,7 @@
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please select training from Training Info</th>
+													<th class="text-center">Please select training from Training List</th>
 												</tr>
 												</thead>
 											</table>
@@ -94,7 +94,7 @@
 											<table class="table table-bordered table-hover">
 												<thead>
 												<tr>
-													<th class="text-center">Please select training from Training Info</th>
+													<th class="text-center">Please select training from Training List</th>
 												</tr>
 												</thead>
 											</table>
@@ -138,23 +138,7 @@
 	var dt_row = '';
 	
 	$(document).ready(function(){
-		// navigate to selected tab
-		<?php
-        $currtab = $this->session->tabID;
-    
-		if (!empty($currtab)) {
-			if ($currtab == 's2'){
-				echo "$('.nav-tabs li:eq(1) a').tab('show');";
-			} elseif ($currtab == 's3'){
-				echo "$('.nav-tabs li:eq(2) a').tab('show');";
-			} elseif ($currtab == 's4'){
-				echo "$('.nav-tabs li:eq(3) a').tab('show');";
-			} 
-            else {
-				echo "$('.nav-tabs li:eq(0) a').tab('show');";
-			}
-		}
-        ?>
+		
 
         $("#myModalis").draggable({
 			handle: ".modal-content"
@@ -204,25 +188,23 @@
 		}
     });
     
-	// add new training tab form (click button)
+	// ADD NEW TRAINING 
 	$('#training_list').on('click','.add_tr', function(){
-		$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-		
+
+		$('#add_edit_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$('.nav-tabs li:eq(1) a').tab('show');
+
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('addNewTraining')?>',
+			url: '<?php echo $this->lib->class_url('addTraining')?>',
+			data: '',
 			success: function(res) {
-				$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').hide()
-				$('.nav-tabs li:eq(1) a').tab('show');
-				$('#add_edit_tr_info').html(res);
-				$('#group_module_setup').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select training from Training Info</th></tr></thead></table></p>')
-				$('#cpd_setup').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select training from Training Info</th></tr></thead></table></p>')
-
+				$('#add_edit_training').html(res);
 			}
 		});
 	});
 
-	// evaluation not/required
+	// EVALUATION NOT/REQUIRED
 	$('#add_edit_training').on('change','#evaluation', function() {
 		var evaluation = $(this).val();
 		$('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -243,7 +225,7 @@
 		$('#evaLoader').html('');
 	});
 		
-	// populate organizer info in add new training form
+	// POPULATE ORGANIZER INFO IN ADD NEW TRAINING FORM
 	$('#add_edit_training').on('change', '#orginfo', function() {
 		var organizerCode = $(this).val();
 		$('#faspinner2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -271,10 +253,10 @@
 		});
 	});
 
-	// save INSERT training info
-	$('#add_edit_tr_info').on('click', '.ins_tr_info', function (e) { 
+	// SAVE INSERT TRAINING
+	$('#add_edit_training').on('click', '.add_tr', function (e) { 
 		e.preventDefault();
-		var data = $('#addNewTraining').serialize();
+		var data = $('#addTraining').serialize();
 		msg.wait('#alert');
 		msg.wait('#alertFooter');
 		//alert('TR INFO');
@@ -288,107 +270,112 @@
 			success: function(res) {
 				msg.show(res.msg, res.alert, '#alert');
 				msg.show(res.msg, res.alert, '#alertFooter');
-				//msg.show(res.listSuccessMsg, res.alert, '#alertFooter');
 				
 				if (res.sts == 1) {
 
 					setTimeout(function () {
-						var trRefID = res.refid;
-						var trainingN = res.trName;
-						//alert(trRefID);
+						var refid = res.refid;
+						var title = res.title;
 						
-					    $('#add_edit_tr_info').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+					    // EDIT TRAINING
+						$('#add_edit_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+						$('.nav-tabs li:eq(1) a').tab('show');
 
-					    $.ajax({
-					        type: 'POST',
-					        url: '<?php echo $this->lib->class_url('editTraining')?>',
-					        data: {'refID' : trRefID},
-					        success: function(res) {
-					            //$('.nav-tabs li:eq(1) a').tab('show');
-								$('#add_edit_tr_info').html(res);
-								
-								// refresh training info
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('trainingInfo')?>',
-									data: '',
-									beforeSend: function() {
-										$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										//alert(res);
-										$('#trainingInfo').html(res);
-										dt_row = $('#tbl_list_ti').DataTable({
-											"ordering":false,
-											//"lengthMenu": [[4, 8], [4, 8]]
-										});
-									},
-									complete: function(){
-										$('#loader').hide();
-									},
-								});
-								
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('speakerInfo')?>',
-									data: {'tsRefID' : trRefID},
-									beforeSend: function() {
-										$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#speakerInfo').html(res);
-									}
-								});
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editTraining')?>',
+							data: {'refid':refid},
+							success: function(res) {
+								$('#add_edit_training').html(res);
 
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
-									data: {'tsRefID' : trRefID},
-									beforeSend: function() {
-										$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#facilitatorInfo').html(res);
-									}
-								});
-								
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('targetGroup')?>',
-									data: {'trRefID' : trRefID, 'tName' : trainingN},
-									beforeSend: function() {
-										$('#group_module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#group_module_setup').html(res);
+								var evaluation = $("#evaluation").val();
+								$('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
 
-										$.ajax({
-											type: 'POST',
-											url: '<?php echo $this->lib->class_url('moduleSetup')?>',
-											data: {'tsRefID' : trRefID, 'tName' : trainingN},
-											beforeSend: function() {
-												$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-											},
-											success: function(res) {
-												$('#module_setup').html(res);
-											}
-										});
-									}
-								});
+								if(evaluation == 'Y') {
+									$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+
+									$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+
+									$('#evaPTo').html('To <b><font color="red">* </font></b>');
+								} else {
+									$('#evaMsg').html('');
+
+									$('#evaPFrom').html('From');
+
+									$('#evaPTo').html('To');
+								}
+								$('#evaLoader').html('');
+							}
+						});
+
+						// TRAINING COST
+						$('#training_cost').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('trainingCost')?>',
+							data: {'refid':refid},
+							success: function(res) {
+								$('#training_cost').html(res);
+							}
+						});
+
+						// TARGET GROUP & MODULE SETUP
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo site_url('training/training_application/targetGroup')?>',
+							data: {'trRefID' : refid, 'tName' : title},
+							beforeSend: function() {
+								$('#group_module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#group_module_setup').html(res);
 
 								$.ajax({
 									type: 'POST',
-									url: '<?php echo $this->lib->class_url('cpdSetup')?>',
-									data: {'tsRefID' : trRefID, 'tName' : trainingN},
+									url: '<?php echo site_url('training/training_application/moduleSetup')?>',
+									data: {'tsRefID' : refid},
 									beforeSend: function() {
-										$('#cpd_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+										$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 									},
 									success: function(res) {
-										$('#cpd_setup').html(res);
+										$('#module_setup').html(res);
 									}
 								});
-					        }
-					    });
+							}
+						});
+		
+						// CPD SETUP
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo site_url('training/training_application/cpdSetup')?>',
+							data: {'tsRefID' : refid, 'tName' : title},
+							beforeSend: function() {
+								$('#cpd_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#cpd_setup').html(res);
+							}
+						});
+
+
+						// POPULATE TRAINING LIST
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('trainingList')?>',
+							data: '',
+							beforeSend: function() {
+								$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#training_list').html(res);
+								dt_row = $('#tbl_list_tl').DataTable({
+									"ordering":false,
+								});
+							},
+							complete: function(){
+								$('#loader').hide();
+							},
+						});
 						
 					}, 2000);
 					$('.btn').removeAttr('disabled');
@@ -402,7 +389,181 @@
 				msg.danger('Please contact administrator.', '#alertFooter');
 			}
 		});	
+	});
+	
+	// EDIT TRAINING
+	$('#training_list').on('click','.upd_tr', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var refid = td.find(".refid").text();
+		var title = td.find(".title").text();
+		
+		// EDIT TRAINING
+		$('#add_edit_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$('.nav-tabs li:eq(1) a').tab('show');
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editTraining')?>',
+			data: {'refid':refid},
+			success: function(res) {
+				$('#add_edit_training').html(res);
+
+				var evaluation = $("#evaluation").val();
+				$('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+
+				if(evaluation == 'Y') {
+					$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+
+					$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+
+					$('#evaPTo').html('To <b><font color="red">* </font></b>');
+				} else {
+					$('#evaMsg').html('');
+
+					$('#evaPFrom').html('From');
+
+					$('#evaPTo').html('To');
+				}
+				$('#evaLoader').html('');
+			}
+		});
+
+		// TRAINING COST
+		$('#training_cost').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('trainingCost')?>',
+			data: {'refid':refid},
+			success: function(res) {
+				$('#training_cost').html(res);
+			}
+		});
+
+		// TARGET GROUP & MODULE SETUP
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo site_url('training/training_application/targetGroup')?>',
+			data: {'trRefID' : refid, 'tName' : title},
+			beforeSend: function() {
+				$('#group_module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			},
+			success: function(res) {
+				$('#group_module_setup').html(res);
+
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo site_url('training/training_application/moduleSetup')?>',
+					data: {'tsRefID' : refid},
+					beforeSend: function() {
+						$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#module_setup').html(res);
+					}
+				});
+			}
+		});
+		
+		// CPD SETUP
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo site_url('training/training_application/cpdSetup')?>',
+			data: {'tsRefID' : refid, 'tName' : title},
+			beforeSend: function() {
+				$('#cpd_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			},
+			success: function(res) {
+				$('#cpd_setup').html(res);
+			}
+		});
+
+	});
+
+	// FILE ATTACHMENT
+	$('#add_edit_training').on('click','.file_att', function(){
+		refid = $('#refid').val();
+		mod = 'TR_SETUP';
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('fileAttParam')?>',
+			data: {'refid' : refid, 'mod' : mod},
+			dataType: 'JSON',
+			success: function(res) {
+				if(res.sts == 1) {
+					var ecommURL = '<?php echo $this->lib->class_url('fileAttachment') ?>';
+					var newWin = window.open(ecommURL, '_blank', 'width=800, height=300');
+				} else {
+					$.alert({
+						title: 'Alert!',
+						content: res.msg,
+						type: 'red',
+					});
+				}
+			}
+		});
     });
+
+	// SAVE EDIT TRAINING
+	$('#add_edit_training').on('click', '.save_upd_tr', function (e) { 
+		e.preventDefault();
+		var data = $('#editTraining').serialize();
+		msg.wait('#alert');
+		msg.wait('#alertFooter');
+		//alert('TR INFO');
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveEditTraining')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#alert');
+				msg.show(res.msg, res.alert, '#alertFooter');
+				
+				if (res.sts == 1) {
+
+					setTimeout(function () {
+						var refid = res.refid;
+
+						$('.nav-tabs li:eq(1) a').tab('show');
+						
+						// EDIT TRAINING
+						$('#add_edit_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editTraining')?>',
+							data: {'refid':refid},
+							success: function(res) {
+								$('#add_edit_training').html(res);
+							}
+						});
+
+						// TRAINING COST
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('trainingCost')?>',
+							data: {'refid':refid},
+							success: function(res) {
+								$('#training_cost').html(res);
+							}
+						});
+						
+					}, 2000);
+					$('.btn').removeAttr('disabled');
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#alert');
+				msg.danger('Please contact administrator.', '#alertFooter');
+			}
+		});	
+	});
 
     ///// SEARCH STAFF//////
 	// AUTO SEARCH STAFF ID
@@ -436,6 +597,7 @@
 
 	// SEARCH STAFF
 	$('#add_edit_training').on('click','.search_staff', function(){
+
 		$('#myModalis .modal-content').empty();
 		$('#myModalis').modal('show');
 		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
@@ -505,278 +667,13 @@
 		}
 	});
 	///// SEARCH STAFF//////
-    
 
-
-
-
-
-
-
-    ///////////////////////////////////////////////////////////////////////////////
-
-	// update - training info
-	$('#trainingInfo').on('click','.edit_training_btn', function(){
+	// DELETE TRAINING
+	$('#training_list').on('click','.del_tr', function() {
 		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var trRefID = td.eq(0).html().trim();
-		var trainingN = td.eq(1).html().trim();
-		
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editTraining')?>',
-			data: {'refID' : trRefID},
-			beforeSend: function() {
-				$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-			},
-			success: function(res) {
-				$('#add_edit_tr_info').html(res);
-				
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('speakerInfo')?>',
-					data: {'tsRefID' : trRefID},
-					beforeSend: function() {
-						$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-					},
-					success: function(res) {
-						$('#speakerInfo').html(res);
-					}
-				});
-
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
-					data: {'tsRefID' : trRefID},
-					beforeSend: function() {
-						$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-					},
-					success: function(res) {
-						$('#facilitatorInfo').html(res);
-					}
-				});
-				
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('targetGroup')?>',
-					data: {'trRefID' : trRefID, 'tName' : trainingN},
-					beforeSend: function() {
-						$('#group_module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-					},
-					success: function(res) {
-						$('#group_module_setup').html(res);
-
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('moduleSetup')?>',
-							data: {'tsRefID' : trRefID},
-							beforeSend: function() {
-								$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#module_setup').html(res);
-							}
-						});
-					}
-				});
-
-				$.ajax({
-					type: 'POST',
-					url: '<?php echo $this->lib->class_url('cpdSetup')?>',
-					data: {'tsRefID' : trRefID, 'tName' : trainingN},
-					beforeSend: function() {
-						$('#cpd_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-					},
-					success: function(res) {
-						$('#cpd_setup').html(res);
-					}
-				});
-
-				$('.nav-tabs li:eq(1) a').tab('show');
-			},
-			complete: function(){
-				$('#loader').hide();
-			},
-		});
-	});
-
-	// save update training info
-	$('#add_edit_tr_info').on('click', '.save_upd_tr_info', function (e) { 
-		e.preventDefault();
-		var data = $('#updTrainingInfo').serialize();
-		msg.wait('#alert');
-		msg.wait('#alertFooter');
-		
-		//$('.btn').attr('disabled', 'disabled');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateTraining')?>',
-			data: data,
-			dataType: 'JSON',
-			success: function(res) {
-				msg.show(res.msg, res.alert, '#alert');
-				msg.show(res.msg, res.alert, '#alertFooter');
-
-				//$('.btn').removeAttr('disabled');
-				
-				if (res.sts == 1) {
-					setTimeout(function () {
-						var trRefID = res.refid;
-						var trainingN = res.trName;
-						$('#add_edit_tr_info').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-						$.ajax({
-					        type: 'POST',
-					        url: '<?php echo $this->lib->class_url('editTraining')?>',
-					        data: {'refID' : trRefID},
-					        success: function(res) {
-					            $('.nav-tabs li:eq(1) a').tab('show');
-								$('#add_edit_tr_info').html(res);
-
-								// refresh training info
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('trainingInfo')?>',
-									data: '',
-									beforeSend: function() {
-										$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										//alert(res);
-										$('#trainingInfo').html(res);
-										dt_row = $('#tbl_list_ti').DataTable({
-											"ordering":false,
-											//"lengthMenu": [[4, 8], [4, 8]]
-										});
-									},
-									complete: function(){
-										$('#loader').hide();
-									},
-								});
-								
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('speakerInfo')?>',
-									data: {'tsRefID' : trRefID},
-									beforeSend: function() {
-										$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#speakerInfo').html(res);
-									}
-								});
-
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
-									data: {'tsRefID' : trRefID},
-									beforeSend: function() {
-										$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#facilitatorInfo').html(res);
-									}
-								});
-								
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('targetGroup')?>',
-									data: {'trRefID' : trRefID, 'tName' : trainingN},
-									beforeSend: function() {
-										$('#group_module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#group_module_setup').html(res);
-
-										$.ajax({
-											type: 'POST',
-											url: '<?php echo $this->lib->class_url('moduleSetup')?>',
-											data: {'tsRefID' : trRefID, 'tName' : trainingN},
-											beforeSend: function() {
-												$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-											},
-											success: function(res) {
-												$('#module_setup').html(res);
-											}
-										});
-									}
-								});
-
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo $this->lib->class_url('cpdSetup')?>',
-									data: {'tsRefID' : trRefID, 'tName' : trainingN},
-									beforeSend: function() {
-										$('#cpd_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#cpd_setup').html(res);
-									}
-								});
-					        }
-					    });
-					}, 1500);
-				} else {
-					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
-				msg.danger('Please contact administrator.', '#alertFooter');
-			}
-		});	
-	});  
-
-	// structured training setup - verify structured training
-	$('#add_edit_tr_info').on('click','#search_str_tr_ver', function(){
-		var thisBtn = $(this);
-		var trRefID = thisBtn.val();
-		//alert(trRefID);
-		
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('verifyStructuredTrainingSetup')?>',
-			data: {'refID' : trRefID},
-			dataType: 'JSON',
-			success: function(res) {
-				if(res.sts==1){
-					$('#myModalis').hide()
-					$.alert({
-						title: 'Alert!',
-						content: res.msg,
-						type: 'red',
-					});
-					return;
-				} else {
-					$('#myModalis .modal-content').empty();
-					$('#myModalis').modal('show');
-					$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-				
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('setupStructuredTraining')?>',
-						data: '',
-						//dataType: 'json',
-						success: function(res) {
-							$('#myModalis .modal-content').html(res);
-							$('#strTraining').val('');
-							dt_row = $('#tbl_list_str_tr').DataTable({
-								"ordering":false,
-								"lengthMenu": [[5, 10], [5, 10]]
-							});		
-						}
-					});
-				}
-			}
-		});
-	});
-
-	// DELETE TRAINING INFO //
-	$('#trainingInfo').on('click','.delete_training_btn', function() {
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var refid = td.eq(0).html().trim();
-		var tName = td.eq(1).html().trim();
+		var td = thisBtn.closest("tr");
+		var refid = td.find(".refid").text();
+		var tName = td.find(".title").text();
 		//alert(refid);
 		
 		$.confirm({
@@ -785,13 +682,15 @@
 			type: 'red',
 		    buttons: {
 		        yes: function () {
+					show_loading();
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo $this->lib->class_url('deleteTrainingInfo')?>',
+						url: '<?php echo $this->lib->class_url('deleteTraining')?>',
 						data: {'refid' : refid},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
+								hide_loading();
 								$.alert({
 									title: 'Success!',
 									content: res.msg,
@@ -799,6 +698,7 @@
 								});
 								thisBtn.parents('tr').fadeOut().delay(1000).remove();
 							} else {
+								hide_loading();
 								$.alert({
 									title: 'Alert!',
 									content: res.msg,
@@ -816,354 +716,169 @@
 		
 	});
 
-	// ADD TRAINING SPEAKER //
-	// ADD TRAINING SPEAKER INFO MODAL
-	$('#add_edit_tr_info').on('click', '.add_tr_sp', function() {
-		var thisBtn = $(this);
-		var trRefID = thisBtn.val();
-		//alert(trRefID);
 
-		$('#myModalis2 #mContent2').empty();
+	/*===========================================================
+       TAB 3 - TRAINING COST
+    =============================================================*/
+
+	// ADD TRAINING COST
+	$('#training_cost').on('click','.add_tr_cost', function(){
+		var refid = $('#refid').val();
+
+		$('#myModalis2 .modal-content').empty();
 		$('#myModalis2').modal('show');
-		$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('addTrainingSpeaker')?>',
-			data: {'RefID' : trRefID},
+			url: '<?php echo $this->lib->class_url('addTrainingCost')?>',
+			data: {'refid':refid},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
 			}
 		});
-	});
+	});	
 
-	// populate speaker list
-	$('#myModalis2').on('change', '#typeSpeaker', function() {
-		var typeSpeaker = $(this).val();
-		//alert(typeSpeaker);
-		$('#faspinner3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		$('#spDept').val('');
-		$('#spCtc').val('');
-		
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('speakerList')?>',
-			data: {'tpSpeaker' : typeSpeaker},
-			dataType: 'json',
-			success: function(res) {
-				$('#faspinner3').html('');
-
-				var resList = '<option value="" selected > ---Please select--- </option>';
-				
-				if (res.sts == 1) {
-					for (var i in res.spList) {
-						resList += '<option value="'+res.spList[i]['SM_STAFF_ID']+'">'+res.spList[i]['STAFF_ID_NAME']+'</option>';
-					}
-				}
-
-				if (res.sts == 2) {
-					for (var i in res.spList) {
-						resList += '<option value="'+res.spList[i]['ES_SPEAKER_ID']+'">'+res.spList[i]['ES_SPEAKER_ID_NAME']+'</option>';
-					}
-				}  
-				
-				$("#trSpeaker").html(resList);
-								
-			}
-		});
-	});
-
-	// populate speaker info
-	$('#myModalis2').on('change', '#trSpeaker', function() {
-		var thisBtn = $(this);
-		var trSpeaker = thisBtn.val();
-		var typeSpeaker = $('#typeSpeaker').val();
-		$('#loaderxxx').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		//$('#loader').html('');
-		
-		//alert(typeSpeaker);
-		//alert(trSpeaker);
-
-		if(typeSpeaker != '' && trSpeaker != '') {
-			$.ajax({
-				type: 'POST',
-				url: '<?php echo $this->lib->class_url('speakerList')?>',
-				data: {'trSpeakerCode' : trSpeaker, 'tpSpeaker' : typeSpeaker},
-				dataType: 'json',
-				success: function(res) {
-					if(res.sts == 1){
-						$('#spDept').val(res.spList.SM_DEPT_CODE);
-						$('#spCtc').val(res.spList.SM_TELNO_WORK);
-					} 
-					else if(res.sts == 2) {
-						$('#spDept').val(res.spList.ES_DEPT);
-						$('#spCtc').val(res.spList.ES_TELNO_WORK);
-					}
-										
-				}
-			});
-		}
-	});
-
-	// SAVE TRAINING SPEAKER
-	$('#myModalis2').on('click', '.ins_sp_info', function () {
-		var data = $('#formTrainingSpeaker').serialize();
-		msg.wait('#alertInsTrSp');
-		//msg.wait('#alertFooter');
-		//alert(data);
+	// SAVE ADD TRAINING COST
+	$('#myModalis2').on('click', '.add_tr_cost', function (e) { 
+		e.preventDefault();
+		var data = $('#addTrCost').serialize();
+		msg.wait('#addTrCostAlert');
 		
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveTrainingSpeaker')?>',
+			url: '<?php echo $this->lib->class_url('saveNewTrCost')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertInsTrSp');
-				//msg.show(res.msg, res.alert, '#alertFooter');
-
+				msg.show(res.msg, res.alert, '#addTrCostAlert');
+				
 				if (res.sts == 1) {
+					
+
 					setTimeout(function () {
+						var refid = res.refid;
+
 						$('#myModalis2').modal('hide');
-						$('.btn').removeAttr('disabled');
-						$('#tbl_list_si tbody #trNrecord').remove();
-						$('#tbl_list_si tbody').append(res.sp_row);
-					}, 1500);
-				} else {
+						$('.nav-tabs li:eq(2) a').tab('show');
+
+						// TRAINING COST
+						$('#training_cost').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('trainingCost')?>',
+							data: {'refid':refid},
+							success: function(res) {
+								$('#training_cost').html(res);
+							}
+						});
+						
+					}, 1000);
 					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				//$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
-			}
-		});	
-	});
-
-	// UPDATE TRAINING SPEAKER //
-	// UPDATE TRAINING SPEAKER INFO MODAL
-	$('#add_edit_tr_info').on('click', '.edit_sp_btn', function() {
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var refid = td.eq(0).html().trim();
-		var spType = td.eq(1).html().trim();
-		var spID = td.eq(2).html().trim();
-		var spName = td.eq(3).html().trim();
-		var spDept = td.eq(4).html().trim();
-		//var spContact = td.eq(5).html().trim();
-
-		srow = $(this).parents('tr');
-		// alert(refid);
-		// alert(spType);
-		// alert(spID);
-
-		$('#myModalis2 #mContent2').empty();
-		$('#myModalis2').modal('show');
-		$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editTrainingSpeaker')?>',
-			data: {'refid' : refid, 'spType' : spType, 'spID' : spID, 'spName' : spName, 'spDept' : spDept},
-			success: function(res) {
-				$('#myModalis2 .modal-content').html(res);
-			}
-		});
-	});
-
-	// SAVE UPDATE TRAINING SPEAKER
-	$('#myModalis2').on('click', '.upd_sp_info', function () {
-		var data = $('#formUpdateTrainingSpeaker').serialize();
-		msg.wait('#alertUpdTrSp');
-		//msg.wait('#alertFooter');
-		//alert(data);
-		
-		$('.btn').attr('disabled', 'disabled');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateTrainingSpeaker')?>',
-			data: data,
-			dataType: 'JSON',
-			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertUpdTrSp');
-				//msg.show(res.msg, res.alert, '#alertFooter');
-
-				if (res.sts == 1) {
-					setTimeout(function () {
-						$('#myModalis2').modal('hide');
-						$('.btn').removeAttr('disabled');
-						srow.find('td:eq(5)').html(res.sp_row.TS_CONTACT);
-					}, 1500);
 				} else {
 					$('.btn').removeAttr('disabled');
 				}
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
+				msg.danger('Please contact administrator.', '#addTrCostAlert');
 			}
 		});	
 	});
 
-	// DELETE TRAINING SPEAKER //
-	$('#add_edit_tr_info').on('click','.del_sp_btn', function() {
+	// EDIT TRAINING COST
+	$('#training_cost').on('click','.upd_tr_cost', function(){
 		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var refid = td.eq(0).html().trim();
-		var spID = td.eq(2).html().trim();
-		var spName = td.eq(3).html().trim();
-		//alert(refid+' ' +spID);
-		
-		$.confirm({
-		    title: 'Delete Training Speaker',
-		    content: 'Are you sure to delete this record? <br> <b>'+spID+' - '+spName+'</b>',
-			type: 'red',
-		    buttons: {
-		        yes: function () {
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo $this->lib->class_url('deleteTrainingSpeaker')?>',
-						data: {'refid' : refid, 'spID' : spID},
-						dataType: 'JSON',
-						success: function(res) {
-							if (res.sts==1) {
-								$.alert({
-									title: 'Success!',
-									content: res.msg,
-									type: 'green',
-								});
-								thisBtn.parents('tr').fadeOut().delay(1000).remove();
-							} else {
-								$.alert({
-									title: 'Alert!',
-									content: res.msg,
-									type: 'red',
-								});
-							}
-						}
-					});			
-		        },
-		        cancel: function () {
-		            $.alert('Canceled Delete Record!');
-		        }
-		    }
-		});
-		
-	});
-	
-	// ADD TRAINING FACILITATOR //
-	// ADD TRAINING SPEAKER INFO MODAL
-	$('#add_edit_tr_info').on('click', '.add_tr_fi', function() {
-		var thisBtn = $(this);
-		var trRefID = thisBtn.val();
-		//alert(trRefID);
+		var td = thisBtn.closest("tr");
+		var code = td.find(".code").text();
+		var refid = $('#refid').val();
 
-		$('#myModalis2 #mContent2').empty();
+		$('#myModalis2 .modal-content').empty();
 		$('#myModalis2').modal('show');
-		$('#myModalis2').find('#mContent2').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		$('#myModalis2').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('addTrainingFacilitator')?>',
-			data: {'RefID' : trRefID},
+			url: '<?php echo $this->lib->class_url('editTrainingCost')?>',
+			data: {'refid':refid, 'code':code},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
 			}
 		});
-	});
+	});	
 
-	// populate speaker list
-	$('#myModalis2').on('change', '#typeFacilitator', function() {
-		var typeFacilitator = $(this).val();
-		//alert(typeFacilitator);
-
-		$('#faspinner3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('facilitatorList')?>',
-			data: {'tpFacilitator' : typeFacilitator},
-			dataType: 'json',
-			success: function(res) {
-				$('#faspinner3').html('');
-
-				var resList = '<option value="" selected > ---Please select--- </option>';
-				
-				if (res.sts == 1) {
-					for (var i in res.fiList) {
-						resList += '<option value="'+res.fiList[i]['SM_STAFF_ID']+'">'+res.fiList[i]['STAFF_ID_NAME']+'</option>';
-					}
-				}
-
-				if (res.sts == 2) {
-					for (var i in res.fiList) {
-						resList += '<option value="'+res.fiList[i]['EF_FACILITATOR_ID']+'">'+res.fiList[i]['ES_FACILITATOR_ID_NAME']+'</option>';
-					}
-				}  
-				
-				$("#trFacilitator").html(resList);
-								
-			}
-		});
-	});
-
-	// SAVE TRAINING FACILITATOR
-	$('#myModalis2').on('click', '.ins_fi_info', function () {
-		var data = $('#formTrainingFacilitator').serialize();
-		msg.wait('#alertInsTrFi');
-		//msg.wait('#alertFooter');
-		//alert(data);
+	// SAVE ADD TRAINING COST
+	$('#myModalis2').on('click', '.upd_tr_cost', function (e) { 
+		e.preventDefault();
+		var data = $('#editTrCost').serialize();
+		msg.wait('#editTrCostAlert');
 		
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveTrainingFacilitator')?>',
+			url: '<?php echo $this->lib->class_url('saveUpdTrCost')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
-				msg.show(res.msg, res.alert, '#alertInsTrFi');
-				//msg.show(res.msg, res.alert, '#alertFooter');
-
+				msg.show(res.msg, res.alert, '#editTrCostAlert');
+				
 				if (res.sts == 1) {
+					
+
 					setTimeout(function () {
+						var refid = res.refid;
+
 						$('#myModalis2').modal('hide');
-						$('.btn').removeAttr('disabled');
-						$('#tbl_list_fi tbody #trNrecord').remove();
-						$('#tbl_list_fi tbody').append(res.fi_row);
-					}, 1500);
+						$('.nav-tabs li:eq(2) a').tab('show');
+
+						// TRAINING COST
+						$('#training_cost').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('trainingCost')?>',
+							data: {'refid':refid},
+							success: function(res) {
+								$('#training_cost').html(res);
+							}
+						});
+						
+					}, 1000);
+					$('.btn').removeAttr('disabled');
 				} else {
 					$('.btn').removeAttr('disabled');
 				}
 			},
 			error: function() {
-				//$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#editTrCostAlert');
 			}
 		});	
 	});
 
-	// DELETE TRAINING FACILITATOR //
-	$('#add_edit_tr_info').on('click','.del_fi_btn', function() {
+	// DELETE TRAINING COST
+	$('#training_cost').on('click','.del_tr_cost', function() {
 		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		var refid = td.eq(0).html().trim();
-		var fiID = td.eq(2).html().trim();
-		var fiName = td.eq(3).html().trim();
-		//alert(refid+' ' +spID);
+		var td = thisBtn.closest("tr");
+		var code = td.find(".code").text();
+		var cost_desc = td.find(".cost_desc").text();
+		var refid = $('#refid').val();
 		
 		$.confirm({
-		    title: 'Delete Training Facilitator',
-		    content: 'Are you sure to delete this record? <br> <b>'+fiID+' - '+fiName+'</b>',
+		    title: 'Delete Training Cost',
+		    content: 'Are you sure to delete this record? <br> <b>'+code+' - '+cost_desc+'</b>',
 			type: 'red',
 		    buttons: {
 		        yes: function () {
+					show_loading();
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo $this->lib->class_url('deleteTrainingFacilitator')?>',
-						data: {'refid' : refid, 'fiID' : fiID},
+						url: '<?php echo $this->lib->class_url('deleteTrainingCost')?>',
+						data: {'refid' : refid, 'code' : code},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
+								hide_loading();
 								$.alert({
 									title: 'Success!',
 									content: res.msg,
@@ -1171,6 +886,7 @@
 								});
 								thisBtn.parents('tr').fadeOut().delay(1000).remove();
 							} else {
+								hide_loading();
 								$.alert({
 									title: 'Alert!',
 									content: res.msg,
@@ -1185,10 +901,36 @@
 		        }
 		    }
 		});
-		
 	});
 
-	// ADD TARGET GROUP //
+
+	/*===========================================================
+       TAB 4 - TARGET GROUP & MODULE SETUP
+	=============================================================*/
+	
+	// LIST OF ELIGIBLE POSITION //
+	$('#group_module_setup').on('click', '.pos_tg_btn', function() {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		//var refid = thisBtn.val();
+		var gpCode = td.eq(0).html().trim();
+		//alert(gpCode);
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo site_url('training/training_application/listEgPosition')?>',
+			data: {'gpCode' : gpCode},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+				$('.add_eg_position_btn').hide();
+			}
+		});
+	});
+
 	// ADD TARGET GROUP MODAL
 	$('#group_module_setup').on('click', '.add_tg', function() {
 		var thisBtn = $(this);
@@ -1201,7 +943,7 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('addTargetGroup')?>',
+			url: '<?php echo site_url('training/training_application/addTargetGroup')?>',
 			data: {'RefID' : trRefID},
 			success: function(res) {
 				$('#myModalis .modal-content').html(res);
@@ -1219,7 +961,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveTrainingTG')?>',
+			url: '<?php echo site_url('training/training_application/saveTrainingTG')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -1253,7 +995,7 @@
 		
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('tgList')?>',
+			url: '<?php echo site_url('training/training_application/tgList')?>',
 			data: {'grpCode' : grpCode},
 			dataType: 'json',
 			success: function(res) {
@@ -1274,29 +1016,6 @@
 		});
 	});
 
-	// LIST OF ELIGIBLE POSITION //
-	$('#group_module_setup').on('click', '.pos_tg_btn', function() {
-		var thisBtn = $(this);
-		var td = thisBtn.parent().siblings();
-		//var refid = thisBtn.val();
-		var gpCode = td.eq(0).html().trim();
-		//alert(gpCode);
-
-		$('#myModalis .modal-content').empty();
-		$('#myModalis').modal('show');
-		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('listEgPosition')?>',
-			data: {'gpCode' : gpCode},
-			success: function(res) {
-				$('#myModalis .modal-content').html(res);
-				$('.add_eg_position_btn').hide();
-			}
-		});
-	});
-
 	// DELETE ELIGIBLE POSITION //
 	$('#myModalis').on('click','.del_eg_btn', function() {
 		var thisBtn = $(this);
@@ -1313,13 +1032,15 @@
 			type: 'red',
 		    buttons: {
 		        yes: function () {
+					show_loading();
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo $this->lib->class_url('deleteTrainingGpService')?>',
+						url: '<?php echo site_url('training/training_application/deleteTrainingGpService')?>',
 						data: {'gpCode' : gpCode, 'tgsSeq' : tgsSeq},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
+								hide_loading();
 								$.alert({
 									title: 'Success!',
 									content: res.msg,
@@ -1327,6 +1048,7 @@
 								});
 								thisBtn.parents('tr').fadeOut().delay(1000).remove();
 							} else {
+								hide_loading();
 								$.alert({
 									title: 'Alert!',
 									content: res.msg,
@@ -1359,13 +1081,15 @@
 			type: 'red',
 		    buttons: {
 		        yes: function () {
+					show_loading();
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo $this->lib->class_url('deleteTargetGroup')?>',
+						url: '<?php echo site_url('training/training_application/deleteTargetGroup')?>',
 						data: {'refid' : refid, 'gpCode' : gpCode},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
+								hide_loading();
 								$.alert({
 									title: 'Success!',
 									content: res.msg,
@@ -1373,6 +1097,7 @@
 								});
 								thisBtn.parents('tr').fadeOut().delay(1000).remove();
 							} else {
+								hide_loading();
 								$.alert({
 									title: 'Alert!',
 									content: res.msg,
@@ -1390,7 +1115,6 @@
 		
 	});
 
-	// ADD HEAD DETL //
 	// ADD MODULE SETUP MODAL
 	$('#group_module_setup').on('click', '.add_ms_btn', function() {
 		var thisBtn = $(this);
@@ -1403,7 +1127,7 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('addModuleSetup')?>',
+			url: '<?php echo site_url('training/training_application/addModuleSetup')?>',
 			data: {'refid' : refid},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
@@ -1419,7 +1143,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveModuleSetup')?>',
+			url: '<?php echo site_url('training/training_application/saveModuleSetup')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -1459,13 +1183,15 @@
 			type: 'red',
 		    buttons: {
 		        yes: function () {
+					show_loading();
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo $this->lib->class_url('deleteModuleSetup')?>',
+						url: '<?php echo site_url('training/training_application/deleteModuleSetup')?>',
 						data: {'refid' : refid},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
+								hide_loading();
 								$.alert({
 									title: 'Success!',
 									content: res.msg,
@@ -1476,6 +1202,7 @@
 								$('#group_module_setup #insMs').show();
 								$('#group_module_setup .delete_ms_btn').hide();
 							} else {
+								hide_loading();
 								$.alert({
 									title: 'Alert!',
 									content: res.msg,
@@ -1508,7 +1235,7 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editModuleSetup1')?>',
+			url: '<?php echo site_url('training/training_application/editModuleSetup1')?>',
 			data: {'refid' : refid, 'spObj' : spObj,},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
@@ -1526,7 +1253,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateMS1')?>',
+			url: '<?php echo site_url('training/training_application/saveUpdateMS1')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -1565,7 +1292,7 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editModuleSetup2')?>',
+			url: '<?php echo site_url('training/training_application/editModuleSetup2')?>',
 			data: {'refid' : refid, 'msCont' : msCont,},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
@@ -1583,7 +1310,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateMS2')?>',
+			url: '<?php echo site_url('training/training_application/saveUpdateMS2')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -1623,7 +1350,7 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editModuleSetup3')?>',
+			url: '<?php echo site_url('training/training_application/editModuleSetup3')?>',
 			data: {'refid' : refid},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
@@ -1639,7 +1366,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateMS3')?>',
+			url: '<?php echo site_url('training/training_application/saveUpdateMS3')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -1663,7 +1390,10 @@
 		});	
 	});
 
-	// ADD CPD HEAD //
+	/*===========================================================
+       TAB 5 - CPD SETUP
+	=============================================================*/
+
 	// ADD CPD SETUP MODAL
 	$('#cpd_setup').on('click', '.add_cpd_btn', function() {
 		var thisBtn = $(this);
@@ -1676,7 +1406,7 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('addCPDSetup')?>',
+			url: '<?php echo site_url('training/training_application/addCPDSetup')?>',
 			data: {'refid' : refid},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
@@ -1692,7 +1422,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveCPDSetup')?>',
+			url: '<?php echo site_url('training/training_application/saveCPDSetup')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -1730,13 +1460,15 @@
 			type: 'red',
 		    buttons: {
 		        yes: function () {
+					show_loading();
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo $this->lib->class_url('deleteCpdSetup')?>',
+						url: '<?php echo site_url('training/training_application/deleteCpdSetup')?>',
 						data: {'refid' : refid},
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
+								hide_loading();
 								$.alert({
 									title: 'Success!',
 									content: res.msg,
@@ -1747,6 +1479,7 @@
 								$('#cpd_setup #insCPD').show();
 								$('#cpd_setup .delete_cpd_btn').hide();
 							} else {
+								hide_loading();
 								$.alert({
 									title: 'Alert!',
 									content: res.msg,
@@ -1781,7 +1514,7 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editCpdSetup1')?>',
+			url: '<?php echo site_url('training/training_application/editCpdSetup1')?>',
 			data: {'refid' : refid, 'cpdComp' : cpdComp},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
@@ -1797,7 +1530,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateCpd1')?>',
+			url: '<?php echo site_url('training/training_application/saveUpdateCpd1')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -1837,6 +1570,7 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('editCpdSetup2')?>',
+			url: '<?php echo site_url('training/training_application/editCpdSetup2')?>',
 			data: {'refid' : refid},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
@@ -1852,7 +1586,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateCpd2')?>',
+			url: '<?php echo site_url('training/training_application/saveUpdateCpd2')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -1893,7 +1627,7 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editCpdSetup3')?>',
+			url: '<?php echo site_url('training/training_application/editCpdSetup3')?>',
 			data: {'refid' : refid, 'cpdMark' : cpdMark},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
@@ -1909,7 +1643,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateCpd3')?>',
+			url: '<?php echo site_url('training/training_application/saveUpdateCpd3')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -1958,6 +1692,7 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('editCpdSetup4')?>',
+			url: '<?php echo site_url('training/training_application/editCpdSetup4')?>',
 			data: {'refid' : refid, 'rpSub' : rpSub},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
@@ -1973,7 +1708,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateCpd4')?>',
+			url: '<?php echo site_url('training/training_application/saveUpdateCpd4')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -2020,7 +1755,7 @@
 	
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('editCpdSetup5')?>',
+			url: '<?php echo site_url('training/training_application/editCpdSetup5')?>',
 			data: {'refid' : refid, 'cpdCmpy' : cpdCmpy},
 			success: function(res) {
 				$('#myModalis2 .modal-content').html(res);
@@ -2036,7 +1771,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveUpdateCpd5')?>',
+			url: '<?php echo site_url('training/training_application/saveUpdateCpd5')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {

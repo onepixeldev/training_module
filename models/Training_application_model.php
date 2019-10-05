@@ -466,7 +466,8 @@ class Training_application_model extends MY_Model
     }
 
     // GET REFID
-    public function getRefID() {
+    public function getRefID() 
+    {
         // $this->db->select("MAX(TO_NUMBER(REGEXP_REPLACE(TH_REF_ID,'\D',''))) + 1 AS TESTREFID");
         // $this->db->from('TRAINING_HEAD');
 
@@ -771,7 +772,8 @@ class Training_application_model extends MY_Model
     }
 
     // VERIFY DELETE TRAINING SPEAKER
-    public function delVerifyTrSP($refid) {
+    public function delVerifyTrSP($refid) 
+    {
         $this->db->select("1");
         $this->db->from("TRAINING_SPEAKER T");
         $this->db->where("T.TS_TRAINING_REFID", $refid);

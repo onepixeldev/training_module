@@ -53,7 +53,7 @@
             <label class="col-md-2 control-label">Country <b><font color="red">* </font></b></label>
             <div class="col-md-4">
                 <?php
-                    echo form_dropdown('form[country]', $country_dd, $org_detl->TOH_COUNTRY, 'class="select2-filter form-control" style="width: 100%"')
+                    echo form_dropdown('form[country]', array('MYS'=>'Malaysia'), $org_detl->TOH_COUNTRY, 'class="form-control" style="width: 100%" readonly')
                 ?>
             </div>
         </div>
@@ -65,10 +65,3 @@
         <button type="submit" class="btn btn-primary upd_org"><i class="fa fa-save"></i> Save</button>
     </div>
 </form>
-
-<script>
-    $(".select2-filter").select2({    
-        // placeholder: 'Select an option',
-        width: 'resolve'
-    });
-</script>

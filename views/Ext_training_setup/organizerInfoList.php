@@ -29,8 +29,8 @@
 						<td class="text-center">'.$ol->TOH_ADDRESS.'</td>
 						<td class="text-center">'.$ol->TOH_POSTCODE.'</td>
 						<td class="text-center">'.$ol->TOH_CITY.'</td>
-						<td class="text-center">'.$ol->TOH_STATE_DESC.'</td>
-						<td class="text-center">'.$ol->TOH_COUNTRY_DESC.'</td>
+						<td class="text-center">'.$ol->SM_STATE_DESC.'</td>
+						<td class="text-center">'.$ol->CM_COUNTRY_DESC.'</td>
 						<td class="text-center">
 							<div class="btn-group">
 								<button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button>

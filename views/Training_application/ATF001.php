@@ -711,6 +711,7 @@
 			type: 'red',
 		    buttons: {
 		        yes: function () {
+					show_loading();
 					$.ajax({
 						type: 'POST',
 						url: '<?php echo $this->lib->class_url('deleteTrainingInfo')?>',
@@ -718,6 +719,7 @@
 						dataType: 'JSON',
 						success: function(res) {
 							if (res.sts==1) {
+								hide_loading();
 								$.alert({
 									title: 'Success!',
 									content: res.msg,
@@ -725,6 +727,7 @@
 								});
 								thisBtn.parents('tr').fadeOut().delay(1000).remove();
 							} else {
+								hide_loading();
 								$.alert({
 									title: 'Alert!',
 									content: res.msg,

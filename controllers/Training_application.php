@@ -2230,7 +2230,8 @@ class Training_application extends MY_Controller
     _____________________*/
 
     // DELETE TRAINING INFO
-    public function deleteTrainingInfo() {
+    public function deleteTrainingInfo() 
+    {
 		$this->isAjax();
 		
         $refid = $this->input->post('refid', true);
