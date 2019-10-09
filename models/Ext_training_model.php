@@ -13,6 +13,82 @@ class Ext_training_model extends MY_Model
         $this->staff_id = $this->lib->userid();
         $this->username = $this->lib->username();
     }
+
+    // get current date
+    public function getCurDate() {		
+        $this->db->select("TO_CHAR(SYSDATE, 'MM') AS SYSDATE_MM, TO_CHAR(SYSDATE, 'YYYY') AS SYSDATE_YYYY");
+        $this->db->from("DUAL");
+        $q = $this->db->get();
+                
+        return $q->row();
+    } 
+
+    // GET YEAR DROPDOWN
+    public function getYearList() 
+    {		
+        $this->db->select("to_char(CM_DATE, 'YYYY') AS CM_YEAR");
+        $this->db->from("CALENDAR_MAIN");
+        $this->db->where("to_char(CM_DATE, 'YYYY') >= to_char(SYSDATE, 'YYYY') - 15");
+        $this->db->group_by("to_char(CM_DATE, 'YYYY')");
+        $this->db->order_by("to_char(CM_DATE, 'YYYY') DESC");
+        $q = $this->db->get();
+                
+        return $q->result();
+    } 
+
+    // GET MONTH DROPDOWN
+    public function getMonthList() 
+    {		
+        $this->db->select("to_char(CM_DATE, 'MM') AS CM_MM, to_char(CM_DATE, 'MONTH') AS CM_MONTH");
+        $this->db->from("CALENDAR_MAIN");
+        $this->db->group_by("to_char(CM_DATE,'MM'), to_char(CM_DATE, 'MONTH')");
+        $this->db->order_by("to_char(CM_DATE, 'MM')");
+        $q = $this->db->get();
+		        
+        return $q->result();
+    } 
+
+    // CURREMT USER DEPT
+    public function currentUsrDept()
+    {  
+        $curr_usr = $this->username;
+
+        $this->db->select("SM_DEPT_CODE");
+        $this->db->from("STAFF_MAIN");
+        $this->db->where("UPPER(SM_APPS_USERNAME)", $curr_usr);
+        $q = $this->db->get();
+    
+        return $q->row();
+    }
+
+    // ALL DEPARTMENT
+    public function getDeptAll()
+    {  
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_CODE||' - '||DM_DEPT_DESC AS DP_CODE_DESC");
+        $this->db->from("DEPARTMENT_MAIN");
+        $this->db->where("COALESCE(DM_STATUS,'INACTIVE') = 'ACTIVE'");
+        $this->db->where("DM_LEVEL IN (1,2)");
+        $this->db->order_by("DM_DEPT_CODE");
+        $q = $this->db->get();
+    
+        return $q->result();
+    }
+
+    // NOT ALL DEPARTMENT
+    public function getDeptBased()
+    {  
+        $curr_usr = $this->username;
+
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_CODE||' - '||DM_DEPT_DESC AS DP_CODE_DESC");
+        $this->db->from("DEPARTMENT_MAIN");
+        $this->db->where("COALESCE(DM_STATUS,'INACTIVE') = 'ACTIVE'");
+        $this->db->where("DM_LEVEL IN (1,2)");
+        $this->db->where("DM_DEPT_CODE = (SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE UPPER(SM_APPS_USERNAME) = '$curr_usr')");
+        $this->db->order_by("DM_DEPT_CODE");
+        $q = $this->db->get();
+    
+        return $q->result();
+    }
     
     /*===========================================================
        Organizer Info for External Agency Setup - ASF132
@@ -36,7 +112,7 @@ class Ext_training_model extends MY_Model
         $this->db->from("TRAINING_ORGANIZER_HEAD");
         $this->db->join("STATE_MAIN", "TOH_STATE = SM_STATE_CODE", "LEFT");
         $this->db->join("COUNTRY_MAIN", "TOH_COUNTRY = CM_COUNTRY_CODE", "LEFT");
-        $this->db->where("NVL(TOH_EXTERNAL_AGENCY,'N') = 'Y'");
+        $this->db->where("COALESCE(TOH_EXTERNAL_AGENCY,'N') = 'Y'");
 
         if(!empty($state)) 
         {
@@ -175,7 +251,7 @@ class Ext_training_model extends MY_Model
     {
         $this->db->select("TC_CATEGORY");
         $this->db->from("TRAINING_CATEGORY");
-        $this->db->where("NVL(TC_STATUS,'N') = 'Y'");
+        $this->db->where("COALESCE(TC_STATUS,'N') = 'Y'");
         $this->db->order_by("1");
         $q = $this->db->get();
         
@@ -224,7 +300,7 @@ class Ext_training_model extends MY_Model
     {
         $this->db->select("TSL_CODE, TSL_CODE ||' - '|| TSL_DESC AS TSL_CODE_DESC");
         $this->db->from('TRAINING_SECTOR_LEVEL');
-		$this->db->where("NVL(TSL_STATUS,'N') = 'Y'");
+		$this->db->where("COALESCE(TSL_STATUS,'N') = 'Y'");
         $q = $this->db->get();
         
         return $q->result();
@@ -248,7 +324,7 @@ class Ext_training_model extends MY_Model
         $this->db->from('TRAINING_ORGANIZER_HEAD, STATE_MAIN, COUNTRY_MAIN');
         $this->db->where("TOH_STATE=SM_STATE_CODE");
         $this->db->where("TOH_COUNTRY=CM_COUNTRY_CODE");
-        $this->db->where("NVL(TOH_EXTERNAL_AGENCY,'N') = 'Y'");
+        $this->db->where("COALESCE(TOH_EXTERNAL_AGENCY,'N') = 'Y'");
 
         if(!empty($organizerCode)) {
             $this->db->where("TOH_ORG_CODE", $organizerCode);
@@ -436,7 +512,8 @@ class Ext_training_model extends MY_Model
         TH_ORGANIZER_NAME,
         TH_EVALUATION_COMPULSORY,
         TH_ATTENDANCE_TYPE,
-        TH_PRINT_CERTIFICATE
+        TH_PRINT_CERTIFICATE,
+        TH_STATUS
         ");
 
         $this->db->from("TRAINING_HEAD");
@@ -733,4 +810,88 @@ class Ext_training_model extends MY_Model
         $this->db->where('TH_REF_ID', $refid);
         return $this->db->delete('TRAINING_HEAD');
     }
+
+    /*===========================================================
+       APPROVE TRAINING SETUP FOR EXTERNAL AGENCY - ATF139
+    =============================================================*/
+
+    // GET TRAINING LIST
+    public function getTrainingList2($dept, $month, $year, $status)
+    {
+        $this->db->select("TH_REF_ID,
+        TH_TRAINING_TITLE,
+        TO_CHAR(TH_DATE_FROM, 'DD/MM/YYYY') TH_DATE_FROM2,
+        TO_CHAR(TH_DATE_TO, 'DD/MM/YYYY') TH_DATE_TO2,
+        TH_TRAINING_FEE
+        ");
+        $this->db->from("TRAINING_HEAD");
+
+        if(!empty($dept)) {
+            $this->db->where("TH_DEPT_CODE", $dept);
+        }
+
+        if(!empty($month)) {
+            $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'MM'),'') = '$month'");
+        }
+
+        if(!empty($year)) {
+            $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'YYYY'),'') = '$year'");
+        }
+
+        // if(!empty($year) && !empty($month)) {
+        //     $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'MM/YYYY'),'') = '$month/$year'");
+        // }
+
+        if(!empty($status)) {
+            $this->db->where("COALESCE(TH_STATUS, 'ENTRY') = '$status'");
+        }
+        
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE, TH_REF_ID");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // APPROVE/POSTPONE/AMEND/REJECT TRAINING
+    public function updStsExtTrainingSetup($refid, $upd_status)
+    {
+        $currentUsr = $this->staff_id;
+        $curDate = 'SYSDATE';
+
+        $data = array(
+            "TH_STATUS" =>  $upd_status,
+            "TH_APPROVE_BY" => $currentUsr
+        );
+
+        $this->db->set("TH_APPROVE_DATE", $curDate, false);
+
+        $this->db->where("TH_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD", $data);
+    } 
+
+    // COUNT STAFF TRAINING
+    public function getTrainingStaffDetl($refid)
+    {
+        $this->db->select("COUNT(1) AS C_STAFF");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // UPDATE STH TRAINING
+    public function updSthTrainingSetup($refid, $upd_status)
+    {
+        $data = array(
+            "STH_STATUS" =>  $upd_status,
+        );
+
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    } 
+    
 }

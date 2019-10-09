@@ -3199,7 +3199,8 @@ class Training_application extends MY_Controller
     =============================================================*/
 
     // APPROVE TRAINING
-    public function approveTrainingSetup() {
+    public function approveTrainingSetup() 
+    {
 		$this->isAjax();
 		
         $refid = $this->input->post('refid', true);

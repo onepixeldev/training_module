@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('CPD / Conference Setup (CPD)') ?>
+<?php echo $this->lib->title('CPD / Conference Setup (CPD)', $screen_id) ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">

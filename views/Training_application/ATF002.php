@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Training Application') ?>
+<?php echo $this->lib->title('Training Application', $screen_id) ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">

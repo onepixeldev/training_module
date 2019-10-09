@@ -32,6 +32,39 @@ class Ext_training_appl extends MY_Controller
         $this->render();
     }
 
+    // APPROVE TRAINING SETUP FOR EXTERNAL AGENCY
+    public function ATF139()
+    {
+        $data['month'] = $this->et_mdl->getCurDate();
+        $data['year'] = $this->et_mdl->getCurDate();
+
+        $data['cur_month'] = $data['month']->SYSDATE_MM;  
+        $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
+
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->et_mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->et_mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        $usr_dept = $this->et_mdl->currentUsrDept();
+        if(!empty($usr_dept)) {
+            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+            if($data['curr_dept'] == 'BSM') {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            } else {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            }
+        } else {
+            $data['curr_dept'] = '';
+            $data['dept_list'] = array(''=>'');
+        }
+
+        $this->render($data);
+    }
+
     // SEARCH STAFF
     public function searchStaffMd() {
         $staff_id = $this->input->post('staff_id', true);
@@ -710,4 +743,236 @@ class Ext_training_appl extends MY_Controller
         echo json_encode($json);
     }
     
+    /*===========================================================
+       APPROVE TRAINING SETUP FOR EXTERNAL AGENCY - ATF139
+    =============================================================*/
+
+    // TRAINING LIST
+    public function getTrainingList()
+    {   
+        // selected filter value
+        $dept = $this->input->post('dept', true);
+        $month = $this->input->post('month', true);
+        $year = $this->input->post('year', true);
+        $status = $this->input->post('status', true);
+
+        // get available records
+        $data['tr_list'] = $this->et_mdl->getTrainingList2($dept, $month, $year, $status);
+
+        $this->render($data);
+    }
+
+    // TRAINING DETL
+    public function trDetl()
+    {   
+        $this->render();
+    }
+
+    // APPROVE TRAINING
+    public function approveExtTrainingSetup() 
+    {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $upd_status = 'APPROVE';
+
+        if (!empty($refid)) {
+            $tr_detl = $this->et_mdl->getTrainingHead($refid);
+
+            if(!empty($tr_detl)) {
+                $status = $tr_detl->TH_STATUS;
+                $fee = $tr_detl->TH_TRAINING_FEE;
+            } else {
+                $status ='';
+                $fee = '';
+            }
+
+            if($status == 'APPROVE') {
+                $json = array('sts' => 0, 'msg' => 'Training already approved.', 'alert' => 'danger');
+            } else {
+                if(empty($fee)) {
+                    $json = array('sts' => 0, 'msg' => 'Training setup not complete.'.nl2br("\r\n").'Please key-in the <b><font color="red">Fee</font></b> amount at <b>Training Setup for External Agency</b> page.', 'alert' => 'danger');
+                } else {
+                    $approve = $this->et_mdl->updStsExtTrainingSetup($refid, $upd_status);
+            
+                    if ($approve > 0) {
+                        $json = array('sts' => 1, 'msg' => 'Training Approval completed.', 'alert' => 'success');
+                    } else {
+                        $json = array('sts' => 0, 'msg' => 'Training Approval failed.', 'alert' => 'danger');
+                    }
+                }
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // AMEND TRAINING
+    public function amendExtTrainingSetup() 
+    {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $upd_status = 'ENTRY';
+        
+        if (!empty($refid)) {
+            $tr_detl = $this->et_mdl->getTrainingHead($refid);
+            if(!empty($tr_detl)) {
+                $status = $tr_detl->TH_STATUS;
+                $fee = $tr_detl->TH_TRAINING_FEE;
+            } else {
+                $status ='';
+                $fee = '';
+            }
+
+            // count staff
+            $tr_stf_detl = $this->et_mdl->getTrainingStaffDetl($refid);
+            if(!empty($tr_stf_detl)) {
+                $count = (int)$tr_stf_detl->C_STAFF;
+            } else {
+                $count = 0;
+            }
+
+            if($status == 'ENTRY') {
+                $json = array('sts' => 0, 'msg' => 'Training already amended.', 'alert' => 'danger');
+            } else {
+                if(empty($fee)) {
+                    $json = array('sts' => 0, 'msg' => 'Training setup not complete.'.nl2br("\r\n").'Please key-in the <b><font color="red">Fee</font></b> amount at <b>Training Setup for External Agency</b> page.', 'alert' => 'danger');
+                } else {
+                    if($count == 0) {
+                        $amend = $this->et_mdl->updStsExtTrainingSetup($refid, $upd_status);
+            
+                        if ($amend > 0) {
+                            $json = array('sts' => 1, 'msg' => 'Training Amendment completed.', 'alert' => 'success');
+                        } else {
+                            $json = array('sts' => 0, 'msg' => 'Training Amendment failed.', 'alert' => 'danger');
+                        }
+                    } else {
+                        $json = array('sts' => 0, 'msg' => 'Cannot amend Training.'.nl2br("\r\n").'There are staff <b><font color="red">applying/approved/assigned</font></b> for this training.', 'alert' => 'danger');
+                    }
+                }
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // POSTPONE TRAINING
+    public function postponeExtTrainingSetup() 
+    {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $upd_status = 'POSTPONE';
+
+        if (!empty($refid)) {
+            $tr_detl = $this->et_mdl->getTrainingHead($refid);
+
+            if(!empty($tr_detl)) {
+                $status = $tr_detl->TH_STATUS;
+                $fee = $tr_detl->TH_TRAINING_FEE;
+            } else {
+                $status ='';
+                $fee = '';
+            }
+
+            if($status == 'POSTPONE') {
+                $json = array('sts' => 0, 'msg' => 'Training already postponed.', 'alert' => 'danger');
+            } else {
+                if(empty($fee)) {
+                    $json = array('sts' => 0, 'msg' => 'Training setup not complete.'.nl2br("\r\n").'Please key-in the <b><font color="red">Fee</font></b> amount at <b>Training Setup for External Agency</b> page.', 'alert' => 'danger');
+                } else {
+                    $postpone = $this->et_mdl->updStsExtTrainingSetup($refid, $upd_status);
+            
+                    if ($postpone > 0) {
+                        $json = array('sts' => 1, 'msg' => 'Training Postponement completed.', 'alert' => 'success');
+                    } else {
+                        $json = array('sts' => 0, 'msg' => 'Training Postponement failed.', 'alert' => 'danger');
+                    }
+                }
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // REJECT TRAINING
+    public function rejectExtTrainingSetup() 
+    {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $upd_status = 'REJECT';
+
+        $sth_msg = '';
+        $th_msg = '';
+        $sth_success = 0;
+        $th_success = 0;
+        
+        if (!empty($refid)) {
+            $tr_detl = $this->et_mdl->getTrainingHead($refid);
+            if(!empty($tr_detl)) {
+                $status = $tr_detl->TH_STATUS;
+                $fee = $tr_detl->TH_TRAINING_FEE;
+            } else {
+                $status ='';
+                $fee = '';
+            }
+
+            // count staff
+            $tr_stf_detl = $this->et_mdl->getTrainingStaffDetl($refid);
+            if(!empty($tr_stf_detl)) {
+                $count = (int)$tr_stf_detl->C_STAFF;
+            } else {
+                $count = 0;
+            }
+
+            if($status == 'REJECT') {
+                $json = array('sts' => 0, 'msg' => 'Training already rejected.', 'alert' => 'danger');
+            } else {
+                if(empty($fee)) {
+                    $json = array('sts' => 0, 'msg' => 'Training setup not complete.'.nl2br("\r\n").'Please key-in the <b><font color="red">Fee</font></b> amount at <b>Training Setup for External Agency</b> page.', 'alert' => 'danger');
+                } else {
+                    if($count == 0) {
+                        $reject = $this->et_mdl->updStsExtTrainingSetup($refid, $upd_status);
+                        if ($reject > 0) {
+                            $json = array('sts' => 1, 'msg' => 'Training Rejection completed.', 'alert' => 'success');
+                        } else {
+                            $json = array('sts' => 0, 'msg' => 'Training Rejection failed.', 'alert' => 'danger');
+                        }
+                    } else {
+                        $reject_sth = $this->et_mdl->updSthTrainingSetup($refid, $upd_status);
+                        if ($reject_sth > 0) {
+                            $sth_msg = 'Staff Training Rejection completed.'.nl2br("\r\n");
+                            $sth_success++;
+                        } else {
+                            $sth_msg = 'Staff Training Rejection failed'.nl2br("\r\n");
+                            $sth_success = 0;
+                        }
+
+                        $reject = $this->et_mdl->updStsExtTrainingSetup($refid, $upd_status);
+                        if ($reject > 0) {
+                            $th_msg = 'Training Rejection completed.';
+                            $th_success++;
+                        } else {
+                            $th_msg = 'Training Rejection failed.';
+                            $th_success = 0;
+                        }
+
+                        if ($sth_success == $th_success) {
+                            $json = array('sts' => 1, 'msg' => $sth_msg.$th_msg, 'alert' => 'success');
+                        } else {
+                            $json = array('sts' => 0, 'msg' => $sth_msg.$th_msg, 'alert' => 'danger');
+                        }
+                    }
+                }
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
 }

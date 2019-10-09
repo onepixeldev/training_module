@@ -53,7 +53,8 @@ class Conference_pmp_model extends MY_Model
     } 
 
     // GET YEAR DROPDOWN
-    public function getYearList() {		
+    public function getYearList() 
+    {		
         $this->db->select("to_char(CM_DATE, 'YYYY') AS CM_YEAR");
         $this->db->from("CALENDAR_MAIN");
         $this->db->where("to_char(CM_DATE, 'YYYY') >= to_char(SYSDATE, 'YYYY') - 15");
@@ -65,7 +66,8 @@ class Conference_pmp_model extends MY_Model
     } 
 
     // GET MONTH DROPDOWN
-    public function getMonthList() {		
+    public function getMonthList() 
+    {		
         $this->db->select("to_char(CM_DATE, 'MM') AS CM_MM, to_char(CM_DATE, 'MONTH') AS CM_MONTH");
         $this->db->from("CALENDAR_MAIN");
         $this->db->group_by("to_char(CM_DATE,'MM'), to_char(CM_DATE, 'MONTH')");
@@ -132,9 +134,7 @@ class Conference_pmp_model extends MY_Model
 
         if($mod == 'EDIT_RMIC') {
             $this->db->where("SCM_BUDGET_ORIGIN IN ('RESEARCH','RESEARCH_CONFERENCE','OTHERS')");
-        } else {
-            $this->db->where("SCM_BUDGET_ORIGIN IN ('DEPARTMENT','CONFERENCE','OTHERS')");
-        }
+        } 
 
         $q = $this->db->get();
                 
