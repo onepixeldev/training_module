@@ -19,6 +19,7 @@
             <th class="text-center">Approved TNCPI - Foreign (RM)</th>
             <th class="text-center">Approved TNCA (RM)</th>
             <th class="text-center">Approved TNCA - Foreign  (RM)</th>
+            <th class="text-center">Select</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -37,8 +38,18 @@
                         <td class="text-center col-md-1">' . number_format($rad->SCA_AMT_FOREIGN_APPROVE_RMIC, 2) . '</td>
                         <td class="text-center col-md-1">' . number_format($rad->SCA_AMT_RM_APPROVE_TNCPI, 2) . '</td>
                         <td class="text-center col-md-1">' . number_format($rad->SCA_AMT_FOREIGN_APPROVE_TNCPI, 2) . '</td>
-                        <td class="text-center col-md-1">' . number_format($rad->SCA_AMT_RM_APPROVE_TNCA, 2) . '</td>
-                        <td class="text-center col-md-1">' . number_format($rad->SCA_AMT_FOREIGN_APPROVE_TNCA, 2) . '</td>
+
+                        <td class="text-center col-md-1">
+                            <input name="sca_amt_rm_approve_tnca" class="form-control" type="number" id="sca_amt_rm_approve_tnca" value="' . $rad->SCA_AMT_RM_APPROVE_TNCA . '">
+                        </td>
+                        <td class="text-center col-md-1">
+                            <input name="sca_amt_foreign_approve_tnca" class="form-control" type="number" id="sca_amt_foreign_approve_tnca" value="' . $rad->SCA_AMT_FOREIGN_APPROVE_TNCA . '">
+                        </td>
+                        <td class="text-center col-md-1">
+							<div class="form-check text-center">
+								<input class="form-check-input position-static checkitem" type="checkbox" name="allwCode" id="allwCode" value="' . $rad->SCA_ALLOWANCE_CODE . '" aria-label="...">
+							</div>
+						</td>
 					</tr>
 					';
                 }
@@ -55,6 +66,7 @@
                         <td class="text-center col-md-1"><b>' . number_format($total_sca_amt_foreign_approve_tncpi, 2) . '</b></td>
                         <td class="text-center col-md-1"><b>' . number_format($total_sca_amt_rm_approve_tnca, 2) . '</b></td>
                         <td class="text-center col-md-1"><b>' . number_format($total_sca_amt_foreign_approve_tnca, 2) . '</b></td>
+                        <td class="text-center col-md-1"><b>' . number_format($total_sca_amt_foreign_approve_tnca, 2) . '</b></td>
                     </tr>
                     ';
 			} else {
@@ -68,4 +80,13 @@
 		</tbody>
 		</table>	
 	</div>
+
+    <br>
+    <div class="row">
+        <div class="text-right">
+            <button type="button" class="btn btn-primary btn-sm save_allw_detl_oth_tnca" data-refid="<?php echo $refid?>" data-staff-id="<?php echo $staff_id?>"><i class="fa fa-floppy-o"></i> Save</button>
+            <button type="button" class="btn btn-info btn-sm select_all_btn"><i class="fa fa-check-square-o"></i> Select All</button>
+            <button type="button" class="btn btn-info btn-sm unselect_all_btn"><i class="fa fa-square-o"></i> Unselect All</button>
+        </div>
+    </div>
 </div>

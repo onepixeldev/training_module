@@ -151,32 +151,6 @@
 
 <script>
 	var tr_row = '';
-	
-	$(document).ready(function(){
-		// navigate to selected tab
-		<?php
-        $currtab = $this->session->tabID;
-    
-        if (!empty($currtab)) {
-            if ($currtab == 's2'){
-                echo "$('.nav-tabs li:eq(1) a').tab('show');";
-            } elseif ($currtab == 's3'){
-				echo "$('.nav-tabs li:eq(2) a').tab('show');";
-			} elseif ($currtab == 's4'){
-				echo "$('.nav-tabs li:eq(3) a').tab('show');";
-			} elseif ($currtab == 's5'){
-				echo "$('.nav-tabs li:eq(4) a').tab('show');";
-			} elseif ($currtab == 's6'){
-				echo "$('.nav-tabs li:eq(5) a').tab('show');";
-			} elseif ($currtab == 's7'){
-				echo "$('.nav-tabs li:eq(6) a').tab('show');";
-			}
-            else {
-                echo "$('.nav-tabs li:eq(0) a').tab('show');";
-            }
-		}
-        ?>
-	});
 
 	$(".nav-tabs a").click(function(){
 		$(this).tab('show');
@@ -221,6 +195,8 @@
 
         $('.nav-tabs li:eq(0) a').tab('show');
 
+		$('#detail').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click Detail button from Training List tab</th></tr></thead></table></p>').show();
+
         $.ajax({
             type: 'POST',
             url: '<?php echo $this->lib->class_url('getTrainingList')?>',
@@ -237,7 +213,7 @@
         });
 	});
 
-    // TRAINING LIST FILTER
+    // TRAINING DETAILS
 	$('#training_list').on('click','.select_training_btn', function() {
         var thisBtn = $(this);
 		var td = thisBtn.closest("tr");

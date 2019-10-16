@@ -833,12 +833,12 @@ class Conference_setup_model extends MY_Model
     } 
 
     // GET YEAR DROPDOWN
-    public function getYearList() {		
-        $this->db->select("to_char(CM_DATE, 'YYYY') AS CM_YEAR");
-        $this->db->from("CALENDAR_MAIN");
-        $this->db->where("to_char(CM_DATE, 'YYYY') >= to_char(SYSDATE, 'YYYY') - 15");
-        $this->db->group_by("to_char(CM_DATE, 'YYYY')");
-        $this->db->order_by("to_char(CM_DATE, 'YYYY') DESC");
+    public function getYearList() {
+        $this->db->distinct();		
+        $this->db->select("TO_CHAR(CM_DATE_FROM, 'YYYY') AS CM_YEAR");
+        $this->db->from("CONFERENCE_MAIN");
+        $this->db->where("CM_DATE_FROM IS NOT NULL");
+        $this->db->order_by("TO_CHAR(CM_DATE_FROM, 'YYYY') DESC");
         $q = $this->db->get();
                 
         return $q->result();

@@ -815,6 +815,19 @@ class Ext_training_model extends MY_Model
        APPROVE TRAINING SETUP FOR EXTERNAL AGENCY - ATF139
     =============================================================*/
 
+    // GET YEAR DROPDOWN
+    public function getYearListAppTr() 
+    {		
+        $this->db->select("TO_CHAR(TH_DATE_FROM,'YYYY') AS CM_YEAR");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->group_by("TO_CHAR(TH_DATE_FROM,'YYYY') ");
+        $this->db->order_by("TO_CHAR(TH_DATE_FROM,'YYYY') DESC");
+        $q = $this->db->get();
+                
+        return $q->result();
+    } 
+
     // GET TRAINING LIST
     public function getTrainingList2($dept, $month, $year, $status)
     {
@@ -894,4 +907,176 @@ class Ext_training_model extends MY_Model
         return $this->db->update("STAFF_TRAINING_HEAD", $data);
     } 
     
+    /*===========================================================
+       APPROVE TRAINING SETUP FOR EXTERNAL AGENCY - ATF139
+    =============================================================*/
+
+    // GET YEAR DROPDOWN
+    public function getYearListEdtAppTr() 
+    {		
+        $this->db->select("TO_CHAR(TH_DATE_FROM,'YYYY') AS CM_YEAR");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->group_by("TO_CHAR(TH_DATE_FROM,'YYYY') ");
+        $this->db->order_by("TO_CHAR(TH_DATE_FROM,'YYYY') DESC");
+        $q = $this->db->get();
+                
+        return $q->result();
+    } 
+
+    // UPDATE TRAINING HEAD
+    public function saveEditTraining2($form, $refid)
+    {
+        $umg = $this->staff_id;
+        $staff_dept_code = "(SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE SM_STAFF_ID = '$umg')";
+        $enter_date = 'SYSDATE';
+
+        $data = array(
+            "TH_TYPE" => $form['type'],
+            "TH_CATEGORY" => $form['category'],
+            "TH_LEVEL" => $form['level'],
+            "TH_TRAINING_TITLE" => $form['training_title'],
+            "TH_TRAINING_DESC" => $form['training_description'],
+            "TH_TRAINING_VENUE" => $form['venue'],
+            "TH_TRAINING_COUNTRY" => $form['country'],
+            "TH_TRAINING_STATE" => $form['state'],
+            "TH_TOTAL_HOURS" => $form['total_hours'],
+            "TH_TRAINING_FEE" => $form['fee'],
+            "TH_INTERNAL_EXTERNAL" => $form['internal_external'],
+            "TH_SPONSOR" => $form['sponsor'],
+            "TH_MAX_PARTICIPANT" => $form['participants'],
+            "TH_OPEN" => $form['online_application'],
+            // "TH_COMPETENCY_CODE" => $form['competency_code'],
+
+            // organizer info
+            "TH_ORGANIZER_LEVEL" => $form['organizer_level'],
+            "TH_ORGANIZER_NAME" => $form['organizer_name'],
+
+            // completion info
+            "TH_EVALUATION_COMPULSORY" => $form['evaluation_compulsary'],
+            "TH_ATTENDANCE_TYPE" => $form['attendance_type'],
+            "TH_PRINT_CERTIFICATE" => $form['print_certificate'],
+
+            "TH_ENTER_BY" => $umg,
+        );
+
+        $this->db->set("TH_DEPT_CODE", $staff_dept_code, false);
+        $this->db->set("TH_ENTER_DATE", $enter_date, false);
+
+        if(!empty($form['date_from'])){
+            $date_from = "to_date('".$form['date_from']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_DATE_FROM", $date_from, false);
+        }
+
+        if(!empty($form['date_to'])){
+            $date_to = "to_date('".$form['date_to']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_DATE_TO", $date_to, false);
+        }
+
+        if(!empty($form['closing_date'])){
+            $closing_date = "to_date('".$form['closing_date']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_APPLY_CLOSING_DATE", $closing_date, false);
+        }
+
+        if(!empty($form['evaluation_period_from'])){
+            $evaluation_period_from = "to_date('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_EVALUATION_DATE_FROM", $evaluation_period_from, false);
+        }
+
+        if(!empty($form['evaluation_period_to'])){
+            $evaluation_period_to = "to_date('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
+            $this->db->set("TH_EVALUATION_DATE_TO", $evaluation_period_to, false);
+        }
+
+        $this->db->where("TH_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD", $data);
+    }
+
+    /*===========================================================
+       APPROVE TRAINING APPLICATIONS FOR EXTERNAL AGENCY - ATF141
+    =============================================================*/
+
+    // GET TRAINING LIST
+    public function getTrainingList4($dept, $month, $year)
+    {
+        $this->db->select("TH_REF_ID,
+        TH_TRAINING_TITLE,
+        TO_CHAR(TH_DATE_FROM, 'DD/MM/YYYY') TH_DATE_FROM2,
+        TO_CHAR(TH_DATE_TO, 'DD/MM/YYYY') TH_DATE_TO2,
+        TH_TRAINING_FEE
+        ");
+        $this->db->from("TRAINING_HEAD");
+
+        if(!empty($dept)) {
+            $this->db->where("TH_DEPT_CODE", $dept);
+        }
+
+        if(!empty($month)) {
+            $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'MM'),'') = '$month'");
+        }
+
+        if (!empty($year)) {
+            $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'YYYY'),'') = '$year'");
+        }
+        
+        $this->db->where("COALESCE(TH_STATUS, 'ENTRY') = 'APPROVE'");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE, TH_REF_ID");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // STAFF LIST
+    public function getTrStaffList($refid)
+    {
+        $this->db->select("STH_STAFF_ID,
+        SM_STAFF_NAME,
+        STH_STATUS,
+        SS_JOB_STATUS,
+        SJS_STATUS_DESC,
+        STH_APPLY_DATE,
+        TO_CHAR(STH_APPLY_DATE, 'DD/MM/YYYY') STH_APPLY_DATE2,
+        STH_FEE_CODE||' - '||TFS_DESC AS FEE_CODE_DESC,
+        TC_AMOUNT,
+        STH_FEE_CODE,
+        STH_RECOMMENDER_REASON
+        ");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->join("STAFF_MAIN", "SM_STAFF_ID = STH_STAFF_ID", "LEFT");
+        $this->db->join("STAFF_SERVICE", "SS_STAFF_ID = STH_STAFF_ID", "LEFT");
+        $this->db->join("STAFF_JOB_STATUS", "SJS_STATUS_CODE = SS_JOB_STATUS", "LEFT");
+        $this->db->join("TRAINING_FEE_SETUP", "TFS_CODE = STH_FEE_CODE", "LEFT");
+        $this->db->join("TRAINING_COST", "TC_COST_CODE = 'T001' AND TC_TRAINING_REFID = '$refid'", "LEFT");
+        $this->db->where("STH_STATUS = 'RECOMMEND'");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->order_by("get_staff_name(STH_STAFF_ID)");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // GET KTP
+    public function getKtp()
+    {
+        $this->db->select("DM_DIRECTOR");
+        $this->db->from("DEPARTMENT_MAIN, TRAINING_FEE_SETUP");
+        $this->db->where("DM_DEPT_CODE = TFS_DCR_APPROVE");
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // GET REGISTRAR
+    public function getRegistrar()
+    {
+        $this->db->select("DM_DIRECTOR");
+        $this->db->from("DEPARTMENT_MAIN, TRAINING_FEE_SETUP");
+        $this->db->where("DM_DEPT_CODE = TFS_REGISTRAR_APPROVE");
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
 }

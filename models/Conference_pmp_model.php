@@ -1207,8 +1207,29 @@ class Conference_pmp_model extends MY_Model
         return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
     }
 
+    // SAVE ALLOWANCE DETAIL RESEARCH / RESEARCH CONFERENCE
+    public function saveAllwDetlResearchCon($refid, $staff_id, $aca, $appTnca, $appTncaFor)
+    {
+        $curDate = 'SYSDATE';
+        $curUsr = $this->staff_id;
+
+        $data = array(
+            "SCA_AMT_RM_APPROVE_TNCA" => $appTnca,
+            "SCA_AMT_FOREIGN_APPROVE_TNCA" => $appTncaFor,
+            "SCA_UPDATE_BY" => $curUsr
+        );
+        $this->db->set("SCA_UPDATE_DATE", $curDate, false);
+
+        $this->db->where('SCA_REFID', $refid);
+        $this->db->where('SCA_STAFF_ID', $staff_id);
+        $this->db->where('SCA_ALLOWANCE_CODE', $aca);
+
+        return $this->db->update("STAFF_CONFERENCE_ALLOWANCE", $data);
+    }
+
     // SUM STAFF CONFERENCE ALLOWANCE
-    public function sumStaffConAllw($refid, $staff_id) {
+    public function sumStaffConAllw($refid, $staff_id) 
+    {
         $this->db->select("SUM(SCA_AMT_RM_APPROVE_TNCA) SCA_AMT_RM_APPROVE_TNCA");
         $this->db->from("STAFF_CONFERENCE_ALLOWANCE");
         $this->db->where("SCA_REFID", $refid);
@@ -1222,6 +1243,77 @@ class Conference_pmp_model extends MY_Model
     public function updApprvAmtTnca($refid, $staff_id, $newSumAppTnca)
     {
         $data = array(
+            "SCM_RM_TOTAL_AMT_APPROVE_TNCA" => $newSumAppTnca,
+        );
+        
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // GET SUM HOD
+    public function getSumHod($refid, $staff_id) 
+    {
+        $this->db->select("SUM(SCA_AMT_RM_APPROVE_HOD) AS SUM_HOD");
+        $this->db->from("STAFF_CONFERENCE_ALLOWANCE, CONFERENCE_ALLOWANCE");
+        $this->db->where("SCA_ALLOWANCE_CODE = CA_CODE");
+        $this->db->where("CA_BUDGET_ORIGIN_LOCAL = 'DEPARTMENT'");
+        $this->db->where("SCA_STAFF_ID", $staff_id);
+        $this->db->where("SCA_REFID", $refid);
+        $this->db->where("CA_STATUS = 'ACTIVE'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET SCM COUNTRY
+    public function getScmCountry($refid, $staff_id) 
+    {
+        $this->db->select("CM_COUNTRY_CODE");
+        $this->db->from("CONFERENCE_MAIN, STAFF_CONFERENCE_MAIN");
+        $this->db->where("CM_REFID = SCM_REFID");
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // UPDATE SCM TNCA 2
+    public function updScmTnca2($refid, $staff_id, $newSumAppTnca, $scm_total_amt_dept_apprv_hod, $budget_org, $c_code)
+    {
+        $data = array(
+            "SCM_TOTAL_AMT_DEPT_APPRV_HOD" => $scm_total_amt_dept_apprv_hod,
+            "SCM_CATEGORY_CODE" => $c_code,
+            "SCM_BUDGET_ORIGIN" => $budget_org,
+            "SCM_RM_TOTAL_AMT_APPROVE_TNCA" => $newSumAppTnca,
+        );
+        
+        $this->db->where("SCM_STAFF_ID", $staff_id);
+        $this->db->where("SCM_REFID", $refid);
+
+        return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // GET CATGORY CODE
+    public function getAssignCatCode($newSumAppTnca) 
+    {
+        $this->db->select("CC_CODE, CC_DESC");
+        $this->db->from("CONFERENCE_CATEGORY");
+        $this->db->where("COALESCE(CC_STATUS,'N') = 'Y'");
+        $this->db->where("'$newSumAppTnca' BETWEEN CC_RM_AMOUNT_FROM AND CC_RM_AMOUNT_TO");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // UPDATE SCM TNCA 1
+    public function updScmTnca1($refid, $staff_id, $newSumAppTnca, $bud_org, $c_code)
+    {
+        $data = array(
+            "SCM_CATEGORY_CODE" => $c_code,
+            "SCM_BUDGET_ORIGIN" => $bud_org,
             "SCM_RM_TOTAL_AMT_APPROVE_TNCA" => $newSumAppTnca,
         );
         
@@ -1273,7 +1365,7 @@ class Conference_pmp_model extends MY_Model
             $data = array(
                 "SCM_TNCPI_REMARK" => $form['remark'],
                 "SCM_CATEGORY_CODE" => $form['category'],
-                "SCM_TNCPI_APPROVE_BY" => $form['approved_rjc_by_tnc'],
+                "SCM_TNCPI_APPROVE_BY" => strtoupper($form['approved_rjc_by_tnc']),
                 "SCM_BUDGET_ORIGIN" => $form['budget_origin']
             );
 

@@ -2216,7 +2216,8 @@ class Conference_pmp extends MY_Controller
     }
 
     // STAFF CONFERENCE DETAILS APPROVE / VERIFY
-    public function staffConferenceDetlAppVer() {
+    public function staffConferenceDetlAppVer() 
+    {
         $staffID = $this->input->post('staffID', true);
         $refid = $this->input->post('refid', true);
         $crName = $this->input->post('crName', true);
@@ -2354,10 +2355,8 @@ class Conference_pmp extends MY_Controller
                         } else {
                             $data['app_rejc_id'] = $data['app_rejc']->SM_STAFF_ID;
                         }
-                        $data['curr_date'] = $data['app_rejc']->CURR_DATE;
                     } else {
                         $data['app_rejc_id'] = '';
-                        $data['curr_date'] = '';
                     }
     
                     $data['stf_app_rejc'] = $this->mdl_pmp->getStaffList($data['app_rejc_id']);
@@ -2366,6 +2365,12 @@ class Conference_pmp extends MY_Controller
                         $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
                     } else {
                         $data['app_rejc_name'] = '';
+                    }
+
+                    if(!empty($data['stf_detl']->SCM_TNCPI_APPROVE_DATE)) {
+                        $data['curr_date'] = $data['stf_detl']->SCM_TNCPI_APPROVE_DATE;
+                    } else {
+                        $data['curr_date'] = '';
                     }
                 } else {
                     $data['app_rejc_id'] = $data['stf_detl']->SCM_TNCPI_APPROVE_BY;
@@ -2377,6 +2382,12 @@ class Conference_pmp extends MY_Controller
                         $data['curr_date'] = $data['stf_app_rejc']->CURR_DATE;
                     } else {
                         $data['app_rejc_name'] = '';
+                        $data['curr_date'] = '';
+                    }
+
+                    if(!empty($data['stf_detl']->SCM_TNCPI_APPROVE_DATE)) {
+                        $data['curr_date'] = $data['stf_detl']->SCM_TNCPI_APPROVE_DATE;
+                    } else {
                         $data['curr_date'] = '';
                     }
                 }
@@ -2780,7 +2791,130 @@ class Conference_pmp extends MY_Controller
             $sum = $this->mdl_pmp->sumStaffConAllw($refid, $staff_id);
             if(!empty($sum)) {
                 $newSumAppTnca = $sum->SCA_AMT_RM_APPROVE_TNCA;
-                $updateSum = $this->mdl_pmp->updApprvAmtTnca($refid, $staff_id, $newSumAppTnca);
+
+                // GET SUM HOD
+                $sumHod = $this->mdl_pmp->getSumHod($refid, $staff_id);
+                if(!empty($sumHod)) {
+                    $s_hod = $sumHod->SUM_HOD;
+                } else {
+                    $s_hod = '';
+                }
+
+                // GET SCM COUNTRY
+                $getCountry = $this->mdl_pmp->getScmCountry($refid, $staff_id);
+                if(!empty($getCountry)) {
+                    $c_scm = $getCountry->CM_COUNTRY_CODE;
+                } else {
+                    $c_scm = '';
+                }
+
+                // GET SCM DETL
+                $scm_detl = $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
+                if(!empty($scm_detl)) {
+                    $prev_budget = $scm_detl->SCM_BUDGET_ORIGIN_PREV;
+                    $budget_org = $scm_detl->SCM_BUDGET_ORIGIN;
+                    $scm_total_amt_dept_apprv_hod = $scm_detl->SCM_TOTAL_AMT_DEPT_APPRV_HOD;
+                } else {
+                    $prev_budget = '';
+                    $budget_org = '';
+                    $scm_total_amt_dept_apprv_hod = '';
+                }
+
+                if(($prev_budget == 'RESEARCH' || $prev_budget == 'RESEARCH_CONFERENCE') && $budget_org == 'CONFERENCE' && $c_scm == 'MYS') {
+                    if(!empty($scm_total_amt_dept_apprv_hod)) {
+                        $scm_total_amt_dept_apprv_hod = $s_hod;
+                    }
+                    $budget_org = 'DEPARTMENT';
+                }
+
+                if(!empty($newSumAppTnca)) {
+                    // GET CATGORY CODE
+                    $cat_code = $this->mdl_pmp->getAssignCatCode($newSumAppTnca);
+                    if(!empty($cat_code)) {
+                        $c_code = $cat_code->CC_CODE;
+                    } else {
+                        $c_code = '';
+                    }
+                }
+
+                $updateSum = $this->mdl_pmp->updScmTnca2($refid, $staff_id, $newSumAppTnca, $scm_total_amt_dept_apprv_hod, $budget_org, $c_code);
+
+                if ($updateSum > 0) {
+                    $successUpdSum++;
+                    $successUpdSumMsg = nl2br("\r\n").'Record has been saved (Staff conference)';
+                } else {
+                    $successUpdSum = 0;
+                    $successUpdSumMsg = nl2br("\r\n").'Fail to save record (Staff conference)';
+                }
+            }
+
+            if($success == $successSave && $successUpdSum > 0) {
+                $json = array('sts' => 1, 'msg' => $saveMsg.$successUpdSumMsg, 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => $saveMsg.$successUpdSumMsg, 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // SAVE ALLOWANCE DETAIL RESEARCH / RESEARCH CONFERENCE
+    public function saveAllwDetlResearchCon()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $allwCodeArr = $this->input->post('allwCodeArr', true);
+        $appTncaArr = $this->input->post('appTncaArr', true);
+        $appTncaForArr = $this->input->post('appTncaForArr', true);
+        // var_dump($refid);
+        $success = 0;
+        $successSave = 0;
+        $successUpdSum = 0;
+
+        $saveMsg = '';
+        $successUpdSumMsg = '';
+
+        if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
+            foreach ($allwCodeArr as $key => $aca) {
+                $success++;
+                $appTnca = $appTncaArr[$key];
+                $appTncaFor = $appTncaForArr[$key];
+
+                $save = $this->mdl_pmp->saveAllwDetlResearchCon($refid, $staff_id, $aca, $appTnca, $appTncaFor);
+
+                if ($save > 0) {
+                    $successSave++;
+                    $saveMsg = 'Record has been saved (Conference allowance for staff)';
+                } else {
+                    $successSave = 0;
+                    $saveMsg = 'Fail to save record (Conference allowance for staff)';
+                }
+            }
+
+            $sum = $this->mdl_pmp->sumStaffConAllw($refid, $staff_id);
+            if(!empty($sum)) {
+                $newSumAppTnca = $sum->SCA_AMT_RM_APPROVE_TNCA;
+
+                // SET BUDGET ORIGNIN
+                if($newSumAppTnca == 0) {
+                    $bud_org = 'RESEARCH';
+                } else {
+                    $bud_org = 'RESEARCH_CONFERENCE';
+                }
+
+                // GET CATGORY CODE
+                $cat_code = $this->mdl_pmp->getAssignCatCode($newSumAppTnca);
+                if(!empty($cat_code)) {
+                    $c_code = $cat_code->CC_CODE;
+                } else {
+                    $c_code = '';
+                }
+
+                $updateSum = $this->mdl_pmp->updScmTnca1($refid, $staff_id, $newSumAppTnca, $bud_org, $c_code);
 
                 if ($updateSum > 0) {
                     $successUpdSum++;
@@ -4720,7 +4854,7 @@ class Conference_pmp extends MY_Controller
             'staff_id' => 'required|max_length[20]',
             'staff_name' => 'max_length[100]',
             'conference_title' => 'required|max_length[40]',
-            'conference_name' => 'max_length[100]',
+            'conference_name' => 'max_length[4000]',
             'date_from' => 'max_length[40]',
             'date_to' => 'max_length[40]',
             'research_project' => 'required|max_length[40]'

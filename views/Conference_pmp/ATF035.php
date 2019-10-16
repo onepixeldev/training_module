@@ -1215,6 +1215,8 @@
 									},
 									success: function(res) {
 										$('#details').html(res);
+										$('#modDetl').val('TNCA');
+
 										var budget = $('.research_info').data();
 										// console.log(budget.budgetOrigin);
 										if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
@@ -1353,6 +1355,8 @@
 									},
 									success: function(res) {
 										$('#details').html(res);
+										$('#modDetl').val('TNCA');
+
 										var budget = $('.research_info').data();
 										// console.log(budget.budgetOrigin);
 										if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
@@ -1388,6 +1392,126 @@
 											500,
 											'linear'
 										)
+									}
+								});
+							} else {
+								$.alert({
+									title: 'Alert!',
+									content: res.msg,
+									type: 'red',
+								});
+								$('.btn').removeAttr('disabled');
+							}
+						}
+					});			
+		        },
+		        cancel: function () {
+		            $.alert('Saving changes cancelled!');
+		        }
+		    }
+		});
+	});
+
+	// SAVE ALLOWANCE DETAIL RESEARCH / RESEARCH_CONFERENCE
+	$('#details').on('click','.save_allw_detl_oth_tnca', function(){
+		var thisBtn = $(this);
+		var refid = $('.save_allw_detl_oth_tnca').data("refid");
+		var staff_id = $('.save_allw_detl_oth_tnca').data("staff-id");
+		var mod = 'TNCA';
+		
+		var allwCodeArr = [];
+		var appTncaArr = [];
+		var appTncaForArr = [];
+		var selectedID = 0;
+		//alert(remark+' '+refid);
+
+		$.confirm({
+		    title: 'Save changes?',
+		    content: 'Press <b>YES</b> to continue',
+			type: 'blue',
+		    buttons: {
+		        yes: function () {
+					$('.btn').attr('disabled', 'disabled');
+					$('.checkitem:checked').each(function() {
+						// check the checked property 
+						var allwCode = $(this).val();
+
+						appTnca = $(this).closest('tr').find('[name="sca_amt_rm_approve_tnca"]').val();
+						appTncaFor = $(this).closest('tr').find('[name="sca_amt_foreign_approve_tnca"]').val();
+						++selectedID;
+						
+						allwCodeArr.push(allwCode);
+						appTncaArr.push(appTnca);
+						appTncaForArr.push(appTncaFor);
+					});
+
+					if (selectedID == 0) {
+						$('.btn').removeAttr('disabled');
+						$.alert({
+							title: 'Alert!',
+							content: 'You must select at least one record to continue.',
+							type: 'red'
+						});
+						return;
+					}
+
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo $this->lib->class_url('saveAllwDetlResearchCon')?>',
+						data: {'refid' : refid, 'staff_id' : staff_id, 'allwCodeArr' : allwCodeArr, 'appTncaArr' : appTncaArr, 'appTncaForArr' : appTncaForArr},
+						dataType: 'JSON',
+						success: function(res) {
+							if (res.sts==1) {
+								$.alert({
+									title: 'Success!',
+									content: res.msg,
+									type: 'green',
+								});
+								$('.btn').removeAttr('disabled');
+
+								// REFRESH 
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
+									data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
+									beforeSend: function() {
+										$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										$('#details').html(res);
+										$('#modDetl').val('TNCA');
+										var budget = $('.research_info').data();
+										// console.log(budget.budgetOrigin);
+										if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {
+											// alert('show');
+											$('#details #rsh_btn').removeClass('hidden');
+											
+											$('#details #allw_detl').removeClass('hidden');
+											$('#details #allw_detl2').addClass('hidden');
+										} else {
+											$('#details #rsh_btn').addClass('hidden');
+											
+											$('#details #allw_detl2').removeClass('hidden');
+											$('#details #allw_detl').addClass('hidden');
+											// alert('hide');
+										}
+										
+										// ALLOWANCE DETAIL RESEARCH / RESEARCH_CONFERENCE
+										$.ajax({
+											type: 'POST',
+											url: '<?php echo $this->lib->class_url('allowanceDetlResearch')?>',
+											data: {'staff_id' : staff_id, 'refid' : refid},
+											success: function(res) {
+												$('#details #allowance_detl').html(res);
+												$('html, body').animate(
+													{
+													scrollTop: $('#details #allowance_detl').offset().top,
+													},
+													500,
+													'linear'
+												)
+											}
+										});
 									}
 								});
 							} else {
@@ -1469,6 +1593,7 @@
 									},
 									success: function(res) {
 										$('#details').html(res);
+										$('#modDetl').val('TNCA');
 										var budget = $('.research_info').data();
 										// console.log(budget.budgetOrigin);
 										if(budget.budgetOrigin == 'RESEARCH' || budget.budgetOrigin == 'RESEARCH_CONFERENCE') {

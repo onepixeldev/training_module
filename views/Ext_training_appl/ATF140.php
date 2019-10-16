@@ -1,4 +1,4 @@
-<?php echo $this->lib->title('Training / Training Setup for External Agency') ?>
+<?php echo $this->lib->title('Training / Edit Approved Training Setup for External Agency', $screen_id) ?>
 
 <section id="widget-grid" class="">
     <div class="jarviswidget  jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" role="widget">
@@ -6,7 +6,7 @@
             <div class="jarviswidget-ctrls" role="menu">
                 <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" data-placement="bottom"><i class="fa fa-expand "></i></a>
             </div>
-            <h2>ATF138 - Training Setup for External Agency</h2>				
+            <h2>ATF140 - Edit Approved Training Setup for External Agency</h2>				
             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
         </header>
         <div role="content">
@@ -26,12 +26,72 @@
                             <!-- This area used as dropdown edit box -->
                         </div>
                         <!-- end widget edit box -->
+                        <div class="widget-body">
+                            
+							<div class="row">
+								<div class="col-sm-3">
+									<div class="form-group text-right">
+										<label><b>Department</b></label>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group text-left">
+										<?php echo form_dropdown('sDept', $dept_list, $curr_dept, 'class="form-control listFilter" id="sDept"'); ?>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="text-left">   
+										&nbsp;
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-sm-3">
+									<div class="form-group text-right">
+										<label><b>Month</b></label>
+									</div>
+								</div>
+								<div class="col-sm-2">
+									<div class="form-group text-left">
+										<?php echo form_dropdown('sMonth', $month_list, '', 'class="form-control listFilter" id="sMonth"'); ?>
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-sm-3">
+									<div class="form-group text-right">
+										<label><b>Year</b></label>
+									</div>
+								</div>
+								<div class="col-sm-2">
+									<div class="form-group text-left">
+										<?php echo form_dropdown('sYear', $year_list, $cur_year, 'class="form-control listFilter" id="sYear"'); ?>
+									</div>
+								</div>
+							</div>
+
+                            <div class="row">
+								<div class="col-sm-3">
+									<div class="form-group text-right">
+										<label><b>Status</b></label>
+									</div>
+								</div>
+								<div class="col-sm-2">
+									<div class="form-group text-left">
+										<?php echo form_dropdown('sStatus', array(''=>'---Please select---', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE', 'AMEND'=>'AMEND'), 'APPROVE', 'class="form-control listFilter" id="sStatus"'); ?>
+									</div>
+								</div>
+							</div>
+                            
+
                             <ul id="myTab1" class="nav nav-tabs bordered">
                                 <li class="active">
                                     <a style="color:#000 !important" href="#s1" data-toggle="tab" aria-expanded="true">Training List</a>
                                 </li>
                                 <li class="">
-                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Add/Edit Training Info</a>
+                                    <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Details</a>
                                 </li>
                                 <li class="">
                                     <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">Training Cost</a>
@@ -45,15 +105,23 @@
                             </ul>
 							<!-- myTabContent1 -->
                             <div id="myTabContent1" class="tab-content padding-10">
+
                                 <div class="tab-pane fade active in" id="s1">
 									<div id="training_list">
-										<div class="text-center" id="loader">
-										</div>
 									</div>
                                 </div>
 
                                 <div class="tab-pane fade" id="s2">
-									<div id="add_edit_training">	
+									<div id="add_edit_training">
+										<p>
+											<table class="table table-bordered table-hover">
+												<thead>
+												<tr>
+													<th class="text-center">Please select training from Training List</th>
+												</tr>
+												</thead>
+											</table>
+										</p>	
 									</div>
                                 </div>
 
@@ -111,6 +179,7 @@
     </div>
 </section>
 
+
 <!-- ADD / EDIT / DELETE page will be displayed here -->
 <div class="modal fade" id="myModalis" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-lg">
@@ -132,7 +201,7 @@
 <!-- end ADD / EDIT / DELETE -->
 
 <script>
-	var dt_row = '';
+	var tr_row = '';
 	
 	$(document).ready(function(){
 		
@@ -156,239 +225,166 @@
     });
 
     // POPULATE TRAINING LIST
+    var dept = $('#sDept').val();
+    var month = $('#sMonth').val();
+    var year = $('#sYear').val();
+    var status = $('#sStatus').val();
 	$.ajax({
 		type: 'POST',
-		url: '<?php echo $this->lib->class_url('trainingList')?>',
-		data: '',
+		url: '<?php echo $this->lib->class_url('getTrainingList3')?>',
+		data: {'dept' : dept, 'month' : month, 'year' : year, 'status' : status},
 		beforeSend: function() {
-			$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 		},
 		success: function(res) {
-			$('#training_list').html(res);
-			dt_row = $('#tbl_list_tl').DataTable({
+            $('#training_list').html(res);
+			tr_row = $('#tbl_tr_list').DataTable({
 				"ordering":false,
 			});
-		},
-		complete: function(){
-			$('#loader').hide();
-		},
-    });
-
-	// ADD NEW TRAINING TAB
-	$('#add_edit_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-	$.ajax({
-		type: 'POST',
-		url: '<?php echo $this->lib->class_url('addTraining')?>',
-		data: '',
-		success: function(res) {
-			$('#add_edit_training').html(res);
 		}
     });
-    
-	// ADD NEW TRAINING 
-	$('#training_list').on('click','.add_tr', function(){
 
-		$('#add_edit_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		$('.nav-tabs li:eq(1) a').tab('show');
+	// TRAINING LIST FILTER
+	$('.listFilter').change(function() {
+		var dept = $('#sDept').val();
+        var month = $('#sMonth').val();
+        var year = $('#sYear').val();
+        var status = $('#sStatus').val();
 
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('addTraining')?>',
-			data: '',
-			success: function(res) {
-				$('#add_edit_training').html(res);
-			}
-		});
+        if(status == '') {
+            $.alert({
+                title: 'Alert!',
+                content: 'Please select <b>Status</b> filter',
+                type: 'red',
+            });
+
+            return;
+        }
+
+        $('.nav-tabs li:eq(0) a').tab('show');
+
+		$('#add_edit_training').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select training from Training List</th></tr></thead></table></p>').show();
+		$('#training_cost').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select training from Training List</th></tr></thead></table></p>').show();
+		$('#group_module_setup').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select training from Training List</th></tr></thead></table></p>').show();
+		$('#cpd_setup').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please select training from Training List</th></tr></thead></table></p>').show();
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo $this->lib->class_url('getTrainingList3')?>',
+            data: {'dept' : dept, 'month' : month, 'year' : year, 'status' : status},
+            beforeSend: function() {
+                $('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+            },
+            success: function(res) {
+                $('#training_list').html(res);
+                tr_row = $('#tbl_tr_list').DataTable({
+                    "ordering":false,
+                });
+            }
+        });
 	});
 
-	// EVALUATION NOT/REQUIRED
-	$('#add_edit_training').on('change','#evaluation', function() {
-		var evaluation = $(this).val();
-		$('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+    // TRAINING DETAILS
+	$('#training_list').on('click','.select_training_btn', function() {
+        var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var refid = td.find(".refid").text();
+		var title = td.find(".title").text();
 
-		if(evaluation == 'Y') {
-			$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+        $('.nav-tabs li:eq(1) a').tab('show');
 
-			$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo $this->lib->class_url('trDetl')?>',
+            // data: {'dept' : dept, 'month' : month, 'year' : year, 'status' : status},
+            beforeSend: function() {
+                $('#detail').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+            },
+            success: function(res) {
+                $('#detail').html(res);
 
-			$('#evaPTo').html('To <b><font color="red">* </font></b>');
-		} else {
-			$('#evaMsg').html('');
+                // TRAINING DETAILS
+                $('#detl1').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo $this->lib->class_url('editTraining')?>',
+                    data: {'refid':refid},
+                    success: function(res) {
+                        $('#detl1').html(res);
 
-			$('#evaPFrom').html('From');
+                        $("#detl1 :input").prop("disabled", true);
+                        $("#detl1 .file_att").removeAttr("disabled");
+                        $("#detl1 :button").addClass('hidden');
+                        $("#detl1 .file_att").removeClass('hidden');
+                        $("#detl1 #alert").addClass('hidden');
+                        $("#detl1 .modal-header").addClass('hidden');
+                    }
+                });
 
-			$('#evaPTo').html('To');
-		}
-		$('#evaLoader').html('');
+                // TRAINING COST
+                $('#detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo $this->lib->class_url('trainingCost')?>',
+                    data: {'refid':refid},
+                    success: function(res) {
+                        $('#detl2').html(res);
+
+                        $("#detl2 :button").addClass('hidden');
+                    }
+                });
+
+                // TARGET GROUP & MODULE SETUP
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo site_url('training/training_application/targetGroup')?>',
+                    data: {'trRefID' : refid, 'tName' : title},
+                    beforeSend: function() {
+                        $('#detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                    },
+                    success: function(res) {
+                        $('#detl3').html(res);
+
+                        $("#detl3 :button").addClass('hidden');
+                        
+                        // MODULE SETUP
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo site_url('training/training_application/moduleSetup')?>',
+                            data: {'tsRefID' : refid},
+                            beforeSend: function() {
+                                $('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                            },
+                            success: function(res) {
+                                $('#module_setup').html(res);
+
+                                $("#module_setup :button").addClass('hidden');
+                            }
+                        });
+                    }
+                });
+
+                // CPD SETUP
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo site_url('training/training_application/cpdSetup')?>',
+                    data: {'tsRefID' : refid, 'tName' : title},
+                    beforeSend: function() {
+                        $('#detl4').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                    },
+                    success: function(res) {
+                        $('#detl4').html(res);
+
+                        $("#detl4 :button").addClass('hidden');
+                    }
+                });
+
+            }
+        });
+
 	});
-		
-	// POPULATE ORGANIZER INFO IN ADD NEW TRAINING FORM
-	$('#add_edit_training').on('change', '#orginfo', function() {
-		var organizerCode = $(this).val();
-		$('#faspinner2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-		$('#orgAddress').html('');
-		$('#orgPostcode').html('');
-		$('#orgCity').html('');
-		$('#orgState').html('');
-		$('#orgCountry').html('');
-	
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('organizerInfo')?>',
-			data: {'orgCode' : organizerCode},
-			dataType: 'json',
-			success: function(res) {
-				if (res.sts == 1) {
-					$('#faspinner2').html('');
-					$('#orgAddress').val(res.orgInfo.TOH_ADDRESS);
-					$('#orgPostcode').val(res.orgInfo.TOH_POSTCODE);
-					$('#orgCity').val(res.orgInfo.TOH_CITY);
-					$('#orgState').val(res.orgInfo.SM_STATE_DESC);
-					$('#orgCountry').val(res.orgInfo.CM_COUNTRY_DESC);
-				}			
-			}
-		});
-	});
 
-	// SAVE INSERT TRAINING
-	$('#add_edit_training').on('click', '.add_tr', function (e) { 
-		e.preventDefault();
-		var data = $('#addTraining').serialize();
-		msg.wait('#alert');
-		msg.wait('#alertFooter');
-		//alert('TR INFO');
-		
-		$('.btn').attr('disabled', 'disabled');
-		$.ajax({
-			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveNewTraining')?>',
-			data: data,
-			dataType: 'JSON',
-			success: function(res) {
-				msg.show(res.msg, res.alert, '#alert');
-				msg.show(res.msg, res.alert, '#alertFooter');
-				
-				if (res.sts == 1) {
-
-					setTimeout(function () {
-						var refid = res.refid;
-						var title = res.title;
-						
-					    // EDIT TRAINING
-						$('#add_edit_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-						$('.nav-tabs li:eq(1) a').tab('show');
-
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('editTraining')?>',
-							data: {'refid':refid},
-							success: function(res) {
-								$('#add_edit_training').html(res);
-
-								var evaluation = $("#evaluation").val();
-								$('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-
-								if(evaluation == 'Y') {
-									$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
-
-									$('#evaPFrom').html('From <b><font color="red">* </font></b>');
-
-									$('#evaPTo').html('To <b><font color="red">* </font></b>');
-								} else {
-									$('#evaMsg').html('');
-
-									$('#evaPFrom').html('From');
-
-									$('#evaPTo').html('To');
-								}
-								$('#evaLoader').html('');
-							}
-						});
-
-						// TRAINING COST
-						$('#training_cost').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('trainingCost')?>',
-							data: {'refid':refid},
-							success: function(res) {
-								$('#training_cost').html(res);
-							}
-						});
-
-						// TARGET GROUP & MODULE SETUP
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo site_url('training/training_application/targetGroup')?>',
-							data: {'trRefID' : refid, 'tName' : title},
-							beforeSend: function() {
-								$('#group_module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#group_module_setup').html(res);
-
-								$.ajax({
-									type: 'POST',
-									url: '<?php echo site_url('training/training_application/moduleSetup')?>',
-									data: {'tsRefID' : refid},
-									beforeSend: function() {
-										$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-									},
-									success: function(res) {
-										$('#module_setup').html(res);
-									}
-								});
-							}
-						});
-		
-						// CPD SETUP
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo site_url('training/training_application/cpdSetup')?>',
-							data: {'tsRefID' : refid, 'tName' : title},
-							beforeSend: function() {
-								$('#cpd_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#cpd_setup').html(res);
-							}
-						});
-
-
-						// POPULATE TRAINING LIST
-						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('trainingList')?>',
-							data: '',
-							beforeSend: function() {
-								$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#training_list').html(res);
-								dt_row = $('#tbl_list_tl').DataTable({
-									"ordering":false,
-								});
-							},
-							complete: function(){
-								$('#loader').hide();
-							},
-						});
-						
-					}, 2000);
-					$('.btn').removeAttr('disabled');
-				} else {
-					$('.btn').removeAttr('disabled');
-				}
-			},
-			error: function() {
-				$('.btn').removeAttr('disabled');
-				msg.danger('Please contact administrator.', '#alert');
-				msg.danger('Please contact administrator.', '#alertFooter');
-			}
-		});	
-	});
-	
-	// EDIT TRAINING
+    // EDIT TRAINING
 	$('#training_list').on('click','.upd_tr', function(){
 		var thisBtn = $(this);
 		var td = thisBtn.closest("tr");
@@ -513,7 +509,7 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('saveEditTraining')?>',
+			url: '<?php echo $this->lib->class_url('saveEditTraining2')?>',
 			data: data,
 			dataType: 'JSON',
 			success: function(res) {
@@ -523,29 +519,26 @@
 				if (res.sts == 1) {
 
 					setTimeout(function () {
-						var refid = res.refid;
-						var title = res.title;
+                        var refid = res.refid;
+                        var title = res.title;
 
-						$('.nav-tabs li:eq(1) a').tab('show');
-
-						// POPULATE TRAINING LIST
+                        $('.nav-tabs li:eq(1) a').tab('show');
+                        
+                        // POPULATE TRAINING LIST 3
 						$.ajax({
-							type: 'POST',
-							url: '<?php echo $this->lib->class_url('trainingList')?>',
-							data: '',
-							beforeSend: function() {
-								$('#loader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
-							},
-							success: function(res) {
-								$('#training_list').html(res);
-								dt_row = $('#tbl_list_tl').DataTable({
-									"ordering":false,
-								});
-							},
-							complete: function(){
-								$('#loader').hide();
-							},
-						});
+                            type: 'POST',
+                            url: '<?php echo $this->lib->class_url('getTrainingList3')?>',
+                            data: {'dept' : dept, 'month' : month, 'year' : year, 'status' : status},
+                            beforeSend: function() {
+                                $('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                            },
+                            success: function(res) {
+                                $('#training_list').html(res);
+                                tr_row = $('#tbl_tr_list').DataTable({
+                                    "ordering":false,
+                                });
+                            }
+                        });
 						
 						// EDIT TRAINING
 						$('#add_edit_training').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
@@ -1848,4 +1841,5 @@
 			}
 		});	
 	});
+	
 </script>

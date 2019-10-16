@@ -42,7 +42,73 @@ class Ext_training_appl extends MY_Controller
         $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
 
         //get year dd list
-        $data['year_list'] = $this->dropdown($this->et_mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        $data['year_list'] = $this->dropdown($this->et_mdl->getYearListAppTr(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->et_mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        $usr_dept = $this->et_mdl->currentUsrDept();
+        if(!empty($usr_dept)) {
+            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+            if($data['curr_dept'] == 'BSM') {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            } else {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            }
+        } else {
+            $data['curr_dept'] = '';
+            $data['dept_list'] = array(''=>'');
+        }
+
+        $this->render($data);
+    }
+
+    // EDIT APPROVED TRAINING SETUP FOR EXTERNAL AGENCY
+    public function ATF140()
+    {
+        $data['month'] = $this->et_mdl->getCurDate();
+        $data['year'] = $this->et_mdl->getCurDate();
+
+        $data['cur_month'] = $data['month']->SYSDATE_MM;  
+        $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
+
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->et_mdl->getYearListEdtAppTr(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->et_mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        $usr_dept = $this->et_mdl->currentUsrDept();
+        if(!empty($usr_dept)) {
+            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+            if($data['curr_dept'] == 'BSM') {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            } else {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            }
+        } else {
+            $data['curr_dept'] = '';
+            $data['dept_list'] = array(''=>'');
+        }
+
+        $this->render($data);
+    }
+
+    // APPROVE TRAINING APPLICATIONS FOR EXTERNAL AGENCY
+    public function ATF141()
+    {
+        $data['month'] = $this->et_mdl->getCurDate();
+        $data['year'] = $this->et_mdl->getCurDate();
+
+        $data['cur_month'] = $data['month']->SYSDATE_MM;  
+        $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
+
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->et_mdl->getYearListAppTr(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         
         //get month dd list
         $data['month_list'] = $this->dropdown($this->et_mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
@@ -427,6 +493,7 @@ class Ext_training_appl extends MY_Controller
         // get parameter values
         $form = $this->input->post('form', true);
         $refid = $form['refid'];
+        $title = $form['training_title'];
         $msgTH = '';
         $msgTHD = '';
         $successTH = 0;
@@ -524,7 +591,7 @@ class Ext_training_appl extends MY_Controller
             }
 
             if($successTH == 1 && $successTHD == 1) {
-                $json = array('sts' => 1, 'msg' => $msgTH.$msgTHD, 'alert' => 'success', 'refid' => $refid);
+                $json = array('sts' => 1, 'msg' => $msgTH.$msgTHD, 'alert' => 'success', 'refid' => $refid, 'title' => $title);
             } else {
                 $json = array('sts' => 0, 'msg' => $msgTH.$msgTHD, 'alert' => 'danger');
             }
@@ -974,5 +1041,243 @@ class Ext_training_appl extends MY_Controller
             $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
         }
         echo json_encode($json);
+    }
+
+    /*===========================================================
+       APPROVE TRAINING SETUP FOR EXTERNAL AGENCY - ATF139
+    =============================================================*/
+
+    // TRAINING LIST 3
+    public function getTrainingList3()
+    {   
+        // selected filter value
+        $dept = $this->input->post('dept', true);
+        $month = $this->input->post('month', true);
+        $year = $this->input->post('year', true);
+        $status = $this->input->post('status', true);
+
+        // get available records
+        $data['tr_list'] = $this->et_mdl->getTrainingList2($dept, $month, $year, $status);
+
+        $this->render($data);
+    }
+
+    // SAVE EDIT TRAINING 
+    public function saveEditTraining2()
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+        $refid = $form['refid'];
+        $title = $form['training_title'];
+        $msgTH = '';
+        $msgTHD = '';
+        $successTH = 0;
+        $successTHD = 1;
+
+        // module setup
+        $coor = strtoupper($form['coordinator']);
+        $coorSeq = $form['coordinator_sector'];
+        $coorContact = $form['phone_number'];
+        $evaluationTHD = $form['evaluation'];
+        $attention = $form['attention'];
+
+        // evaluation period not/required
+        if($evaluationTHD == 'Y') {
+            $evaluationFrReq = 'required|max_length[30]';
+            $evaluationToReq = 'required|max_length[30]';
+        } else {
+            $evaluationFrReq = 'max_length[30]';
+            $evaluationToReq = 'max_length[30]';
+        }
+
+        // form / input validation
+        $rule = array(
+            'refid' => 'required|max_length[20]', 
+            'type' => 'required|max_length[100]', 
+            'category' => 'required|max_length[200]',
+            'level' => 'required|max_length[10]', 
+            'training_title' => 'required|max_length[100]', 
+            'training_description' => 'max_length[500]', 
+            'venue' => 'max_length[100]',
+            'country' => 'max_length[10]', 
+            'state' => 'max_length[10]', 
+            'date_from' => 'required|max_length[11]',
+            'date_to' => 'required|max_length[11]', 
+            'total_hours' => 'required|max_length[12]', 
+            'fee' => 'numeric|max_length[12]', 
+            'internal_external' => 'required|max_length[20]', 
+            'sponsor' => 'max_length[100]',
+            'participants' => 'max_length[11]', 
+            'online_application' => 'max_length[1]',
+            'closing_date' => 'max_length[11]', 
+            // 'competency_code' => 'max_length[10]', 
+            'evaluation_period_from' => $evaluationFrReq,
+            'evaluation_period_to' => $evaluationToReq, 
+            'attention' => 'max_length[500]', 
+
+            // TRAINING_HEAD_DETL
+            'coordinator' => 'max_length[10]', 
+            'coordinator_sector' => 'max_length[10]',
+            'phone_number' => 'max_length[15]', 
+            'evaluation' => 'max_length[1]', 
+            
+            // organizer info
+            'organizer_level' => 'max_length[10]', 
+            'organizer_name' => 'max_length[100]', 
+            'attention' => 'max_length[200]',
+
+            // completion info
+            'evaluation_compulsary' => 'max_length[1]', 
+            'attendance_type' => 'max_length[20]', 
+            'print_certificate' => 'max_length[1]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        // Begin Insert New Record
+        if ($status == 1) {
+
+            // UPDATE TRAINING HEAD
+            $update = $this->et_mdl->saveEditTraining2($form, $refid);
+            if($update > 0) {
+                $msgTH = "Record has been saved (Training)";
+                $successTH = 1;
+            } else {
+                $msgTH = "Fail to save record (Training)";
+                $successTH = 0;
+            }
+
+            // UPDATE TRAINING HEAD DETL
+            if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD) || !empty($attention)) {
+                $update2 = $this->et_mdl->saveUpdTrainingDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD, $attention);
+
+                if($update2 > 0) {
+                    $msgTHD = nl2br("\r\n").'<b><font color="green"><i class="fa fa-check"></i> Success </font></b>'."Record has been saved (Training Detail)";
+                    $successTHD = 1;
+                } else {
+                    $msgTHD = nl2br("\r\n").'<b><font color="white"><i class="fa fa-times"></i> Failed </font></b>'."Fail to save record (Training Detail)";
+                    $successTHD = 0;
+                }
+            } else {
+                $msgTHD = '';
+                $successTHD = 1;
+            }
+
+            if($successTH == 1 && $successTHD == 1) {
+                $json = array('sts' => 1, 'msg' => $msgTH.$msgTHD, 'alert' => 'success', 'refid' => $refid, 'title' => $title);
+            } else {
+                $json = array('sts' => 0, 'msg' => $msgTH.$msgTHD, 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+        
+        echo json_encode($json);
+    }
+
+    /*===========================================================
+       APPROVE TRAINING APPLICATIONS FOR EXTERNAL AGENCY - ATF141
+    =============================================================*/
+
+    // TRAINING LIST
+    public function getTrainingList4()
+    {   
+        // selected filter value
+        $dept = $this->input->post('dept', true);
+        $month = $this->input->post('month', true);
+        $year = $this->input->post('year', true);
+
+        // get available records
+        $data['tr_list'] = $this->et_mdl->getTrainingList4($dept, $month, $year);
+
+        $this->render($data);
+    }
+
+    // STAFF LIST
+    public function trStaffList()
+    {   
+        // selected filter value
+        $refid = $this->input->post('refid', true);
+
+        $trListArr = array();
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $tr_detl = $this->et_mdl->getTrainingHead($refid);
+            if(!empty($tr_detl)) {
+                $data['tr_title'] = $tr_detl->TH_TRAINING_TITLE;
+            } else {
+                $data['tr_title'] = '';
+            }
+        } else {
+            $data['refid'] = '';
+            $data['tr_title'] = '';
+        }
+
+        // get available records
+        $data['tr_list'] = $this->et_mdl->getTrStaffList($refid);
+
+        foreach($data['tr_list'] as $tl) 
+        {   
+            $sid = $tl->STH_STAFF_ID;
+            $sname = $tl->SM_STAFF_NAME;
+            $sjs_desc = $tl->SJS_STATUS_DESC;
+            $status = $tl->STH_STATUS;
+            $appl_date = $tl->STH_APPLY_DATE2;
+            $fee_code_desc = $tl->FEE_CODE_DESC;
+            $cost = $tl->TC_AMOUNT;
+            $remark = $tl->STH_RECOMMENDER_REASON;
+
+            $fee_code = $tl->STH_FEE_CODE;
+
+            // GET STAFF KTP
+            $get_ktp = $this->et_mdl->getKtp();
+            if(!empty($get_ktp)) {
+                $ktp = $get_ktp->DM_DIRECTOR;
+            } else {
+                $ktp = '';
+            }
+
+            // GET STAFF REGISTRAR
+            $get_registrar = $this->et_mdl->getRegistrar();
+            if(!empty($get_registrar)) {
+                $registrar = $get_registrar->DM_DIRECTOR;
+            } else {
+                $registrar = '';
+            }
+
+            // CHECK KTP
+            if($sid == $ktp && ($fee_code == '001' || $fee_code == '002')) {
+                $check_ktp = 'YES';
+            } else {
+                $check_ktp = 'NO';
+            }
+
+            // CHECK REGISTRAR
+            if($sid == $registrar && ($fee_code == '001' || $fee_code == '002')) {
+                $check_reg = 'YES';
+            } else {
+                $check_reg = 'NO';
+            }
+
+            $trListArr [] = array('STAFF_ID'=>$sid,
+            'sname'=>$sname,
+            'sjs_desc'=>$sjs_desc,
+            'status'=>$status,
+            'appl_date'=>$appl_date,
+            'fee_code_desc'=>$fee_code_desc,
+            'cost'=>$cost,
+            'remark'=>$remark,
+            'KTP'=>$check_ktp, 
+            'REG'=>$check_reg);
+        }
+
+        $data['stf_list'] = $trListArr;
+
+        $this->render($data);
     }
 }
