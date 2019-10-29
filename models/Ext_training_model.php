@@ -1079,4 +1079,700 @@ class Ext_training_model extends MY_Model
         
         return $q->row();
     }
+
+    // STH DETL
+    public function getSTHDetl($refid, $staff_id)
+    {
+        $this->db->select("STH_STAFF_ID,
+        STH_TRAINING_REFID,
+        STH_FEE_CODE,
+        STH_STATUS,
+        ");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->where("STH_STAFF_ID", $staff_id);
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // EVALUATOR DETL
+    public function getEvaDetl($refid, $staff_id)
+    {
+        $this->db->select("STH_VERIFY_BY");
+        $this->db->from("STAFF_TRAINING_HEAD, TRAINING_HEAD_DETL, TRAINING_HEAD");
+        $this->db->where("STH_STAFF_ID", $staff_id);
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("COALESCE(THD_EVALUATION,'N') = 'Y'");
+        $this->db->where("THD_REF_ID = STH_TRAINING_REFID");
+        $this->db->where("TH_REF_ID = STH_TRAINING_REFID");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // UPDATE TRAINING HEAD (APPROVE)
+    public function updateApprove($refid, $sid, $fee_code, $cur_usr_id, $rem, $eva_id)
+    {
+        $curr_date = 'SYSDATE';
+
+        $data = array(
+            "STH_FEE_CODE" => $fee_code,
+            "STH_STATUS" => 'RECOMMEND_BSM',
+            "STH_RECOMMEND_BY" => $cur_usr_id,
+            "STH_RECOMMENDER_REASON" => $rem,
+            "STH_EVALUATOR_ID" => $eva_id
+        );
+
+        $this->db->set("STH_RECOMMEND_DATE", $curr_date, false);
+
+        $this->db->where("STH_STAFF_ID", $sid);
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    // UPDATE TRAINING HEAD KTP / REG
+    public function updateApproveKtpReg($refid, $sid, $fee_code, $cur_usr_id, $rem, $eva_id)
+    {
+        $curr_date = 'SYSDATE';
+
+        $data = array(
+            "STH_FEE_CODE" => $fee_code,
+            "STH_STATUS" => 'APPROVE',
+            "STH_APPROVE_BY" => $cur_usr_id,
+            "STH_APPROVE_REASON" => $rem,
+            "STH_RECOMMENDER_REASON" => $rem,
+            "STH_EVALUATOR_ID" => $eva_id
+        );
+
+        $this->db->set("STH_APPROVE_DATE", $curr_date, false);
+
+        $this->db->where("STH_STAFF_ID", $sid);
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    // UPDATE TRAINING HEAD (REJECT)
+    public function updateReject($refid, $sid, $fee_code, $cur_usr_id, $rem)
+    {
+        $curr_date = 'SYSDATE';
+
+        $data = array(
+            "STH_FEE_CODE" => $fee_code,
+            "STH_STATUS" => 'REJECT',
+            "STH_RECOMMEND_BY" => $cur_usr_id,
+            "STH_RECOMMENDER_REASON" => $rem
+        );
+
+        $this->db->set("STH_RECOMMEND_DATE", $curr_date, false);
+
+        $this->db->where("STH_STAFF_ID", $sid);
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    // UPDATE TRAINING HEAD (REJECT - KTP / REG)
+    public function updateRejectKtpReg($refid, $sid, $fee_code, $cur_usr_id, $rem)
+    {
+        $curr_date = 'SYSDATE';
+
+        $data = array(
+            "STH_FEE_CODE" => $fee_code,
+            "STH_STATUS" => 'REJECT',
+            "STH_APPROVE_BY" => $cur_usr_id,
+            "STH_APPROVE_REASON" => $rem,
+            "STH_RECOMMENDER_REASON" => $rem
+        );
+
+        $this->db->set("STH_APPROVE_DATE", $curr_date, false);
+
+        $this->db->where("STH_STAFF_ID", $sid);
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    // GET KTP / SUPERIOR
+    public function getKtpSup()
+    {
+        $this->db->select("DM_DIRECTOR");
+        $this->db->from("DEPARTMENT_MAIN, TRAINING_FEE_SETUP");
+        $this->db->where("DM_DEPT_CODE = TFS_DCR_APPROVE");
+        $this->db->where("TFS_CODE = '001'");
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // GET REGISTRAR / SUPERIOR
+    public function getRegSup()
+    {
+        $this->db->select("DM_DIRECTOR");
+        $this->db->from("DEPARTMENT_MAIN, TRAINING_FEE_SETUP");
+        $this->db->where("DM_DEPT_CODE = TFS_REGISTRAR_APPROVE");
+        $this->db->where("TFS_CODE = '002'");
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // SEND APPROVE MEMO 001
+    public function SendApproveMemo001($cur_usr_id, $refid, $ktp_sup, $cc_user) 
+    {
+        $sts = null;
+
+		$sql = oci_parse($this->db->conn_id, "begin :bindOutput1 := EXTERNAL_TRAINING.SendApproveMemo001(:bind1,:bind2,:bind3,:bind4); end;");
+		oci_bind_by_name($sql, ":bind1", $cur_usr_id);	//IN
+		oci_bind_by_name($sql, ":bind2", $refid);		//IN
+        oci_bind_by_name($sql, ":bind3", $ktp_sup);		//IN
+        oci_bind_by_name($sql, ":bind4", $cc_user);		//IN
+        oci_bind_by_name($sql, ":bindOutput1", $sts);	//OUT
+		$q = oci_execute($sql, OCI_DEFAULT); 
+		
+        if ($q === FALSE) {
+			return 0;
+		}
+		
+        return 1;
+        // var_dump($q); 	
+    } 
+
+    // SEND APPROVE MEMO 002
+    public function SendApproveMemo002($cur_usr_id, $refid, $reg_sup, $cc_user) 
+    {
+        $sts = null;
+
+		$sql = oci_parse($this->db->conn_id, "begin :bindOutput1 := EXTERNAL_TRAINING.SendApproveMemo002(:bind1,:bind2,:bind3,:bind4); end;");
+		oci_bind_by_name($sql, ":bind1", $cur_usr_id);	//IN
+		oci_bind_by_name($sql, ":bind2", $refid);		//IN
+        oci_bind_by_name($sql, ":bind3", $reg_sup);		//IN
+        oci_bind_by_name($sql, ":bind4", $cc_user);		//IN
+        oci_bind_by_name($sql, ":bindOutput1", $sts);	//OUT
+		$q = oci_execute($sql, OCI_DEFAULT); 
+		
+        if ($q === FALSE) {
+			return 0;
+		}
+		
+        return 1;
+        // var_dump($q); 	
+    } 
+
+    // SEND APPROVE MEMO 003
+    public function SendApproveMemo003($cur_usr_id, $refid, $sid) 
+    {
+        $sts = null;
+
+		$sql = oci_parse($this->db->conn_id, "begin :bindOutput1 := EXTERNAL_TRAINING.SendApproveMemo003(:bind1,:bind2,:bind3); end;");
+		oci_bind_by_name($sql, ":bind1", $cur_usr_id);	//IN
+		oci_bind_by_name($sql, ":bind2", $refid);		//IN
+        oci_bind_by_name($sql, ":bind3", $sid);		//IN
+        oci_bind_by_name($sql, ":bindOutput1", $sts);	//OUT
+		$q = oci_execute($sql, OCI_DEFAULT); 
+		
+        if ($q === FALSE) {
+			return 0;
+		}
+		
+        return 1;
+        // var_dump($q); 	
+    } 
+
+    // SEND APPROVE MEMO 004
+    public function SendApproveMemo004($cur_usr_id, $refid, $sid) 
+    {
+        $sts = null;
+
+		$sql = oci_parse($this->db->conn_id, "begin :bindOutput1 := EXTERNAL_TRAINING.SendApproveMemo004(:bind1,:bind2,:bind3); end;");
+		oci_bind_by_name($sql, ":bind1", $cur_usr_id);	//IN
+		oci_bind_by_name($sql, ":bind2", $refid);		//IN
+        oci_bind_by_name($sql, ":bind3", $sid);		//IN
+        oci_bind_by_name($sql, ":bindOutput1", $sts);	//OUT
+		$q = oci_execute($sql, OCI_DEFAULT); 
+		
+        if ($q === FALSE) {
+			return 0;
+		}
+		
+        return 1;
+        // var_dump($q); 	
+    } 
+
+    // GET REJECT MEMO DETL
+    public function getRejMemoDetl($refid, $sid)
+    {
+        $this->db->select("STH_STAFF_ID, 
+        TH_TRAINING_TITLE, 
+        COALESCE(TH_TRAINING_VENUE,'') STH_VENUE,
+        TO_CHAR(TH_DATE_FROM,'DD/MM/YYYY') TH_DATE_FROM,
+        TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') TH_DATE_TO, 
+        STH_STATUS,
+		TO_CHAR(TH_DATE_FROM-7,'DD/MM/YYYY') TH_DUE_DATE");
+        $this->db->from("TRAINING_HEAD");
+        // $this->db->where("TH_REF_ID(+) = STH_TRAINING_REFID");
+        $this->db->join("STAFF_TRAINING_HEAD", "TH_REF_ID = STH_TRAINING_REFID", "LEFT");
+        $this->db->where("(TH_REF_ID = '$refid'
+		AND STH_STAFF_ID = '$sid')");
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // SEND MEMO
+    public function createMemo($cur_usr_id, $sid, $cc = null, $memoTitle, $memoContent) 
+    {
+		$sql = oci_parse($this->db->conn_id, "begin create_memo(:bind1,:bind2,null,:bind3,:bind4); end;");
+		oci_bind_by_name($sql, ":bind1", $cur_usr_id);		    //IN
+		oci_bind_by_name($sql, ":bind2", $sid);				    //IN
+		oci_bind_by_name($sql, ":bind3", $memoTitle, 255);		//IN
+		oci_bind_by_name($sql, ":bind4", $memoContent, 4000);	//IN
+		$q = oci_execute($sql, OCI_DEFAULT); 
+		
+        if ($q === FALSE) {
+			return 0;
+		}
+		
+		return 1;	
+    } 
+
+    /*===========================================================
+       ASSIGN TRAINING COST TO STAFF - ATF029
+    =============================================================*/
+
+    // GET YEAR DROPDOWN
+    public function getYearListTrCost() 
+    {		
+        $this->db->select("TO_CHAR(TH_DATE_FROM,'YYYY') AS CM_YEAR");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->group_by("TO_CHAR(TH_DATE_FROM,'YYYY') ");
+        $this->db->order_by("TO_CHAR(TH_DATE_FROM,'YYYY') DESC");
+        $q = $this->db->get();
+                
+        return $q->result();
+    } 
+
+    // STAFF LIST
+    public function getTrStaffCostList($refid)
+    {
+        $this->db->select("STCM_STAFF_ID,
+        STCM_TRAINING_REFID,
+        STCM_TOTAL_AMOUNT,
+        SM_STAFF_NAME
+        ");
+        $this->db->from("STAFF_TRAINING_COST_MAIN");
+        $this->db->join("STAFF_MAIN", "SM_STAFF_ID = STCM_STAFF_ID", "LEFT");
+        $this->db->where("STCM_TRAINING_REFID", $refid);
+        $this->db->order_by("UPPER(GET_STAFF_NAME(STCM_STAFF_ID))");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // PAYMENT DETAILS
+    public function getPaymentDetl($staff_id, $refid)
+    {
+        $this->db->select("STCD_STAFF_ID,
+        STCD_TRAINING_REFID,
+        STCD_COST_CODE,
+        STCD_AMOUNT,
+        TCT_DESC
+        ");
+        $this->db->from("STAFF_TRAINING_COST_DETL");
+        $this->db->join("TRAINING_COST_TYPE", "TCT_CODE = STCD_COST_CODE", "LEFT");
+        $this->db->where("STCD_STAFF_ID", $staff_id);
+        $this->db->where("STCD_TRAINING_REFID", $refid);
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // APPLICANT DETL
+    public function getApplicantDetl($staff_id)
+    {
+        $this->db->select("SM_STAFF_NAME,
+        SM_STAFF_ID
+        ");
+        $this->db->from("STAFF_MAIN");
+        $this->db->where("SM_STAFF_ID", $staff_id);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // STAFF TRAINING COST DETL
+    public function getTrStaffCostDetl($refid, $staff_id)
+    {
+        $this->db->select("STCM_STAFF_ID,
+        STCM_TRAINING_REFID,
+        STCM_TOTAL_AMOUNT
+        ");
+        $this->db->from("STAFF_TRAINING_COST_MAIN");
+        $this->db->where("STCM_TRAINING_REFID", $refid);
+        $this->db->where("STCM_STAFF_ID", $staff_id);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // UPDATE STAFF_TRAINING_COST_MAIN
+    public function saveUpdAssignStaffCost($form) 
+    {
+        $data = array(
+            "STCM_TOTAL_AMOUNT" => $form['amount']
+        );
+
+        $this->db->where("STCM_TRAINING_REFID", $form['refid']);
+        $this->db->where("STCM_STAFF_ID", $form['staff_id']);
+
+        return $this->db->update("STAFF_TRAINING_COST_MAIN", $data);
+    }
+
+    // COST CODE DD
+    public function getCostCodeDD2($refid, $staff_id)
+    {
+        $this->db->select("TC_COST_CODE,
+        TCT_DESC, 
+        TC_AMOUNT,
+        TC_COST_CODE||' - '||TCT_DESC TC_COST_CODE_DESC
+        ");
+        $this->db->from("TRAINING_COST, TRAINING_COST_TYPE");
+        $this->db->where("TC_COST_CODE = TCT_CODE");
+        $this->db->where("TC_TRAINING_REFID", $refid);
+        $this->db->where("TC_COST_CODE NOT IN (SELECT STCD_COST_CODE
+        FROM STAFF_TRAINING_COST_DETL
+        WHERE STCD_TRAINING_REFID = '$refid'
+        AND STCD_STAFF_ID = '$staff_id')");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // COST CODE DETL
+    public function getCostCodeDetl($refid, $staff_id, $cost_code)
+    {
+        $this->db->select("TC_COST_CODE,
+        TCT_DESC, 
+        TC_AMOUNT
+        ");
+        $this->db->from("TRAINING_COST, TRAINING_COST_TYPE");
+        $this->db->where("TC_COST_CODE = TCT_CODE");
+        $this->db->where("TC_TRAINING_REFID", $refid);
+        $this->db->where("TC_COST_CODE NOT IN (SELECT STCD_COST_CODE
+        FROM STAFF_TRAINING_COST_DETL
+        WHERE STCD_TRAINING_REFID = '$refid'
+        AND STCD_STAFF_ID = '$staff_id')");
+        $this->db->where("TC_COST_CODE", $cost_code);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // INSERT STAFF_TRAINING_COST_DETL
+    public function savePayDetl($form) 
+    {
+        $data = array(
+            "STCD_STAFF_ID" => $form['staff_id'],
+            "STCD_TRAINING_REFID" => $form['refid'],
+            "STCD_COST_CODE" => $form['cost_code'],
+            "STCD_AMOUNT" => $form['amount']
+        );
+
+        return $this->db->insert("STAFF_TRAINING_COST_DETL", $data);
+    }
+
+    // SUM STCD
+    public function getSumSTCD($refid, $staff_id)
+    {
+        $this->db->select("COALESCE(SUM(STCD_AMOUNT),0) SUM_STCD");
+        $this->db->from("STAFF_TRAINING_COST_DETL");
+        $this->db->where("STCD_STAFF_ID", $staff_id);
+        $this->db->where("STCD_TRAINING_REFID", $refid);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // UPDATE STAFF_TRAINING_COST_MAIN 2
+    public function saveUpdateStfTrCostMain($refid, $staff_id, $amt) 
+    {
+        $data = array(
+            "STCM_TOTAL_AMOUNT" => $amt
+        );
+
+        $this->db->where("STCM_TRAINING_REFID", $refid);
+        $this->db->where("STCM_STAFF_ID", $staff_id);
+
+        return $this->db->update("STAFF_TRAINING_COST_MAIN", $data);
+    }
+
+    // CHECK STCD
+    public function checkSTCD($refid, $staff_id)
+    {
+        $this->db->select("1");
+        $this->db->from("STAFF_TRAINING_COST_DETL");
+        $this->db->where("STCD_STAFF_ID", $staff_id);
+        $this->db->where("STCD_TRAINING_REFID", $refid);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // DELETE STCM
+    public function delStfTrCost($refid, $staff_id) 
+    {
+        $this->db->where("STCM_TRAINING_REFID", $refid);
+        $this->db->where("STCM_STAFF_ID", $staff_id);
+        return $this->db->delete('STAFF_TRAINING_COST_MAIN');
+    }
+
+    // DELETE STCD
+    public function delPayDetl($refid, $staff_id, $code_code) 
+    {
+        $this->db->where("STCD_TRAINING_REFID", $refid);
+        $this->db->where("STCD_STAFF_ID", $staff_id);
+        $this->db->where("STCD_COST_CODE", $code_code);
+        return $this->db->delete('STAFF_TRAINING_COST_DETL');
+    }
+
+    /*===========================================================
+       APPROVE TRAINING BY MPE FOR EXTERNAL AGENCY - ATF143
+    =============================================================*/
+
+    // GET YEAR DROPDOWN
+    public function getYearListAppTr2() 
+    {		
+        $this->db->select("TO_CHAR(TH_DATE_FROM,'YYYY') AS CM_YEAR");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->group_by("TO_CHAR(TH_DATE_FROM,'YYYY')");
+        $this->db->order_by("TO_CHAR(TH_DATE_FROM,'YYYY') DESC");
+        $q = $this->db->get();
+                
+        return $q->result();
+    } 
+
+    // GET TRAINING LIST
+    public function getTrainingList5($dept, $month, $year)
+    {
+        $this->db->select("TH_REF_ID,
+        TH_TRAINING_TITLE,
+        TO_CHAR(TH_DATE_FROM, 'DD/MM/YYYY') TH_DATE_FROM2,
+        TO_CHAR(TH_DATE_TO, 'DD/MM/YYYY') TH_DATE_TO2,
+        TH_TRAINING_FEE
+        ");
+        $this->db->from("TRAINING_HEAD");
+
+        if(!empty($dept)) {
+            $this->db->where("TH_DEPT_CODE", $dept);
+        }
+
+        if(!empty($month)) {
+            $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'MM'),'') = '$month'");
+        }
+
+        if (!empty($year)) {
+            $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'YYYY'),'') = '$year'");
+        }
+        
+        $this->db->where("COALESCE(TH_STATUS, 'ENTRY') = 'APPROVE'");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->where("TH_TRAINING_FEE >= '5000.01'");
+        $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // STAFF LIST
+    public function getTrStaffList3($refid)
+    {
+        $this->db->select("STH_STAFF_ID,
+        SM_STAFF_NAME,
+        STH_STATUS,
+        SS_JOB_STATUS,
+        SJS_STATUS_DESC,
+        STH_APPLY_DATE,
+        TO_CHAR(STH_APPLY_DATE, 'DD/MM/YYYY') STH_APPLY_DATE2,
+        STH_FEE_CODE||' - '||TFS_DESC AS FEE_CODE_DESC,
+        TC_AMOUNT,
+        STH_FEE_CODE,
+        STH_RECOMMENDER_REASON,
+        STH_APPROVE_REASON
+        ");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->join("STAFF_MAIN", "SM_STAFF_ID = STH_STAFF_ID", "LEFT");
+        $this->db->join("STAFF_SERVICE", "SS_STAFF_ID = STH_STAFF_ID", "LEFT");
+        $this->db->join("STAFF_JOB_STATUS", "SJS_STATUS_CODE = SS_JOB_STATUS", "LEFT");
+        $this->db->join("TRAINING_FEE_SETUP", "TFS_CODE = STH_FEE_CODE", "LEFT");
+        $this->db->join("TRAINING_COST", "TC_COST_CODE = 'T001' AND TC_TRAINING_REFID = '$refid'", "LEFT");
+        $this->db->where("STH_STATUS = 'RECOMMEND_BSM'");
+        $this->db->where("STH_FEE_CODE IN (SELECT TFS_CODE FROM TRAINING_FEE_SETUP WHERE COALESCE(TFS_MPE_APPROVE,'N') = 'Y')");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->order_by("get_staff_name(STH_STAFF_ID)");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // UPDATE STH
+    public function updateSTH($refid, $sid, $cur_usr_id, $rem)
+    {
+        $curr_date = 'SYSDATE';
+
+        $data = array(
+            "STH_STATUS" => 'APPROVE',
+            "STH_APPROVE_BY" => $cur_usr_id,
+            "STH_APPROVE_REASON" => $rem
+        );
+
+        $this->db->set("STH_APPROVE_DATE", $curr_date, false);
+
+        $this->db->where("STH_STAFF_ID", $sid);
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    // UPDATE STD
+    public function updateSTD($refid, $sid, $mpe_date)
+    {
+        if(!empty($mpe_date)) {
+            $date = "TO_DATE('".$mpe_date."', 'DD/MM/YYYY')";
+            $this->db->set("STD_MPE_DATE", $date, false);
+        } 
+
+        $this->db->where("STD_TRAINING_REFID", $refid);
+        $this->db->where("STD_STAFF_ID", $sid);
+
+        return $this->db->update("STAFF_TRAINING_DETL");
+    }
+
+    // GET DM_DIRECTOR
+    public function getDeptDirector($sid)
+    {
+        $this->db->select("DM_DIRECTOR");
+        $this->db->from("DEPARTMENT_MAIN, STAFF_MAIN");
+        $this->db->where("SM_DEPT_CODE = DM_DEPT_CODE");
+        $this->db->where("SM_STAFF_ID", $sid);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // SEND MEMO 2
+    public function createMemo2($cur_usr_id, $sid, $cc_hod, $memoTitle, $memoContent) 
+    {
+		$sql = oci_parse($this->db->conn_id, "begin create_memo(:bind1,:bind2,:bind3,:bind4,:bind5); end;");
+		oci_bind_by_name($sql, ":bind1", $cur_usr_id);		    //IN
+        oci_bind_by_name($sql, ":bind2", $sid);				    //IN
+        oci_bind_by_name($sql, ":bind3", $cc_hod);				//IN
+		oci_bind_by_name($sql, ":bind4", $memoTitle, 255);		//IN
+		oci_bind_by_name($sql, ":bind5", $memoContent, 4000);	//IN
+		$q = oci_execute($sql, OCI_DEFAULT); 
+		
+        if ($q === FALSE) {
+			return 0;
+		}
+		
+		return 1;	
+    } 
+
+    // UPDATE STH 2
+    public function updateSTH2($refid, $sid, $cur_usr_id, $rem)
+    {
+        $curr_date = 'SYSDATE';
+
+        $data = array(
+            "STH_STATUS" => 'REJECT',
+            "STH_APPROVE_BY" => $cur_usr_id,
+            "STH_APPROVE_REASON" => $rem
+        );
+
+        $this->db->set("STH_APPROVE_DATE", $curr_date, false);
+
+        $this->db->where("STH_STAFF_ID", $sid);
+        $this->db->where("STH_TRAINING_REFID", $refid);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    /*===========================================================
+       ASSIGN TRAINING FOR EXTERNAL AGENCY - ATF142
+    =============================================================*/
+
+    // GET TRAINING LIST 6
+    public function getTrainingList6($dept, $month, $year)
+    {
+        $this->db->select("TH_REF_ID,
+        TH_TRAINING_TITLE,
+        TO_CHAR(TH_DATE_FROM, 'DD/MM/YYYY') TH_DATE_FROM2,
+        TO_CHAR(TH_DATE_TO, 'DD/MM/YYYY') TH_DATE_TO2,
+        TH_TRAINING_FEE
+        ");
+        $this->db->from("TRAINING_HEAD");
+
+        if(!empty($dept)) {
+            $this->db->where("TH_DEPT_CODE", $dept);
+        }
+
+        if(!empty($month)) {
+            $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'MM'),'') = '$month'");
+        }
+
+        if (!empty($year)) {
+            $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'YYYY'),'') = '$year'");
+        }
+        
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE, TH_REF_ID");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // STAFF LIST
+    public function getTrStaffList4($refid)
+    {
+        $this->db->select("STH_STAFF_ID,
+        SM_STAFF_NAME,
+        STH_STATUS,
+        STH_APPLY_DATE,
+        TO_CHAR(STH_APPLY_DATE, 'DD/MM/YYYY') STH_APPLY_DATE2,
+        STH_FEE_CODE||' - '||TFS_DESC AS FEE_CODE_DESC,
+        TC_AMOUNT,
+        STH_FEE_CODE,
+        STH_RECOMMENDER_REASON,
+        STH_APPROVE_REASON,
+        SM_DEPT_CODE STAFF_DEPT,
+        TPR_DESC,
+        STH_STAFF_TRAINING_BENEFIT,
+        STH_DEPT_TRAINING_BENEFIT,
+        CASE STH_HOD_EVALUATION
+        WHEN 'Y' THEN 'Yes'
+        WHEN 'N' THEN 'No'
+        END STH_HOD_EVALUATION2,
+        STH_HOD_EVALUATION
+        ");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->join("STAFF_MAIN", "SM_STAFF_ID = STH_STAFF_ID", "LEFT");
+        $this->db->join("TRAINING_PARTICIPANT_ROLE", "TPR_CODE = STH_PARTICIPANT_ROLE", "LEFT");
+        // $this->db->join("STAFF_SERVICE", "SS_STAFF_ID = STH_STAFF_ID", "LEFT");
+        // $this->db->join("STAFF_JOB_STATUS", "SJS_STATUS_CODE = SS_JOB_STATUS", "LEFT");
+        $this->db->join("TRAINING_FEE_SETUP", "TFS_CODE = STH_FEE_CODE", "LEFT");
+        $this->db->join("TRAINING_COST", "TC_COST_CODE = 'T001' AND TC_TRAINING_REFID = '$refid'", "LEFT");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->order_by("STH_STAFF_ID, UPPER(GET_STAFF_DEPT(STH_STAFF_ID)), STH_STATUS, UPPER(GET_STAFF_NAME(STH_STAFF_ID))");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
 }

@@ -2956,7 +2956,8 @@ class Training_application_model extends MY_Model
     }
 
     // SEND MEMO
-    public function createMemo($from, $sendTO, $memoTitle, $memoContent) {
+    public function createMemo($from, $sendTO, $memoTitle, $memoContent) 
+    {
 		$sql = oci_parse($this->db->conn_id, "begin create_memo(:bind1,:bind2,null,:bind3,:bind4); end;");
 		oci_bind_by_name($sql, ":bind1", $from);				//IN
 		oci_bind_by_name($sql, ":bind2", $sendTO);				//IN

@@ -131,6 +131,105 @@ class Ext_training_appl extends MY_Controller
         $this->render($data);
     }
 
+    // ASSIGN TRAINING COST TO STAFF
+    public function ATF029()
+    {
+        $data['month'] = $this->et_mdl->getCurDate();
+        $data['year'] = $this->et_mdl->getCurDate();
+
+        $data['cur_month'] = $data['month']->SYSDATE_MM;  
+        $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
+
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->et_mdl->getYearListTrCost(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->et_mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        $usr_dept = $this->et_mdl->currentUsrDept();
+        if(!empty($usr_dept)) {
+            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+            if($data['curr_dept'] == 'BSM') {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            } else {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            }
+        } else {
+            $data['curr_dept'] = '';
+            $data['dept_list'] = array(''=>'');
+        }
+
+        $this->render($data);
+    }
+
+    // APPROVE TRAINING BY MPE FOR EXTERNAL AGENCY
+    public function ATF143()
+    {
+        $data['month'] = $this->et_mdl->getCurDate();
+        $data['year'] = $this->et_mdl->getCurDate();
+
+        $data['cur_month'] = $data['month']->SYSDATE_MM;  
+        $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
+
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->et_mdl->getYearListAppTr2(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->et_mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        $usr_dept = $this->et_mdl->currentUsrDept();
+        if(!empty($usr_dept)) {
+            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+            if($data['curr_dept'] == 'BSM') {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            } else {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            }
+        } else {
+            $data['curr_dept'] = '';
+            $data['dept_list'] = array(''=>'');
+        }
+
+        $this->render($data);
+    }
+
+    // ASSIGN TRAINING FOR EXTERNAL AGENCY
+    public function ATF142()
+    {
+        $data['month'] = $this->et_mdl->getCurDate();
+        $data['year'] = $this->et_mdl->getCurDate();
+
+        $data['cur_month'] = $data['month']->SYSDATE_MM;  
+        $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
+
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->et_mdl->getYearListAppTr2(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->et_mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        $usr_dept = $this->et_mdl->currentUsrDept();
+        if(!empty($usr_dept)) {
+            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+            if($data['curr_dept'] == 'BSM') {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            } else {
+                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+            }
+        } else {
+            $data['curr_dept'] = '';
+            $data['dept_list'] = array(''=>'');
+        }
+
+        $this->render($data);
+    }
+
     // SEARCH STAFF
     public function searchStaffMd() {
         $staff_id = $this->input->post('staff_id', true);
@@ -1252,16 +1351,16 @@ class Ext_training_appl extends MY_Controller
 
             // CHECK KTP
             if($sid == $ktp && ($fee_code == '001' || $fee_code == '002')) {
-                $check_ktp = 'YES';
+                $check_ktp = '<b><font color="blue">YES</font></b>';
             } else {
-                $check_ktp = 'NO';
+                $check_ktp = '<b>NO</b>';
             }
 
             // CHECK REGISTRAR
             if($sid == $registrar && ($fee_code == '001' || $fee_code == '002')) {
-                $check_reg = 'YES';
+                $check_reg = '<b><font color="blue">YES</font></b>';
             } else {
-                $check_reg = 'NO';
+                $check_reg = '<b>NO</b>';
             }
 
             $trListArr [] = array('STAFF_ID'=>$sid,
@@ -1280,4 +1379,1035 @@ class Ext_training_appl extends MY_Controller
 
         $this->render($data);
     }
+
+    // APPROVE APPLICANT
+    public function appTrApplicant()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('staffID', true);
+        $remark = $this->input->post('remark', true);
+        $sts = 0;
+        $success = 0;
+        $successUpdApp = 0;
+        $successMemo = 0;
+        $cc_user = '';
+
+        if (!empty($refid) && !empty($staffID)) {
+            foreach ($staffID as $key => $sid) {
+                $success++;
+                $rem = $remark[$key];
+
+                // STH DETL
+                $sth_detl = $this->et_mdl->getSTHDetl($refid, $sid);
+                if(!empty($sth_detl)) {
+                    $fee_code = $sth_detl->STH_FEE_CODE;
+                } else {
+                    $fee_code = '';
+                }
+
+                // EVALUATOR DETL
+                $eva_detl = $this->et_mdl->getEvaDetl($refid, $sid);
+                if(!empty($eva_detl)) {
+                    $eva_id = $eva_detl->STH_VERIFY_BY;
+                } else {
+                    $eva_id = '';
+                }
+
+                $cur_usr_id = $this->staff_id;
+
+                // update sth
+                $upd_approve = $this->et_mdl->updateApprove($refid, $sid, $fee_code, $cur_usr_id, $rem, $eva_id);
+                if ($upd_approve > 0) {
+                    $successUpdApp++;
+                } else {
+                    $successUpdApp = 0;
+                }
+
+                // SEND APPROVE MEMO
+                if($fee_code == '003') {
+                    $status = $this->et_mdl->SendApproveMemo003($cur_usr_id, $refid, $sid);
+                    if($status > 0) {
+                        $successMemo++;
+                    } else {
+                        $successMemo = 0;
+                    }
+                }
+
+                if($fee_code == '002') {
+                    
+                    // GET REG / SUPERIOR
+                    $reg_sup_detl = $this->et_mdl->getRegSup();
+                    if(!empty($reg_sup_detl)) {
+                        $reg_sup = $reg_sup_detl->DM_DIRECTOR;
+                    } else {
+                        $reg_sup = '';
+                    }
+
+                    if(!empty($cc_user)) {
+                        $cc_user = $cc_user.$sid.',';
+                    } else {
+                        $cc_user = $sid.',';
+                    }
+
+                    $status = $this->et_mdl->SendApproveMemo002($cur_usr_id, $refid, $reg_sup, $cc_user);
+                    if($status > 0) {
+                        $successMemo++;
+                    } else {
+                        $successMemo = 0;
+                    }
+                }
+
+                if($fee_code == '001') {
+
+                    // GET KTP / SUPERIOR
+                    $ktp_sup_detl = $this->et_mdl->getKtpSup();
+                    if(!empty($ktp_sup_detl)) {
+                        $ktp_sup = $ktp_sup_detl->DM_DIRECTOR;
+                    } else {
+                        $ktp_sup = '';
+                    }
+
+                    if(!empty($cc_user)) {
+                        $cc_user = $cc_user.$sid.',';
+                    } else {
+                        $cc_user = $sid.',';
+                    }
+
+                    $status = $this->et_mdl->SendApproveMemo001($cur_usr_id, $refid, $ktp_sup, $cc_user);
+                    if($status > 0) {
+                        $successMemo++;
+                    } else {
+                        $successMemo = 0;
+                    }
+                }
+            }
+
+            if($success == $successUpdApp && $successMemo == $success) {
+                $json = array('sts' => 1, 'msg' => 'Training Application Approval Completed.', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Training Application Approval Aborted.', 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // APPROVE KTP / REG APPLICANT
+    public function appKtpRegApplicant()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('staffID', true);
+        $remark = $this->input->post('remark', true);
+        $sts = 0;
+        $success = 0;
+        $successUpdApp = 0;
+        $successMemo = 0;
+
+        if (!empty($refid) && !empty($staffID)) {
+            foreach ($staffID as $key => $sid) {
+                $success++;
+                $rem = $remark[$key];
+
+                // STH DETL
+                $sth_detl = $this->et_mdl->getSTHDetl($refid, $sid);
+                if(!empty($sth_detl)) {
+                    $fee_code = $sth_detl->STH_FEE_CODE;
+                } else {
+                    $fee_code = '';
+                }
+
+                // EVALUATOR DETL
+                $eva_detl = $this->et_mdl->getEvaDetl($refid, $sid);
+                if(!empty($eva_detl)) {
+                    $eva_id = $eva_detl->STH_VERIFY_BY;
+                } else {
+                    $eva_id = '';
+                }
+
+                $cur_usr_id = $this->staff_id;
+
+                // update sth
+                $upd_approve = $this->et_mdl->updateApproveKtpReg($refid, $sid, $fee_code, $cur_usr_id, $rem, $eva_id);
+                if ($upd_approve > 0) {
+                    $successUpdApp++;
+                } else {
+                    $successUpdApp = 0;
+                }
+
+                // SEND APPROVE MEMO 004
+                $status = $this->et_mdl->SendApproveMemo004($cur_usr_id, $refid, $sid);
+                if($status > 0) {
+                    $successMemo++;
+                } else {
+                    $successMemo = 0;
+                }
+            }
+
+            if($success == $successUpdApp && $successMemo == $success) {
+                $json = array('sts' => 1, 'msg' => 'Training Application Approval (KTP / REGISTRAR) Completed.', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Training Application Approval (KTP / REGISTRAR) Aborted.', 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // REJECT APPLICANT
+    public function rejTrApplicant()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('staffID', true);
+        $remark = $this->input->post('remark', true);
+        $sts = 0;
+        $success = 0;
+        $successUpdRej = 0;
+        $successMemo = 0;
+
+        if (!empty($refid) && !empty($staffID)) {
+            foreach ($staffID as $key => $sid) {
+                $success++;
+                $rem = $remark[$key];
+
+                // STH DETL
+                $sth_detl = $this->et_mdl->getSTHDetl($refid, $sid);
+                if(!empty($sth_detl)) {
+                    $fee_code = $sth_detl->STH_FEE_CODE;
+                } else {
+                    $fee_code = '';
+                }
+
+                $cur_usr_id = $this->staff_id;
+
+                // update sth 
+                $upd_reject = $this->et_mdl->updateReject($refid, $sid, $fee_code, $cur_usr_id, $rem);
+                if ($upd_reject > 0) {
+                    $successUpdRej++;
+                } else {
+                    $successUpdRej = 0;
+                }
+
+                // MEMO DETL
+                $mem_detl = $this->et_mdl->getRejMemoDetl($refid, $sid);
+                if(!empty($mem_detl)) {
+                    $sid2 = $mem_detl->STH_STAFF_ID;
+                    $title = $mem_detl->TH_TRAINING_TITLE;
+                    $venue = $mem_detl->STH_VENUE;
+                    $dt_from = $mem_detl->TH_DATE_FROM;
+                    $dt_to = $mem_detl->TH_DATE_TO;
+                    $sth_sts = $mem_detl->STH_STATUS;
+                    $due_date = $mem_detl->TH_DUE_DATE;
+                } else {
+                    $sid2 = '';
+                    $title = '';
+                    $venue = '';
+                    $dt_from = '';
+                    $dt_to = '';
+                    $sth_sts = '';
+                    $due_date = '';
+                }
+
+                $memoTitle = 'Permohonan Latihan Agensi Luar Tidak Diperakukan';
+                $memoContent = 'Dukacita dimaklumkan bahawa permohonan tuan/puan untuk mengikuti kursus yang dinyatakan dibawah adalah '.
+                            '<br>'.
+                            '<b>Tidak Diperakukan oleh Unit Latihan, BSM.</b>'.
+                            '<br><br>'.
+                            'Kursus : '.$title.
+                            '<br>'.
+                            'Tarikh : '.$dt_from.' - '.$dt_to.
+                            '<br>'.
+                            'Alasan : '.$rem.
+                            '<br><br>'.
+                            'Sekian, terima kasih.'.
+                            '<br><br>'.
+                            '--System Generated Memo--';
+
+                // CREATE MEMO
+                $status = $this->et_mdl->createMemo($cur_usr_id, $sid, $cc = null, $memoTitle, $memoContent);
+                if($status > 0) {
+                    $successMemo++;
+                } else {
+                    $successMemo = 0;
+                }
+            }
+
+            if($success == $successUpdRej && $successMemo == $success) {
+                $json = array('sts' => 1, 'msg' => 'Training Application Has Been Rejected.', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Training Application (Reject) Aborted.', 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // REJECT KTP / REG APPLICANT
+    public function rejKtpRegApplicant()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('staffID', true);
+        $remark = $this->input->post('remark', true);
+        $sts = 0;
+        $success = 0;
+        $successUpdRej = 0;
+        $successMemo = 0;
+
+        if (!empty($refid) && !empty($staffID)) {
+            foreach ($staffID as $key => $sid) {
+                $success++;
+                $rem = $remark[$key];
+
+                // STH DETL
+                $sth_detl = $this->et_mdl->getSTHDetl($refid, $sid);
+                if(!empty($sth_detl)) {
+                    $fee_code = $sth_detl->STH_FEE_CODE;
+                } else {
+                    $fee_code = '';
+                }
+
+                $cur_usr_id = $this->staff_id;
+
+                // update sth 
+                $upd_reject = $this->et_mdl->updateRejectKtpReg($refid, $sid, $fee_code, $cur_usr_id, $rem);
+                if ($upd_reject > 0) {
+                    $successUpdRej++;
+                } else {
+                    $successUpdRej = 0;
+                }
+
+                // MEMO DETL
+                $mem_detl = $this->et_mdl->getRejMemoDetl($refid, $sid);
+                if(!empty($mem_detl)) {
+                    $sid2 = $mem_detl->STH_STAFF_ID;
+                    $title = $mem_detl->TH_TRAINING_TITLE;
+                    $venue = $mem_detl->STH_VENUE;
+                    $dt_from = $mem_detl->TH_DATE_FROM;
+                    $dt_to = $mem_detl->TH_DATE_TO;
+                    $sth_sts = $mem_detl->STH_STATUS;
+                    $due_date = $mem_detl->TH_DUE_DATE;
+                } else {
+                    $sid2 = '';
+                    $title = '';
+                    $venue = '';
+                    $dt_from = '';
+                    $dt_to = '';
+                    $sth_sts = '';
+                    $due_date = '';
+                }
+
+                $memoTitle = 'Permohonan Latihan Agensi Luar Tidak Diperakukan';
+                $memoContent = 'Dukacita dimaklumkan bahawa permohonan tuan/puan untuk mengikuti kursus yang dinyatakan dibawah adalah '.
+                            '<br>'.
+                            '<b>Tidak Diperakukan oleh Unit Latihan, BSM.</b>'.
+                            '<br><br>'.
+                            'Kursus : '.$title.
+                            '<br>'.
+                            'Tarikh : '.$dt_from.' - '.$dt_to.
+                            '<br>'.
+                            'Alasan : '.$rem.
+                            '<br><br>'.
+                            'Sekian, terima kasih.'.
+                            '<br><br>'.
+                            '--System Generated Memo--';
+
+                // CREATE MEMO
+                $status = $this->et_mdl->createMemo($cur_usr_id, $sid, $cc = null, $memoTitle, $memoContent);
+                if($status > 0) {
+                    $successMemo++;
+                } else {
+                    $successMemo = 0;
+                }
+            }
+
+            if($success == $successUpdRej && $successMemo == $success) {
+                $json = array('sts' => 1, 'msg' => 'Training Application Has Been Rejected (KTP / REGISTRAR).', 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Training Application (Reject - KTP / REGISTRAR) Aborted.', 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    /*===========================================================
+       ASSIGN TRAINING COST TO STAFF - ATF029
+    =============================================================*/
+
+    // STAFF LIST 2
+    public function trStaffList2()
+    {   
+        // selected filter value
+        $refid = $this->input->post('refid', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $tr_detl = $this->et_mdl->getTrainingHead($refid);
+            if(!empty($tr_detl)) {
+                $data['tr_title'] = $tr_detl->TH_TRAINING_TITLE;
+            } else {
+                $data['tr_title'] = '';
+            }
+        } else {
+            $data['refid'] = '';
+            $data['tr_title'] = '';
+        }
+
+        // get available records
+        $data['stf_cost'] = $this->et_mdl->getTrStaffCostList($refid);
+
+        $this->render($data);
+    }
+
+    // PAYMENT DETAILS
+    public function getPaymentDetl()
+    {   
+        // selected filter value
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+
+        // TRAINING DETL
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $tr_detl = $this->et_mdl->getTrainingHead($refid);
+            if(!empty($tr_detl)) {
+                $data['tr_title'] = $tr_detl->TH_TRAINING_TITLE;
+            } else {
+                $data['tr_title'] = '';
+            }
+        } else {
+            $data['refid'] = '';
+            $data['tr_title'] = '';
+        }
+
+        // APPLICANT DETL
+        if(!empty($staff_id)) {
+            $data['staff_id'] = $staff_id;
+            $app_detl = $this->et_mdl->getApplicantDetl($staff_id);
+            if(!empty($app_detl)) {
+                $data['staff_name'] = $app_detl->SM_STAFF_NAME;
+            } else {
+                $data['staff_name'] = '';
+            }
+        } else {
+            $data['staff_id'] = '';
+            $data['staff_name'] = '';
+        }
+
+        // get available records
+        $data['pymnt_detl'] = $this->et_mdl->getPaymentDetl($staff_id, $refid);
+
+        $this->render($data);
+    }
+
+    // EDIT STAFF TRAINING COST
+    public function editStaffCost()
+    {   
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+        } else {
+            $data['refid'] = "";
+        }
+
+        // APPLICANT DETL
+        if(!empty($staff_id)) {
+            $data['staff_id'] = $staff_id;
+            $app_detl = $this->et_mdl->getApplicantDetl($staff_id);
+            if(!empty($app_detl)) {
+                $data['staff_name'] = $app_detl->SM_STAFF_NAME;
+            } else {
+                $data['staff_name'] = '';
+            }
+        } else {
+            $data['staff_id'] = '';
+            $data['staff_name'] = '';
+        }
+
+        // STAFF TRAINING COST DETL
+        $data['cost_detl'] = $this->et_mdl->getTrStaffCostDetl($refid, $staff_id);
+
+        $this->render($data);
+    }
+
+    // SAVE UPDATE STAFF TRAINING COST
+    public function saveUpdAssignStaffCost()
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['refid'];
+        $staff_id = $form['staff_id'];
+
+        // form / input validation
+        $rule = array(
+            'refid' => 'required|max_length[30]', 
+            'staff_id' => 'required|max_length[10]', 
+            'amount' => 'required|numeric|max_length[40]',
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            // UPDATE STAFF_TRAINING_COST_MAIN
+            $update = $this->et_mdl->saveUpdAssignStaffCost($form);
+
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'refid' => $refid);
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // ADD PAYMENT DETL
+    public function addPaydetl()
+    {   
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+        } else {
+            $data['refid'] = "";
+        }
+
+        // APPLICANT DETL
+        if(!empty($staff_id)) {
+            $data['staff_id'] = $staff_id;
+            $app_detl = $this->et_mdl->getApplicantDetl($staff_id);
+            if(!empty($app_detl)) {
+                $data['staff_name'] = $app_detl->SM_STAFF_NAME;
+            } else {
+                $data['staff_name'] = '';
+            }
+        } else {
+            $data['staff_id'] = '';
+            $data['staff_name'] = '';
+        }
+
+        // COST CODE DD
+        $data['cost_code'] = $this->dropdown($this->et_mdl->getCostCodeDD2($refid, $staff_id), 'TC_COST_CODE', 'TC_COST_CODE_DESC', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // COST AMOUNT DETL
+    public function getCostCodeDetl() 
+    {
+		$this->isAjax();
+        
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['refid'];
+        $staff_id = $form['staff_id'];
+        $cost_code = $form['cost_code'];
+        // var_dump($refid);
+        
+        if (!empty($refid) && !empty($staff_id) && !empty($cost_code)) {
+            $cost_detl = $this->et_mdl->getCostCodeDetl($refid, $staff_id, $cost_code);
+
+            if(!empty($cost_detl)) {
+                $amount = $cost_detl->TC_AMOUNT;
+            } else {
+                $amount = '';
+            }
+        
+            if (!empty($amount)) {
+                $json = array('sts' => 1, 'msg' => 'Amount found.', 'alert' => 'success', 'amount' => $amount);
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to get amount.', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // SAVE PAYMENT DETL
+    public function savePayDetl()
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['refid'];
+        $staff_id = $form['staff_id'];
+
+        // form / input validation
+        $rule = array(
+            'refid' => 'required|max_length[30]', 
+            'staff_id' => 'required|max_length[10]', 
+            'cost_code' => 'required|max_length[10]',
+            'amount' => 'required|numeric|max_length[40]',
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            // INSERT STAFF_TRAINING_COST_DETL
+            $insert = $this->et_mdl->savePayDetl($form);
+
+            if($insert > 0) {
+                // SUM STCD
+                $sum_amt = $this->et_mdl->getSumSTCD($refid, $staff_id);
+                if(!empty($sum_amt)) {
+                    $amt = $sum_amt->SUM_STCD;
+                } else {
+                    $amt = 0;
+                }
+
+                // UPDATE STAFF_TRAINING_COST_MAIN
+                $update = $this->et_mdl->saveUpdateStfTrCostMain($refid, $staff_id, $amt);
+
+                if($update > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => $staff_id);
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                }
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // DELETE STCM
+    public function delStfTrCost() 
+    {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        
+        if (!empty($staff_id) && !empty($staff_id)) {
+            // CHECK STCD
+            $check = $this->et_mdl->checkSTCD($refid, $staff_id);
+
+            if (empty($check)) {
+                $del = $this->et_mdl->delStfTrCost($refid, $staff_id);
+        
+                if ($del > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+                }
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Please delete record on Payment Details', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // DELETE STCD
+    public function delPayDetl() 
+    {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        $code_code = $this->input->post('code_code', true);
+        
+        if (!empty($staff_id) && !empty($staff_id)) {
+            $del = $this->et_mdl->delPayDetl($refid, $staff_id, $code_code);
+    
+            if ($del > 0) {
+                // SUM STCD
+                $sum_amt = $this->et_mdl->getSumSTCD($refid, $staff_id);
+                if(!empty($sum_amt)) {
+                    $amt = $sum_amt->SUM_STCD;
+                } else {
+                    $amt = 0;
+                }
+
+                // UPDATE STAFF_TRAINING_COST_MAIN
+                $update = $this->et_mdl->saveUpdateStfTrCostMain($refid, $staff_id, $amt);
+
+                if($update > 0) {
+                    $updMsg = nl2br("\r\n")."Staff Training Cost has been updated.";
+                    $json = array('sts' => 1, 'msg' => 'Record has been deleted'.$updMsg, 'alert' => 'success', 'refid' => $refid);
+                } else {
+                    $updMsg = nl2br("\r\n")."Fail to update Staff Training Cost.";
+                    $json = array('sts' => 0, 'msg' => 'Record has been deleted'.$updMsg, 'alert' => 'danger');
+                }
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    /*===========================================================
+       APPROVE TRAINING BY MPE FOR EXTERNAL AGENCY - ATF143
+    =============================================================*/
+
+    // TRAINING LIST 5
+    public function getTrainingList5()
+    {   
+        // selected filter value
+        $dept = $this->input->post('dept', true);
+        $month = $this->input->post('month', true);
+        $year = $this->input->post('year', true);
+
+        // get available records
+        $data['tr_list'] = $this->et_mdl->getTrainingList5($dept, $month, $year);
+
+        $this->render($data);
+    }
+
+    // STAFF LIST 3
+    public function trStaffList3()
+    {   
+        // selected filter value
+        $refid = $this->input->post('refid', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $tr_detl = $this->et_mdl->getTrainingHead($refid);
+            if(!empty($tr_detl)) {
+                $data['tr_title'] = $tr_detl->TH_TRAINING_TITLE;
+            } else {
+                $data['tr_title'] = '';
+            }
+        } else {
+            $data['refid'] = '';
+            $data['tr_title'] = '';
+        }
+
+        // get available records
+        $data['stf_list'] = $this->et_mdl->getTrStaffList3($refid);
+
+        $this->render($data);
+    }
+
+
+    // APPROVE APPLICANT MPE
+    public function appTrApplicantMPE()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('staffID', true);
+        $remark = $this->input->post('remark', true);
+        $mpe_date = $this->input->post('mpe_date', true);
+        $sts = 0;
+        $success = 0;
+        $successUpdApp1 = 0;
+        $successUpdApp2 = 0;
+        $successMemo = 0;
+        $msg1 = '';
+        $msg2 = '';
+        $msg3 = '';
+        $cc_hod = '';
+        $reportID = 'ATR230';
+
+        if (!empty($refid) && !empty($staffID)) {
+            foreach ($staffID as $key => $sid) {
+                $success++;
+                $rem = $remark[$key];
+
+                $cur_usr_id = $this->staff_id;
+
+                // update sth
+                $upd_sth = $this->et_mdl->updateSTH($refid, $sid, $cur_usr_id, $rem);
+                // $upd_sth = 1;
+                if ($upd_sth > 0) {
+                    $successUpdApp1++;
+                    $msg1 = 'Staff has been approved. (Staff Training 1)';
+                } else {
+                    $successUpdApp1 = 0;
+                    $msg1 = 'Fail to approve staff. (Staff Training 1)';
+                }
+
+                // var_dump($mpe_date);
+
+                // update std
+                $upd_std = $this->et_mdl->updateSTD($refid, $sid, $mpe_date);
+                // $upd_std = 1;
+                if ($upd_std > 0) {
+                    $successUpdApp2++;
+                    $msg2 = nl2br("\r\n").'Record has been saved. (Staff Training 2)';
+                } else {
+                    $successUpdApp2 = 0;
+                    $msg2 = nl2br("\r\n").'Fail to save record. (Staff Training 2)';
+                }
+
+                // EVALUATOR DETL
+                $hod_detl = $this->et_mdl->getDeptDirector($sid);
+                if(!empty($hod_detl)) {
+                    $hod = $hod_detl->DM_DIRECTOR;
+                } else {
+                    $hod = '';
+                }
+
+                if(!empty($cc_hod)) {
+                    $cc_hod = $cc_hod.$hod;
+                } else {
+                    $cc_hod = $hod.',';
+                }
+
+                // MEMO DETL
+                $mem_detl = $this->et_mdl->getRejMemoDetl($refid, $sid);
+                if(!empty($mem_detl)) {
+                    $sid2 = $mem_detl->STH_STAFF_ID;
+                    $title = $mem_detl->TH_TRAINING_TITLE;
+                    $venue = $mem_detl->STH_VENUE;
+                    $dt_from = $mem_detl->TH_DATE_FROM;
+                    $dt_to = $mem_detl->TH_DATE_TO;
+                    $sth_sts = $mem_detl->STH_STATUS;
+                    $due_date = $mem_detl->TH_DUE_DATE;
+                } else {
+                    $sid2 = '';
+                    $title = '';
+                    $venue = '';
+                    $dt_from = '';
+                    $dt_to = '';
+                    $sth_sts = '';
+                    $due_date = '';
+                }
+
+                $memoTitle = 'Permohonan Latihan Agensi Luar Diluluskan';
+                $memoContent = 'Sukacita dimaklumkan bahawa permohonan tuan/puan untuk mengikuti kursus yang dinyatakan dibawah telah '.
+                            '<br>'.
+                            '<b>DILULUSKAN.</b>'.
+                            '<br><br>'.
+                            'Kursus : '.$title.
+                            '<br>'.
+                            'Tarikh : '.$dt_from.' - '.$dt_to.
+                            '<br><br>'.
+                            '2. Klik pautan dibawah untuk mencetak surat kelulusan : '.
+                            '<br>'.
+                            '<a href="TrainingReport?action=EXT_AGENCY_TRAIN&repID='.$reportID.'&apRID='.$refid.'" onmouseover="window.status='.'Surat Kelulusan Permohonan Latihan Agensi Luar'.';return true;">Surat Kelulusan Permohonan Latihan Agensi Luar</a>.'.
+                            '<br><br><br>'.
+                            'Sekian, terima kasih.'.
+                            '<br><br>'.
+                            '--System Generated Memo--';
+
+                // CREATE MEMO
+                $status = $this->et_mdl->createMemo2($cur_usr_id, $sid, $cc_hod, $memoTitle, $memoContent);
+                if($status > 0) {
+                    $successMemo++;
+                    $msg3 = nl2br("\r\n").'Memo has been sent.';
+                } else {
+                    $successMemo = 0;
+                    $msg3 = nl2br("\r\n").'Fail to send memo.';
+                }
+                $cc_hod = '';
+            }
+
+            if($success == $successUpdApp1  && $success == $successUpdApp2 && $successMemo == $success) {
+                $json = array('sts' => 1, 'msg' => $msg1.$msg2.$msg3, 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => $msg1.$msg2.$msg3, 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // REJECT APPLICANT MPE
+    public function rejTrApplicantMPE()
+    {  
+        $this->isAjax();
+
+        $refid = $this->input->post('refid', true);
+        $staffID = $this->input->post('staffID', true);
+        $remark = $this->input->post('remark', true);
+        $mpe_date = $this->input->post('mpe_date', true);
+        $sts = 0;
+        $success = 0;
+        $successUpdApp1 = 0;
+        $successUpdApp2 = 0;
+        $successMemo = 0;
+        $msg1 = '';
+        $msg2 = '';
+        $msg3 = '';
+        $cc_hod = '';
+        $reportID = 'ATR230';
+
+        if (!empty($refid) && !empty($staffID)) {
+            foreach ($staffID as $key => $sid) {
+                $success++;
+                $rem = $remark[$key];
+
+                $cur_usr_id = $this->staff_id;
+
+                // update sth 2
+                $upd_sth = $this->et_mdl->updateSTH2($refid, $sid, $cur_usr_id, $rem);
+                // $upd_sth = 1;
+                if ($upd_sth > 0) {
+                    $successUpdApp1++;
+                    $msg1 = 'Staff has been rejected. (Staff Training 1)';
+                } else {
+                    $successUpdApp1 = 0;
+                    $msg1 = 'Fail to reject staff. (Staff Training 1)';
+                }
+
+                // var_dump($mpe_date);
+
+                // update std
+                $upd_std = $this->et_mdl->updateSTD($refid, $sid, $mpe_date);
+                // $upd_std = 1;
+                if ($upd_std > 0) {
+                    $successUpdApp2++;
+                    $msg2 = nl2br("\r\n").'Record has been saved. (Staff Training 2)';
+                } else {
+                    $successUpdApp2 = 0;
+                    $msg2 = nl2br("\r\n").'Fail to save record. (Staff Training 2)';
+                }
+
+                // EVALUATOR DETL
+                $hod_detl = $this->et_mdl->getDeptDirector($sid);
+                if(!empty($hod_detl)) {
+                    $hod = $hod_detl->DM_DIRECTOR;
+                } else {
+                    $hod = '';
+                }
+
+                if(!empty($cc_hod)) {
+                    $cc_hod = $cc_hod.$hod;
+                } else {
+                    $cc_hod = $hod.',';
+                }
+
+                // MEMO DETL
+                $mem_detl = $this->et_mdl->getRejMemoDetl($refid, $sid);
+                if(!empty($mem_detl)) {
+                    $sid2 = $mem_detl->STH_STAFF_ID;
+                    $title = $mem_detl->TH_TRAINING_TITLE;
+                    $venue = $mem_detl->STH_VENUE;
+                    $dt_from = $mem_detl->TH_DATE_FROM;
+                    $dt_to = $mem_detl->TH_DATE_TO;
+                    $sth_sts = $mem_detl->STH_STATUS;
+                    $due_date = $mem_detl->TH_DUE_DATE;
+                } else {
+                    $sid2 = '';
+                    $title = '';
+                    $venue = '';
+                    $dt_from = '';
+                    $dt_to = '';
+                    $sth_sts = '';
+                    $due_date = '';
+                }
+
+                $memoTitle = 'Permohonan Latihan Agensi Luar Tidak Diluluskan';
+                $memoContent = 'Dukacita dimaklumkan bahawa permohonan tuan/puan untuk mengikuti kursus yang dinyatakan dibawah adalah '.
+                            '<br>'.
+                            '<b>TIDAK DILULUSKAN.</b>'.
+                            '<br><br>'.
+                            'Kursus : '.$title.
+                            '<br>'.
+                            'Tarikh : '.$dt_from.' - '.$dt_to.
+                            '<br>'.
+                            'Alasan : '.$rem.
+                            '<br><br>'.
+                            'Sekian, terima kasih.'.
+                            '<br><br>'.
+                            '--System Generated Memo--';
+
+                // CREATE MEMO
+                $status = $this->et_mdl->createMemo2($cur_usr_id, $sid, $cc_hod, $memoTitle, $memoContent);
+                if($status > 0) {
+                    $successMemo++;
+                    $msg3 = nl2br("\r\n").'Memo has been sent.';
+                } else {
+                    $successMemo = 0;
+                    $msg3 = nl2br("\r\n").'Fail to send memo.';
+                }
+                $cc_hod = '';
+            }
+
+            if($success == $successUpdApp1  && $success == $successUpdApp2 && $successMemo == $success) {
+                $json = array('sts' => 1, 'msg' => $msg1.$msg2.$msg3, 'alert' => 'green');
+            } else {
+                $json = array('sts' => 0, 'msg' => $msg1.$msg2.$msg3, 'alert' => 'red');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Please contact administrator', 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    /*===========================================================
+       ASSIGN TRAINING FOR EXTERNAL AGENCY - ATF142
+    =============================================================*/
+
+    // TRAINING LIST 6
+    public function getTrainingList6()
+    {   
+        // selected filter value
+        $dept = $this->input->post('dept', true);
+        $month = $this->input->post('month', true);
+        $year = $this->input->post('year', true);
+
+        // get available records
+        $data['tr_list'] = $this->et_mdl->getTrainingList6($dept, $month, $year);
+
+        $this->render($data);
+    }
+
+    // STAFF LIST 4
+    public function trStaffList4()
+    {   
+        // selected filter value
+        $refid = $this->input->post('refid', true);
+
+        if(!empty($refid)) {
+            $data['refid'] = $refid;
+            $tr_detl = $this->et_mdl->getTrainingHead($refid);
+            if(!empty($tr_detl)) {
+                $data['tr_title'] = $tr_detl->TH_TRAINING_TITLE;
+            } else {
+                $data['tr_title'] = '';
+            }
+        } else {
+            $data['refid'] = '';
+            $data['tr_title'] = '';
+        }
+
+        // get available records
+        $data['stf_list'] = $this->et_mdl->getTrStaffList4($refid);
+
+        $this->render($data);
+    }
+
 }

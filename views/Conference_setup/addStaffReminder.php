@@ -11,7 +11,7 @@
             <label class="col-md-3 control-label">Staff ID <b><font color="red">* </font></b></label>
             <div class="col-md-8">
                 <?php
-                    echo form_dropdown('form[staff_id]', $staff_tnca, '', 'class="select2-filter form-control width-50"')
+                    echo form_dropdown('form[staff_id]', $staff_tnca, '', 'class="select2-filter form-control" style="width: 100%"')
                 ?>
             </div>
         </div>

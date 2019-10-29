@@ -79,8 +79,12 @@
 									</div>
 								</div>
 								<div class="col-sm-2">
+									<!--<div class="form-group text-left">
+										<?php //echo form_dropdown('sStatus', array(''=>'---Please select---', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE', 'AMEND'=>'AMEND'), 'APPROVE', 'class="form-control listFilter" id="sStatus"'); ?>
+									</div>-->
+
 									<div class="form-group text-left">
-										<?php echo form_dropdown('sStatus', array(''=>'---Please select---', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE', 'AMEND'=>'AMEND'), 'APPROVE', 'class="form-control listFilter" id="sStatus"'); ?>
+										<?php echo form_dropdown('sStatus', array(''=>'---Please select---', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE'), 'APPROVE', 'class="form-control listFilter" id="sStatus"'); ?>
 									</div>
 								</div>
 							</div>
@@ -453,6 +457,7 @@
 					},
 					success: function(res) {
 						$('#module_setup').html(res);
+						$('.pos_tg_btn').addClass('hidden');
 					}
 				});
 			}
@@ -581,6 +586,7 @@
 									},
 									success: function(res) {
 										$('#module_setup').html(res);
+										$('.pos_tg_btn').addClass('hidden');
 									}
 								});
 							}
@@ -1022,6 +1028,7 @@
 						$('.btn').removeAttr('disabled');
 						$('#tbl_list_tg tbody #trNrecord').remove();
 						$('#tbl_list_tg tbody').append(res.tg_row);
+						$('.pos_tg_btn').addClass('hidden');
 					}, 1500);
 				} else {
 					$('.btn').removeAttr('disabled');

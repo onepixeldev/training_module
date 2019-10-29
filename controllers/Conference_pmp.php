@@ -2340,9 +2340,13 @@ class Conference_pmp extends MY_Controller
     
                     if(!empty($data['stf_app_rejc']->SM_STAFF_NAME)) {
                         $data['app_rejc_name'] = $data['stf_app_rejc']->SM_STAFF_NAME;
-                        $data['curr_date'] = $data['stf_app_rejc']->CURR_DATE;
                     } else {
                         $data['app_rejc_name'] = '';
+                    }
+
+                    if(!empty($data['stf_detl']->SCM_RMIC_APPROVE_DATE)) {
+                        $data['curr_date'] = $data['stf_detl']->SCM_RMIC_APPROVE_DATE;
+                    } else {
                         $data['curr_date'] = '';
                     }
                 }

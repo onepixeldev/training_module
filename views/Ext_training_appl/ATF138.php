@@ -336,6 +336,7 @@
 									},
 									success: function(res) {
 										$('#module_setup').html(res);
+										$('.pos_tg_btn').addClass('hidden');
 									}
 								});
 							}
@@ -457,6 +458,7 @@
 					},
 					success: function(res) {
 						$('#module_setup').html(res);
+						$('.pos_tg_btn').addClass('hidden');
 					}
 				});
 			}
@@ -588,6 +590,7 @@
 									},
 									success: function(res) {
 										$('#module_setup').html(res);
+										$('.pos_tg_btn').addClass('hidden');
 									}
 								});
 							}
@@ -1029,6 +1032,7 @@
 						$('.btn').removeAttr('disabled');
 						$('#tbl_list_tg tbody #trNrecord').remove();
 						$('#tbl_list_tg tbody').append(res.tg_row);
+						$('.pos_tg_btn').addClass('hidden');
 					}, 1500);
 				} else {
 					$('.btn').removeAttr('disabled');
