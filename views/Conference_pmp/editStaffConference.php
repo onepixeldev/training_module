@@ -75,13 +75,13 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Date From</label>
         <div class="col-md-4">
-            <input name="" placeholder="DD/MM/YYYY" value="<?php echo $date_from?>" class="datepicker form-control" type="text" readonly>
+            <input name="form[form_date_from]" placeholder="DD/MM/YYYY" value="<?php echo $date_from?>" class="datepicker form-control" type="text" readonly>
         </div>
 
 
         <label class="col-md-2 control-label">Date To</label>
         <div class="col-md-4">
-            <input name="" placeholder="DD/MM/YYYY" value="<?php echo $date_to?>" class="datepicker form-control" type="text" readonly>
+            <input name="form[form_date_to]" placeholder="DD/MM/YYYY" value="<?php echo $date_to?>" class="datepicker form-control" type="text" readonly>
         </div>
     </div>
 

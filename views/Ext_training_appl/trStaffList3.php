@@ -70,7 +70,7 @@
 
 	<div class="row">
         <div class="form-group text-left col-md-12">
-            <label class="col-md-1 control-label">MPE Date :</label>
+            <label class="col-md-1 control-label"><b> MPE Date :</b></label>
             <div class="col-md-2">
                 <input name="mpe_date" placeholder="DD/MM/YYYY" class="form-control mpe_date" type="text" id="mpe_date">
             </div>

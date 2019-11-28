@@ -332,6 +332,35 @@ class Conference_pmp_model extends MY_Model
         return $this->db->insert("STAFF_CONFERENCE_MAIN", $data);
     }
 
+    // INSERT STAFF LEAVE DETL 2
+    public function insStaffLeaveDetl2($sld_refid, $staff_id, $apply_date, $status, $leave_dt_from, $leave_dt_to, $day)
+    {
+        $data = array(
+            "SLD_REF_ID" => $sld_refid,
+            "SLD_STAFF_ID" => $staff_id,
+            "SLD_LEAVE_TYPE" => '014',
+            "SLD_STATUS" => $status,
+            "SLD_TOTAL_DAY" => $day,
+        );
+
+        if(!empty($apply_date)) {
+            $date = "to_date('".$apply_date."', 'DD/MM/YYYY')";
+            $this->db->set("SLD_APPLY_DATE", $date, false);
+        }
+
+        if(!empty($leave_dt_from)) {
+            $date = "to_date('".$leave_dt_from."', 'DD/MM/YYYY')";
+            $this->db->set("SLD_DATE_FROM", $date, false);
+        }
+
+        if(!empty($leave_dt_to)) {
+            $date = "to_date('".$leave_dt_to."', 'DD/MM/YYYY')";
+            $this->db->set("SLD_DATE_TO", $date, false);
+        }
+        
+        return $this->db->insert("STAFF_LEAVE_DETL", $data);
+    }
+
     // INSERT STAFF CONFERENCE DETL
     public function insStaffConDetl($refid, $staff_id)
     {
@@ -453,6 +482,149 @@ class Conference_pmp_model extends MY_Model
         $this->db->where("SCM_REFID", $refid);
 
         return $this->db->update("STAFF_CONFERENCE_MAIN", $data);
+    }
+
+    // SAVE UPDATE LEAVE DETL (APPROVE / REJECT )
+    public function updLeaveDetl($leave_refid, $status, $v_approver, $v_approved_date)
+    {
+        $data = array(
+            "SLD_STATUS" => $status,
+            "SLD_APPROVE_BY" => $v_approver,
+            "SLD_CANCEL_APPROVE_BY" => '',
+            "SLD_CANCEL_APPROVE_DATE" => '',
+        );
+
+        if(!empty($v_approved_date)) {
+            $date = "to_date('".$v_approved_date."', 'DD/MM/YYYY')";
+            $this->db->set("SLD_APPROVE_DATE", $date, false);
+        }
+        
+        $this->db->where("SLD_REF_ID", $leave_refid);
+
+        return $this->db->update("STAFF_LEAVE_DETL", $data);
+    }
+
+    // SAVE UPDATE LEAVE DETL 2 (APPLY)
+    public function updLeaveDetl2($leave_refid, $status)
+    {
+        $data = array(
+            "SLD_STATUS" => $status,
+            "SLD_APPROVE_BY" => '',
+            "SLD_APPROVE_DATE" => '',
+            "SLD_CANCEL_APPROVE_BY" => '',
+            "SLD_CANCEL_APPROVE_DATE" => '',
+        );
+        
+        $this->db->where("SLD_REF_ID", $leave_refid);
+
+        return $this->db->update("STAFF_LEAVE_DETL", $data);
+    }
+
+    // SAVE UPDATE LEAVE DETL 3 (CANCEL)
+    public function updLeaveDetl3($leave_refid, $status, $v_approver, $v_approved_date)
+    {
+        $curr_usr = $this->staff_id;
+        $curr_date = 'SYSDATE';
+
+        if(empty($v_approver)) {
+            $v_approver = $curr_usr;
+        }
+
+        $data = array(
+            "SLD_STATUS" => $status,
+            "SLD_APPROVE_BY" => '',
+            "SLD_APPROVE_DATE" => '',
+            "SLD_CANCEL_APPROVE_BY" => $v_approver,
+        );
+
+        if(!empty($v_approved_date)) {
+            $date = "to_date('".$v_approved_date."', 'DD/MM/YYYY')";
+            $this->db->set("SLD_CANCEL_APPROVE_DATE", $date, false);
+        } else {
+            $this->db->set("SLD_CANCEL_APPROVE_DATE", $curr_date, false);
+        }
+        
+        $this->db->where("SLD_REF_ID", $leave_refid);
+
+        return $this->db->update("STAFF_LEAVE_DETL", $data);
+    }
+
+    // GET SUM DAYS TAKEN - APPROVE ONLY
+    public function getSumDayTaken($leave_refid, $leave_year, $staff_id)
+    {
+        $this->db->select("NVL(SUM(SLD_TOTAL_DAY),0) TAKEN_DAY");
+        $this->db->from("STAFF_LEAVE_DETL");
+        $this->db->where("SLD_LEAVE_TYPE = '014'");
+        $this->db->where("((SLD_STATUS IN ('APPLY','APPROVE')
+        AND (TO_CHAR(SLD_DATE_FROM,'YYYY') = '$leave_year'
+        AND TO_CHAR(SLD_DATE_TO,'YYYY') = '$leave_year')) 
+        AND SLD_REF_ID = '$leave_refid')");
+        // $this->db->where("SLD_REF_ID", $leave_refid);
+        $this->db->where("SLD_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET SUM DAYS TAKEN 2 - ALL APPROVE / APPLY
+    public function getSumDayTaken2($leave_refid, $leave_year, $staff_id)
+    {
+        $this->db->select("NVL(SUM(SLD_TOTAL_DAY),0) TAKEN_DAY");
+        $this->db->from("STAFF_LEAVE_DETL");
+        $this->db->where("SLD_LEAVE_TYPE = '014'");
+        $this->db->where("((SLD_STATUS IN ('APPLY','APPROVE')
+        AND (TO_CHAR(SLD_DATE_FROM,'YYYY') = '$leave_year'
+        AND TO_CHAR(SLD_DATE_TO,'YYYY') = '$leave_year')) 
+        AND SLD_REF_ID != '$leave_refid')");
+        // $this->db->where("SLD_REF_ID", $leave_refid);
+        $this->db->where("SLD_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET SUM DAYS TAKEN - REJECT
+    public function getSumDayTaken3($leave_refid, $leave_year, $staff_id)
+    {
+        $this->db->select("NVL(SUM(SLD_TOTAL_DAY),0) TAKEN_DAY");
+        $this->db->from("STAFF_LEAVE_DETL");
+        $this->db->where("SLD_LEAVE_TYPE = '014'");
+        $this->db->where("((SLD_STATUS IN ('REJECT', 'CANCEL')
+        AND (TO_CHAR(SLD_DATE_FROM,'YYYY') = '$leave_year'
+        AND TO_CHAR(SLD_DATE_TO,'YYYY') = '$leave_year')) 
+        AND SLD_REF_ID = '$leave_refid')");
+        // $this->db->where("SLD_REF_ID", $leave_refid);
+        $this->db->where("SLD_STAFF_ID", $staff_id);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // UPDATE LEAVE RECORD - APPROVE
+    public function updLeaveRecord($staff_id, $leave_year, $taken_days, $total_taken_days)
+    {
+        $this->db->set("SLR_TAKEN_DAYS", "$total_taken_days", false);
+        $this->db->set("SLR_BALANCE_DAYS", "SLR_ENTITLED_DAYS - $total_taken_days", false);
+
+        $this->db->where("SLR_LEAVE_CODE = '014'");
+        $this->db->where("SLR_YEAR", $leave_year);
+        $this->db->where("SLR_STAFF_ID", $staff_id);
+
+        return $this->db->update("STAFF_LEAVE_RECORD");
+    }
+
+    // UPDATE LEAVE RECORD - REJECT
+    public function updLeaveRecord2($staff_id, $leave_year, $taken_days, $all_taken_days, $total_taken_days)
+    {
+        // var_dump($all_taken_days);
+        $this->db->set("SLR_TAKEN_DAYS", "$all_taken_days", false);
+        $this->db->set("SLR_BALANCE_DAYS", "(SLR_ENTITLED_DAYS - $taken_days) + $total_taken_days", false);
+
+        $this->db->where("SLR_LEAVE_CODE = '014'");
+        $this->db->where("SLR_YEAR", $leave_year);
+        $this->db->where("SLR_STAFF_ID", $staff_id);
+
+        return $this->db->update("STAFF_LEAVE_RECORD");
     }
     
     // GET ECOMM URL
@@ -596,13 +768,14 @@ class Conference_pmp_model extends MY_Model
     }
 
     // SAVE UPDATE STAFF LEAVE DETL
-    public function updStaffLeaveDetl($form, $cr_leave_refid, $staff_id)
+    public function updStaffLeaveDetl($form, $cr_leave_refid, $staff_id, $sld_status)
     {
         // $curDate = 'SYSDATE';
         // $curUsr = $this->staff_id;
 
         $data = array(
-            "SLD_TOTAL_DAY" => $form['total_day_approve']
+            "SLD_TOTAL_DAY" => $form['total_day_approve'],
+            "SLD_STATUS" => $sld_status
         );
 
         if(!empty($form['approve_date_from'])) {
@@ -756,6 +929,7 @@ class Conference_pmp_model extends MY_Model
     {
         $this->db->select("COUNT(SLD_STAFF_ID) AS SLD_STAFF_ID_COUNT, SUM(SLD_TOTAL_DAY) AS SLD_TOTAL_DAY");
         $this->db->from("STAFF_LEAVE_DETL");
+        $this->db->where("SLD_STATUS IN ('APPLY','APPROVE')");
         $this->db->where("SLD_STAFF_ID", $staff_id);
         $this->db->where("TO_CHAR(SLD_DATE_FROM, 'YYYY') = '$approve_date_from_year'");
 

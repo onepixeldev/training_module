@@ -129,7 +129,7 @@
                                 </div> 
 
                                 <div class="tab-pane fade" id="s4">
-									<div id="svc_book">
+									<div id="staff_training_svc_book">
 										<p>
 											<table class="table table-bordered table-hover">
 												<thead>
@@ -205,6 +205,21 @@
 
 <script>
 	var tr_row = '';
+
+    $(document).ready(function(){
+		$("#myModalis").draggable({
+			handle: ".modal-content"
+		});
+
+		$("#myModalis2").draggable({
+			handle: ".modal-content"
+		});
+
+		// PREVENT SUBMIT RELOAD
+		$('#myModalis').on('submit', function(e){
+			e.preventDefault();
+		});
+	});
 
 	$(".nav-tabs a").click(function(){
 		$(this).tab('show');
@@ -412,16 +427,13 @@
         });
 
     });
-    
+
+    // --- ATF123 --- //
     // CPD POINT
     $('#training_list').on('click','.cpd_pts_btn', function(){
         var thisBtn = $(this);
 		var td = thisBtn.closest("tr");
 		var refid = td.find(".refid").text();
-		
-		// var thisBtn = $(this);
-		// var td = thisBtn.parent().siblings();
-		// var refid = td.eq(0).html().trim();
 		
 		$.ajax({
 			type: 'POST',
@@ -439,6 +451,111 @@
 			}
 		}); 
 	});
+
+    // SAVE UPDATE STAFF CPD MARK
+	$('#myModalis').on('click', '.upd_staff_cpd_mark', function (e) {
+		e.preventDefault();
+		var refid = $('#refid').val(); 
+
+		var data = $('#updCpdMarkStaff').serialize();
+		msg.wait('#updCpdMarkStaffAlert');
+		// alert(data);
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo site_url('training/cpd/saveStaffUpdateCpdMark')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+				msg.show(res.msg, res.alert, '#updCpdMarkStaffAlert');
+				if (res.sts == 1) {
+					setTimeout(function () {
+						$('#myModalis').modal('hide');
+
+						// REFRESH
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo site_url('training/cpd/ATF123')?>',
+							data: {'refid' : refid},
+							beforeSend: function() {
+								$('#update_cpd_info').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#update_cpd_info').html(res);
+								tr_row = $('#tbl_stf_cpd_list').DataTable({
+									"ordering":false,
+								});
+							}
+						});
+						
+						$('.btn').removeAttr('disabled');
+					}, 1000);
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+				msg.danger('Please contact administrator.', '#updCpdMarkStaffAlert');
+			}
+		});	
+	});
+    // --- ATF123 --- //
+    
+    // --- ATF118 --- //
+    // SERVICE BOOK - ATF118
+	$('#training_list').on('click','.svc_book_btn', function(){
+        var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var trRefID = td.find(".refid").text();
+        var trainingN = td.find(".title").text();
+
+		$.ajax({
+			type: 'POST',
+            url: '<?php echo site_url('training/training_application/verifySvcBook')?>',
+			data: {'refid' : trRefID},
+			dataType: 'JSON',
+			beforeSend: function() {
+				show_loading();
+				$('.btn').attr('disabled', 'disabled');
+			},
+			success: function(res) {
+				if(res.sts == 1) {
+					$('.btn').removeAttr('disabled');
+					hide_loading();
+
+					$.ajax({
+						type: 'POST',
+                        url: '<?php echo site_url('training/training_application/ATF118')?>',
+						data: {'refid' : trRefID, 'tName' : trainingN},
+						beforeSend: function() {
+							$('.nav-tabs li:eq(3) a').tab('show');
+							$('#staff_training_svc_book').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+						},
+						success: function(res) {
+							$('#staff_training_svc_book').html(res);
+							tr_row = $('#tbl_list_sta_svc_book').DataTable({
+								"ordering":false,
+							});
+						}
+					}); 
+				} else{
+					$('.btn').removeAttr('disabled');
+					hide_loading();
+					$.alert({
+						title: 'Alert!',
+						content: res.msg,
+						type: res.alert,
+					});
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+			}
+		});
+    });
+    // --- ATF118 --- //
 
     /*===========================================================
        TAB 2 - STAFF LIST
@@ -467,6 +584,462 @@
 			}
 		});
     });	
+
+    // SEARCH STAFF
+	$('#staff_list').on('click','.assign_staff', function(){
+        var refid = $('#refid').val();
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('searchStaffAssignTr')?>',
+			data: {'refid':refid},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+			}
+		});
+	});
+
+    // ASSIGN STAFF MODAL
+	$('#myModalis').on('click', '.search_staff_md', function () {
+        var refid = $('#myModalis #refid').val();
+		var staff_id = $('#myModalis #staff_id').val();
+		search_trigger = 1;
+		
+		if(staff_id == '') {
+			msg.show('Please enter Staff ID / Name', 'warning', '#myModalis .modal-content #alertStfIDMD');
+			return;
+		}
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+		
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('searchStaffAssignTr')?>',
+			data: {'staff_id':staff_id, 'search_trigger':search_trigger, 'refid':refid},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+				$('#myModalis #staff_list').removeClass('hidden');
+
+				stf_row = $('#myModalis #tbl_stf_res_list').DataTable({
+                    "ordering":false,
+                });
+			}
+		});
+	});
+
+	// ENTER BUTTON NOT ALLOWED
+	$('#myModalis').on('keyup', '#staff_id', function (e) {
+		if (e.keyCode === 13) {
+            e.preventDefault();
+			msg.show('Enter button are not allowed', 'warning', '#myModalis .modal-content #alertStfIDMD');
+			return;
+        }
+	});
+
+    // SELECT STAFF ID
+	$('#myModalis').on('click', '.select_staff_id', function () {
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var staff_id = td.eq(0).html().trim();
+		var staff_name = td.eq(1).html().trim();
+        var refid = $('#myModalis #refid').val();
+
+        $('#myModalis #loaderAlert').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+
+        if(staff_id != '' && staff_name != '') {
+			$('#stfID').val(staff_id);
+			$('#stfName').val(staff_name);
+		}
+
+        $.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('staffFormDetl')?>',
+			data: {'refid' : refid, 'staff_id' : staff_id},
+			dataType: 'JSON',
+			success: function(res) {
+				if(res.sts == 1) {
+                    $('#staff_dept').val(res.dept);
+                    $('#staff_fee').val(res.fee);
+				} 
+			}
+		});
+        
+        $('#myModalis #staff_form').removeClass('hidden');
+        $('#myModalis').animate({scrollTop: $('#staff_form').position().top}, 'slow');
+        $('#myModalis #loaderAlert').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>').hide();
+    });
+    
+    // SAVE ASSIGN STAFF
+	$('#myModalis').on('click', '.save_assign_stf', function (e) { 
+		e.preventDefault();
+        var data = $('#assignStaffForm').serialize();
+        msg.wait('#assignStaffAlert');
+        msg.wait('#assignStaffAlertFooter');
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveAssignStaff')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+                msg.show(res.msg, res.alert, '#assignStaffAlert');
+                msg.show(res.msg, res.alert, '#assignStaffAlertFooter');
+				
+				if (res.sts == 1) {
+					
+					setTimeout(function () {
+                        var refid = res.refid;
+                        var staff_id = res.staff_id;
+
+						$('#myModalis').modal('hide');
+
+						// REFRESH STAFF LIST
+						$.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->lib->class_url('trStaffList4')?>',
+                            data: {'refid' : refid},
+                            beforeSend: function() {
+                                $('#staff_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                            },
+                            success: function(res) {
+                                $('#staff_list').html(res);
+                                tr_row = $('#tbl_tr_stf_list').DataTable({
+                                    "ordering":false,
+                                });
+                            }
+                        });
+						
+					}, 1000);
+					$('.btn').removeAttr('disabled');
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+                msg.danger('Please contact administrator.', '#assignStaffAlert');
+                msg.danger('Please contact administrator.', '#assignStaffAlertFooter');
+			}
+		});	
+    });
+
+    // EDIT ASSIGN STAFF 
+	$('#staff_list').on('click','.upd_staff', function(){
+        var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var staff_id = td.find(".staff_id").text();
+        var refid = $('#refid').val();
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editAssignStfTr')?>',
+			data: {'refid':refid, 'staff_id':staff_id},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+			}
+		});
+	});
+
+    // SAVE UPDATE ASSIGN STAFF
+	$('#myModalis').on('click', '.upd_assign_stf', function (e) { 
+		e.preventDefault();
+        var data = $('#editAssignStaffForm').serialize();
+        msg.wait('#editAssignStaffAlert');
+        msg.wait('#editAssignStaffAlertFooter');
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveEditAssignStaff')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+                msg.show(res.msg, res.alert, '#editAssignStaffAlert');
+                msg.show(res.msg, res.alert, '#editAssignStaffAlertFooter');
+				
+				if (res.sts == 1) {
+					
+					setTimeout(function () {
+                        var refid = res.refid;
+                        var staff_id = res.staff_id;
+
+						$('#myModalis').modal('hide');
+
+						// REFRESH STAFF LIST
+						$.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->lib->class_url('trStaffList4')?>',
+                            data: {'refid' : refid},
+                            beforeSend: function() {
+                                $('#staff_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                            },
+                            success: function(res) {
+                                $('#staff_list').html(res);
+                                tr_row = $('#tbl_tr_stf_list').DataTable({
+                                    "ordering":false,
+                                });
+                            }
+                        });
+						
+					}, 1000);
+					$('.btn').removeAttr('disabled');
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+                msg.danger('Please contact administrator.', '#editAssignStaffAlert');
+                msg.danger('Please contact administrator.', '#editAssignStaffAlertFooter');
+			}
+		});	
+    });
+
+    // EDIT ASSIGN STAFF 
+	$('#staff_list').on('click','.tr_detl_btn', function(){
+        var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+        var staff_id = td.find(".staff_id").text();
+        var sth_status = td.find(".sth_status").text();
+        var refid = $('#refid').val();
+
+		$('#myModalis .modal-content').empty();
+		$('#myModalis').modal('show');
+		$('#myModalis').find('.modal-content').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('updTrainingDetl')?>',
+			data: {'refid':refid, 'staff_id':staff_id, 'sth_status':sth_status},
+			success: function(res) {
+				$('#myModalis .modal-content').html(res);
+			}
+		});
+    });
+    
+    // SAVE UPDATE ASSIGN STAFF
+	$('#myModalis').on('click', '.upd_train_detl', function (e) { 
+		e.preventDefault();
+        var data = $('#editTrainDetl').serialize();
+        msg.wait('#editTrainDetlAlert');
+		
+		$('.btn').attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('saveEditTrDetl')?>',
+			data: data,
+			dataType: 'JSON',
+			success: function(res) {
+                msg.show(res.msg, res.alert, '#editTrainDetlAlert');
+				
+				if (res.sts == 1) {
+					
+					setTimeout(function () {
+                        var refid = res.refid;
+                        var staff_id = res.staff_id;
+
+						$('#myModalis').modal('hide');
+
+						// REFRESH STAFF LIST
+						$.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->lib->class_url('trStaffList4')?>',
+                            data: {'refid' : refid},
+                            beforeSend: function() {
+                                $('#staff_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                            },
+                            success: function(res) {
+                                $('#staff_list').html(res);
+                                tr_row = $('#tbl_tr_stf_list').DataTable({
+                                    "ordering":false,
+                                });
+                            }
+                        });
+						
+					}, 1000);
+					$('.btn').removeAttr('disabled');
+				} else {
+					$('.btn').removeAttr('disabled');
+				}
+			},
+			error: function() {
+				$('.btn').removeAttr('disabled');
+                msg.danger('Please contact administrator.', '#editTrainDetlAlert');
+			}
+		});	
+    });
+
+    // PRINT
+	$('#staff_list').on('click','.print_btn', function () {
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+        var staff_id = td.find(".staff_id").text();
+        var refid = $('#refid').val();
+		var repCode = 'ATR281';
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setRepParam')?>',
+			data: {'staff_id':staff_id, 'refid':refid, 'repCode':repCode},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
+	});
+
+
+    /*===========================================================
+       TAB 3 - CPD POINT
+    =============================================================*/
+
+    
+
+    /*===========================================================
+       TAB 4 - SERVICE BOOK
+    =============================================================*/
+
+    // TRAINING DETAILS
+    $('#staff_training_svc_book').on('click','.tr_detl_btn', function() {
+        var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var refid = td.eq(0).html().trim();
+		var title = td.eq(1).html().trim();
+
+        $('.nav-tabs li:eq(4) a').tab('show');
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo $this->lib->class_url('trDetl')?>',
+            // data: {'dept' : dept, 'month' : month, 'year' : year, 'status' : status},
+            beforeSend: function() {
+                $('#detail').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+            },
+            success: function(res) {
+                $('#detail').html(res);
+
+                // TRAINING DETAILS
+                $('#detl1').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo site_url('training/training_application/editTraining')?>',
+                    data: {'refID':refid},
+                    success: function(res) {
+                        $('#detl1').html(res);
+
+                        $("#detl1 :input").prop("disabled", true);
+                        $("#detl1 .file_att").removeAttr("disabled");
+                        $("#detl1 :button").addClass('hidden');
+                        $("#detl1 .file_att").removeClass('hidden');
+                        $("#detl1 #alert").addClass('hidden');
+                        $("#detl1 .modal-header").addClass('hidden');
+
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo site_url('training/training_application/speakerInfo')?>',
+                            data: {'tsRefID' : refid},
+                            beforeSend: function() {
+                                $('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                            },
+                            success: function(res) {
+                                $('#speakerInfo').html(res);
+                                $('.add_tr_sp').hide();
+                                $('#speakerInfo #spAct').hide();
+                            }
+                        });
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo site_url('training/training_application/facilitatorInfo')?>',
+                            data: {'tsRefID' : refid},
+                            beforeSend: function() {
+                                $('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                            },
+                            success: function(res) {
+                                $('#facilitatorInfo').html(res);
+                                $('.add_tr_fi').hide();
+                                $('#facilitatorInfo #fiAct').hide();
+                            }
+                        });
+                    }
+                });
+
+                // TRAINING COST
+                $('#detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo site_url('training/training_application/trainingCost')?>',
+                    data: {'trRefID' : refid, 'tName' : title},
+                    success: function(res) {
+                        $('#detl2').html(res);
+
+                        $("#detl2 :button").addClass('hidden');
+                    }
+                });
+
+                // TARGET GROUP & MODULE SETUP
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo site_url('training/training_application/targetGroup')?>',
+                    data: {'trRefID' : refid, 'tName' : title},
+                    beforeSend: function() {
+                        $('#detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                    },
+                    success: function(res) {
+                        $('#detl3').html(res);
+
+                        $("#detl3 .add_tg").addClass('hidden');
+                        $("#detl3 .del_tg_btn").addClass('hidden');
+                        
+                        // MODULE SETUP
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo site_url('training/training_application/moduleSetup')?>',
+                            data: {'tsRefID' : refid},
+                            beforeSend: function() {
+                                $('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                            },
+                            success: function(res) {
+                                $('#module_setup').html(res);
+
+                                $("#module_setup :button").addClass('hidden');
+                            }
+                        });
+                    }
+                });
+
+                // CPD SETUP
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo site_url('training/training_application/cpdSetup')?>',
+                    data: {'tsRefID' : refid, 'tName' : title},
+                    beforeSend: function() {
+                        $('#detl4').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+                    },
+                    success: function(res) {
+                        $('#detl4').html(res);
+
+                        $("#detl4 :button").addClass('hidden');
+                    }
+                });
+
+            }
+        });
+
+	});
     
     /*===========================================================
        TAB 5 - DETAILS

@@ -13,7 +13,7 @@
 </form>
 <br>
 <div class="text-right">
-	<button type="button" class="btn btn-primary btn-sm add_staff"><i class="fa fa-plus"></i> Assign New Staff</button>
+	<button type="button" class="btn btn-primary btn-sm assign_staff"><i class="fa fa-plus"></i> Assign New Staff</button>
 </div>
 <br>
 <div class="well">
@@ -46,7 +46,7 @@
                         <td class="text-left col-md-3 name">' . $sl->SM_STAFF_NAME . '</td>
 						<td class="text-center col-md-1">' . $sl->STAFF_DEPT . '</td>
 						<td class="text-center col-md-1">' . $sl->TPR_DESC . '</td>
-                        <td class="text-center col-md-1">' . $sl->STH_STATUS . '</td>
+                        <td class="text-center col-md-1 sth_status">' . $sl->STH_STATUS . '</td>
                         <td class="text-center col-md-2">' . $sl->FEE_CODE_DESC . '</td>
 						<td class="text-center col-md-1">' . number_format($sl->TC_AMOUNT,2) . '</td>
 
@@ -63,12 +63,14 @@
 								<button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button>
 								<div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn">
 
-									<button type="button" class="btn btn-info text-left btn-block btn-xs tr_history"><i class="fa fa-history"></i> History</button>
-
 									<button type="button" class="btn btn-success text-left btn-block btn-xs upd_staff"><i class="fa fa-edit"></i> Edit</button>
 
-									<button type="button" class="btn btn-danger text-left btn-block btn-xs del_staff"><i class="fa fa-trash"></i> Delete</button>
-									
+									<button type="button" class="btn btn-primary text-left btn-block btn-xs tr_detl_btn"><i class="fa fa-info-circle"></i> Training Details</button>
+
+									<button type="button" class="btn btn-info text-left btn-block btn-xs tr_history"><i class="fa fa-history"></i> History</button>
+
+									<button type="button" class="btn btn-danger text-left btn-block btn-xs print_btn"><i class="fa fa-print"></i> Print</button>
+
 								</div>
 							</div>
                         </td>

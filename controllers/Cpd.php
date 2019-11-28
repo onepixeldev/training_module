@@ -1927,7 +1927,8 @@ class Cpd extends MY_Controller
     }
 
     // VALIDATE UPDATE
-    public function validateUpdateTrCpd() {
+    public function validateUpdateTrCpd() 
+    {
         $this->isAjax();
 
         $refid = $this->input->post('refid', true);

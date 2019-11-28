@@ -215,7 +215,7 @@ $('.tr_details').click(function(){
                     if(res.sts == 1) {
                         $.ajax({
                             type: 'POST',
-                            url: '<?php echo $this->lib->class_url('trainingCost')?>',
+                            url: '<?php echo site_url('training/training_application/trainingCost')?>',
                             data: {'trRefID' : trRefID, 'tName' : trainingN},
                             beforeSend: function() {
                                 $('#tr_detl #training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
@@ -405,7 +405,6 @@ $('.gen_mark').click(function() {
                                             url: '<?php echo site_url('training/cpd/ATF123')?>',
                                             data: {'refid' : refid},
                                             beforeSend: function() {
-                                                $('.nav-tabs li:eq(8) a').tab('show');
                                                 $('#update_cpd_info').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
                                             },
                                             success: function(res) {

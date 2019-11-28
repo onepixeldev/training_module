@@ -26,13 +26,13 @@
                                 <button type="button" class="btn btn-xs btn-warning" data-toggle="dropdown"><i class="fa fa-bars"></i> Menu</button>
                                 <div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn">
 
-                                    <button type="button" class="btn btn-primary text-left btn-block btn-xs staff_list_btn"><i class="fa fa-users"></i> Assign Training</button>
+                                    <button type="button" class="btn btn-primary text-left btn-block btn-xs staff_list_btn"><i class="fa fa-users"></i> Assign Staff</button>
 
                                     <button type="button" class="btn btn-info text-left btn-block btn-xs select_training_btn"><i class="fa fa-info-circle"></i> Details</button>
 
                                     <button type="button" class="btn btn-success text-left btn-block btn-xs cpd_pts_btn"><i class="fa fa fa-upload"></i> CPD Point</button>
 
-                                    <button type="button" class="btn btn-warning text-left btn-block btn-xs service_book"><i class="fa fa-book"></i> Service Book</button>
+                                    <button type="button" class="btn btn-warning text-left btn-block btn-xs svc_book_btn"><i class="fa fa-book"></i> Service Book</button>
                                     
                                 </div>
                             </div>

@@ -309,7 +309,6 @@
     <div id="alertFooter"></div>
     
     <div class="modal-footer">
-		<button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-hand-o-left"></i> Cancel</button>
         <button type="button" class="btn btn-primary save_upd_tr"><i class="fa fa-save"></i> Save</button>
     </div>
 </form>

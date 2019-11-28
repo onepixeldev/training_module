@@ -595,7 +595,7 @@
 		});
 	});
 
-	// SELECT TRAINING BTN - STAFF
+	// TRAINING DETAIL TRAINING_LIST_STAFF
 	$('#training_list_staff').on('click','.tr_detl_btn', function(){
 		var thisBtn = $(this);
 		var td = thisBtn.parent().siblings();
@@ -1265,6 +1265,137 @@
 		});
     });
 
+	// TRAINING DETL
+	$('#staff_training_svc_book').on('click','.tr_detl_btn', function(){
+		var thisBtn = $(this);
+		var td = thisBtn.parent().siblings();
+		var trRefID = td.eq(0).html().trim();
+		var trainingN = td.eq(1).html().trim();
+		//var scCode = '1';
+		//alert(trRefID);
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('editTraining')?>',
+			data: {'refID' : trRefID},
+			beforeSend: function() {
+				$('.nav-tabs li:eq(4) a').tab('show');
+				$('#training_list_detl').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+			},
+			success: function(res) {
+				$('#training_list_detl').html(res);
+
+				$('.modal-header').hide();
+				$('#alert').hide();
+				$('.field_inpt').prop("disabled", true);
+				$('.save_upd_tr_info').hide();
+				$('#search_str_tr_ver').hide();
+		
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('speakerInfo')?>',
+					data: {'tsRefID' : trRefID},
+					beforeSend: function() {
+						$('#speakerInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#speakerInfo').html(res);
+						$('.add_tr_sp').hide();
+						$('#speakerInfo #spAct').hide();
+					}
+				});
+
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('facilitatorInfo')?>',
+					data: {'tsRefID' : trRefID},
+					beforeSend: function() {
+						$('#facilitatorInfo').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#facilitatorInfo').html(res);
+						$('.add_tr_fi').hide();
+						$('#facilitatorInfo #fiAct').hide();
+					}
+				});
+
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('verExternalAgency')?>',
+					data: {'trRefID' : trRefID},
+					dataType: 'JSON',
+					success: function(res) {
+						if(res.sts == 1) {
+							$.ajax({
+								type: 'POST',
+								url: '<?php echo $this->lib->class_url('trainingCost')?>',
+								data: {'trRefID' : trRefID, 'tName' : trainingN},
+								beforeSend: function() {
+									$('#training_list_detl2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+								},
+								success: function(res) {
+									$('#training_list_detl2').html(res);
+								}
+							});
+						} else {
+							$('#training_list_detl2').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Training Cost only available for External Agency Training</th></tr></thead></table></p>');
+						};
+					}
+				});
+			
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('targetGroup')?>',
+					data: {'trRefID' : trRefID, 'tName' : trainingN},
+					beforeSend: function() {
+						$('#training_list_detl3').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#training_list_detl3').html(res);
+						$('.add_tg').hide();
+						$('.del_tg_btn').hide();
+
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('moduleSetup')?>',
+							data: {'tsRefID' : trRefID},
+							beforeSend: function() {
+								$('#module_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#module_setup').html(res);
+								$('#msBTN').hide();
+								$('.edit_ms1_btn').hide();
+								$('.edit_ms2_btn').hide();
+								$('.edit_ms3_btn').hide();
+							}
+						});
+					}
+				});
+
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo $this->lib->class_url('cpdSetup')?>',
+					data: {'tsRefID' : trRefID, 'tName' : trainingN},
+					beforeSend: function() {
+						$('#training_list_detl4').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+					},
+					success: function(res) {
+						$('#training_list_detl4').html(res);
+						$('#cpdBTN').hide();
+						$('.edit_cpd1_btn').hide();
+						$('.edit_cpd2_btn').hide();
+						$('.edit_cpd3_btn').hide();
+						$('.edit_cpd4_btn').hide();
+						$('.edit_cpd5_btn').hide();
+					}
+				});
+			}
+		});
+	});
+
+	// SERVICE BOOK - ATF118
+
 	// Select all record	
 	$('#staff_training_application').on('click','.select_all_btn', function() {
 		$(".checkitem").prop('checked', true);
@@ -1315,7 +1446,6 @@
 		$('.btn').attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			//url: '<?php echo $this->lib->class_url('saveStaffUpdateCpdMark')?>',
 			url: '<?php echo site_url('training/cpd/saveStaffUpdateCpdMark')?>',
 			data: data,
 			dataType: 'JSON',

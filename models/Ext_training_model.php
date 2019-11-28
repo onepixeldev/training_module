@@ -355,7 +355,7 @@ class Ext_training_model extends MY_Model
     // GET STAFF LIST DROPDOWN
     public function getStaffList($staffID = null)
     {
-        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID ||' - '||SM_STAFF_NAME AS SM_STAFF_ID_NAME, TO_CHAR(SYSDATE, 'DD/MM/YYYY') AS CURR_DATE");
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_STAFF_ID ||' - '||SM_STAFF_NAME AS SM_STAFF_ID_NAME, TO_CHAR(SYSDATE, 'DD/MM/YYYY') AS CURR_DATE, SM_DEPT_CODE");
         $this->db->from("STAFF_MAIN, STAFF_STATUS");
         $this->db->where("SS_STATUS_CODE = SM_STAFF_STATUS");
         $this->db->where("SM_STAFF_TYPE = 'STAFF'");
@@ -1775,4 +1775,540 @@ class Ext_training_model extends MY_Model
         return $q->result();
     }
 
+    // ROLE DD
+    public function getRoleDD()
+    {
+        $this->db->select("TPR_CODE,
+        TPR_DESC,
+        TPR_CODE||' - '||TPR_DESC TPR_CODE_DESC
+        ");
+        $this->db->from("TRAINING_PARTICIPANT_ROLE");
+        $this->db->order_by("TPR_CODE");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // FEE DD
+    public function getFeeDD()
+    {
+        $this->db->select("TFS_CODE,
+        TFS_DESC,
+        TFS_CODE||' - '||TFS_DESC TFS_CODE_DESC
+        ");
+        $this->db->from("TRAINING_FEE_SETUP");
+        $this->db->order_by("TFS_CODE");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // STAFF DEPT
+    public function getStaffDept($staff_id)
+    {
+        $this->db->select("SM_DEPT_CODE");
+        $this->db->from("STAFF_MAIN");
+        $this->db->where("SM_STAFF_ID", $staff_id);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // TRAINING FEE
+    public function getTrainingFee($refid)
+    {
+        $this->db->select("TC_AMOUNT");
+        $this->db->from("TRAINING_COST");
+        $this->db->where("TC_COST_CODE = 'T001'");
+        $this->db->where("TC_TRAINING_REFID", $refid);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // ASSIGN STAFF DETL
+    public function assignStaffDetl($refid, $staff_id)
+    {
+        $this->db->select("STH_STAFF_ID, STH_TRAINING_REFID");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_STAFF_ID", $staff_id);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // TRAINING HEAD DETL
+    public function getTrDetl($refid)
+    {
+        $this->db->select("TH_ATTENDANCE_TYPE, COALESCE(TH_EVALUATION_COMPULSORY,'N') TH_EVALUATION_COMPULSORY");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_REF_ID", $refid);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // ASSIGN NEW STAFF
+    public function saveAssignStaff($form, $sth_complete, $eva_id)
+    {
+        $curr_usr = $this->staff_id;
+        $curr_date = 'SYSDATE';
+        $status = $form['status'];
+        $role = $form['role'];
+
+        $sth_approve_by = '';
+        $sth_approve_date = '';
+        $sth_verify_by = '';
+        $sth_verify_date = '';
+        $sth_recommend_by = '';
+        $sth_recommend_date = '';
+
+        // AUTO ASSIGN ROLE PESERTA
+        if(empty($form['role'])) {
+            $role = 'D';
+        }
+
+        if($status == 'APPROVE' || $status == 'REJECT') {
+            $sth_approve_by = $curr_usr;
+            $sth_approve_date = $curr_date;
+        } elseif($status == 'RECOMMEND') {
+            $sth_verify_by = $curr_usr;
+            $sth_verify_date = $curr_date;
+        } elseif($status == 'RECOMMEND_BSM') {
+            $sth_recommend_by = $curr_usr;
+            $sth_recommend_date = $curr_date;
+        }
+
+        $data = array(
+            "STH_TRAINING_REFID" => $form['refid'],
+            "STH_STAFF_ID" => $form['staff_id_form'],
+            "STH_PARTICIPANT_ROLE" =>  $role,
+            "STH_STATUS" =>  $form['status'],
+            "STH_FEE_CODE" =>  $form['fee_category'],
+            "STH_STAFF_TRAINING_BENEFIT" =>  $form['tr_benefit_stf'],
+            "STH_DEPT_TRAINING_BENEFIT" =>  $form['tr_benefit_dept'],
+            "STH_RECOMMENDER_REASON" =>  $form['remark'],
+            "STH_APPROVE_REASON" =>  $form['remark_other'],
+            "STH_HOD_EVALUATION" =>  $form['eva_status'],
+            "STH_ENTER_BY" => $curr_usr,
+        );
+
+        $this->db->set("STH_ENTER_DATE", $curr_date, false);
+
+        // APPROVE & REJECT
+        if(!empty($sth_approve_by)) {
+            $this->db->set("STH_APPROVE_BY", $sth_approve_by);
+        }
+
+        if(!empty($sth_approve_date)) {
+            $this->db->set("STH_APPROVE_DATE", $sth_approve_date, false);
+        }
+
+        // RECOMMEND
+        if(!empty($sth_verify_by)) {
+            $this->db->set("STH_VERIFY_BY", $sth_verify_by);
+        }
+
+        if(!empty($sth_verify_date)) {
+            $this->db->set("STH_VERIFY_DATE", $sth_verify_date, false);
+        }
+
+        // RECOMMEND_BSM
+        if(!empty($sth_recommend_by)) {
+            $this->db->set("STH_RECOMMEND_BY", $sth_verify_by);
+        }
+
+        if(!empty($sth_recommend_date)) {
+            $this->db->set("STH_RECOMMEND_DATE", $sth_verify_date, false);
+        }
+
+        // STH_COMPLETE
+        if(!empty($sth_complete)) {
+            $this->db->set("STH_COMPLETE", $sth_complete);
+        }
+
+        // STH_EVALUATOR_ID
+        if(!empty($eva_id)) {
+            $this->db->set("STH_EVALUATOR_ID", $eva_id);
+        }
+
+        return $this->db->insert("STAFF_TRAINING_HEAD", $data);
+    }
+
+    // ASSIGN STAFF DETL 2
+    public function getAssignStfDetl($refid, $staff_id)
+    {
+        $this->db->select("STH_STAFF_ID,
+        SM_STAFF_NAME,
+        STH_STATUS,
+        STH_APPLY_DATE,
+        TO_CHAR(STH_APPLY_DATE, 'DD/MM/YYYY') STH_APPLY_DATE2,
+        STH_FEE_CODE||' - '||TFS_DESC AS FEE_CODE_DESC,
+        TC_AMOUNT,
+        STH_FEE_CODE,
+        STH_RECOMMENDER_REASON,
+        STH_APPROVE_REASON,
+        SM_DEPT_CODE STAFF_DEPT,
+        TPR_DESC,
+        STH_STAFF_TRAINING_BENEFIT,
+        STH_DEPT_TRAINING_BENEFIT,
+        CASE STH_HOD_EVALUATION
+        WHEN 'Y' THEN 'Yes'
+        WHEN 'N' THEN 'No'
+        END STH_HOD_EVALUATION2,
+        STH_HOD_EVALUATION,
+        STH_PARTICIPANT_ROLE
+        ");
+        $this->db->from("STAFF_TRAINING_HEAD");
+        $this->db->join("STAFF_MAIN", "SM_STAFF_ID = STH_STAFF_ID", "LEFT");
+        $this->db->join("TRAINING_PARTICIPANT_ROLE", "TPR_CODE = STH_PARTICIPANT_ROLE", "LEFT");
+        $this->db->join("TRAINING_FEE_SETUP", "TFS_CODE = STH_FEE_CODE", "LEFT");
+        $this->db->join("TRAINING_COST", "TC_COST_CODE = 'T001' AND TC_TRAINING_REFID = '$refid'", "LEFT");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_STAFF_ID", $staff_id);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // GET EVALUATOR DETL
+    public function getEvaluatorDetl($staff_id)
+    {
+        $this->db->select("DM_DIRECTOR");
+        $this->db->from("DEPARTMENT_MAIN, STAFF_MAIN");
+        $this->db->where("SM_DEPT_CODE = DM_DEPT_CODE");
+        $this->db->where("SM_STAFF_ID", $staff_id);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // SAVE EDIT ASSIGN STAFF
+    public function saveEditAssignStaff($form, $sth_complete)
+    {
+        $curr_usr = $this->staff_id;
+        $curr_date = 'SYSDATE';
+        $status = $form['status'];
+        $role = $form['role'];
+
+        $sth_approve_by = '';
+        $sth_approve_date = '';
+        $sth_verify_by = '';
+        $sth_verify_date = '';
+        $sth_recommend_by = '';
+        $sth_recommend_date = '';
+
+        // AUTO ASSIGN ROLE PESERTA
+        if(empty($form['role'])) {
+            $role = 'D';
+        }
+
+        if($status == 'APPROVE' || $status == 'REJECT') {
+            $sth_approve_by = $curr_usr;
+            $sth_approve_date = $curr_date;
+        } elseif($status == 'RECOMMEND') {
+            $sth_verify_by = $curr_usr;
+            $sth_verify_date = $curr_date;
+        } elseif($status == 'RECOMMEND_BSM') {
+            $sth_recommend_by = $curr_usr;
+            $sth_recommend_date = $curr_date;
+        }
+
+        $data = array(
+            "STH_PARTICIPANT_ROLE" =>  $role,
+            "STH_STATUS" =>  $form['status'],
+            "STH_FEE_CODE" =>  $form['fee_category'],
+            "STH_STAFF_TRAINING_BENEFIT" =>  $form['tr_benefit_stf'],
+            "STH_DEPT_TRAINING_BENEFIT" =>  $form['tr_benefit_dept'],
+            "STH_RECOMMENDER_REASON" =>  $form['remark'],
+            "STH_APPROVE_REASON" =>  $form['remark_other'],
+            "STH_HOD_EVALUATION" =>  $form['eva_status'],
+            "STH_ENTER_BY" => $curr_usr,
+        );
+
+        $this->db->set("STH_ENTER_DATE", $curr_date, false);
+
+        // APPROVE & REJECT
+        if(!empty($sth_approve_by)) {
+            $this->db->set("STH_APPROVE_BY", $sth_approve_by);
+        }
+
+        if(!empty($sth_approve_date)) {
+            $this->db->set("STH_APPROVE_DATE", $sth_approve_date, false);
+        }
+
+        // RECOMMEND
+        if(!empty($sth_verify_by)) {
+            $this->db->set("STH_VERIFY_BY", $sth_verify_by);
+        }
+
+        if(!empty($sth_verify_date)) {
+            $this->db->set("STH_VERIFY_DATE", $sth_verify_date, false);
+        }
+
+        // RECOMMEND_BSM
+        if(!empty($sth_recommend_by)) {
+            $this->db->set("STH_RECOMMEND_BY", $sth_recommend_by);
+        }
+
+        if(!empty($sth_recommend_date)) {
+            $this->db->set("STH_RECOMMEND_DATE", $sth_recommend_date, false);
+        }
+
+        // STH_COMPLETE
+        if(!empty($sth_complete)) {
+            $this->db->set("STH_COMPLETE", $sth_complete);
+        }
+
+        // // STH_EVALUATOR_ID
+        // if(!empty($eva_id)) {
+        //     $this->db->set("STH_EVALUATOR_ID", $eva_id);
+        // }
+        
+        $this->db->where("STH_TRAINING_REFID", $form['refid']);
+        $this->db->where("STH_STAFF_ID", $form['staff_id_form']);
+
+        return $this->db->update("STAFF_TRAINING_HEAD", $data);
+    }
+
+    // GET SUM CNT
+    public function getSumCNT($staff_id)
+    {
+        $query = $this->db->query("SELECT SUM(CNT) SUM_CNT FROM
+        (SELECT SUM(STH_CPD_MARK)CNT
+        FROM STAFF_TRAINING_HEAD, TRAINING_HEAD
+        WHERE STH_TRAINING_REFID=TH_REF_ID
+        AND STH_STAFF_ID='$staff_id'
+        AND STH_STATUS='APPROVE'
+        AND STH_CPD_COMPETENCY='UMUM'
+        AND TO_CHAR(TH_DATE_FROM,'YYYY')=TO_CHAR(SYSDATE,'YYYY')
+        UNION
+        SELECT SUM(SCM_CPD_MARK)CNT
+        FROM STAFF_CONFERENCE_MAIN,CONFERENCE_MAIN,STAFF_CONFERENCE_REP, CPD_HEAD
+        WHERE SCM_REFID=CM_REFID
+        AND SCM_STAFF_ID = SCR_STAFF_ID(+)
+        AND SCM_REFID = SCR_REFID(+)
+        AND CH_TRAINING_REFID=CM_REFID
+        AND SCM_STAFF_ID='$staff_id'
+        AND TO_CHAR(CM_DATE_TO,'yyyy')=TO_CHAR(SYSDATE,'YYYY')
+        AND SCM_STATUS = 'APPROVE'
+        AND ((CH_REPORT_SUBMISSION = 'N')
+        OR (CH_REPORT_SUBMISSION='Y' AND SCR_STATUS = 'VERIFY_TNCA'))
+        AND SCM_CPD_COMPETENCY ='UMUM')");
+
+        $row = $query->row();
+        
+        return $row;
+    }
+
+    // GET SUM CNT 2
+    public function getSumCNT2($staff_id)
+    {
+        $query = $this->db->query("SELECT SUM(CNT) SUM_CNT2 FROM
+        (SELECT SUM(STH_CPD_MARK)CNT
+        FROM STAFF_TRAINING_HEAD, TRAINING_HEAD
+        WHERE STH_TRAINING_REFID=TH_REF_ID
+        AND STH_STAFF_ID='$staff_id'
+        AND STH_STATUS='APPROVE'
+        AND STH_CPD_COMPETENCY='KHUSUS'
+        AND TO_CHAR(TH_DATE_FROM,'YYYY')=TO_CHAR(SYSDATE,'YYYY')
+        UNION
+        SELECT SUM(SCM_CPD_MARK)CNT
+        FROM STAFF_CONFERENCE_MAIN,CONFERENCE_MAIN,STAFF_CONFERENCE_REP, CPD_HEAD
+        WHERE SCM_REFID=CM_REFID
+        AND SCM_STAFF_ID = SCR_STAFF_ID(+)
+        AND SCM_REFID = SCR_REFID(+)
+        AND CH_TRAINING_REFID=CM_REFID
+        AND SCM_STAFF_ID='$staff_id'
+        AND TO_CHAR(CM_DATE_TO,'yyyy')=TO_CHAR(SYSDATE,'YYYY')
+        AND SCM_STATUS = 'APPROVE'
+        AND ((CH_REPORT_SUBMISSION = 'N')
+        OR (CH_REPORT_SUBMISSION='Y' AND SCR_STATUS = 'VERIFY_TNCA'))
+        AND SCM_CPD_COMPETENCY ='KHUSUS')");
+
+        $row = $query->row();
+        
+        return $row;
+    }
+
+    // GET SUM CNT 3
+    public function getSumCNT3($staff_id)
+    {
+        $query = $this->db->query("SELECT SUM(CNT) SUM_CNT3 FROM
+        (SELECT SUM(STH_CPD_MARK) CNT
+        FROM STAFF_TRAINING_HEAD, TRAINING_HEAD
+        WHERE STH_TRAINING_REFID=TH_REF_ID
+        AND STH_STAFF_ID='$staff_id'
+        AND STH_CPD_COMPETENCY IN ('KHUSUS','UMUM')
+        AND TO_CHAR(TH_DATE_FROM,'YYYY')=TO_CHAR(SYSDATE,'YYYY')
+        AND STH_STATUS='APPROVE'
+        UNION
+        SELECT SUM(SCM_CPD_MARK) CNT
+        FROM STAFF_CONFERENCE_MAIN,CONFERENCE_MAIN,STAFF_CONFERENCE_REP, CPD_HEAD
+        WHERE SCM_REFID=CM_REFID
+        AND SCM_STAFF_ID = SCR_STAFF_ID(+)
+        AND SCM_REFID = SCR_REFID(+)
+        AND CH_TRAINING_REFID=CM_REFID
+        AND SCM_STAFF_ID='$staff_id'
+        AND TO_CHAR(CM_DATE_TO,'yyyy')=TO_CHAR(SYSDATE,'YYYY')
+        AND SCM_STATUS = 'APPROVE'
+        AND ((CH_REPORT_SUBMISSION = 'N')
+        OR (CH_REPORT_SUBMISSION='Y' AND SCR_STATUS = 'VERIFY_TNCA'))
+        AND SCM_CPD_COMPETENCY IN ('KHUSUS','UMUM'))");
+
+        $row = $query->row();
+        
+        return $row;
+    }
+
+    // GET CPD DETL
+    public function getCPDDetl($staff_id)
+    {
+        $this->db->select("SCH_JUM_CPD, SCH_CPD_LAYAK, CP_LNPT_WEIGHTAGE");
+        $this->db->from("STAFF_CPD_HEAD, CPD_POINT");
+        $this->db->where("SCH_TAHUN = CP_YEAR");
+        $this->db->where("SCH_KUMP = CP_SCHEME");
+        $this->db->where("SCH_TAHUN = TO_CHAR(SYSDATE,'YYYY')");
+        $this->db->where("SCH_STAFF_ID", $staff_id);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // UPDATE STAFF_CPD_HEAD
+    public function updateSCH($staff_id, $jumum, $jkhu, $jum_cpd)
+    {
+        $data = array(
+            "SCH_JUM_KHUSUS" =>  $jkhu,
+            "SCH_JUM_UMUM" =>  $jumum,
+            "SCH_JUM_CPD" =>  $jum_cpd
+        );
+        
+        $this->db->where("SCH_STAFF_ID", $staff_id);
+        $this->db->where("SCH_TAHUN = TO_CHAR(SYSDATE,'YYYY')");
+
+        return $this->db->update("STAFF_CPD_HEAD", $data);
+    }
+
+    // UPDATE STAFF_CPD_HEAD 2
+    public function updateSCH2($staff_id, $res)
+    {
+        $data = array(
+            "SCH_PERATUS_LPP" =>  $res
+        );
+        
+        $this->db->where("SCH_STAFF_ID", $staff_id);
+        $this->db->where("SCH_TAHUN = TO_CHAR(SYSDATE,'YYYY')");
+
+        return $this->db->update("STAFF_CPD_HEAD", $data);
+    }
+
+    // GET TRAINING DETL
+    public function getTrainingDetl($refid, $staff_id)
+    {
+        $this->db->select("STD_CANCEL_REASON, TO_CHAR(STD_MPE_DATE, 'DD/MM/YYYY') STD_MPE_DATE2, STD_TRAINING_CALENDAR, STD_WORK_RELATED");
+        $this->db->from("STAFF_TRAINING_DETL");
+        $this->db->where("STD_TRAINING_REFID", $refid);
+        $this->db->where("STD_STAFF_ID", $staff_id);
+        $q = $this->db->get();
+        
+        return $q->row();
+    }
+
+    // UPDATE STAFF_TRAINING_DETL
+    public function saveEditTrDetl($form)
+    {
+        $curr_usr = $this->staff_id;
+        $curr_date = 'SYSDATE';
+        $status = $form['status'];
+        $mpe_date = $form['mpe_date'];
+
+        $data = array(
+            "STD_CANCEL_REASON" =>  $form['cancel_reason'],
+            "STD_TRAINING_CALENDAR" =>  $form['nitc'],
+            "STD_WORK_RELATED" =>  $form['wrelated'],
+        );
+
+        if($status == 'CANCEL') {
+            
+            $this->db->set("STD_CANCEL_BY", $curr_usr);
+
+            $this->db->set("STD_CANCEL_DATE", $curr_date, false);
+        } 
+
+        if(!empty($mpe_date)) {
+            $date = "TO_DATE('$mpe_date', 'DD/MM/YYYY')";
+            $this->db->set("STD_MPE_DATE", $date, false);
+        }
+        
+        $this->db->where("STD_TRAINING_REFID", $form['refid']);
+        $this->db->where("STD_STAFF_ID", $form['staff_id_form']);
+
+        return $this->db->update("STAFF_TRAINING_DETL", $data);
+    }
+
+    // INSERT STAFF_TRAINING_DETL
+    public function saveInsTrDetl($form)
+    {
+        $curr_usr = $this->staff_id;
+        $curr_date = 'SYSDATE';
+        $status = $form['status'];
+        $mpe_date = $form['mpe_date'];
+
+        $data = array(
+            "STD_TRAINING_REFID" =>  $form['refid'],
+            "STD_STAFF_ID" =>  $form['staff_id_form'],
+            "STD_CANCEL_REASON" =>  $form['cancel_reason'],
+            "STD_TRAINING_CALENDAR" =>  $form['nitc'],
+            "STD_WORK_RELATED" =>  $form['wrelated'],
+        );
+
+        if($status == 'CANCEL') {
+            
+            $this->db->set("STD_CANCEL_BY", $curr_usr);
+
+            $this->db->set("STD_CANCEL_DATE", $curr_date, false);
+        } 
+
+        if(!empty($mpe_date)) {
+            $date = "TO_DATE('$mpe_date', 'DD/MM/YYYY')";
+            $this->db->set("STD_MPE_DATE", $date, false);
+        }
+
+        return $this->db->insert("STAFF_TRAINING_DETL", $data);
+    }
+
+    /*===========================================================
+       REPORTS FOR EXTERNAL AGENCY - ATF144
+    =============================================================*/
+
+    // TRAINING LIST
+    public function getExtTrainList()
+    {
+        $this->db->select("TH_REF_ID, TH_TRAINING_TITLE, TO_CHAR(TH_DATE_FROM,'DD/MM/YYYY') TH_DATE_FROM, TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') TH_DATE_TO");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // SEARCH STAFF
+    public function searchStaffMdExt($refid)
+    {
+        $this->db->select("STH_STAFF_ID,
+        SM_STAFF_NAME,
+        SM_DEPT_CODE");
+        $this->db->from("STAFF_TRAINING_HEAD, STAFF_MAIN, STAFF_SERVICE, STAFF_JOB_STATUS");
+        $this->db->where("STH_STAFF_ID = SM_STAFF_ID");
+        $this->db->where("SS_STAFF_ID = SM_STAFF_ID");
+        $this->db->where("SS_JOB_STATUS = SJS_STATUS_CODE");
+        $this->db->where("STH_TRAINING_REFID", $refid);
+        $this->db->where("STH_STATUS = 'APPROVE'");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
 }

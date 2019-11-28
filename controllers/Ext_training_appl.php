@@ -201,7 +201,6 @@ class Ext_training_appl extends MY_Controller
     public function ATF142()
     {
         $data['month'] = $this->et_mdl->getCurDate();
-        $data['year'] = $this->et_mdl->getCurDate();
 
         $data['cur_month'] = $data['month']->SYSDATE_MM;  
         $data['cur_year'] = $data['month']->SYSDATE_YYYY;       
@@ -230,8 +229,16 @@ class Ext_training_appl extends MY_Controller
         $this->render($data);
     }
 
+    // ASSIGN TRAINING FOR EXTERNAL AGENCY
+    public function ATF144()
+    {
+        $this->render();
+    }
+
+
     // SEARCH STAFF
-    public function searchStaffMd() {
+    public function searchStaffMd() 
+    {
         $staff_id = $this->input->post('staff_id', true);
         $search_trigger = $this->input->post('search_trigger', true);
 
@@ -275,7 +282,8 @@ class Ext_training_appl extends MY_Controller
     }
 
     // FILE ATTACHMENT PARAM
-    public function fileAttParam() {
+    public function fileAttParam() 
+    {
         $this->isAjax();
 
         $mod = $this->input->post('mod', true);
@@ -295,7 +303,8 @@ class Ext_training_appl extends MY_Controller
     }
 
     // FILE ATTACHMENT URL
-    public function fileAttachment() {
+    public function fileAttachment() 
+    {
         $mod = $this->session->userdata('mod');
 
         if($mod == "TR_SETUP") {
@@ -312,6 +321,79 @@ class Ext_training_appl extends MY_Controller
             echo header('Location: '.$ecomm_url.'trainingAttachment.jsp?admsID='.$curUser.'&apRID='.$refid.'&apTy=APPL');
             exit;
         } 
+    }
+
+    // SET REPORT PARAM
+    public function setRepParam() 
+    {
+		$this->isAjax();
+		
+		$repCode = $this->input->post('repCode', true);
+		$param = '';
+		
+		if ($repCode == 'ATR281') {
+			$refid = $this->input->post('refid', true);
+			$staff_id = $this->input->post('staff_id', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','TRAINING_REFID'=>$refid,'STAFFID'=>$staff_id));
+        } elseif ($repCode == 'ATR238') {
+			$refid = $this->input->post('refid', true);
+            $staff_id = $this->input->post('staff_id', true);
+            $ref_no = $this->input->post('ref_no', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','TRAINING_REFID'=>$refid,'STAFFID'=>$staff_id, 'RUJUKAN'=>$ref_no));
+        } elseif ($repCode == 'ATR231') {
+			$month = $this->input->post('month', true);
+            $year = $this->input->post('year', true);
+            $dept = $this->input->post('dept', true);
+            $sts = $this->input->post('sts', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO', 'DEPARTMENT'=>$dept, 'TRAINING_YEAR'=>$year, 'STATUS'=>$sts, 'TRAINING_MM'=>$month));
+        } elseif ($repCode == 'ATR232') {
+			$month = $this->input->post('month', true);
+            $year = $this->input->post('year', true);
+            $dept = $this->input->post('dept', true);
+            $sts = $this->input->post('sts', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO', 'DEPARTMENT'=>$dept, 'TRAINING_YEAR'=>$year, 'STATUS'=>$sts, 'TRAINING_MM'=>$month));
+        } elseif ($repCode == 'ATR233') {
+			$month = $this->input->post('month', true);
+            $year = $this->input->post('year', true);
+            $dept = $this->input->post('dept', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO', 'DEPARTMENT'=>$dept, 'TRAINING_YEAR'=>$year, 'TRAINING_MM'=>$month));
+        } elseif ($repCode == 'ATR234') {
+			$month = $this->input->post('month', true);
+            $year = $this->input->post('year', true);
+            $dept = $this->input->post('dept', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO', 'DEPARTMENT'=>$dept, 'TRAINING_YEAR'=>$year, 'TRAINING_MM'=>$month));
+        } elseif ($repCode == 'ATR235') {
+			$month = $this->input->post('month', true);
+            $year = $this->input->post('year', true);
+            $dept = $this->input->post('dept', true);
+            $fee_code = $this->input->post('fee_code', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO', 'DEPARTMENT'=>$dept, 'TRAINING_YEAR'=>$year, 'TRAINING_MM'=>$month, 'FEE_CODE'=>$fee_code));
+        }
+		
+		$json = array('report' => $param);
+		
+		echo json_encode($json);		
+    } 
+    
+    // GENERATE REPORT
+    public function report()
+    {
+		$report = $this->encryption->decrypt_array($this->input->get('r'));
+		$this->lib->generate_report($report, false);
     }
 
     /*===========================================================
@@ -2042,7 +2124,7 @@ class Ext_training_appl extends MY_Controller
         $staff_id = $this->input->post('staff_id', true);
         $code_code = $this->input->post('code_code', true);
         
-        if (!empty($staff_id) && !empty($staff_id)) {
+        if (!empty($refid) && !empty($staff_id)) {
             $del = $this->et_mdl->delPayDetl($refid, $staff_id, $code_code);
     
             if ($del > 0) {
@@ -2410,4 +2492,427 @@ class Ext_training_appl extends MY_Controller
         $this->render($data);
     }
 
+    // SEARCH STAFF
+    public function searchStaffAssignTr() 
+    {
+        $staff_id = $this->input->post('staff_id', true);
+        $search_trigger = $this->input->post('search_trigger', true);
+        $refid = $this->input->post('refid', true);
+
+        if(!empty($refid) && !empty($staff_id) && $search_trigger == 1) {
+            $data['refid'] = $refid;
+
+            $data['stf_inf'] = $this->et_mdl->getStaffSearch($staff_id);
+
+            // role dd
+            $data['role_list'] = $this->dropdown($this->et_mdl->getRoleDD(), 'TPR_CODE', 'TPR_CODE_DESC', ' ---Please select--- ');
+
+            // fee code dd
+            $data['fee_list'] = $this->dropdown($this->et_mdl->getFeeDD(), 'TFS_CODE', 'TFS_CODE_DESC', ' ---Please select--- ');
+
+            // $data['role_list'] = $this->et_mdl->getRoleDD();
+
+            $this->render($data);
+        } else {
+            $data['refid'] = $refid;
+            $this->render($data);
+        }
+    }
+
+    // STAFF FORM DETL
+    public function staffFormDetl() 
+    {
+		$this->isAjax();
+		
+        $refid = $this->input->post('refid', true);
+        $staff_id = $this->input->post('staff_id', true);
+        
+        if (!empty($refid) && !empty($staff_id)) {
+            // STAFF DEPT
+            $info1 = $this->et_mdl->getStaffDept($staff_id);
+            if(!empty($info1)) {
+                $dept = $info1->SM_DEPT_CODE;
+            } else {
+                $dept = '';
+            }
+
+            // TRAINING FEE
+            $info2 = $this->et_mdl->getTrainingFee($refid);
+            if(!empty($info2)) {
+                $fee = number_format($info2->TC_AMOUNT, 2);
+            } else {
+                $fee = '';
+            }
+    
+            if(!empty($dept) && !empty($fee)) {
+                $json = array('sts' => 1, 'msg' => 'Details found', 'alert' => 'success', 'dept' => $dept, 'fee' => $fee);
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to get details', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Invalid operation. Please contact administrator', 'alert' => 'danger');
+        }
+        echo json_encode($json);
+    }
+
+    // SAVE ASSIGN STAFF
+    public function saveAssignStaff()
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['refid'];
+        $staff_id = $form['staff_id_form'];
+        $sth_status = $form['status'];
+        $eva_id = '';
+
+        // form / input validation
+        $rule = array(
+            'refid' => 'required|max_length[30]', 
+            'staff_id_form' => 'required|max_length[10]', 
+            'role' => 'required|max_length[100]',
+            'status' => 'max_length[15]',
+            'fee_category' => 'required|max_length[10]',
+            'tr_benefit_stf' => 'max_length[200]',
+            'tr_benefit_dept' => 'max_length[200]',
+            'remark' => 'max_length[300]',
+            'remark_other' => 'max_length[300]',
+            'eva_status' => 'max_length[1]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $check =  $this->et_mdl->assignStaffDetl($refid, $staff_id);
+
+            if(empty($check)) {
+                $tr_detl =  $this->et_mdl->getTrDetl($refid);
+
+                if(!empty($tr_detl)) {
+                    $att_type = $tr_detl->TH_ATTENDANCE_TYPE;
+                    $th_evaluation = $tr_detl->TH_EVALUATION_COMPULSORY;
+                } else {
+                    $att_type = '';
+                    $th_evaluation = '';
+                }
+
+                if(empty($att_type) || $att_type == 'NONE' && $th_evaluation == 'N') {
+                    $sth_complete = 'Y';
+                }
+
+                if($sth_status != 'REJECT' || $sth_status != 'CANCEL') {
+                    if($th_evaluation == 'Y') {
+                        $eva_detl =  $this->et_mdl->getEvaluatorDetl($staff_id);
+                        if(!empty($eva_detl)) {
+                            $eva_id = $eva_detl->DM_DIRECTOR;
+                        }
+                    }
+                }
+
+                $insert =  $this->et_mdl->saveAssignStaff($form, $sth_complete, $eva_id);
+                // $insert =  1;
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => $staff_id);
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                }
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Record already exist', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // EDIT ASSIGN STAFF
+    public function editAssignStfTr() 
+    {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+
+        if(!empty($refid) && !empty($staff_id)) {
+            $data['refid'] = $refid;
+            $data['staff_id'] = $staff_id;
+
+            // $data['stf_inf'] = $this->et_mdl->getStaffList($staff_id);
+            $data['assign_detl'] = $this->et_mdl->getAssignStfDetl($refid, $staff_id);
+
+            // role dd
+            $data['role_list'] = $this->dropdown($this->et_mdl->getRoleDD(), 'TPR_CODE', 'TPR_CODE_DESC', ' ---Please select--- ');
+
+            // fee code dd
+            $data['fee_list'] = $this->dropdown($this->et_mdl->getFeeDD(), 'TFS_CODE', 'TFS_CODE_DESC', ' ---Please select--- ');
+        } 
+
+        $this->render($data);
+    }
+
+    // SAVE EDIT ASSIGN STAFF
+    public function saveEditAssignStaff()
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['refid'];
+        $staff_id = $form['staff_id_form'];
+        $sth_status = $form['status'];
+        $update2Msg = '';
+        $update3Msg = '';
+
+        // form / input validation
+        $rule = array(
+            'refid' => 'required|max_length[30]', 
+            'staff_id_form' => 'required|max_length[10]', 
+            'role' => 'required|max_length[100]',
+            'status' => 'max_length[15]',
+            'fee_category' => 'required|max_length[10]',
+            'tr_benefit_stf' => 'max_length[200]',
+            'tr_benefit_dept' => 'max_length[200]',
+            'remark' => 'max_length[300]',
+            'remark_other' => 'max_length[300]',
+            'eva_status' => 'max_length[1]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+
+            $tr_detl =  $this->et_mdl->getTrDetl($refid);
+
+            if(!empty($tr_detl)) {
+                $att_type = $tr_detl->TH_ATTENDANCE_TYPE;
+                $th_evaluation = $tr_detl->TH_EVALUATION_COMPULSORY;
+            } else {
+                $att_type = '';
+                $th_evaluation = '';
+            }
+
+            if(empty($att_type) || $att_type == 'NONE' && $th_evaluation == 'N') {
+                $sth_complete = 'Y';
+            }
+
+            if($sth_status == 'REJECT' || $sth_status == 'CANCEL') {
+                $cnt = $this->et_mdl->getSumCNT($staff_id);
+                if(!empty($cnt)) {
+                    $jumum = (int)$cnt->SUM_CNT;
+                } else {
+                    $jumum = 0;
+                }
+
+                $cnt2 = $this->et_mdl->getSumCNT2($staff_id);
+                if(!empty($cnt2)) {
+                    $jkhu = (int)$cnt2->SUM_CNT2;
+                } else {
+                    $jkhu = 0;
+                }
+
+                $cnt3 = $this->et_mdl->getSumCNT3($staff_id);
+                if(!empty($cnt3)) {
+                    $jum_cpd = (int)$cnt3->SUM_CNT3;
+                } else {
+                    $jum_cpd = 0;
+                }
+
+                $cpd_detl = $this->et_mdl->getCPDDetl($staff_id);
+                if(!empty($cpd_detl)) {
+                    $sch_jum_cpd = (int)$cpd_detl->SCH_JUM_CPD;
+                    $sch_cpd_layak = (int)$cpd_detl->SCH_CPD_LAYAK;
+                    $lnptweightage = (int)$cpd_detl->CP_LNPT_WEIGHTAGE;
+
+                    // UPDATE STAFF_CPD_HEAD
+                    $update2 =  $this->et_mdl->updateSCH($staff_id, $jumum, $jkhu, $jum_cpd);
+                    if($update2 > 0) {
+                        $update2Msg = nl2br("\r\n").'Record has been saved (Staff CPD)';
+                    } else {
+                        $update2Msg = '';
+                    }
+
+                    if($sch_jum_cpd < $sch_cpd_layak) {
+                        $res = $lnptweightage;
+                    } else {
+                        if($sch_cpd_layak == 0) {
+                            $res = 0;
+                        } else {
+                            $res_sum = ($sch_jum_cpd / $sch_cpd_layak) * $lnptweightage;
+                            $res = round($res_sum, 2);
+                        }
+                    }
+
+                    // UPDATE STAFF_CPD_HEAD 2
+                    $update3 =  $this->et_mdl->updateSCH2($staff_id, $res);
+                    if($update3 > 0) {
+                        $update3Msg = nl2br("\r\n").'Record has been saved (Staff CPD 2)';
+                    } else {
+                        $update3Msg = '';
+                    }
+                } else {
+                    $update2Msg = nl2br("\r\n").'<font class="text-danger">No record saved on Staff CPD</font>';
+                }
+
+            }
+
+            $update =  $this->et_mdl->saveEditAssignStaff($form, $sth_complete);
+
+            if($update > 0) {
+                $json = array('sts' => 1, 'msg' => 'Record has been saved'.$update2Msg.$update3Msg, 'alert' => 'success', 'refid' => $refid, 'staff_id' => $staff_id);
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+            }
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    // UPDATE TRAINING DETAILS
+    public function updTrainingDetl() 
+    {
+        $staff_id = $this->input->post('staff_id', true);
+        $refid = $this->input->post('refid', true);
+        $sth_status = $this->input->post('sth_status', true);
+
+        if(!empty($refid) && !empty($staff_id)) {
+            $data['refid'] = $refid;
+            $data['staff_id'] = $staff_id;
+            $data['sth_status'] = $sth_status;
+
+            $data['stf_inf'] = $this->et_mdl->getStaffList($staff_id);
+
+            $data['tr_detl'] = $this->et_mdl->getTrainingDetl($refid, $staff_id);
+
+            if(!empty($data['tr_detl'])) {
+                $data['c_reason'] = $data['tr_detl']->STD_CANCEL_REASON;
+                $data['mpe_date'] = $data['tr_detl']->STD_MPE_DATE2;
+                $data['nitc'] = $data['tr_detl']->STD_TRAINING_CALENDAR;
+                $data['wrelated'] = $data['tr_detl']->STD_WORK_RELATED;
+            } else {
+                $data['c_reason'] = '';
+                $data['mpe_date'] = '';
+                $data['nitc'] = '';
+                $data['wrelated'] = '';
+            }
+        } 
+
+        $this->render($data);
+    }
+
+    // SAVE EDIT TRAINING DETAIL
+    public function saveEditTrDetl()
+    {
+        $this->isAjax();
+
+        // get parameter values
+        $form = $this->input->post('form', true);
+
+        $refid = $form['refid'];
+        $staff_id = $form['staff_id_form'];
+        $sth_status = $form['status'];
+
+        // form / input validation
+        $rule = array(
+            'refid' => 'required|max_length[30]', 
+            'staff_id_form' => 'required|max_length[10]', 
+            'status' => 'max_length[15]',
+            'cancel_reason' => 'max_length[200]',
+            'mpe_date' => 'max_length[11]',
+            'nitc' => 'max_length[1]',
+            'wrelated' => 'max_length[1]'
+        );
+
+        $exclRule = null;
+        
+        list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
+
+        if ($status == 1) {
+            $check =  $this->et_mdl->getTrainingDetl($refid, $staff_id);
+
+            if(!empty($check)) {
+                $update =  $this->et_mdl->saveEditTrDetl($form);
+
+                if($update > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => $staff_id);
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                }
+            } else {
+                $insert =  $this->et_mdl->saveInsTrDetl($form);
+
+                if($insert > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'refid' => $refid, 'staff_id' => $staff_id);
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
+                }
+            }
+
+            
+        } else {
+            $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');
+        }
+         
+        echo json_encode($json);
+    }
+
+    /*===========================================================
+       REPORTS FOR EXTERNAL AGENCY - ATF144
+    =============================================================*/
+
+    // PRINT LETTER REPORT
+    public function printLetterRep()
+    {
+        $this->render();
+    }
+
+    // SEARCH TRAINING
+    public function searchTrainingMd() 
+    {
+        $data['train_list'] = $this->et_mdl->getExtTrainList();
+
+        $this->render($data);
+    }
+
+    // PRINT EXTERNAL TRAINING REPORT
+    public function extReport()
+    {
+        $data['date'] = $this->et_mdl->getCurDate();
+
+        $data['cur_month'] = $data['date']->SYSDATE_MM;  
+        $data['cur_year'] = $data['date']->SYSDATE_YYYY;
+        
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->et_mdl->getYearListAppTr2(), 'CM_YEAR', 'CM_YEAR', ' --Please select-- ');
+        
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->et_mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' --Please select-- ');
+
+        $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+
+        $data['sts_list'] = array(''=>'---Please select---', 'APPLY'=>'APPLY', 'RECOMMEND'=>'RECOMMEND', 'RECOMMEND_BSM'=>'RECOMMEND_BSM', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT');
+
+        // fee code dd
+        $data['fee_list'] = $this->dropdown($this->et_mdl->getFeeDD(), 'TFS_CODE', 'TFS_CODE_DESC', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+
+    // SEARCH STAFF EXTERNAL
+    public function searchStaffMdExt() 
+    {
+        $refid = $this->input->post('refid', true);
+
+        $data['stf_inf'] = $this->et_mdl->searchStaffMdExt($refid);
+
+        $this->render($data);
+    }
 }

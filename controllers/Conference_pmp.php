@@ -448,18 +448,18 @@ class Conference_pmp extends MY_Controller
                 //$insert = 1;
 
                 if($insert > 0) {
-                    $insertStaffConDetl = $this->mdl_pmp->insStaffConDetl($refid, $staff_id);
-                    if($insertStaffConDetl > 0) { 
-                        $insConDetlMsg = 'Successfully saved on Staff Conference Detail';
-                    } else {
-                        $insConDetlMsg = '';
-                    }
-
                     $staff_detl = $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
                     if(!empty($staff_detl)) {
                         $sponsor = $staff_detl->SCM_SPONSOR;
                     } else {
                         $sponsor = '';
+                    }
+
+                    $insertStaffConDetl = $this->mdl_pmp->insStaffConDetl($refid, $staff_id);
+                    if($insertStaffConDetl > 0) { 
+                        $insConDetlMsg = 'Successfully saved on Staff Conference Detail';
+                    } else {
+                        $insConDetlMsg = '';
                     }
 
                     $json = array('sts' => 1, 'msg' => 'Record successfully saved'.nl2br("\r\n").$insConDetlMsg, 'alert' => 'success', 'sponsor' => $sponsor);
@@ -652,9 +652,19 @@ class Conference_pmp extends MY_Controller
         // sponsor field
         $sponsor = $form['sponsor'];
 
-        // refid 
         $refid = $form['conference_title'];
         $staff_id = $form['staff_id'];
+        $scm_status = $form['status'];
+        $date_fr = $form['form_date_from'];
+        $date_to = $form['form_date_to'];
+        $v_approver = '';
+        $v_approved_date = '';
+        $leave_year = '';
+
+        $successUpdLDetl = 0;
+        $successUpdLDetlMsg = '';
+        $successUpdLRec = 0;
+        $successUpdLRecMsg = '';
 
         if(!empty($sponsor) && ($sponsor == 'Y' || $sponsor == 'H')) {
             if($form['mod'] == 'EDIT_RMIC') {
@@ -686,6 +696,9 @@ class Conference_pmp extends MY_Controller
                     'approved_by_vc' => 'max_length[10]',
                     'approved_date_vc' => 'max_length[11]',
                     'received_date_vc' => 'max_length[11]',
+
+                    'form_date_from' => 'max_length[11]',
+                    'form_date_to' => 'max_length[11]',
 
                     // RMIC
                     'research_project' => 'required|max_length[20]',
@@ -827,11 +840,267 @@ class Conference_pmp extends MY_Controller
         list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
 
         if ($status == 1) {
-            $update = $this->mdl_pmp->saveEditStfCr($form, $refid, $staff_id);
-            //$update = 1;
 
-            if($update > 0) {
-                $json = array('sts' => 1, 'msg' => 'Record successfully saved', 'alert' => 'success');
+            $update = $this->mdl_pmp->saveEditStfCr($form, $refid, $staff_id);
+            
+            if ($update > 0) {
+                $staff_detl = $this->mdl_pmp->getStaffConferenceDetl($refid, $staff_id);
+                if(!empty($staff_detl)) {
+                    $leave_refid = $staff_detl->SCM_LEAVE_REFID;
+
+                    $scm_app_by = $staff_detl->SCM_APPROVE_BY;
+                    $scm_tnca_app_by = $staff_detl->SCM_TNCA_APPROVE_BY;
+                    $scm_vc_app_by = $staff_detl->SCM_VC_APPROVE_BY;
+
+                    $scm_app_date = $staff_detl->SCM_APPROVE_DATE;
+                    $scm_tnca_app_date = $staff_detl->SCM_TNCA_APPROVE_DATE;
+                    $scm_vc_app_date = $staff_detl->SCM_VC_APPROVE_DATE;
+                } else {
+                    $leave_refid = '';
+
+                    $scm_app_by = '';
+                    $scm_tnca_app_by = '';
+                    $scm_vc_app_by = '';
+
+                    $scm_app_date = '';
+                    $scm_tnca_app_date = '';
+                    $scm_vc_app_date = '';
+                }
+
+                if(!empty($leave_refid)) {
+                    if($scm_status == 'APPROVE' || $scm_status == 'REJECT' || $scm_status == 'CANCEL') {
+                        if(!empty($scm_app_by) && empty($scm_tnca_app_by) && empty($scm_vc_app_by)) {
+                            $v_approver = $scm_app_by;
+                            $v_approved_date = $scm_app_date;
+                        } elseif(!empty($scm_app_by) && !empty($scm_tnca_app_by) && empty($scm_vc_app_by)) {
+                            $v_approver = $scm_tnca_app_by;
+                            $v_approved_date = $scm_tnca_app_date;
+                        } elseif(!empty($scm_app_by) && !empty($scm_tnca_app_by) && !empty($scm_vc_app_by)) {
+                            $v_approver = $scm_vc_app_by;
+                            $v_approved_date = $scm_vc_app_date;
+                        }
+                    }
+
+                    // UPDATE SLD & SLR
+                    if($scm_status == 'APPROVE') {
+
+                        // UPDATE SLD
+                        $upd_leave_detl = $this->mdl_pmp->updLeaveDetl($leave_refid, $scm_status, $v_approver, $v_approved_date);
+
+                        if($upd_leave_detl > 0 ) {
+                            $successUpdLDetl = 1;
+                            $successUpdLDetlMsg = nl2br("\r\n").'Record successfully saved (Leave Detail)';
+                        } else {
+                            $successUpdLDetl = 0;
+                            $successUpdLDetlMsg = '';
+                        }
+
+                        $dateFr = explode('/', $date_fr);
+                        $date_from_year = $dateFr[2];
+
+                        $dateTo = explode('/', $date_to);
+                        $date_to_year = $dateTo[2];
+
+                        if($date_from_year == $date_to_year) {
+                            $leave_year = $date_from_year;
+                        }
+
+                        // GET SUM DAYS TAKEN BASED LEAVE REFID 
+                        $day_detl = $this->mdl_pmp->getSumDayTaken($leave_refid, $leave_year, $staff_id);
+                        if(!empty($day_detl)) {
+                            $taken_days = (int)$day_detl->TAKEN_DAY;
+                        } else {
+                            $taken_days = 0;
+                        }
+
+                        // GET SUM DAYS TAKEN ALL
+                        $day_detl = $this->mdl_pmp->getSumDayTaken2($leave_refid, $leave_year, $staff_id);
+                        if(!empty($day_detl)) {
+                            $all_taken_days = (int)$day_detl->TAKEN_DAY;
+                        } else {
+                            $all_taken_days = 0;
+                        }
+
+                        $total_taken_days = $taken_days + $all_taken_days;
+
+                        // UPDATE SLR
+                        $upd_lr = $this->mdl_pmp->updLeaveRecord($staff_id, $leave_year, $taken_days, $total_taken_days);
+                        if($upd_lr > 0) {
+                            $successUpdLRec = 1;
+                            $successUpdLRecMsg = nl2br("\r\n").'Record successfully saved (Leave Record)';
+                        } else {
+                            $successUpdLRec = 0;
+                            $successUpdLRecMsg = '';
+                        }
+                    } elseif($scm_status == 'REJECT') {
+                        $scm_status = 'REJECT';
+
+                        // UPDATE SLD
+                        $upd_leave_detl = $this->mdl_pmp->updLeaveDetl($leave_refid, $scm_status, $v_approver, $v_approved_date);
+
+                        if($upd_leave_detl > 0 ) {
+                            $successUpdLDetl = 1;
+                            $successUpdLDetlMsg = nl2br("\r\n").'Record successfully saved (Leave Detail)';
+                        } else {
+                            $successUpdLDetl = 0;
+                            $successUpdLDetlMsg = '';
+                        }
+
+                        $dateFr = explode('/', $date_fr);
+                        $date_from_year = $dateFr[2];
+
+                        $dateTo = explode('/', $date_to);
+                        $date_to_year = $dateTo[2];
+
+                        if($date_from_year == $date_to_year) {
+                            $leave_year = $date_from_year;
+                        }
+
+                        // GET SUM DAYS TAKEN BASED LEAVE REFID - REJECT
+                        $day_detl = $this->mdl_pmp->getSumDayTaken3($leave_refid, $leave_year, $staff_id);
+                        if(!empty($day_detl)) {
+                            $taken_days = (int)$day_detl->TAKEN_DAY;
+                        } else {
+                            $taken_days = 0;
+                        }
+
+                        // GET SUM DAYS TAKEN ALL
+                        $day_detl = $this->mdl_pmp->getSumDayTaken2($leave_refid, $leave_year, $staff_id);
+                        if(!empty($day_detl)) {
+                            $all_taken_days = (int)$day_detl->TAKEN_DAY;
+                        } else {
+                            $all_taken_days = 0;
+                        }
+
+                        if($taken_days > $all_taken_days) {
+                            $total_taken_days = $taken_days - $all_taken_days;
+                        } else {
+                            $total_taken_days = $all_taken_days - $taken_days;
+                        }
+
+                        // var_dump($total_taken_days);
+                        // var_dump($taken_days);
+                        // var_dump($all_taken_days);
+
+                        // UPDATE SLR
+                        $upd_lr = $this->mdl_pmp->updLeaveRecord2($staff_id, $leave_year, $taken_days, $all_taken_days, $total_taken_days);
+                        if($upd_lr > 0) {
+                            $successUpdLRec = 1;
+                            $successUpdLRecMsg = nl2br("\r\n").'Record successfully saved (Leave Record)';
+                        } else {
+                            $successUpdLRec = 0;
+                            $successUpdLRecMsg = '';
+                        }
+                    } elseif($scm_status == 'CANCEL') {
+                        $scm_status = 'CANCEL';
+
+                        // UPDATE SLD
+                        $upd_leave_detl = $this->mdl_pmp->updLeaveDetl3($leave_refid, $scm_status, $v_approver, $v_approved_date);
+
+                        if($upd_leave_detl > 0 ) {
+                            $successUpdLDetl = 1;
+                            $successUpdLDetlMsg = nl2br("\r\n").'Record successfully saved (Leave Detail)';
+                        } else {
+                            $successUpdLDetl = 0;
+                            $successUpdLDetlMsg = '';
+                        }
+
+                        $dateFr = explode('/', $date_fr);
+                        $date_from_year = $dateFr[2];
+
+                        $dateTo = explode('/', $date_to);
+                        $date_to_year = $dateTo[2];
+
+                        if($date_from_year == $date_to_year) {
+                            $leave_year = $date_from_year;
+                        }
+
+                        // GET SUM DAYS TAKEN BASED LEAVE REFID - REJECT
+                        $day_detl = $this->mdl_pmp->getSumDayTaken3($leave_refid, $leave_year, $staff_id);
+                        if(!empty($day_detl)) {
+                            $taken_days = (int)$day_detl->TAKEN_DAY;
+                        } else {
+                            $taken_days = 0;
+                        }
+
+                        // GET SUM DAYS TAKEN ALL
+                        $day_detl = $this->mdl_pmp->getSumDayTaken2($leave_refid, $leave_year, $staff_id);
+                        if(!empty($day_detl)) {
+                            $all_taken_days = (int)$day_detl->TAKEN_DAY;
+                        } else {
+                            $all_taken_days = 0;
+                        }
+
+                        if($taken_days > $all_taken_days) {
+                            $total_taken_days = $taken_days - $all_taken_days;
+                        } else {
+                            $total_taken_days = $all_taken_days - $taken_days;
+                        }
+
+                        // UPDATE SLR
+                        $upd_lr = $this->mdl_pmp->updLeaveRecord2($staff_id, $leave_year, $taken_days, $all_taken_days, $total_taken_days);
+                        if($upd_lr > 0) {
+                            $successUpdLRec = 1;
+                            $successUpdLRecMsg = nl2br("\r\n").'Record successfully saved (Leave Record)';
+                        } else {
+                            $successUpdLRec = 0;
+                            $successUpdLRecMsg = '';
+                        }
+                    } else {
+                        $scm_status = 'APPLY';
+
+                        // UPDATE SLD
+                        $upd_leave_detl = $this->mdl_pmp->updLeaveDetl2($leave_refid, $scm_status, $v_approver, $v_approved_date);
+
+                        if($upd_leave_detl > 0 ) {
+                            $successUpdLDetl = 1;
+                            $successUpdLDetlMsg = nl2br("\r\n").'Record successfully saved (Leave Detail)';
+                        } else {
+                            $successUpdLDetl = 0;
+                            $successUpdLDetlMsg = '';
+                        }
+
+                        $dateFr = explode('/', $date_fr);
+                        $date_from_year = $dateFr[2];
+
+                        $dateTo = explode('/', $date_to);
+                        $date_to_year = $dateTo[2];
+
+                        if($date_from_year == $date_to_year) {
+                            $leave_year = $date_from_year;
+                        }
+
+                        // GET SUM DAYS TAKEN BASED LEAVE REFID 
+                        $day_detl = $this->mdl_pmp->getSumDayTaken($leave_refid, $leave_year, $staff_id);
+                        if(!empty($day_detl)) {
+                            $taken_days = (int)$day_detl->TAKEN_DAY;
+                        } else {
+                            $taken_days = 0;
+                        }
+
+                        // GET SUM DAYS TAKEN ALL
+                        $day_detl = $this->mdl_pmp->getSumDayTaken2($leave_refid, $leave_year, $staff_id);
+                        if(!empty($day_detl)) {
+                            $all_taken_days = (int)$day_detl->TAKEN_DAY;
+                        } else {
+                            $all_taken_days = 0;
+                        }
+
+                        $total_taken_days = $taken_days + $all_taken_days;
+
+                        // UPDATE SLR
+                        $upd_lr = $this->mdl_pmp->updLeaveRecord($staff_id, $leave_year, $taken_days, $total_taken_days);
+                        if($upd_lr > 0) {
+                            $successUpdLRec = 1;
+                            $successUpdLRecMsg = nl2br("\r\n").'Record successfully saved (Leave Record)';
+                        } else {
+                            $successUpdLRec = 0;
+                            $successUpdLRecMsg = '';
+                        }
+                    }
+                }
+
+                $json = array('sts' => 1, 'msg' => 'Record successfully saved'.$successUpdLDetlMsg.$successUpdLRecMsg, 'alert' => 'success');
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
             } 
@@ -1335,6 +1604,7 @@ class Conference_pmp extends MY_Controller
 
             // assign sld_status 
             $scm_status = $cr_detl->SCM_STATUS;
+            // var_dump($scm_status);
 
             $leave_approver = '';
             $approve_date = '';
@@ -1381,7 +1651,7 @@ class Conference_pmp extends MY_Controller
             // if staff_leave_detl(sld_refid) !empty then update else insert
             if(!empty($cr_leave_refid)) {
                 
-                $upd_staff_leave_detl = $this->mdl_pmp->updStaffLeaveDetl($form, $cr_leave_refid, $staff_id);
+                $upd_staff_leave_detl = $this->mdl_pmp->updStaffLeaveDetl($form, $cr_leave_refid, $staff_id, $sld_status);
 
                 if($upd_staff_leave_detl > 0) {
                     $successUpdStfLvDetl++;
@@ -1424,6 +1694,7 @@ class Conference_pmp extends MY_Controller
 
             $stf_lv_rec = $this->mdl_pmp->getTotalLeave($staff_id, $approve_date_from_year);
 
+            // INSERT / UPDATE STAFF_LEAVE_DETL & STAFF_LEAVE_RECORD
             if(!empty($stf_lv_rec) && ($successUpdStfLvDetl > 0 || $successInsStfLvDetl > 0)) {
 
                 $sum_total_day_taken = $this->mdl_pmp->sumTotalDayTaken($staff_id, $approve_date_from_year);
@@ -2464,7 +2735,8 @@ class Conference_pmp extends MY_Controller
     }
 
     // SEARCH STAFF
-    public function searchStaffMd() {
+    public function searchStaffMd() 
+    {
         $staff_id = $this->input->post('staff_id', true);
         $search_trigger = $this->input->post('search_trigger', true);
 
@@ -2523,7 +2795,7 @@ class Conference_pmp extends MY_Controller
             'conference_name' => 'required|max_length[200]',
             'mod' => 'required|max_length[10]',
 
-            'remark' => 'max_length[500]',
+            'remark' => 'max_length[2000]',
             'budget_origin' => 'max_length[100]',
             'category' => 'max_length[50]',
             'approved_rjc_by_tnc' => 'max_length[40]',
