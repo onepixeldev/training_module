@@ -53,12 +53,18 @@ class Cpd_report extends MY_Controller
 
         if($dept == $parm_dept) {
             $is_hr_staff = 'Y';
+
+            // PTJ LIST
+            $data['ptj_list'] = $this->dropdown($this->mdl_cpd->getPtjList($is_hr_staff), 'DM_DEPT_CODE', 'DM_DEPT_CD', ' ---Please select--- ');
         } else {
             $is_hr_staff = 'N';
+
+            // PTJ LIST
+            $data['ptj_list'] = $this->dropdown($this->mdl_cpd->getPtjList($is_hr_staff), 'DM_DEPT_CODE', 'DM_DEPT_CD', '');
         }
 
         // PTJ LIST
-        $data['ptj_list'] = $this->dropdown($this->mdl_cpd->getPtjList($is_hr_staff), 'DM_DEPT_CODE', 'DM_DEPT_CD', ' ---Please select--- ');
+        // $data['ptj_list'] = $this->dropdown($this->mdl_cpd->getPtjList($is_hr_staff), 'DM_DEPT_CODE', 'DM_DEPT_CD', ' ---Please select--- ');
 
         $this->render($data);
     }
@@ -195,8 +201,13 @@ class Cpd_report extends MY_Controller
 			$year = $this->input->post('year', true);
             $dept = $this->input->post('dept', true);
             $format = $this->input->post('format', true);
+            $is_hr = $this->input->post('is_hr', true);
 
-            if($format == 'EXCEL') {
+            // if($format == 'EXCEL') {
+            //     $repCode = 'ATR187';
+            // }
+
+            if($is_hr == 'N') {
                 $repCode = 'ATR187';
             }
 
@@ -458,11 +469,11 @@ class Cpd_report extends MY_Controller
                 $cnt = 0;
             }
         } else {
-            $cnt = 0;
+            $cnt = 1;
         }
 
-        if($cnt < 1) {
-            $json = array('sts' => 1, 'msg' => 'Print', 'alert' => 'success');
+        if($cnt > 0) {
+            $json = array('sts' => 1, 'msg' => 'Print', 'alert' => 'success', 'is_hr' => $is_hr_staff);
         } else {
             $json = array('sts' => 0, 'msg' => 'Sorry, Access Denied. You are not authorized to access the report.', 'alert' => 'danger');
         }
@@ -506,11 +517,11 @@ class Cpd_report extends MY_Controller
                 $cnt = 0;
             }
         } else {
-            $cnt = 0;
+            $cnt = 1;
         }
         
-        if($cnt < 1) {
-            $json = array('sts' => 1, 'msg' => 'Print', 'alert' => 'success');
+        if($cnt > 0) {
+            $json = array('sts' => 1, 'msg' => 'Print', 'alert' => 'success', 'is_hr' => $is_hr_staff);
         } else {
             $json = array('sts' => 0, 'msg' => 'Sorry, Access Denied. You are not authorized to access the report.', 'alert' => 'danger');
         }

@@ -604,7 +604,10 @@
 									title: 'Success!',
 									content: res.msg,
 									type: 'green',
-								});
+                                });
+                                
+                                $('#detail').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click Detail button from Training List tab</th></tr></thead></table></p>').show();
+                                $('#history').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click History button from Staff List tab</th></tr></thead></table></p>').show();
                                 
                                 // REFRESH STAFF LIST
                                 $.ajax({
@@ -721,7 +724,10 @@
 									title: 'Success!',
 									content: res.msg,
 									type: 'green',
-								});
+                                });
+                                
+                                $('#detail').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click Detail button from Training List tab</th></tr></thead></table></p>').show();
+                                $('#history').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click History button from Staff List tab</th></tr></thead></table></p>').show();
                                 
                                 // REFRESH STAFF LIST
                                 $.ajax({
@@ -843,7 +849,10 @@
 									title: 'Success!',
 									content: res.msg,
 									type: 'green',
-								});
+                                });
+                                
+                                $('#detail').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click Detail button from Training List tab</th></tr></thead></table></p>').show();
+                                $('#history').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click History button from Staff List tab</th></tr></thead></table></p>').show();
                                 
                                 // REFRESH STAFF LIST
                                 $.ajax({
@@ -960,7 +969,10 @@
 									title: 'Success!',
 									content: res.msg,
 									type: 'green',
-								});
+                                });
+                                
+                                $('#detail').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click Detail button from Training List tab</th></tr></thead></table></p>').show();
+                                $('#history').html('<p><table class="table table-bordered table-hover"><thead><tr><th class="text-center">Please click History button from Staff List tab</th></tr></thead></table></p>').show();
                                 
                                 // REFRESH STAFF LIST
                                 $.ajax({

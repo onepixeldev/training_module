@@ -1,6 +1,6 @@
 <form id="addPayDetl" class="form-horizontal" method="post">
     <div class="modal-header btn-primary">
-        <h4 class="modal-title txt-color-white" id="myModalLabel">Add Peyment Detail</h4>
+        <h4 class="modal-title txt-color-white" id="myModalLabel">Add Payment Detail</h4>
     </div>
     <div class="modal-body">
         <div id="addPayDetlAlert">

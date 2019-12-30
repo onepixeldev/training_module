@@ -181,6 +181,7 @@
 				msg.show(res.msg, res.alert, '#addOrganizerAlert');
 
 				if (res.sts == 1) {
+
 					setTimeout(function () {
 						$('.btn').removeAttr('disabled');
 						location = '<?php echo $this->lib->class_url('viewTabFilter','s1','ASF132')?>';

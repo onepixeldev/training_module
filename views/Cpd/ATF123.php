@@ -338,10 +338,16 @@ $('.edit_cpd_info_btn').click(function() {
                         $('#myModalis .modal-content').html(res);
                     }
                 });
+            } else if(res.sts == 2) {
+                $.alert({
+                    title: 'Alert!',
+                    content: res.msg,
+                    type: 'red',
+                });
             } else {
                 $.alert({
                     title: 'Alert!',
-                    content: 'Evaluation status is No, cannot update CPD mark.',
+                    content: 'Evaluation is not available, cannot update CPD mark.',
                     type: 'red',
                 });
             }

@@ -60,7 +60,7 @@
         <label class="col-md-2 control-label">Country</label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[country]', array('MYS'=>'Malaysia'), 'MYS', 'class="form-control" id="country" style="width: 100%" readonly')
+                echo form_dropdown('form[country]', $country_dd, '', 'class="form-control" id="country" style="width: 100%"')
             ?>
         </div>
         
@@ -68,7 +68,7 @@
         <div class="col-md-4">
             <div id="faspinner"></div>
             <?php
-                echo form_dropdown('form[state]', $state_dd, '', 'class="form-control width-50" id="state"')
+                echo form_dropdown('form[state]', array(''=>'-- Please select country --'), '', 'class="form-control width-50" id="state"')
             ?>
         </div>
     </div>
@@ -99,7 +99,7 @@
     </div>
 
     <div class="form-group">
-        <label class="col-md-2 control-label">Fee</label>
+        <label class="col-md-2 control-label">Fee (RM)</label>
         <div class="col-md-4">
             <input name="form[fee]" placeholder="Fee" class="form-control" type="text">
         </div>
@@ -133,22 +133,22 @@
 
     <br>
 
-    <div class="form-group">
+    <!--<div class="form-group">
         <label class="col-md-4 control-label text-right"><b>Evaluation Period :</b></label>
     </div>
 
     <div class="form-group">
         <label class="col-md-4 control-label text-right" id="evaMsg"></label>
-    </div>
+    </div>-->
 
     <div class="form-group">
-        <label class="col-md-2 control-label">Evaluation?</label>
+        <label class="col-md-2 control-label">Effectiveness Evaluation</label>
         <div class="col-md-4">
             <?php echo form_dropdown('form[evaluation]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), '', 'class="form-control width-50" id="evaluation"')?>
         </div>
     </div>
 
-    <div class="form-group">
+    <!--<div class="form-group hidden" id="eva_period">
         <div id="evaLoader"></div>
         <label class="col-md-2 control-label" id="evaPFrom">From</label>
         <div class="col-md-4">
@@ -159,7 +159,7 @@
         <div class="col-md-4">
             <input name="form[evaluation_period_to]" placeholder="DD-MM-YYYY" class="form-control" type="text" id="datepicker5">
         </div>
-    </div>
+    </div>-->
 
     <br>
     <div class="form-group">
@@ -172,12 +172,16 @@
             <input name="form[coordinator]" class="form-control" type="text" value="" id="coordinator_id" readonly>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
             <input name="" class="form-control" type="text" value="" id="coordinator_name" readonly>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-1">
             <button type="button" class="btn btn-primary search_staff"><i class="fa fa-search"></i> Search</button>
+        </div>
+
+        <div class="col-md-1">
+            <button type="button" class="btn btn-danger" id="toggleClear"><i class="fa fa-times" aria-hidden="true"></i></button>
         </div>
     </div>
 
@@ -202,6 +206,25 @@
     </div>
 
     <div class="alert alert-info fade in">
+        <b>Program / Facilitator Evaluation Info</b>
+    </div>
+    <div class="form-group">
+        <label class="col-md-4 control-label text-right"><b>Program / Facilitator Evaluation Period :</b></label>
+    </div>
+    <div class="form-group">
+        <div id="evaLoader"></div>
+        <label class="col-md-2 control-label" id="evaPFrom">From</label>
+        <div class="col-md-4">
+            <input name="form[evaluation_period_from]" placeholder="DD-MM-YYYY" class="form-control" type="text" id="datepicker4">
+        </div>
+
+        <label class="col-md-2 control-label" id="evaPTo">To</label>
+        <div class="col-md-4">
+            <input name="form[evaluation_period_to]" placeholder="DD-MM-YYYY" class="form-control" type="text" id="datepicker5">
+        </div>
+    </div>
+
+    <div class="alert alert-info fade in">
         <b>Organizer Info</b>
     </div>
     <br>
@@ -212,12 +235,18 @@
                 echo form_dropdown('form[organizer_level]', $org_lvl, '', 'class="form-control width-50"')
             ?>
         </div>
-        
+    </div>
+
+    <div class="form-group">
         <label class="col-md-2 control-label">Organizer Name</label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[organizer_name]', $org_name, '', 'class="select2-filter form-control" style="width: 100%" id="orginfo"')
+                echo form_dropdown('form[organizer_name]', $org_name, '', 'class="select2-filter form-control" id="orginfo"')
             ?>
+        </div>
+
+        <div class="col-md-2">
+            <button type="button" class="btn btn-danger" id="toggleClear2"><i class="fa fa-times" aria-hidden="true"></i></button>
         </div>
     </div>
 
@@ -303,7 +332,9 @@
 <script>
 	$(document).ready(function(){
         $('.select2-filter').select2({
-            width: 'resolve'
+            allowClear: true,
+            placeholder: 'Select an option',
+            width: '100%',
         });
         
         $('#datepicker').datetimepicker({
@@ -329,6 +360,16 @@
         $('#datepicker5').datetimepicker({
             format: 'L',
             format: 'DD-MM-YYYY'
+        });
+
+        $("#toggleClear").click(function() {
+            $("#coordinator_id").val("");
+            $("#coordinator_name").val("");
+        });
+        
+        $("#toggleClear2").click(function() { 
+            $("#orginfo").select2("val", "");
+            $("#orginfo").select2().val("");
         });
 	});
 </script>

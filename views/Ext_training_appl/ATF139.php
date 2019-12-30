@@ -83,7 +83,7 @@
 										<?php //echo form_dropdown('sStatus', array(''=>'---Please select---', 'ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE', 'AMEND'=>'AMEND'), 'ENTRY', 'class="form-control listFilter" id="sStatus"'); ?>
 									</div>-->
 									<div class="form-group text-left">
-										<?php echo form_dropdown('sStatus', array(''=>'---Please select---', 'ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE'), 'ENTRY', 'class="form-control listFilter" id="sStatus"'); ?>
+										<?php echo form_dropdown('sStatus', array(''=>'---Please select---', 'ENTRY'=>'AMEND', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE'), 'ENTRY', 'class="form-control listFilter" id="sStatus"'); ?>
 									</div>
 								</div>
 							</div>

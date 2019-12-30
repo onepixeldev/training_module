@@ -71,7 +71,7 @@ class Ext_training_setup extends MY_Controller
         $form = $this->input->post('form', true);
 
         // CODE
-        $code = $form['code'];
+        $code = strtoupper($form['code']);
 
         // form / input validation
         $rule = array(
@@ -134,7 +134,7 @@ class Ext_training_setup extends MY_Controller
         $form = $this->input->post('form', true);
 
         // CODE
-        $code = $form['code'];
+        $code = strtoupper($form['code']);
 
         // form / input validation
         $rule = array(

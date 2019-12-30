@@ -901,11 +901,15 @@ class Training_application_model extends MY_Model
         if(!empty($form['evaluation_period_from'])){
             $evaluation_period_from = "to_date('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
             $this->db->set("TH_EVALUATION_DATE_FROM", $evaluation_period_from, false);
+        } else {
+            $this->db->set("TH_EVALUATION_DATE_FROM", '', true);
         }
 
         if(!empty($form['evaluation_period_to'])){
             $evaluation_period_to = "to_date('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
             $this->db->set("TH_EVALUATION_DATE_TO", $evaluation_period_to, false);
+        } else {
+            $this->db->set("TH_EVALUATION_DATE_TO", '', true);
         }
 
         if(!empty($form['confirmation_due_date_from'])){
@@ -1145,11 +1149,15 @@ class Training_application_model extends MY_Model
         if(!empty($form['confirmation_due_date_from'])){
             $confirmation_due_date_from = "to_date('".$form['confirmation_due_date_from']."', 'DD/MM/YYYY')";
             $this->db->set("TH_CONFIRM_DATE_FROM", $confirmation_due_date_from, false);
+        } else {
+            $this->db->set("TH_CONFIRM_DATE_FROM", '', true);
         }
 
         if(!empty($form['confirmation_due_date_to'])){
             $confirmation_due_date_to = "to_date('".$form['confirmation_due_date_to']."', 'DD/MM/YYYY')";
             $this->db->set("TH_CONFIRM_DATE_TO", $confirmation_due_date_to, false);
+        } else {
+            $this->db->set("TH_CONFIRM_DATE_TO", '', true);
         }
 
         $this->db->where("TH_REF_ID",$refid);

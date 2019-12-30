@@ -27,6 +27,16 @@
                 ?>
             </div>
         </div>
+        
+        <div class="form-group">
+            <label class="col-md-2 control-label">Label <b><font color="red">* </font></b></label>
+            <div class="col-md-9">
+                <!--input type="text" name="form[label]" placeholder="Label" class="form-control"-->
+                <?php
+                    echo form_dropdown('form[label]', array(''=>'---Please Select---','A'=>'A','B'=>'B','C'=>'C','D'=>'D','E'=>'E','F'=>'F','G'=>'G','H'=>'H','I'=>'I','J'=>'J','K'=>'K','L'=>'L','M'=>'M','N'=>'N','O'=>'O','P'=>'P','Q'=>'Q','R'=>'R','S'=>'S','T'=>'T'), '', 'class="form-control" style="width: 50%"')
+                ?>
+            </div>
+        </div>
     </div>
     
     <div class="modal-footer">

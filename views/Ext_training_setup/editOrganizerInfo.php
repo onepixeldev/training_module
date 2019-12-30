@@ -1,4 +1,4 @@
-<form id="editOrganizer" class="form-horizontal" method="post">
+<form id="editOrganizer" class="form-horizontal" method="post" autocomplete="off">
     <div class="modal-header btn-success">
         <h4 class="modal-title txt-color-white" id="myModalLabel">Edit Record</h4>
     </div>
@@ -24,19 +24,19 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Address</label>
             <div class="col-md-8">
-                <input name="form[address]" placeholder="Address" class="form-control" type="text" value="<?php echo $org_detl->TOH_ADDRESS?>">
+                <input name="form[address]" placeholder="Address" class="form-control" type="text" value="<?php echo $org_detl->TOH_ADDRESS?>" autocomplete="in-address">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-md-2 control-label">Postcode</label>
             <div class="col-md-2">
-                <input name="form[postcode]" placeholder="Postcode" class="form-control" type="text" value="<?php echo $org_detl->TOH_POSTCODE?>">
+                <input name="form[postcode]" placeholder="Postcode" class="form-control" type="text" value="<?php echo $org_detl->TOH_POSTCODE?>" autocomplete="in-postcode">
             </div>
 
             <label class="col-md-2 control-label">City</label>
             <div class="col-md-2">
-                <input name="form[city]" placeholder="City" class="form-control" type="text" value="<?php echo $org_detl->TOH_CITY?>">
+                <input name="form[city]" placeholder="City" class="form-control" type="text" value="<?php echo $org_detl->TOH_CITY?>" autocomplete="in-city">
             </div>
         </div>
 

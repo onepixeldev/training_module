@@ -3,9 +3,9 @@
         <h4 class="modal-title txt-color-white" id="myModalLabel">Training Details</h4>
     </div>
     <div class="modal-body">
-        <!--<div id="editTrainDetlAlert">
-            <b>Note : </b> ( <b><font color="red">*</font></b> ) <b><font color="red">compulsory fields</font></b><br>&nbsp; <span id="note"></span>
-        </div>-->
+        <div id="editTrainDetlAlert">
+            <!--<b>Note : </b> ( <b><font color="red">*</font></b> ) <b><font color="red">compulsory fields</font></b><br>&nbsp; <span id="note"></span>-->
+        </div>
 
         <div class="form-group">
             <label class="col-md-3 control-label">Refid</label>

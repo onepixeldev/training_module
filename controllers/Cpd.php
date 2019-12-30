@@ -1340,8 +1340,8 @@ class Cpd extends MY_Controller
         $rule = array(
             'refid' => 'required|max_length[30]',
             'staff_id' => 'required|max_length[10]',
-            'mark' => 'numeric|required|max_length[40]',
-            'competency' => 'required|max_length[10]'
+            'mark' => 'numeric|max_length[40]',
+            'competency' => 'max_length[10]'
         );
 
         $exclRule = null;
@@ -1977,14 +1977,30 @@ class Cpd extends MY_Controller
         // var_dump($current_date);
         // exit;
 
-        if($sth_hod_evaluation == 'N' && ($th_date_from >= $eva_start_dt) && $getC > 0) {
-            $json = array('sts' => 0, 'msg' => 'Cannot update', 'alert' => 'success');
+        /*if($sth_hod_evaluation == 'N' && ($th_date_from >= $eva_start_dt) && $getC > 0) {
+            $json = array('sts' => 0, 'msg' => 'Cannot update CPD mark', 'alert' => 'success');
 
         } elseif ($sth_hod_evaluation == 'Y' && ($th_date_from >= $eva_start_dt) && $getC > 0 || ($th_date_from >= $eva_start_dt) && $getC == 0 || ($th_date_from < $eva_start_dt) && ($getC == 0 || $getC > 0 )) {
             if($th_date_from == $current_year) {
                 $json = array('sts' => 1, 'msg' => 'Update', 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 1, 'msg' => 'Cannot update CPD from previous year', 'alert' => 'danger');
             }
+        }*/
+
+        if($sth_hod_evaluation == 'N' && ($th_date_from >= $eva_start_dt) && $getC > 0) {
+            $json = array('sts' => 0, 'msg' => 'Cannot update CPD mark', 'alert' => 'success');
+
+        } elseif ($sth_hod_evaluation == 'Y' && ($th_date_from >= $eva_start_dt) && $getC > 0 || ($th_date_from >= $eva_start_dt) && $getC == 0 || ($th_date_from < $eva_start_dt) && ($getC == 0 || $getC > 0 )) {
+            if($th_date_from == $current_year) {
+                $json = array('sts' => 1, 'msg' => 'Update', 'alert' => 'danger');
+            } else {
+                $json = array('sts' => 0, 'msg' => 'Cannot update CPD mark', 'alert' => 'danger');
+            } 
+        } else {
+            $json = array('sts' => 0, 'msg' => 'Cannot update CPD mark', 'alert' => 'danger');
         }
+
         echo json_encode($json);
     }
 
@@ -2000,8 +2016,8 @@ class Cpd extends MY_Controller
         $rule = array(
             'refid' => 'required|max_length[30]',
             'staff_id' => 'required|max_length[10]',
-            'mark' => 'numeric|required|max_length[40]',
-            'competency' => 'required|max_length[10]'
+            'mark' => 'numeric|max_length[40]',
+            'competency' => 'max_length[10]'
         );
 
         $exclRule = null;

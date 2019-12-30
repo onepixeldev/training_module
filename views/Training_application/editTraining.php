@@ -181,33 +181,33 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <!--<div class="form-group">
             <label class="col-md-4 control-label text-right"><b>Evaluation Period :</b></label>
         </div>
         
         <div class="form-group">
             <label class="col-md-4 control-label text-right" id="evaMsg"></label>
-        </div>
+        </div>-->
 
         <div class="form-group">
-            <label class="col-md-2 control-label">Evaluation?</label>
+            <label class="col-md-2 control-label">Effectiveness Evaluation</label>
             <div class="col-md-2">
                 <?php echo form_dropdown('form[evaluation]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $evaluation, 'class="selectpicker form-control field_inpt width-50" id="evaluation"')?>
             </div>
         </div>
 
-        <div class="form-group">
+        <!--<div class="form-group">
             <div id="evaLoader"></div>
-            <label class="col-md-2 control-label" id="evaPFrom">From</label>
+            <label class="col-md-2 control-label" id="evaPFrom">Program / Facilitator Evaluation  From</label>
             <div class="col-md-4">
-                <input name="form[evaluation_period_from]" placeholder="DD-MM-YYYY" class="form-control field_inpt" type="text" id="datepicker4" value="<?php echo $trInfo->TH_EVA_DATE_FROM?>">
+                <input name="form[evaluation_period_from]" placeholder="DD-MM-YYYY" class="form-control field_inpt" type="text" id="datepicker4" value="<?php //echo $trInfo->TH_EVA_DATE_FROM?>">
             </div>
 
-            <label class="col-md-2 control-label" id="evaPTo">To</label>
+            <label class="col-md-2 control-label" id="evaPTo">Program / Facilitator Evaluation To</label>
             <div class="col-md-4">
-                <input name="form[evaluation_period_to]" placeholder="DD-MM-YYYY" class="form-control field_inpt" type="text" id="datepicker5"  value="<?php echo $trInfo->TH_EVA_DATE_TO?>">
+                <input name="form[evaluation_period_to]" placeholder="DD-MM-YYYY" class="form-control field_inpt" type="text" id="datepicker5"  value="<?php //echo $trInfo->TH_EVA_DATE_TO?>">
             </div>
-        </div>
+        </div>-->
 
         <div class="form-group">
             <label class="col-md-4 control-label text-right"><b>Module Setup :</b></label>
@@ -216,8 +216,12 @@
             <label class="col-md-2 control-label">Coordinator</label>
             <div class="col-md-5">
                 <?php
-                    echo form_dropdown('form[coordinator]', $coor, $coordinator, 'class="selectpicker select2-filter form-control field_inpt" style="width: 100%"')
+                    echo form_dropdown('form[coordinator]', $coor, $coordinator, 'class="select2-filter form-control field_inpt" id="coor"')
                 ?>
+            </div>
+
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger" id="toggleClear"><i class="fa fa-times" aria-hidden="true"></i></button>
             </div>
         </div>
 
@@ -232,6 +236,25 @@
             <label class="col-md-2 control-label">Phone Number</label>
             <div class="col-md-4">
                 <input name="form[phone_number]" placeholder="Coordinator contact / phone number" class="form-control field_inpt" type="text" value="<?php echo $coor_p_no?>">
+            </div>
+        </div>
+
+        <div class="alert alert-success fade in">
+            <b>Program / Facilitator Evaluation Info</b>
+        </div>
+        <div class="form-group">
+            <label class="col-md-4 control-label text-right"><b>Program / Facilitator Evaluation Period :</b></label>
+        </div>
+        <div class="form-group">
+            <div id="evaLoader"></div>
+            <label class="col-md-2 control-label" id="evaPFrom">From</label>
+            <div class="col-md-4">
+                <input name="form[evaluation_period_from]" placeholder="DD-MM-YYYY" class="form-control field_inpt" type="text" id="datepicker4" value="<?php echo $trInfo->TH_EVA_DATE_FROM?>">
+            </div>
+
+            <label class="col-md-2 control-label" id="evaPTo">To</label>
+            <div class="col-md-4">
+                <input name="form[evaluation_period_to]" placeholder="DD-MM-YYYY" class="form-control field_inpt" type="text" id="datepicker5"  value="<?php echo $trInfo->TH_EVA_DATE_TO?>">
             </div>
         </div>
 
@@ -262,12 +285,17 @@
                     echo form_dropdown('form[organizer_level]', $org_lvl, $trInfo->TH_ORGANIZER_LEVEL, 'class="selectpicker form-control field_inpt width-50"')
                 ?>
             </div>
-            
+        </div>
+
+        <div class="form-group">
             <label class="col-md-2 control-label">Organizer Name</label>
             <div class="col-md-4">
                 <?php
-                    echo form_dropdown('form[organizer_name]', $org_name, $trInfo->TH_ORGANIZER_NAME, 'class="selectpicker select2-filter form-control field_inpt" style="width: 100%" id="orginfo"')
+                    echo form_dropdown('form[organizer_name]', $org_name, $trInfo->TH_ORGANIZER_NAME, 'class="select2-filter form-control field_inpt" id="orginfo"')
                 ?>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger" id="toggleClear2"><i class="fa fa-times" aria-hidden="true"></i></button>
             </div>
         </div>
 
@@ -356,8 +384,9 @@
 
 	$(document).ready(function(){	
         $('.select2-filter').select2({
+            allowClear: true,
             placeholder: 'Select an option',
-            width: 'resolve'
+            width: '100%',
         });
         
         $('#datepicker').datetimepicker({
@@ -405,4 +434,15 @@
             format: 'hh:mm A'
         });  
 	});
+
+    $("#toggleClear").click(function() {
+        $("#coor").select2("val", "");
+        $("#coor").select2().val("");
+    });
+    
+    $("#toggleClear2").click(function() { 
+        $("#orginfo").select2("val", "");
+        $("#orginfo").select2().val("");
+    });
+    
 </script>

@@ -174,7 +174,7 @@ class Ext_training_model extends MY_Model
     public function saveOrgInfo($form) 
     {
         $data = array(
-            "TOH_ORG_CODE" => $form['code'],
+            "TOH_ORG_CODE" => strtoupper($form['code']),
             "TOH_ORG_DESC" => $form['description'],
             "TOH_ADDRESS" => $form['address'],
             "TOH_POSTCODE" => $form['postcode'],
@@ -601,11 +601,15 @@ class Ext_training_model extends MY_Model
         if(!empty($form['evaluation_period_from'])){
             $evaluation_period_from = "to_date('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
             $this->db->set("TH_EVALUATION_DATE_FROM", $evaluation_period_from, false);
+        } else {
+            $this->db->set("TH_EVALUATION_DATE_FROM", '', true);
         }
 
         if(!empty($form['evaluation_period_to'])){
             $evaluation_period_to = "to_date('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
             $this->db->set("TH_EVALUATION_DATE_TO", $evaluation_period_to, false);
+        } else {
+            $this->db->set("TH_EVALUATION_DATE_TO", '', true);
         }
 
         $this->db->where("TH_REF_ID", $refid);
@@ -979,14 +983,28 @@ class Ext_training_model extends MY_Model
             $this->db->set("TH_APPLY_CLOSING_DATE", $closing_date, false);
         }
 
+        // if(!empty($form['evaluation_period_from'])){
+        //     $evaluation_period_from = "to_date('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
+        //     $this->db->set("TH_EVALUATION_DATE_FROM", $evaluation_period_from, false);
+        // }
+
+        // if(!empty($form['evaluation_period_to'])){
+        //     $evaluation_period_to = "to_date('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
+        //     $this->db->set("TH_EVALUATION_DATE_TO", $evaluation_period_to, false);
+        // }
+
         if(!empty($form['evaluation_period_from'])){
             $evaluation_period_from = "to_date('".$form['evaluation_period_from']."', 'DD/MM/YYYY')";
             $this->db->set("TH_EVALUATION_DATE_FROM", $evaluation_period_from, false);
+        } else {
+            $this->db->set("TH_EVALUATION_DATE_FROM", '', true);
         }
 
         if(!empty($form['evaluation_period_to'])){
             $evaluation_period_to = "to_date('".$form['evaluation_period_to']."', 'DD/MM/YYYY')";
             $this->db->set("TH_EVALUATION_DATE_TO", $evaluation_period_to, false);
+        } else {
+            $this->db->set("TH_EVALUATION_DATE_TO", '', true);
         }
 
         $this->db->where("TH_REF_ID", $refid);
@@ -1920,8 +1938,8 @@ class Ext_training_model extends MY_Model
         }
 
         if(!empty($sth_recommend_date)) {
-            $this->db->set("STH_RECOMMEND_DATE", $sth_verify_date, false);
-        }
+            $this->db->set("STH_RECOMMEND_DATE", $sth_recommend_date, false);
+        } 
 
         // STH_COMPLETE
         if(!empty($sth_complete)) {
@@ -2240,6 +2258,8 @@ class Ext_training_model extends MY_Model
         if(!empty($mpe_date)) {
             $date = "TO_DATE('$mpe_date', 'DD/MM/YYYY')";
             $this->db->set("STD_MPE_DATE", $date, false);
+        } else {
+            $this->db->set("STD_MPE_DATE", '', true);
         }
         
         $this->db->where("STD_TRAINING_REFID", $form['refid']);

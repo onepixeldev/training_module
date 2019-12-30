@@ -84,7 +84,7 @@
 									</div>-->
 
 									<div class="form-group text-left">
-										<?php echo form_dropdown('sStatus', array(''=>'---Please select---', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE'), 'APPROVE', 'class="form-control listFilter" id="sStatus"'); ?>
+										<?php echo form_dropdown('sStatus', array(''=>'---Please select---', 'ENTRY'=>'AMEND', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE'), 'APPROVE', 'class="form-control listFilter" id="sStatus"'); ?>
 									</div>
 								</div>
 							</div>
@@ -406,23 +406,27 @@
 			success: function(res) {
 				$('#add_edit_training').html(res);
 
-				var evaluation = $("#evaluation").val();
-				$('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+				// var evaluation = $("#evaluation").val();
+				// $('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
 
-				if(evaluation == 'Y') {
-					$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+				// if(evaluation == 'Y') {
+				// 	$('#eva_period').removeClass('hidden');
 
-					$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+				// 	$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
 
-					$('#evaPTo').html('To <b><font color="red">* </font></b>');
-				} else {
-					$('#evaMsg').html('');
+				// 	$('#evaPFrom').html('From <b><font color="red">* </font></b>');
 
-					$('#evaPFrom').html('From');
+				// 	$('#evaPTo').html('To <b><font color="red">* </font></b>');
+				// } else {
+				// 	$('#eva_period').addClass('hidden');
+					
+				// 	$('#evaMsg').html('');
 
-					$('#evaPTo').html('To');
-				}
-				$('#evaLoader').html('');
+				// 	$('#evaPFrom').html('From');
+
+				// 	$('#evaPTo').html('To');
+				// }
+				// $('#evaLoader').html('');
 			}
 		});
 
@@ -477,6 +481,87 @@
 		});
 
 	});
+
+	// populate state add new training form
+	$('#add_edit_training').on('change','#country', function() {
+		var countCode = $(this).val();
+		$('#faspinner').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$('#state').html('');
+		//alert($countCode);
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('stateList')?>',
+			data: {'countryCode' : countCode},
+			dataType: 'json',
+			success: function(res) {
+				$('#faspinner').html('');
+
+				var resList = '<option value="" selected > ---Please select--- </option>';
+				
+				if (res.sts == 1) {
+					for (var i in res.stateList) {
+						resList += '<option value="'+res.stateList[i]['SM_STATE_CODE']+'">'+res.stateList[i]['SM_STATE_DESC']+'</option>';
+					}
+				} 
+				
+				$("#state").html(resList);
+			}
+		});
+	});
+
+	// POPULATE ORGANIZER INFO IN ADD NEW TRAINING FORM
+	$('#add_edit_training').on('change', '#orginfo', function() {
+		var organizerCode = $(this).val();
+		$('#faspinner2').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+		$('#orgAddress').html('');
+		$('#orgPostcode').html('');
+		$('#orgCity').html('');
+		$('#orgState').html('');
+		$('#orgCountry').html('');
+	
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('organizerInfo')?>',
+			data: {'orgCode' : organizerCode},
+			dataType: 'json',
+			success: function(res) {
+				if (res.sts == 1) {
+					$('#faspinner2').html('');
+					$('#orgAddress').val(res.orgInfo.TOH_ADDRESS);
+					$('#orgPostcode').val(res.orgInfo.TOH_POSTCODE);
+					$('#orgCity').val(res.orgInfo.TOH_CITY);
+					$('#orgState').val(res.orgInfo.SM_STATE_DESC);
+					$('#orgCountry').val(res.orgInfo.CM_COUNTRY_DESC);
+				}			
+			}
+		});
+	});
+
+	// EVALUATION NOT/REQUIRED
+	// $('#add_edit_training').on('change','#evaluation', function() {
+	// 	var evaluation = $(this).val();
+	// 	$('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+
+	// 	if(evaluation == 'Y') {
+	// 		$('#eva_period').removeClass('hidden');
+
+	// 		$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+
+	// 		$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+
+	// 		$('#evaPTo').html('To <b><font color="red">* </font></b>');
+	// 	} else {
+	// 		$('#eva_period').addClass('hidden');
+
+	// 		$('#evaMsg').html('');
+
+	// 		$('#evaPFrom').html('From');
+
+	// 		$('#evaPTo').html('To');
+	// 	}
+	// 	$('#evaLoader').html('');
+	// });
 
 	// FILE ATTACHMENT
 	$('#add_edit_training').on('click','.file_att', function(){
@@ -553,6 +638,28 @@
 							data: {'refid':refid},
 							success: function(res) {
 								$('#add_edit_training').html(res);
+
+								// var evaluation = $("#evaluation").val();
+								// $('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+
+								// if(evaluation == 'Y') {
+								// 	$('#eva_period').removeClass('hidden');
+
+								// 	$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+
+								// 	$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+
+								// 	$('#evaPTo').html('To <b><font color="red">* </font></b>');
+								// } else {
+								// 	$('#eva_period').addClass('hidden');
+									
+								// 	$('#evaMsg').html('');
+
+								// 	$('#evaPFrom').html('From');
+
+								// 	$('#evaPTo').html('To');
+								// }
+								// $('#evaLoader').html('');
 							}
 						});
 
@@ -1256,6 +1363,38 @@
 								//$('#tbl_list_ms tbody').fadeOut().delay(1000).detach();
 								$('#group_module_setup #insMs').show();
 								$('#group_module_setup .delete_ms_btn').hide();
+
+								// REFRESH EDIT TRAINING
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('editTraining')?>',
+									data: {'refid':refid},
+									success: function(res) {
+										$('#add_edit_training').html(res);
+
+										// var evaluation = $("#evaluation").val();
+										// $('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+
+										// if(evaluation == 'Y') {
+										// 	$('#eva_period').removeClass('hidden');
+
+										// 	$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+
+										// 	$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+
+										// 	$('#evaPTo').html('To <b><font color="red">* </font></b>');
+										// } else {
+										// 	$('#eva_period').addClass('hidden');
+											
+										// 	$('#evaMsg').html('');
+
+										// 	$('#evaPFrom').html('From');
+
+										// 	$('#evaPTo').html('To');
+										// }
+										// $('#evaLoader').html('');
+									}
+								});
 							} else {
 								hide_loading();
 								$.alert({

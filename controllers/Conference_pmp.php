@@ -2800,6 +2800,7 @@ class Conference_pmp extends MY_Controller
             'category' => 'max_length[50]',
             'approved_rjc_by_tnc' => 'max_length[40]',
             'approved_rjc_date_tnc' => 'max_length[40]',
+            'received_date_tnc' => 'max_length[40]',
 
             'previous_budget_origin' => 'max_length[40]',
 

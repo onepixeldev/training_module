@@ -252,7 +252,7 @@
 		},
     });
 
-    // REPORT I
+    // REPORT I (A)
     $('#report_i').on('click', '.genReporti', function () {
         var repCode = $(this).attr('repCode');
         var year_ai = $("#year_ai").val(); 
@@ -282,6 +282,44 @@
         });
         
     });
+	
+	// REPORT I (Program / Facilitator Evaluation)
+	$('#report_i').on('click','.genReportBi', function() {
+		var repCode = $(this).attr('repCode');
+		var repFormat = $("#rep_format_bi").val();
+        var year_bi = $("#year_bi").val();
+        var courseRefid = $("#courseRefid").val();
+		
+		if (courseRefid.length == 0) {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please select Course Title',
+				type: 'red'
+			});
+			return;
+		}
+
+		$(this).attr('disabled', 'disabled');
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setRepParam')?>',
+			data: {'rep_code': repCode, 'rep_format' : repFormat, 'rep_year' : year_bi, 'course_rid' : courseRefid},
+			dataType: 'json',
+			success: function(res) {
+				$('.genReportBi').removeAttr('disabled');
+				
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			},
+			error: function() {
+				$('.genReportBi').removeAttr('disabled');
+				$.alert({
+					title: 'Error!',
+					content: 'Please contact administrator.',
+					type: 'red',
+				});
+			}
+		});	
+	});	
 
     // REPORT I
     $('#report_i').on('click', '.genReportMMi', function () {

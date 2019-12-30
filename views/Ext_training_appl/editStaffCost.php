@@ -1,6 +1,6 @@
 <form id="editAssignStfCost" class="form-horizontal" method="post">
     <div class="modal-header btn-success">
-        <h4 class="modal-title txt-color-white" id="myModalLabel">Assign New Staff</h4>
+        <h4 class="modal-title txt-color-white" id="myModalLabel">Edit Staff Cost</h4>
     </div>
     <div class="modal-body">
         <div id="editAssignStfCostAlert">

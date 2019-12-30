@@ -817,14 +817,14 @@ class Training_application extends MY_Controller
         // training name
         $trName = $form['training_title'];
 
-        // evaluation period not/required
-        if($evaluationTHD == 'Y') {
-            $evaluationFrReq = 'required|max_length[30]';
-            $evaluationToReq = 'required|max_length[30]';
-        } else {
-            $evaluationFrReq = 'max_length[30]';
-            $evaluationToReq = 'max_length[30]';
-        }
+        // // evaluation period not/required
+        // if($evaluationTHD == 'Y') {
+        //     $evaluationFrReq = 'required|max_length[30]';
+        //     $evaluationToReq = 'required|max_length[30]';
+        // } else {
+        //     $evaluationFrReq = 'max_length[30]';
+        //     $evaluationToReq = 'max_length[30]';
+        // }
 
         // form / input validation
         $rule = array(
@@ -844,16 +844,19 @@ class Training_application extends MY_Controller
             'date_to' => 'required|max_length[11]', 
             'time_from' => 'required|max_length[11]', 
             'time_to' => 'required|max_length[11]',
-            'total_hours' => 'required|max_length[12]', 
+            'total_hours' => 'required|numeric|max_length[12]', 
             'internal_external' => 'required|max_length[20]', 
             'sponsor' => 'max_length[100]',
             'offer' => 'max_length[1]', 
-            'participants' => 'max_length[11]', 
+            'participants' => 'integer|max_length[11]', 
             'online_application' => 'max_length[1]',
             'closing_date' => 'max_length[11]', 
             'competency_code' => 'max_length[10]', 
-            'evaluation_period_from' => $evaluationFrReq,
-            'evaluation_period_to' => $evaluationToReq, 
+            'evaluation_period_from' => 'max_length[30]',
+            'evaluation_period_to' => 'max_length[30]', 
+
+            // 'evaluation_period_from' => $evaluationFrReq,
+            // 'evaluation_period_to' => $evaluationToReq, 
 
             // TRAINING_HEAD_DETL
             'coordinator' => 'max_length[10]', 
@@ -1500,13 +1503,13 @@ class Training_application extends MY_Controller
         $evaluationTHD = $form['evaluation'];
 
         // evaluation period not/required
-        if($evaluationTHD == 'Y') {
-            $evaluationFrReq = 'required|max_length[30]';
-            $evaluationToReq = 'required|max_length[30]';
-        } else {
-            $evaluationFrReq = 'max_length[30]';
-            $evaluationToReq = 'max_length[30]';
-        }
+        // if($evaluationTHD == 'Y') {
+        //     $evaluationFrReq = 'required|max_length[30]';
+        //     $evaluationToReq = 'required|max_length[30]';
+        // } else {
+        //     $evaluationFrReq = 'max_length[30]';
+        //     $evaluationToReq = 'max_length[30]';
+        // }
 
         // form / input validation
         $rule = array(
@@ -1530,16 +1533,18 @@ class Training_application extends MY_Controller
             'date_to' => 'required|max_length[11]', 
             'time_from' => 'required|max_length[11]', 
             'time_to' => 'required|max_length[11]',
-            'total_hours' => 'required|max_length[12]', 
+            'total_hours' => 'required|numeric|max_length[12]', 
             'internal_external' => 'required|max_length[20]', 
             'sponsor' => 'max_length[100]',
             'offer' => 'max_length[1]', 
-            'participants' => 'max_length[11]', 
+            'participants' => 'integer|max_length[11]', 
             'online_application' => 'max_length[1]',
             'closing_date' => 'max_length[11]', 
             'competency_code' => 'max_length[10]', 
-            'evaluation_period_from' => $evaluationFrReq,
-            'evaluation_period_to' => $evaluationToReq, 
+            'evaluation_period_from' => 'max_length[30]',
+            'evaluation_period_to' => 'max_length[30]', 
+            // 'evaluation_period_from' => $evaluationFrReq,
+            // 'evaluation_period_to' => $evaluationToReq, 
 
             // TRAINING_HEAD_DETL
             'coordinator' => 'max_length[10]', 

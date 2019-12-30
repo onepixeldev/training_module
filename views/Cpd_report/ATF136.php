@@ -184,11 +184,12 @@
 			dataType: 'JSON',
 			success: function(res) {
 				if(res.sts == 1) {
-                    hide_loading();
+					hide_loading();
+					// is_hr = res.is_hr;
 					$.ajax({
                         type: 'POST',
                         url: '<?php echo $this->lib->class_url('setRepParam')?>',
-                        data: {'year':year, 'dept':dept, 'format':format, 'staff_id':staff_id, 'repCode':repCode},
+                        data: {'year':year, 'dept':dept, 'format':format, 'staff_id':staff_id, 'repCode':repCode, 'is_hr':res.is_hr},
                         dataType: 'JSON',
                         success: function(res) {
                             window.open("report?r="+res.report,"mywin","width=800,height=600");
@@ -478,7 +479,7 @@
 					$.ajax({
                         type: 'POST',
                         url: '<?php echo $this->lib->class_url('setRepParam')?>',
-                        data: {'year':year, 'format':format, 'sector':sector, 'scheme':scheme, 'repCode':repCode},
+                        data: {'year':year, 'format':format, 'sector':sector, 'scheme':scheme, 'repCode':repCode, 'is_hr':res.is_hr},
                         dataType: 'JSON',
                         success: function(res) {
                             window.open("report?r="+res.report,"mywin","width=800,height=600");
@@ -529,7 +530,7 @@
 					$.ajax({
                         type: 'POST',
                         url: '<?php echo $this->lib->class_url('setRepParam')?>',
-                        data: {'year':year, 'format':format, 'sector':sector, 'scheme':scheme, 'job':job, 'repCode':repCode},
+                        data: {'year':year, 'format':format, 'sector':sector, 'scheme':scheme, 'job':job, 'repCode':repCode, 'is_hr':res.is_hr},
                         dataType: 'JSON',
                         success: function(res) {
                             window.open("report?r="+res.report,"mywin","width=800,height=600");

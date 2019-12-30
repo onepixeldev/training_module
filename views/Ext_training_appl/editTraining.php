@@ -6,7 +6,7 @@
     <div id="alert">
         <b>Note : </b> ( <b><font color="red">*</font></b> ) <b><font color="red">compulsory fields</font></b><br>&nbsp; <span id="note"></span>
     </div>
-    <div class="alert alert-info fade in">
+    <div class="alert alert-success fade in">
         <b>Training Info</b>
     </div>
     <br>
@@ -73,7 +73,7 @@
         <label class="col-md-2 control-label">Country</label>
         <div class="col-md-4">
             <?php
-                echo form_dropdown('form[country]', array('MYS'=>'Malaysia'), $tr_info->TH_TRAINING_COUNTRY, 'class="form-control" id="country" style="width: 100%" readonly')
+                echo form_dropdown('form[country]', $country_dd, $tr_info->TH_TRAINING_COUNTRY, 'class="selectpicker form-control field_inpt width-50" id="country"')
             ?>
         </div>
         
@@ -81,7 +81,7 @@
         <div class="col-md-4">
             <div id="faspinner"></div>
             <?php
-                echo form_dropdown('form[state]', $state_dd, $tr_info->TH_TRAINING_STATE, 'class="form-control width-50" id="state"')
+                echo form_dropdown('form[state]', $state_list, $tr_info->TH_TRAINING_STATE, 'class="selectpicker form-control field_inpt width-50" id="state"')
             ?>
         </div>
     </div>
@@ -112,7 +112,7 @@
     </div>
 
     <div class="form-group">
-        <label class="col-md-2 control-label">Fee</label>
+        <label class="col-md-2 control-label">Fee (RM)</label>
         <div class="col-md-4">
             <input name="form[fee]" placeholder="Fee" class="form-control" type="text" value="<?php echo $tr_info->TH_TRAINING_FEE?>">
         </div>
@@ -144,35 +144,33 @@
         </div>
     </div>
 
-    <br>
-
-    <div class="form-group">
+    <!--<div class="form-group">
         <label class="col-md-4 control-label text-right"><b>Evaluation Period :</b></label>
     </div>
 
     <div class="form-group">
         <label class="col-md-4 control-label text-right" id="evaMsg"></label>
-    </div>
+    </div>-->
 
     <div class="form-group">
-        <label class="col-md-2 control-label">Evaluation?</label>
+        <label class="col-md-2 control-label">Effectiveness Evaluation</label>
         <div class="col-md-4">
             <?php echo form_dropdown('form[evaluation]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $evaluation, 'class="form-control width-50" id="evaluation"')?>
         </div>
     </div>
 
-    <div class="form-group">
+    <!--<div class="form-group hidden" id="eva_period">
         <div id="evaLoader"></div>
         <label class="col-md-2 control-label" id="evaPFrom">From</label>
         <div class="col-md-4">
-            <input name="form[evaluation_period_from]" placeholder="DD-MM-YYYY" class="form-control" type="text" id="datepicker4" value="<?php echo $tr_info->TH_EVALUATION_DATE_FROM2?>">
+            <input name="form[evaluation_period_from]" placeholder="DD-MM-YYYY" class="form-control" type="text" id="datepicker4" value="<?php //echo $tr_info->TH_EVALUATION_DATE_FROM2?>">
         </div>
 
         <label class="col-md-2 control-label" id="evaPTo">To</label>
         <div class="col-md-4">
-            <input name="form[evaluation_period_to]" placeholder="DD-MM-YYYY" class="form-control" type="text" id="datepicker5" value="<?php echo $tr_info->TH_EVALUATION_DATE_TO2?>">
+            <input name="form[evaluation_period_to]" placeholder="DD-MM-YYYY" class="form-control" type="text" id="datepicker5" value="<?php //echo $tr_info->TH_EVALUATION_DATE_TO2?>">
         </div>
-    </div>
+    </div>-->
 
     <br>
     <div class="form-group">
@@ -185,12 +183,16 @@
             <input name="form[coordinator]" class="form-control" type="text" id="coordinator_id" value="<?php echo $coor_id?>" readonly>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
             <input name="" class="form-control" type="text" id="coordinator_name" value="<?php echo $coor_name?>" readonly>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-1">
             <button type="button" class="btn btn-primary search_staff"><i class="fa fa-search"></i> Search</button>
+        </div>
+
+        <div class="col-md-1">
+            <button type="button" class="btn btn-danger" id="toggleClear"><i class="fa fa-times" aria-hidden="true"></i></button>
         </div>
     </div>
 
@@ -214,7 +216,26 @@
         </div>
     </div>
 
-    <div class="alert alert-info fade in">
+    <div class="alert alert-success fade in">
+        <b>Program / Facilitator Evaluation Info</b>
+    </div>
+    <div class="form-group">
+        <label class="col-md-4 control-label text-right"><b>Program / Facilitator Evaluation Period :</b></label>
+    </div>
+    <div class="form-group" id="eva_period">
+        <div id="evaLoader"></div>
+        <label class="col-md-2 control-label" id="evaPFrom">From</label>
+        <div class="col-md-4">
+            <input name="form[evaluation_period_from]" placeholder="DD-MM-YYYY" class="form-control" type="text" id="datepicker4" value="<?php echo $tr_info->TH_EVALUATION_DATE_FROM2?>">
+        </div>
+
+        <label class="col-md-2 control-label" id="evaPTo">To</label>
+        <div class="col-md-4">
+            <input name="form[evaluation_period_to]" placeholder="DD-MM-YYYY" class="form-control" type="text" id="datepicker5" value="<?php echo $tr_info->TH_EVALUATION_DATE_TO2?>">
+        </div>
+    </div>
+
+    <div class="alert alert-success fade in">
         <b>Organizer Info</b>
     </div>
     <br>
@@ -225,12 +246,18 @@
                 echo form_dropdown('form[organizer_level]', $org_lvl, $tr_info->TH_ORGANIZER_LEVEL, 'class="form-control width-50"')
             ?>
         </div>
-        
+    </div>
+
+    <div class="form-group">
         <label class="col-md-2 control-label">Organizer Name</label>
         <div class="col-md-4">
             <?php
                 echo form_dropdown('form[organizer_name]', $org_name, $tr_info->TH_ORGANIZER_NAME, 'class="select2-filter form-control" style="width: 100%" id="orginfo"')
             ?>
+        </div>
+
+        <div class="col-md-2">
+            <button type="button" class="btn btn-danger" id="toggleClear2"><i class="fa fa-times" aria-hidden="true"></i></button>
         </div>
     </div>
 
@@ -277,7 +304,7 @@
         </div>
     </div>
 
-    <div class="alert alert-info fade in">
+    <div class="alert alert-success fade in">
         <b>Completion Info</b>
     </div>
     <br>
@@ -316,7 +343,9 @@
 <script>
 	$(document).ready(function(){
         $('.select2-filter').select2({
-            width: 'resolve'
+            allowClear: true,
+            placeholder: 'Select an option',
+            width: '100%',
         });
         
         $('#datepicker').datetimepicker({
@@ -342,6 +371,16 @@
         $('#datepicker5').datetimepicker({
             format: 'L',
             format: 'DD-MM-YYYY'
+        });
+
+        $("#toggleClear").click(function() {
+            $("#coordinator_id").val("");
+            $("#coordinator_name").val("");
+        });
+        
+        $("#toggleClear2").click(function() { 
+            $("#orginfo").select2("val", "");
+            $("#orginfo").select2().val("");
         });
 	});
 </script>

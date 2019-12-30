@@ -425,6 +425,24 @@
                                 </div>
                             </div>
                         </div>
+						
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="form-group text-right">
+                                    <label><b>Report Format</b></label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group text-left">
+                                    <?php echo form_dropdown('form[eval_rep_format]', array('PDF' => 'PDF', 'EXCEL' => 'EXCEL'), 'PDF', 'class="form-control" id="rep_format_bi" style="width: 100%"') ?>	
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="text-left">   
+                                    &nbsp;
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="row">
                             <div class="col-sm-2">
@@ -435,13 +453,13 @@
 
                             <div class="col-sm-7">
                                 <div class="form-group text-left">
-                                    <label>Laporan Penilaian Program (Laporan 1)</label>
+                                    <label>Laporan Penilaian Program (A)</label>
                                 </div>
                             </div>
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR061" class="btn btn-danger btn-sm genReporti"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR061" class="btn btn-danger btn-sm genReportBi"><i class="fa fa-file-text-o"></i> Generate Report</button>
                                 </div>
                             </div>
                         </div>
@@ -455,13 +473,13 @@
 
                             <div class="col-sm-7">
                                 <div class="form-group text-left">
-                                    <label>Laporan Penilaian Program (Laporan 2)</label>
+                                    <label>Statistik Penilaian Program (A)</label>
                                 </div>
                             </div>
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR062" class="btn btn-danger btn-sm genReporti"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR062" class="btn btn-danger btn-sm genReportBi"><i class="fa fa-file-text-o"></i> Generate Report</button>
                                 </div>
                             </div>
                         </div>
@@ -475,13 +493,13 @@
 
                             <div class="col-sm-7">
                                 <div class="form-group text-left">
-                                    <label>Laporan Penilaian Penceramah (Laporan 1)</label>
+                                    <label>Laporan Penilaian Penceramah (A)</label>
                                 </div>
                             </div>
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR063" class="btn btn-danger btn-sm genReporti"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR063" class="btn btn-danger btn-sm genReportBi"><i class="fa fa-file-text-o"></i> Generate Report</button>
                                 </div>
                             </div>
                         </div>
@@ -495,13 +513,13 @@
 
                             <div class="col-sm-7">
                                 <div class="form-group text-left">
-                                    <label>Laporan Penilaian Penceramah (Laporan 2)</label>
+                                    <label>Statistik Penilaian Penceramah (A)</label>
                                 </div>
                             </div>
 
                             <div class="col-sm-3">
                                 <div class="form-group text-left">
-                                    <button type="button" repCode="ATR064" class="btn btn-danger btn-sm genReporti"><i class="fa fa-file-pdf-o"></i> PDF</button>
+                                    <button type="button" repCode="ATR064" class="btn btn-danger btn-sm genReportBi"><i class="fa fa-file-text-o"></i> Generate Report</button>
                                 </div>
                             </div>
                         </div>

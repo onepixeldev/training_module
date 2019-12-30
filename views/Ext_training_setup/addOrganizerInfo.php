@@ -1,4 +1,4 @@
-<form id="addOrganizer" class="form-horizontal" method="post">
+<form id="addOrganizer" class="form-horizontal" method="post" autocomplete="off">
     <div class="modal-header btn-primary">
         <h4 class="modal-title txt-color-white" id="myModalLabel">Add New Organizer</h4>
     </div>
@@ -10,7 +10,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Code <b><font color="red">* </font></b></label>
             <div class="col-md-2">
-                <input name="form[code]" placeholder="Code" class="form-control" type="text">
+                <input name="form[code]" placeholder="Code" class="form-control" type="text" style="text-transform:uppercase">
             </div>
         </div>
 
@@ -24,19 +24,19 @@
         <div class="form-group">
             <label class="col-md-2 control-label">Address</label>
             <div class="col-md-8">
-                <input name="form[address]" placeholder="Address" class="form-control" type="text">
+                <input name="form[address]" placeholder="Address" class="form-control" type="text" autocomplete="in-address">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-md-2 control-label">Postcode</label>
             <div class="col-md-2">
-                <input name="form[postcode]" placeholder="Postcode" class="form-control" type="text">
+                <input name="form[postcode]" placeholder="Postcode" class="form-control" type="text" autocomplete="in-postcode">
             </div>
 
             <label class="col-md-2 control-label">City</label>
             <div class="col-md-2">
-                <input name="form[city]" placeholder="City" class="form-control" type="text">
+                <input name="form[city]" placeholder="City" class="form-control" type="text" autocomplete="in-city">
             </div>
         </div>
 

@@ -13,6 +13,7 @@
 		<th class="text-center">Type</th>
 		<th class="text-center">Facilitator ID</th>
 		<th class="text-left">Facilitator Name</th>
+		<th class="text-center">Label</th>
 		<th class="text-center" id="fiAct">Action</th>
 	</tr>
 	</thead>
@@ -25,7 +26,8 @@
 					<td class="text-center" style="display: none">' . $refid .'</td>
 					<td class="text-center col-md-1">' . $fie->TF_TYPE . '</td>
 					<td class="text-center col-md-2">' . $fie->TF_FACILITATOR_ID . '</td>
-					<td class="text-left">' . $fie->EF_FACILITATOR_NAME . '</td>
+					<td class="text-left col-md-7">' . $fie->EF_FACILITATOR_NAME . '</td>
+					<td class="text-center col-md-1">' . $fie->TF_FACILITATOR_LABEL . '</td>
 					<td class="text-center col-md-1" id="fiAct">
 						<button type="button" class="btn btn-danger btn-xs del_fi_btn"><i class="fa fa-trash"></i> Delete</button>
 					</td>
@@ -40,7 +42,8 @@
 					<td class="text-center" style="display: none">' . $refid .'</td>
 					<td class="text-center col-md-1">' . $fis->TF_TYPE . '</td>
 					<td class="text-center col-md-2">' . $fis->TF_FACILITATOR_ID . '</td>
-					<td class="text-left">' . $fis->SM_STAFF_NAME . '</td>
+					<td class="text-left col-md-7">' . $fis->SM_STAFF_NAME . '</td>
+					<td class="text-center col-md-1">' . $fis->TF_FACILITATOR_LABEL . '</td>
 					<td class="text-center col-md-1" id="fiAct">
 						<button type="button" class="btn btn-danger btn-xs del_fi_btn"><i class="fa fa-trash"></i> Delete</button>
 					</td>

@@ -195,26 +195,26 @@
 		});
 	});
 
-	// evaluation not/required
-	$('#add_edit_tr_info').on('change','#evaluation', function() {
-		var evaluation = $(this).val();
-		$('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+	// // evaluation not/required
+	// $('#add_edit_tr_info').on('change','#evaluation', function() {
+	// 	var evaluation = $(this).val();
+	// 	$('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
 
-		if(evaluation == 'Y') {
-			$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+	// 	if(evaluation == 'Y') {
+	// 		$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
 
-			$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+	// 		$('#evaPFrom').html('From <b><font color="red">* </font></b>');
 
-			$('#evaPTo').html('To <b><font color="red">* </font></b>');
-		} else {
-			$('#evaMsg').html('');
+	// 		$('#evaPTo').html('To <b><font color="red">* </font></b>');
+	// 	} else {
+	// 		$('#evaMsg').html('');
 
-			$('#evaPFrom').html('From');
+	// 		$('#evaPFrom').html('From');
 
-			$('#evaPTo').html('To');
-		}
-		$('#evaLoader').html('');
-	});
+	// 		$('#evaPTo').html('To');
+	// 	}
+	// 	$('#evaLoader').html('');
+	// });
 
 	// populate state add new training form
 	$('#add_edit_tr_info').on('change','#country', function() {

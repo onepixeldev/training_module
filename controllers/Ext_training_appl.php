@@ -441,6 +441,26 @@ class Ext_training_appl extends MY_Controller
         $this->render($data);
     }
 
+    // Populate state list
+    public function stateList(){
+        $this->isAjax();
+        
+        $countCode = $this->input->post('countryCode', true);
+        
+        // get available records
+        $stateList = $this->et_mdl->getCountryStateList($countCode);
+               
+        if (!empty($stateList)) {
+            $success = 1;
+        } else {
+            $success = 0;
+        }
+        
+        $json = array('sts' => $success, 'stateList' => $stateList);
+        
+        echo json_encode($json);
+    }
+
     // POPULATE ORGANIZER INFO
     public function organizerInfo()
     {
@@ -482,13 +502,13 @@ class Ext_training_appl extends MY_Controller
         $attention = $form['attention'];
 
         // evaluation period not/required
-        if($evaluationTHD == 'Y') {
-            $evaluationFrReq = 'required|max_length[30]';
-            $evaluationToReq = 'required|max_length[30]';
-        } else {
-            $evaluationFrReq = 'max_length[30]';
-            $evaluationToReq = 'max_length[30]';
-        }
+        // if($evaluationTHD == 'Y') {
+        //     $evaluationFrReq = 'required|max_length[30]';
+        //     $evaluationToReq = 'required|max_length[30]';
+        // } else {
+        //     $evaluationFrReq = 'max_length[30]';
+        //     $evaluationToReq = 'max_length[30]';
+        // }
 
         // form / input validation
         $rule = array(
@@ -509,9 +529,11 @@ class Ext_training_appl extends MY_Controller
             'participants' => 'max_length[11]', 
             'online_application' => 'max_length[1]',
             'closing_date' => 'max_length[11]', 
-            // 'competency_code' => 'max_length[10]', 
-            'evaluation_period_from' => $evaluationFrReq,
-            'evaluation_period_to' => $evaluationToReq, 
+            // 'competency_code' => 'max_length[10]',
+            'evaluation_period_from' => 'max_length[30]',
+            'evaluation_period_to' => 'max_length[30]',  
+            // 'evaluation_period_from' => $evaluationFrReq,
+            // 'evaluation_period_to' => $evaluationToReq, 
             'attention' => 'max_length[500]', 
 
             // TRAINING_HEAD_DETL
@@ -592,6 +614,14 @@ class Ext_training_appl extends MY_Controller
         if(!empty($refid)) {
             $data['refid'] = $refid; 
             $data['tr_info'] = $this->et_mdl->getTrainingHead($refid);
+
+            // COUNTRY CODE
+            if(!empty($data['tr_info']->TH_TRAINING_COUNTRY)) {
+                $countCode = $data['tr_info']->TH_TRAINING_COUNTRY;
+            } else {
+                $countCode = '';
+            }
+
             if(!empty($data['tr_info'])) {
                 $org_name = $data['tr_info']->TH_ORGANIZER_NAME;
                 if(!empty($org_name)) {
@@ -662,6 +692,12 @@ class Ext_training_appl extends MY_Controller
 
         // CONTRY DD
         $data['country_dd'] = $this->dropdown($this->et_mdl->getCountryDD(), 'CM_COUNTRY_CODE', 'CM_COUNTRY_CD', ' ---Please select--- ');
+
+        if (!empty($countCode)) {
+            $data['state_list'] = $this->dropdown($this->et_mdl->getCountryStateList($countCode), 'SM_STATE_CODE', 'SM_STATE_DESC', ' ---Please select--- ');
+        } else {
+            $data['state_list'] = '';
+        }
         
         $this->render($data);
     }
@@ -688,13 +724,13 @@ class Ext_training_appl extends MY_Controller
         $attention = $form['attention'];
 
         // evaluation period not/required
-        if($evaluationTHD == 'Y') {
-            $evaluationFrReq = 'required|max_length[30]';
-            $evaluationToReq = 'required|max_length[30]';
-        } else {
-            $evaluationFrReq = 'max_length[30]';
-            $evaluationToReq = 'max_length[30]';
-        }
+        // if($evaluationTHD == 'Y') {
+        //     $evaluationFrReq = 'required|max_length[30]';
+        //     $evaluationToReq = 'required|max_length[30]';
+        // } else {
+        //     $evaluationFrReq = 'max_length[30]';
+        //     $evaluationToReq = 'max_length[30]';
+        // }
 
         // form / input validation
         $rule = array(
@@ -717,8 +753,10 @@ class Ext_training_appl extends MY_Controller
             'online_application' => 'max_length[1]',
             'closing_date' => 'max_length[11]', 
             // 'competency_code' => 'max_length[10]', 
-            'evaluation_period_from' => $evaluationFrReq,
-            'evaluation_period_to' => $evaluationToReq, 
+            'evaluation_period_from' => 'max_length[30]',
+            'evaluation_period_to' => 'max_length[30]', 
+            // 'evaluation_period_from' => $evaluationFrReq,
+            // 'evaluation_period_to' => $evaluationToReq, 
             'attention' => 'max_length[500]', 
 
             // TRAINING_HEAD_DETL
@@ -755,8 +793,10 @@ class Ext_training_appl extends MY_Controller
                 $successTH = 0;
             }
 
-            // UPDATE TRAINING HEAD DETL
-            if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD) || !empty($attention)) {
+            $thd_info = $this->et_mdl->getTrainingHeadDetl($refid);
+
+            if(!empty($thd_info)) {
+                // UPDATE TRAINING HEAD DETL
                 $update2 = $this->et_mdl->saveUpdTrainingDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD, $attention);
 
                 if($update2 > 0) {
@@ -767,9 +807,23 @@ class Ext_training_appl extends MY_Controller
                     $successTHD = 0;
                 }
             } else {
-                $msgTHD = '';
-                $successTHD = 1;
+                // INSERT TRAINING HEAD DETL
+                if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD) || !empty($attention)) {
+                    $update2 = $this->et_mdl->saveTrainingDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD, $attention);
+
+                    if($update2 > 0) {
+                        $msgTHD = nl2br("\r\n").'<b><font color="green"><i class="fa fa-check"></i> Success </font></b>'."Record has been saved (Training Detail)";
+                        $successTHD = 1;
+                    } else {
+                        $msgTHD = nl2br("\r\n").'<b><font color="white"><i class="fa fa-times"></i> Failed </font></b>'."Fail to save record (Training Detail)";
+                        $successTHD = 0;
+                    }
+                } else {
+                    $msgTHD = '';
+                    $successTHD = 1;
+                }
             }
+            
 
             if($successTH == 1 && $successTHD == 1) {
                 $json = array('sts' => 1, 'msg' => $msgTH.$msgTHD, 'alert' => 'success', 'refid' => $refid, 'title' => $title);
@@ -1265,13 +1319,13 @@ class Ext_training_appl extends MY_Controller
         $attention = $form['attention'];
 
         // evaluation period not/required
-        if($evaluationTHD == 'Y') {
-            $evaluationFrReq = 'required|max_length[30]';
-            $evaluationToReq = 'required|max_length[30]';
-        } else {
-            $evaluationFrReq = 'max_length[30]';
-            $evaluationToReq = 'max_length[30]';
-        }
+        // if($evaluationTHD == 'Y') {
+        //     $evaluationFrReq = 'required|max_length[30]';
+        //     $evaluationToReq = 'required|max_length[30]';
+        // } else {
+        //     $evaluationFrReq = 'max_length[30]';
+        //     $evaluationToReq = 'max_length[30]';
+        // }
 
         // form / input validation
         $rule = array(
@@ -1294,8 +1348,10 @@ class Ext_training_appl extends MY_Controller
             'online_application' => 'max_length[1]',
             'closing_date' => 'max_length[11]', 
             // 'competency_code' => 'max_length[10]', 
-            'evaluation_period_from' => $evaluationFrReq,
-            'evaluation_period_to' => $evaluationToReq, 
+            'evaluation_period_from' => 'max_length[30]',
+            'evaluation_period_to' => 'max_length[30]', 
+            // 'evaluation_period_from' => $evaluationFrReq,
+            // 'evaluation_period_to' => $evaluationToReq, 
             'attention' => 'max_length[500]', 
 
             // TRAINING_HEAD_DETL
@@ -1319,7 +1375,7 @@ class Ext_training_appl extends MY_Controller
         
         list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
 
-        // Begin Insert New Record
+        // Begin update
         if ($status == 1) {
 
             // UPDATE TRAINING HEAD
@@ -1333,7 +1389,25 @@ class Ext_training_appl extends MY_Controller
             }
 
             // UPDATE TRAINING HEAD DETL
-            if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD) || !empty($attention)) {
+            // if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD) || !empty($attention)) {
+            //     $update2 = $this->et_mdl->saveUpdTrainingDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD, $attention);
+
+            //     if($update2 > 0) {
+            //         $msgTHD = nl2br("\r\n").'<b><font color="green"><i class="fa fa-check"></i> Success </font></b>'."Record has been saved (Training Detail)";
+            //         $successTHD = 1;
+            //     } else {
+            //         $msgTHD = nl2br("\r\n").'<b><font color="white"><i class="fa fa-times"></i> Failed </font></b>'."Fail to save record (Training Detail)";
+            //         $successTHD = 0;
+            //     }
+            // } else {
+            //     $msgTHD = '';
+            //     $successTHD = 1;
+            // }
+
+            $thd_info = $this->et_mdl->getTrainingHeadDetl($refid);
+
+            if(!empty($thd_info)) {
+                // UPDATE TRAINING HEAD DETL
                 $update2 = $this->et_mdl->saveUpdTrainingDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD, $attention);
 
                 if($update2 > 0) {
@@ -1344,8 +1418,21 @@ class Ext_training_appl extends MY_Controller
                     $successTHD = 0;
                 }
             } else {
-                $msgTHD = '';
-                $successTHD = 1;
+                // INSERT TRAINING HEAD DETL
+                if(!empty($coor) || !empty($coorSeq) || !empty($coorContact) || !empty($evaluationTHD) || !empty($attention)) {
+                    $update2 = $this->et_mdl->saveTrainingDetl($refid, $coor, $coorSeq, $coorContact, $evaluationTHD, $attention);
+
+                    if($update2 > 0) {
+                        $msgTHD = nl2br("\r\n").'<b><font color="green"><i class="fa fa-check"></i> Success </font></b>'."Record has been saved (Training Detail)";
+                        $successTHD = 1;
+                    } else {
+                        $msgTHD = nl2br("\r\n").'<b><font color="white"><i class="fa fa-times"></i> Failed </font></b>'."Fail to save record (Training Detail)";
+                        $successTHD = 0;
+                    }
+                } else {
+                    $msgTHD = '';
+                    $successTHD = 1;
+                }
             }
 
             if($successTH == 1 && $successTHD == 1) {
@@ -2567,6 +2654,7 @@ class Ext_training_appl extends MY_Controller
         $staff_id = $form['staff_id_form'];
         $sth_status = $form['status'];
         $eva_id = '';
+        $sth_complete = '';
 
         // form / input validation
         $rule = array(
@@ -2855,7 +2943,6 @@ class Ext_training_appl extends MY_Controller
                     $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
                 }
             }
-
             
         } else {
             $json = array('sts' => 0, 'msg' => $err, 'alert' => 'danger');

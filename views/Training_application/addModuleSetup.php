@@ -10,7 +10,7 @@
         <input name="form[refid]" class="form-control" value="<?php echo $refid ?>" type="hidden" readonly>
 
         <div class="form-group">
-            <label class="col-md-2 control-label">Specific Objectives</label>
+            <label class="col-md-2 control-label">Specific Objectives <b><font color="red">(2000 character limit)</font></b></label>
             <div class="col-md-9">
                 <textarea name="form[specific_objectives]" placeholder="Objectives" class="form-control" type="text" rows="5"></textarea>
             </div>
