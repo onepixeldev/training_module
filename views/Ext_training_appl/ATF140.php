@@ -475,8 +475,13 @@
 			beforeSend: function() {
 				$('#cpd_setup').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 			},
-			success: function(res) {
+			success: function(res, xhr, status) {
 				$('#cpd_setup').html(res);
+				console.log('Error - ' + xhr.statusText);
+			},
+			done: function(xhr, status, error){
+				var errorMessage = xhr.status + ': ' + xhr.statusText
+				console.log('Error - ' + errorMessage);
 			}
 		});
 
@@ -934,6 +939,58 @@
 								$('#training_cost').html(res);
 							}
 						});
+
+						// REFRESH TRAINING FORM
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editTraining')?>',
+							data: {'refid':refid},
+							success: function(res) {
+								$('#add_edit_training').html(res);
+
+								// var evaluation = $("#evaluation").val();
+								// $('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+
+								// if(evaluation == 'Y') {
+								// 	$('#eva_period').removeClass('hidden');
+
+								// 	$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+
+								// 	$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+
+								// 	$('#evaPTo').html('To <b><font color="red">* </font></b>');
+								// } else {
+								// 	$('#eva_period').addClass('hidden');
+
+								// 	$('#evaMsg').html('');
+
+								// 	$('#evaPFrom').html('From');
+
+								// 	$('#evaPTo').html('To');
+								// }
+								// $('#evaLoader').html('');
+							}
+						});
+
+						// POPULATE TRAINING LIST
+						var dept = $('#sDept').val();
+						var month = $('#sMonth').val();
+						var year = $('#sYear').val();
+						var status = $('#sStatus').val();
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('getTrainingList3')?>',
+							data: {'dept' : dept, 'month' : month, 'year' : year, 'status' : status},
+							beforeSend: function() {
+								$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#training_list').html(res);
+								tr_row = $('#tbl_tr_list').DataTable({
+									"ordering":false,
+								});
+							}
+						});
 						
 					}, 1000);
 					$('.btn').removeAttr('disabled');
@@ -969,7 +1026,7 @@
 		});
 	});	
 
-	// SAVE ADD TRAINING COST
+	// SAVE EDIT TRAINING COST
 	$('#myModalis2').on('click', '.upd_tr_cost', function (e) { 
 		e.preventDefault();
 		var data = $('#editTrCost').serialize();
@@ -1001,6 +1058,58 @@
 							data: {'refid':refid},
 							success: function(res) {
 								$('#training_cost').html(res);
+							}
+						});
+
+						// REFRESH TRAININg FORM
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('editTraining')?>',
+							data: {'refid':refid},
+							success: function(res) {
+								$('#add_edit_training').html(res);
+
+								// var evaluation = $("#evaluation").val();
+								// $('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+
+								// if(evaluation == 'Y') {
+								// 	$('#eva_period').removeClass('hidden');
+
+								// 	$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+
+								// 	$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+
+								// 	$('#evaPTo').html('To <b><font color="red">* </font></b>');
+								// } else {
+								// 	$('#eva_period').addClass('hidden');
+
+								// 	$('#evaMsg').html('');
+
+								// 	$('#evaPFrom').html('From');
+
+								// 	$('#evaPTo').html('To');
+								// }
+								// $('#evaLoader').html('');
+							}
+						});
+
+						// POPULATE TRAINING LIST
+						var dept = $('#sDept').val();
+						var month = $('#sMonth').val();
+						var year = $('#sYear').val();
+						var status = $('#sStatus').val();
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('getTrainingList3')?>',
+							data: {'dept' : dept, 'month' : month, 'year' : year, 'status' : status},
+							beforeSend: function() {
+								$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+							},
+							success: function(res) {
+								$('#training_list').html(res);
+								tr_row = $('#tbl_tr_list').DataTable({
+									"ordering":false,
+								});
 							}
 						});
 						
@@ -1046,6 +1155,58 @@
 									type: 'green',
 								});
 								thisBtn.parents('tr').fadeOut().delay(1000).remove();
+
+								// REFRESH TRAININg FORM
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('editTraining')?>',
+									data: {'refid':refid},
+									success: function(res) {
+										$('#add_edit_training').html(res);
+
+										// var evaluation = $("#evaluation").val();
+										// $('#evaLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+
+										// if(evaluation == 'Y') {
+										// 	$('#eva_period').removeClass('hidden');
+
+										// 	$('#evaMsg').html('<b><font color="red">Evaluation Period is required</font></b>');
+
+										// 	$('#evaPFrom').html('From <b><font color="red">* </font></b>');
+
+										// 	$('#evaPTo').html('To <b><font color="red">* </font></b>');
+										// } else {
+										// 	$('#eva_period').addClass('hidden');
+
+										// 	$('#evaMsg').html('');
+
+										// 	$('#evaPFrom').html('From');
+
+										// 	$('#evaPTo').html('To');
+										// }
+										// $('#evaLoader').html('');
+									}
+								});
+
+								// POPULATE TRAINING LIST
+								var dept = $('#sDept').val();
+								var month = $('#sMonth').val();
+								var year = $('#sYear').val();
+								var status = $('#sStatus').val();
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo $this->lib->class_url('getTrainingList3')?>',
+									data: {'dept' : dept, 'month' : month, 'year' : year, 'status' : status},
+									beforeSend: function() {
+										$('#training_list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+									},
+									success: function(res) {
+										$('#training_list').html(res);
+										tr_row = $('#tbl_tr_list').DataTable({
+											"ordering":false,
+										});
+									}
+								});
 							} else {
 								hide_loading();
 								$.alert({

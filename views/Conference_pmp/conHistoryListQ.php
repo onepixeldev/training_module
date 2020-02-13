@@ -61,6 +61,7 @@
 								<div style="background-color:silver;text-align:center;width:5px;" class="dropdown-menu dropdown-menu-right dd_btn">
 									<button type="button" class="btn btn-primary text-left btn-block btn-xs detl_btn" value=""><i class="fa fa-info-circle"></i> Detail</button>
 									<button type="button" class="btn btn-danger text-left btn-block btn-xs memo_tnca_btn"><i class="fa fa-print"></i> Memo TNCA</button>
+									<button type="button" class="btn btn-danger text-left btn-block btn-xs print_pmp_btn"><i class="fa fa-print"></i> Print PMP</button>
 								</div>
 							</div>
 						</td>
@@ -123,3 +124,23 @@
 		<!-- end myTabContent1 -->
 	</div>
 </div>
+
+
+<script>
+	// PRINT PMP
+	$('.print_pmp_btn').on('click', function () {
+		var thisBtn = $(this);
+		var td = thisBtn.closest("tr");
+		var crRefID = td.find(".refid").text();
+		var repCode = "ATR020";
+		crStaffID = $('#staff_id').val();
+		// alert(repCode+' '+crStaffID+' '+crRefID);
+		
+		$.post('<?php echo $this->lib->class_url('setParamPmpAtt') ?>', {repCode: repCode, crStaffID: crStaffID, crRefID: crRefID}, function (res) {
+			var repURL = '<?php echo $this->lib->class_url('genReportPmpAtt') ?>';
+			var mywin = window.open( repURL , 'report');
+		}).fail(function(){
+			msg.danger('Please contact administrator.', '#alertEditStaffConference');        
+		});
+	});
+</script>

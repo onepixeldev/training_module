@@ -92,29 +92,45 @@ class Cpd extends MY_Controller
         // get dept dd list
         $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDept(), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
 
-       
-        // HRD DEPT
-        $data['hrd_dept'] = $this->mdl_cpd->getHrdDept();
-        if(!empty($data['hrd_dept'])) {
-            $data['hrd_dept_2'] = $data['hrd_dept']->HP_PARM_DESC;
-        } else {
-            $data['hrd_dept_2'] = '';
-        }
 
         // CURRENT USER DEPT
-        $data['usr_dept'] = $this->mdl_cpd->currentUsrDept();
-        if(!empty($data['usr_dept'])) {
-            $data['curr_dept'] = $data['usr_dept']->SM_DEPT_CODE;
+        $usr_dept = $this->mdl_cpd->currentUsrDept();
+        $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
 
-            // get dept dd list
-            if($data['curr_dept'] == $data['hrd_dept_2']) {
-                $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDept(), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
-            } else {
-                $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDept2($data['curr_dept']), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
-            }
+        // get department code for Human Resource Division
+        $hrdCode = $this->mdl_cpd->getCpdAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curr_dept']) {
+            $deptCode = null;
         } else {
-            $data['curr_dept'] = '';
+            $deptCode = $data['curr_dept'];
         }
+
+        $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDeptNew($deptCode), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
+       
+        // // HRD DEPT
+        // $data['hrd_dept'] = $this->mdl_cpd->getHrdDept();
+        // if(!empty($data['hrd_dept'])) {
+        //     $data['hrd_dept_2'] = $data['hrd_dept']->HP_PARM_DESC;
+        // } else {
+        //     $data['hrd_dept_2'] = '';
+        // }
+
+        // // CURRENT USER DEPT
+        // $data['usr_dept'] = $this->mdl_cpd->currentUsrDept();
+        // if(!empty($data['usr_dept'])) {
+        //     $data['curr_dept'] = $data['usr_dept']->SM_DEPT_CODE;
+
+        //     // get dept dd list
+        //     if($data['curr_dept'] == $data['hrd_dept_2']) {
+        //         $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDept(), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
+        //     } else {
+        //         $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDept2($data['curr_dept']), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
+        //     }
+        // } else {
+        //     $data['curr_dept'] = '';
+        // }
 
         $this->render($data);
     }
@@ -132,29 +148,44 @@ class Cpd extends MY_Controller
         // get dept dd list
         $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDept(), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
 
+        // CURRENT USER DEPT
+        $usr_dept = $this->mdl_cpd->currentUsrDept();
+        $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+        // get department code for Human Resource Division
+        $hrdCode = $this->mdl_cpd->getCpdAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curr_dept']) {
+            $deptCode = null;
+        } else {
+            $deptCode = $data['curr_dept'];
+        }
+
+        $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDeptNew($deptCode), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
        
         // HRD DEPT
-        $data['hrd_dept'] = $this->mdl_cpd->getHrdDept();
-        if(!empty($data['hrd_dept'])) {
-            $data['hrd_dept_2'] = $data['hrd_dept']->HP_PARM_DESC;
-        } else {
-            $data['hrd_dept_2'] = '';
-        }
+        // $data['hrd_dept'] = $this->mdl_cpd->getHrdDept();
+        // if(!empty($data['hrd_dept'])) {
+        //     $data['hrd_dept_2'] = $data['hrd_dept']->HP_PARM_DESC;
+        // } else {
+        //     $data['hrd_dept_2'] = '';
+        // }
 
-        // CURRENT USER DEPT
-        $data['usr_dept'] = $this->mdl_cpd->currentUsrDept();
-        if(!empty($data['usr_dept'])) {
-            $data['curr_dept'] = $data['usr_dept']->SM_DEPT_CODE;
+        // // CURRENT USER DEPT
+        // $data['usr_dept'] = $this->mdl_cpd->currentUsrDept();
+        // if(!empty($data['usr_dept'])) {
+        //     $data['curr_dept'] = $data['usr_dept']->SM_DEPT_CODE;
 
-            // get dept dd list
-            if($data['curr_dept'] == $data['hrd_dept_2']) {
-                $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDept(), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
-            } else {
-                $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDept2($data['curr_dept']), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
-            }
-        } else {
-            $data['curr_dept'] = '';
-        }
+        //     // get dept dd list
+        //     if($data['curr_dept'] == $data['hrd_dept_2']) {
+        //         $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDept(), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
+        //     } else {
+        //         $data['dept_list'] = $this->dropdown($this->mdl_cpd->populateDept2($data['curr_dept']), 'DM_DEPT_CODE', 'DM_DEPT_CODE_DESC', ' ---Please select--- ');
+        //     }
+        // } else {
+        //     $data['curr_dept'] = '';
+        // }
 
         $this->render($data);
     }

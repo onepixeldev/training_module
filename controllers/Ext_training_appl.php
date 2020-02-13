@@ -49,18 +49,34 @@ class Ext_training_appl extends MY_Controller
 
         // CURRENT USER DEPT
         $usr_dept = $this->et_mdl->currentUsrDept();
-        if(!empty($usr_dept)) {
-            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+        $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
 
-            if($data['curr_dept'] == 'BSM') {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            } else {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            }
+        // get department code for Human Resource Division
+        $hrdCode = $this->et_mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curr_dept']) {
+            $deptCode = null;
         } else {
-            $data['curr_dept'] = '';
-            $data['dept_list'] = array(''=>'');
+            $deptCode = $data['curr_dept'];
         }
+
+        $data['dept_list'] = $this->dropdown($this->et_mdl->getPopulateDept($deptCode), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        // $usr_dept = $this->et_mdl->currentUsrDept();
+        // if(!empty($usr_dept)) {
+        //     $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+        //     if($data['curr_dept'] == 'BSM') {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     } else {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     }
+        // } else {
+        //     $data['curr_dept'] = '';
+        //     $data['dept_list'] = array(''=>'');
+        // }
 
         $this->render($data);
     }
@@ -82,18 +98,34 @@ class Ext_training_appl extends MY_Controller
 
         // CURRENT USER DEPT
         $usr_dept = $this->et_mdl->currentUsrDept();
-        if(!empty($usr_dept)) {
-            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+        $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
 
-            if($data['curr_dept'] == 'BSM') {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            } else {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            }
+        // get department code for Human Resource Division
+        $hrdCode = $this->et_mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curr_dept']) {
+            $deptCode = null;
         } else {
-            $data['curr_dept'] = '';
-            $data['dept_list'] = array(''=>'');
+            $deptCode = $data['curr_dept'];
         }
+
+        $data['dept_list'] = $this->dropdown($this->et_mdl->getPopulateDept($deptCode), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        // $usr_dept = $this->et_mdl->currentUsrDept();
+        // if(!empty($usr_dept)) {
+        //     $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+        //     if($data['curr_dept'] == 'BSM') {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     } else {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     }
+        // } else {
+        //     $data['curr_dept'] = '';
+        //     $data['dept_list'] = array(''=>'');
+        // }
 
         $this->render($data);
     }
@@ -115,18 +147,34 @@ class Ext_training_appl extends MY_Controller
 
         // CURRENT USER DEPT
         $usr_dept = $this->et_mdl->currentUsrDept();
-        if(!empty($usr_dept)) {
-            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+        $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
 
-            if($data['curr_dept'] == 'BSM') {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            } else {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            }
+        // get department code for Human Resource Division
+        $hrdCode = $this->et_mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curr_dept']) {
+            $deptCode = null;
         } else {
-            $data['curr_dept'] = '';
-            $data['dept_list'] = array(''=>'');
+            $deptCode = $data['curr_dept'];
         }
+
+        $data['dept_list'] = $this->dropdown($this->et_mdl->getPopulateDept($deptCode), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        // $usr_dept = $this->et_mdl->currentUsrDept();
+        // if(!empty($usr_dept)) {
+        //     $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+        //     if($data['curr_dept'] == 'BSM') {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     } else {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     }
+        // } else {
+        //     $data['curr_dept'] = '';
+        //     $data['dept_list'] = array(''=>'');
+        // }
 
         $this->render($data);
     }
@@ -148,18 +196,32 @@ class Ext_training_appl extends MY_Controller
 
         // CURRENT USER DEPT
         $usr_dept = $this->et_mdl->currentUsrDept();
-        if(!empty($usr_dept)) {
-            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+        $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
 
-            if($data['curr_dept'] == 'BSM') {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            } else {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            }
+        // get department code for Human Resource Division
+        $hrdCode = $this->et_mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curr_dept']) {
+            $deptCode = null;
         } else {
-            $data['curr_dept'] = '';
-            $data['dept_list'] = array(''=>'');
+            $deptCode = $data['curr_dept'];
         }
+
+        $data['dept_list'] = $this->dropdown($this->et_mdl->getPopulateDept($deptCode), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+
+        // if(!empty($usr_dept)) {
+            
+
+        //     if($data['curr_dept'] == 'BSM') {
+                
+        //     } else {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased2(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     }
+        // } else {
+        //     $data['curr_dept'] = '';
+        //     $data['dept_list'] = array(''=>'');
+        // }
 
         $this->render($data);
     }
@@ -181,18 +243,34 @@ class Ext_training_appl extends MY_Controller
 
         // CURRENT USER DEPT
         $usr_dept = $this->et_mdl->currentUsrDept();
-        if(!empty($usr_dept)) {
-            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+        $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
 
-            if($data['curr_dept'] == 'BSM') {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            } else {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            }
+        // get department code for Human Resource Division
+        $hrdCode = $this->et_mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curr_dept']) {
+            $deptCode = null;
         } else {
-            $data['curr_dept'] = '';
-            $data['dept_list'] = array(''=>'');
+            $deptCode = $data['curr_dept'];
         }
+
+        $data['dept_list'] = $this->dropdown($this->et_mdl->getPopulateDept($deptCode), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        // $usr_dept = $this->et_mdl->currentUsrDept();
+        // if(!empty($usr_dept)) {
+        //     $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+        //     if($data['curr_dept'] == 'BSM') {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     } else {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     }
+        // } else {
+        //     $data['curr_dept'] = '';
+        //     $data['dept_list'] = array(''=>'');
+        // }
 
         $this->render($data);
     }
@@ -213,18 +291,34 @@ class Ext_training_appl extends MY_Controller
 
         // CURRENT USER DEPT
         $usr_dept = $this->et_mdl->currentUsrDept();
-        if(!empty($usr_dept)) {
-            $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+        $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
 
-            if($data['curr_dept'] == 'BSM') {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            } else {
-                $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
-            }
+        // get department code for Human Resource Division
+        $hrdCode = $this->et_mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curr_dept']) {
+            $deptCode = null;
         } else {
-            $data['curr_dept'] = '';
-            $data['dept_list'] = array(''=>'');
+            $deptCode = $data['curr_dept'];
         }
+
+        $data['dept_list'] = $this->dropdown($this->et_mdl->getPopulateDept($deptCode), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+
+        // CURRENT USER DEPT
+        // $usr_dept = $this->et_mdl->currentUsrDept();
+        // if(!empty($usr_dept)) {
+        //     $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+        //     if($data['curr_dept'] == 'BSM') {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptAll(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     } else {
+        //         $data['dept_list'] = $this->dropdown($this->et_mdl->getDeptBased(), 'DM_DEPT_CODE', 'DP_CODE_DESC', ' ---Please select--- ');
+        //     }
+        // } else {
+        //     $data['curr_dept'] = '';
+        //     $data['dept_list'] = array(''=>'');
+        // }
 
         $this->render($data);
     }
@@ -403,8 +497,22 @@ class Ext_training_appl extends MY_Controller
     // TRAINING LIST
     public function trainingList()
     {   
+        // CURRENT USER DEPT
+        $usr_dept = $this->et_mdl->currentUsrDept();
+        $data['curr_dept'] = $usr_dept->SM_DEPT_CODE;
+
+        // get department code for Human Resource Division
+        $hrdCode = $this->et_mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curr_dept']) {
+            $deptCode = null;
+        } else {
+            $deptCode = $data['curr_dept'];
+        }
+
         // get available records
-        $data['tr_list'] = $this->et_mdl->getTrainingList();
+        $data['tr_list'] = $this->et_mdl->getTrainingListNew($deptCode);
 
         $this->render($data);
     }
@@ -882,6 +990,8 @@ class Ext_training_appl extends MY_Controller
 
         $refid = $form['refid'];
         $cost_code = $form['cost_code'];
+        $tr_cost = 0;
+
         // form / input validation
         $rule = array(
             'refid' => 'required|max_length[30]', 
@@ -904,7 +1014,18 @@ class Ext_training_appl extends MY_Controller
                 $insert = $this->et_mdl->saveNewTrCost($form);
 
                 if($insert > 0) {
-                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'refid' => $refid);
+                    $get_sum_tr_cost = $this->et_mdl->getSumtrCost($refid);
+                    if(!empty($get_sum_tr_cost)) {
+                        $tr_cost = $get_sum_tr_cost->SUM_TR_COST;
+                    } 
+
+                    $upd_tr_fee = $this->et_mdl->updTrainingFee($refid, $tr_cost);
+                    if($upd_tr_fee > 0) {
+                        $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'refid' => $refid);
+                    } else {
+                        $json = array('sts' => 0, 'msg' => 'Fail to update Training Fee', 'alert' => 'danger');
+                    }
+
                 } else {
                     $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
                 }
@@ -954,6 +1075,8 @@ class Ext_training_appl extends MY_Controller
 
         $refid = $form['refid'];
         $cost_code = $form['cost_code'];
+        $tr_cost = 0;
+
         // form / input validation
         $rule = array( 
             'amount' => 'required|numeric|max_length[40]',
@@ -970,7 +1093,17 @@ class Ext_training_appl extends MY_Controller
             $update = $this->et_mdl->saveUpdTrCost($form);
 
             if($update > 0) {
-                $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'refid' => $refid);
+                $get_sum_tr_cost = $this->et_mdl->getSumtrCost($refid);
+                if(!empty($get_sum_tr_cost)) {
+                    $tr_cost = $get_sum_tr_cost->SUM_TR_COST;
+                } 
+
+                $upd_tr_fee = $this->et_mdl->updTrainingFee($refid, $tr_cost);
+                if($upd_tr_fee > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success', 'refid' => $refid);
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to update Training Fee', 'alert' => 'danger');
+                }
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
             }
@@ -988,12 +1121,23 @@ class Ext_training_appl extends MY_Controller
 		
         $refid = $this->input->post('refid', true);
         $code = $this->input->post('code', true);
+        $tr_cost = 0;
         
         if (!empty($refid) && !empty($code)) {
             $del = $this->et_mdl->deleteTrainingCost($refid, $code);
         
             if ($del > 0) {
-                $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success');
+                $get_sum_tr_cost = $this->et_mdl->getSumtrCost($refid);
+                if(!empty($get_sum_tr_cost)) {
+                    $tr_cost = $get_sum_tr_cost->SUM_TR_COST;
+                } 
+
+                $upd_tr_fee = $this->et_mdl->updTrainingFee($refid, $tr_cost);
+                if($upd_tr_fee > 0) {
+                    $json = array('sts' => 1, 'msg' => 'Record has been deleted', 'alert' => 'success', 'refid' => $refid);
+                } else {
+                    $json = array('sts' => 0, 'msg' => 'Fail to update Training Fee', 'alert' => 'danger');
+                }
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to delete record', 'alert' => 'danger');
             }

@@ -3043,6 +3043,7 @@ class Conference_pmp extends MY_Controller
 
         $saveMsg = '';
         $successUpdSumMsg = '';
+        $c_code = '';
 
         if (!empty($refid) && !empty($staff_id) && !empty($allwCodeArr)) {
             foreach ($allwCodeArr as $key => $aca) {
@@ -3068,6 +3069,8 @@ class Conference_pmp extends MY_Controller
             $sum = $this->mdl_pmp->sumStaffConAllw($refid, $staff_id);
             if(!empty($sum)) {
                 $newSumAppTnca = $sum->SCA_AMT_RM_APPROVE_TNCA;
+
+                // var_dump($newSumAppTnca);
 
                 // GET SUM HOD
                 $sumHod = $this->mdl_pmp->getSumHod($refid, $staff_id);
@@ -3104,9 +3107,10 @@ class Conference_pmp extends MY_Controller
                     $budget_org = 'DEPARTMENT';
                 }
 
-                if(!empty($newSumAppTnca)) {
+                if($newSumAppTnca != '') {
                     // GET CATGORY CODE
                     $cat_code = $this->mdl_pmp->getAssignCatCode($newSumAppTnca);
+
                     if(!empty($cat_code)) {
                         $c_code = $cat_code->CC_CODE;
                     } else {

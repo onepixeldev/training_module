@@ -34,9 +34,6 @@ class Training_application extends MY_Controller
     // APPROVE TRAINING APPLICATION
     public function ATF002()
     { 
-
-        $selDept = $this->input->post('sDept', true);
-
         // default value filter
         // default dept
         $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
@@ -47,9 +44,19 @@ class Training_application extends MY_Controller
         $data['cur_year'] = $this->mdl->getCurYear();
         $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
+        // get department code for Human Resource Division
+        $hrdCode = $this->mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curUsrDept']) {
+            $deptCode = null;
+        } else {
+            $deptCode = $data['curUsrDept'];
+        }
 
         // get department dd list
-        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        $data['dept_list'] = $this->dropdown($this->mdl->populateDept($deptCode), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        
         //get year dd list
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
@@ -71,9 +78,18 @@ class Training_application extends MY_Controller
         $data['cur_year'] = $this->mdl->getCurYear();
         $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
+        // get department code for Human Resource Division
+        $hrdCode = $this->mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curUsrDept']) {
+            $deptCode = null;
+        } else {
+            $deptCode = $data['curUsrDept'];
+        }
 
         // get department dd list
-        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        $data['dept_list'] = $this->dropdown($this->mdl->populateDept($deptCode), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
         //get year dd list
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
@@ -97,9 +113,18 @@ class Training_application extends MY_Controller
         $data['cur_year'] = $this->mdl->getCurYear();
         $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
+        // get department code for Human Resource Division
+        $hrdCode = $this->mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curUsrDept']) {
+            $deptCode = null;
+        } else {
+            $deptCode = $data['curUsrDept'];
+        }
 
         // get department dd list
-        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        $data['dept_list'] = $this->dropdown($this->mdl->populateDept($deptCode), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
         //get year dd list
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
@@ -153,9 +178,18 @@ class Training_application extends MY_Controller
         $data['cur_year'] = $this->mdl->getCurYear();
         $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
+        // get department code for Human Resource Division
+        $hrdCode = $this->mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curUsrDept']) {
+            $deptCode = null;
+        } else {
+            $deptCode = $data['curUsrDept'];
+        }
 
         // get department dd list
-        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        $data['dept_list'] = $this->dropdown($this->mdl->populateDept($deptCode), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
         //get year dd list
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
@@ -233,9 +267,18 @@ class Training_application extends MY_Controller
         $data['cur_year'] = $this->mdl->getCurYear();
         $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
+        // get department code for Human Resource Division
+        $hrdCode = $this->mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curUsrDept']) {
+            $deptCode = null;
+        } else {
+            $deptCode = $data['curUsrDept'];
+        }
 
         // get department dd list
-        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        $data['dept_list'] = $this->dropdown($this->mdl->populateDept($deptCode), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
         //get year dd list
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
@@ -259,9 +302,18 @@ class Training_application extends MY_Controller
         $data['cur_year'] = $this->mdl->getCurYear();
         $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
+        // get department code for Human Resource Division
+        $hrdCode = $this->mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curUsrDept']) {
+            $deptCode = null;
+        } else {
+            $deptCode = $data['curUsrDept'];
+        }
 
         // get department dd list
-        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        $data['dept_list'] = $this->dropdown($this->mdl->populateDept($deptCode), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
         //get year dd list
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
@@ -271,7 +323,7 @@ class Training_application extends MY_Controller
 
         $this->render($data);
     }
-
+    
     // REPORT FOR TRAINING EVALUATION
     public function ATF166()
     {   
@@ -317,9 +369,18 @@ class Training_application extends MY_Controller
         $data['cur_year'] = $this->mdl->getCurYear();
         $data['curYear'] = $data['cur_year']->CUR_YEAR;
 
+        // get department code for Human Resource Division
+        $hrdCode = $this->mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curUsrDept']) {
+            $deptCode = null;
+        } else {
+            $deptCode = $data['curUsrDept'];
+        }
 
         // get department dd list
-        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        $data['dept_list'] = $this->dropdown($this->mdl->populateDept($deptCode), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
         //get year dd list
         $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
         //get month dd list
@@ -353,8 +414,22 @@ class Training_application extends MY_Controller
     _____________________*/
     public function trainingInfo()
     {   
+        // user dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+
+        // get department code for Human Resource Division
+        $hrdCode = $this->mdl->getTrainingAdminDeptCode();
+
+        // check whether Human Resource Staff
+        if($hrdCode == $data['curUsrDept']) {
+            $deptCode = null;
+        } else {
+            $deptCode = $data['curUsrDept'];
+        }
+
         // get available records
-        $data['trainingInfo'] = $this->mdl->getTrainingInfo();
+        $data['trainingInfo'] = $this->mdl->getTrainingInfo2($deptCode);
 
         $this->render($data);
     }
@@ -426,13 +501,17 @@ class Training_application extends MY_Controller
             $data['cpdSetup'] = $this->mdl->getCpdSetup($tsRefID);
             if (!empty($data['cpdSetup']->CH_CATEGORY)){
                 $data['cpdSetupCat'] = $this->mdl->getCpdSetupCategory($data['cpdSetup']->CH_CATEGORY);
-                $data['cpdSetupCatDesc'] = $data['cpdSetupCat']->CH_CC_CATEGORY_DESC;
+                if(!empty($data['cpdSetupCat'])) {
+                    $data['cpdSetupCatDesc'] = $data['cpdSetupCat']->CH_CC_CATEGORY_DESC;
+                } else {
+                    $data['cpdSetupCatDesc'] = '';
+                }
             } else {
                 $data['cpdSetupCatDesc'] = '';
             }
         }
 
-        $this->render($data);
+        $this->renderAjax($data);
     }
 
     // Populate state list

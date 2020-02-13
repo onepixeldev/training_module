@@ -14,6 +14,28 @@ class Cpd_model extends MY_Model
         $this->username = $this->lib->username();
     }
 
+    // GET ADMIN DEPT
+    public function getCpdAdminDeptCode() {
+		$sID = $this->staff_id;
+		
+        $this->db->select('HP_PARM_DESC AS PARM_DESC');
+        $this->db->from('HRADMIN_PARMS');
+        $this->db->join('STAFF_MAIN','SM_DEPT_CODE = UPPER(TRIM(HP_PARM_DESC))');
+        $this->db->where('HP_PARM_CODE', 'TRAINING_ADM_DEPT_CODE');
+        $this->db->where('SM_STAFF_ID', $sID);
+        $query = $this->db->get();
+		
+        if ($query->num_rows() > 0) {
+            if ($query->row()->PARM_DESC == '' or $query->row()->PARM_DESC == null){
+                return '';
+            }else{
+                return $query->row()->PARM_DESC;
+            }
+        }
+		
+        return '';
+    }
+
     // GET STAFF LIST DROPDOWN
     public function getStaffList($staffID = null, $dept)
     {
@@ -698,6 +720,22 @@ class Cpd_model extends MY_Model
         $this->db->select("DM_DEPT_CODE, DM_DEPT_CODE||' - '||DM_DEPT_DESC AS DM_DEPT_CODE_DESC");
         $this->db->from("DEPARTMENT_MAIN");
         $this->db->where("DM_LEVEL IN (1,2)");
+        $this->db->where("DM_STATUS = 'ACTIVE'");
+        $this->db->order_by("DM_DEPT_CODE");
+        $q = $this->db->get();
+    
+        return $q->result();
+    }
+
+    // POPULATE DEPT NEW
+    public function populateDeptNew($deptCode)
+    {  
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_CODE||' - '||DM_DEPT_DESC AS DM_DEPT_CODE_DESC");
+        $this->db->from("DEPARTMENT_MAIN");
+        if(!empty($deptCode)) {
+            $this->db->where("DM_LEVEL IN (1,2)");
+            $this->db->where("DM_DEPT_CODE", $deptCode);
+        }
         $this->db->where("DM_STATUS = 'ACTIVE'");
         $this->db->order_by("DM_DEPT_CODE");
         $q = $this->db->get();

@@ -44,12 +44,12 @@ class Cpd_report extends MY_Controller
         }
 
         // HRD DEPT
-        $parm = $this->mdl_cpd->getHrdDept();
-        if(!empty($parm)) {
-            $parm_dept = $parm->HP_PARM_DESC;
-        } else {
-            $parm_dept = '';
-        }
+        $parm_dept = $this->mdl_cpd->getCpdAdminDeptCode();
+        // if(!empty($parm)) {
+        //     $parm_dept = $parm->HP_PARM_DESC;
+        // } else {
+        //     $parm_dept = '';
+        // }
 
         if($dept == $parm_dept) {
             $is_hr_staff = 'Y';
@@ -447,12 +447,12 @@ class Cpd_report extends MY_Controller
         }
 
         // HRD DEPT
-        $parm = $this->mdl_cpd->getHrdDept();
-        if(!empty($parm)) {
-            $parm_dept = $parm->HP_PARM_DESC;
-        } else {
-            $parm_dept = '';
-        }
+        $parm_dept = $this->mdl_cpd->getCpdAdminDeptCode();
+        // if(!empty($parm)) {
+        //     $parm_dept = $parm->HP_PARM_DESC;
+        // } else {
+        //     $parm_dept = '';
+        // }
 
         if($dept == $parm_dept) {
             $is_hr_staff = 'Y';
@@ -495,12 +495,12 @@ class Cpd_report extends MY_Controller
         }
 
         // HRD DEPT
-        $parm = $this->mdl_cpd->getHrdDept();
-        if(!empty($parm)) {
-            $parm_dept = $parm->HP_PARM_DESC;
-        } else {
-            $parm_dept = '';
-        }
+        $parm_dept = $this->mdl_cpd->getCpdAdminDeptCode();
+        // if(!empty($parm)) {
+        //     $parm_dept = $parm->HP_PARM_DESC;
+        // } else {
+        //     $parm_dept = '';
+        // }
 
         if($dept == $parm_dept) {
             $is_hr_staff = 'Y';
@@ -541,12 +541,12 @@ class Cpd_report extends MY_Controller
         }
 
         // HRD DEPT
-        $parm = $this->mdl_cpd->getHrdDept();
-        if(!empty($parm)) {
-            $parm_dept = $parm->HP_PARM_DESC;
-        } else {
-            $parm_dept = '';
-        }
+        $parm_dept = $this->mdl_cpd->getCpdAdminDeptCode();
+        // if(!empty($parm)) {
+        //     $parm_dept = $parm->HP_PARM_DESC;
+        // } else {
+        //     $parm_dept = '';
+        // }
 
         if($dept == $parm_dept) {
             $is_hr_staff = 'Y';

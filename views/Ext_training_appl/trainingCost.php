@@ -8,7 +8,7 @@
         </div>
 
         <div class="col-md-6">
-            <input name="" class="form-control" type="text" value="<?php echo $tr_info->TH_TRAINING_TITLE?>" id="" readonly>
+            <input name="" class="form-control" type="text" value="<?php echo $tr_info->TH_TRAINING_TITLE?>" id="trName" readonly>
         </div>
     </div>
 </form>

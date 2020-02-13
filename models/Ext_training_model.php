@@ -14,6 +14,28 @@ class Ext_training_model extends MY_Model
         $this->username = $this->lib->username();
     }
 
+    // GET ADMIN DEPT
+    public function getTrainingAdminDeptCode() {
+		$sID = $this->staff_id;
+		
+        $this->db->select('HP_PARM_DESC AS PARM_DESC');
+        $this->db->from('HRADMIN_PARMS');
+        $this->db->join('STAFF_MAIN','SM_DEPT_CODE = UPPER(TRIM(HP_PARM_DESC))');
+        $this->db->where('HP_PARM_CODE', 'TRAINING_ADM_DEPT_CODE');
+        $this->db->where('SM_STAFF_ID', $sID);
+        $query = $this->db->get();
+		
+        if ($query->num_rows() > 0) {
+            if ($query->row()->PARM_DESC == '' or $query->row()->PARM_DESC == null){
+                return '';
+            }else{
+                return $query->row()->PARM_DESC;
+            }
+        }
+		
+        return '';
+    }
+
     // get current date
     public function getCurDate() {		
         $this->db->select("TO_CHAR(SYSDATE, 'MM') AS SYSDATE_MM, TO_CHAR(SYSDATE, 'YYYY') AS SYSDATE_YYYY");
@@ -68,6 +90,20 @@ class Ext_training_model extends MY_Model
         $this->db->from("DEPARTMENT_MAIN");
         $this->db->where("COALESCE(DM_STATUS,'INACTIVE') = 'ACTIVE'");
         $this->db->where("DM_LEVEL IN (1,2)");
+        $this->db->order_by("DM_DEPT_CODE");
+        $q = $this->db->get();
+    
+        return $q->result();
+    }
+
+    // ALL DEPARTMENT 2
+    public function getPopulateDept($deptCode)
+    {  
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_CODE||' - '||DM_DEPT_DESC AS DP_CODE_DESC");
+        $this->db->from("DEPARTMENT_MAIN");
+        if(!empty($deptCode)) {
+            $this->db->where('DM_DEPT_CODE', $deptCode);
+        }
         $this->db->order_by("DM_DEPT_CODE");
         $q = $this->db->get();
     
@@ -229,6 +265,26 @@ class Ext_training_model extends MY_Model
         
         $this->db->where("TH_STATUS = 'ENTRY'");
         $this->db->where("TH_DEPT_CODE = (SELECT SM_DEPT_CODE FROM STAFF_MAIN WHERE UPPER(SM_APPS_USERNAME) = UPPER('$umg'))");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE, TH_REF_ID");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
+
+    // GET TRAINING LIST NEW
+    public function getTrainingListNew($deptCode)
+    {
+        $this->db->select("TH_REF_ID,
+        TH_TRAINING_TITLE,
+        TO_CHAR(TH_DATE_FROM, 'DD/MM/YYYY') TH_DATE_FROM2,
+        TO_CHAR(TH_DATE_TO, 'DD/MM/YYYY') TH_DATE_TO2,
+        ");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->where("TH_STATUS = 'ENTRY'");
+        if(!empty($deptCode)) {
+            $this->db->where("TH_DEPT_CODE", $deptCode);
+        }
         $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
         $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE, TH_REF_ID");
         $q = $this->db->get();
@@ -729,6 +785,29 @@ class Ext_training_model extends MY_Model
         );
 
         return $this->db->insert("TRAINING_COST", $data);
+    }
+
+    // GET SUM TRAINING COST
+    public function getSumTrCost($refid)
+    {
+        $this->db->select("SUM(TC_AMOUNT) AS SUM_TR_COST");
+        $this->db->from("TRAINING_COST");
+        $this->db->where("TC_TRAINING_REFID", $refid);
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // UPDATE TRAINING FEE
+    public function updTrainingFee($refid, $tr_cost)
+    {
+        $data = array(
+            "TH_TRAINING_FEE" => $tr_cost,
+        );
+
+        $this->db->where("TH_REF_ID", $refid);
+
+        return $this->db->update("TRAINING_HEAD", $data);
     }
 
     // UPDATE TRAINING_COST
