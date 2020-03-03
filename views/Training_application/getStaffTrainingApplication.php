@@ -11,7 +11,7 @@
 	</div> 
 </div>
 <div class="well">
-	<div class="row table-responsive">
+	<div class="row table-responsive" style="font-size: 11px;">
 		<table class="table table-bordered table-hover table-condensed" id="tbl_list_sta" style="white-space: nowrap, width: 1%;">
 		<thead>
 		<tr>
@@ -28,21 +28,21 @@
 		</thead>
 		<tbody>
 		<?php
-			if (!empty($staff_tr_list)) {
-				foreach ($staff_tr_list as $stl) {
+			if (!empty($stf_li_arr)) {
+				foreach ($stf_li_arr as $stl=>$val) {
 					echo '
 					<tr>
 						<td class="text-center col-md-1">
 							<div class="form-check text-center">
-								<input class="form-check-input position-static checkitem" type="checkbox" name="applicantID" id="applicantID" value="' . $stl->SM_STAFF_ID . '" aria-label="...">
+								<input class="form-check-input position-static checkitem" type="checkbox" name="applicantID" id="applicantID" value="' .$val['staff_id']. '" aria-label="...">
 							</div>
 						</td>
-						<td class="text-center col-md-1 sid">' . $stl->SM_STAFF_ID . '</td>
-						<td class="text-left col-md-3">' . $stl->SM_STAFF_NAME . '</td>
-						<td class="text-center col-md-2">' . $stl->SM_EMAIL_ADDR . '</td>
-						<td class="text-center col-md-2">' . $stl->SM_DEPT_CODE . '</td>
-						<td class="text-center col-md-2">' . $stl->SJS_STATUS_DESC . '</td>
-						<td class="text-center col-md-2">' . $stl->STAFFEVA . '</td>
+						<td class="text-center col-md-1 sid">' .$val['staff_id']. '</td>
+						<td class="text-left col-md-3">' .$val['staff_name']. '</td>
+						<td class="text-center col-md-2">' .$val['staff_email']. '</td>
+						<td class="text-center col-md-1">' .$val['staff_dept']. '</td>
+						<td class="text-center col-md-2">' .$val['staff_job_sts']. '</td>
+						<td class="text-center col-md-2">' .$val['staff_eva_id']. '</td>
 						<td class="text-center col-md-1">
 						<div class="form-group">
 							<div class="col-md-9">

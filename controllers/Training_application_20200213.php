@@ -1206,8 +1206,7 @@ class Training_application extends MY_Controller
         // form / input validation
         $rule = array(
             'type' => 'required|max_length[20]', 
-            'facilitator' => 'required|max_length[10]',
-			'label' => 'required|max_length[2]'
+            'facilitator' => 'required|max_length[10]'
         );
 
         $exclRule = null;
@@ -1217,7 +1216,7 @@ class Training_application extends MY_Controller
         // Begin Insert New Record
         if ($status == 1 && !empty($refid)) {
             // check training speaker
-            $check = $this->mdl->checkTrainingFacilitator($refid, $fiID, $form['label']);
+            $check = $this->mdl->checkTrainingFacilitator($refid, $fiID);
 
             if(empty($check)) {
                 $insert = $this->mdl->insertTrainingFacilitator($form, $refid);
@@ -2315,7 +2314,8 @@ class Training_application extends MY_Controller
     _____________________*/
 
     // DELETE TRAINING INFO
-    public function deleteTrainingInfo() {
+    public function deleteTrainingInfo() 
+    {
 		$this->isAjax();
 		
         $refid = $this->input->post('refid', true);
@@ -2594,36 +2594,12 @@ class Training_application extends MY_Controller
         $refid = $this->input->post('refid', true);
         $tName = $this->input->post('tName', true);
 
-        $stf_li_arr = array();
+        //$data2 = array();
 
         if(!empty($refid)) {
             $data['refid'] = $refid;
             $data['tname'] = $tName;
             $data['staff_tr_list'] = $this->mdl->getStaffTrainingApplication($refid);
-
-            foreach($data['staff_tr_list'] as $stl) {
-                $staff_id = $stl->SM_STAFF_ID;
-                $staff_name = $stl->SM_STAFF_NAME;
-                $staff_email = $stl->SM_EMAIL_ADDR;
-                $staff_dept = $stl->SM_DEPT_CODE;
-                $staff_job_sts = $stl->SJS_STATUS_DESC;
-                $staff_eva_id = '';
-
-                $getEvaID = $this->mdl->getStaffTrainingApplicationEvaID($refid, $staff_id);
-
-                if(!empty($getEvaID)) {
-                    $staff_eva_id = $getEvaID->STAFF;
-                }
-                
-                $stf_li_arr [] = array('staff_id'=>$staff_id,
-                                'staff_name'=>$staff_name,
-                                'staff_email'=>$staff_email,
-                                'staff_dept'=>$staff_dept,
-                                'staff_job_sts'=>$staff_job_sts,
-                                'staff_eva_id'=>$staff_eva_id);
-            }
-
-            $data['stf_li_arr'] = $stf_li_arr;
         } 
 
         $this->renderAjax($data);

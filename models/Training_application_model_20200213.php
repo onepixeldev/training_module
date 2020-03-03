@@ -191,7 +191,7 @@ class Training_application_model extends MY_Model
     // FACILITATOR INFO EXTERNAL
     public function getFacilitatorInfoExternal($tsrefID, $fiID = null)
     {
-        $this->db->select("TF_TYPE, EF_FACILITATOR_NAME, TF_FACILITATOR_ID, TF_FACILITATOR_LABEL");
+        $this->db->select("TF_TYPE, EF_FACILITATOR_NAME, TF_FACILITATOR_ID");
         $this->db->from("TRAINING_FACILITATOR, EXTERNAL_FACILITATOR");
         $this->db->where("EF_FACILITATOR_ID = TF_FACILITATOR_ID");
         $this->db->where("TF_TRAINING_REFID", $tsrefID);
@@ -203,7 +203,6 @@ class Training_application_model extends MY_Model
             
             return $q->row();
         } else {
-			$this->db->order_by("TF_FACILITATOR_LABEL");
             $q = $this->db->get();
         
             return $q->result();
@@ -213,7 +212,7 @@ class Training_application_model extends MY_Model
     // FACILITATOR INFO STAFF
     public function getFacilitatorInfoStaff($tsrefID, $fiID = null)
     {
-        $this->db->select("TF_TYPE, SM_STAFF_NAME, TF_FACILITATOR_ID, TF_FACILITATOR_LABEL");
+        $this->db->select("TF_TYPE, SM_STAFF_NAME, TF_FACILITATOR_ID");
         $this->db->from("TRAINING_FACILITATOR, STAFF_MAIN");
         $this->db->where("SM_STAFF_ID = TF_FACILITATOR_ID");
         $this->db->where("TF_TRAINING_REFID", $tsrefID);
@@ -225,7 +224,6 @@ class Training_application_model extends MY_Model
             
             return $q->row();
         } else {
-			$this->db->order_by("TF_FACILITATOR_LABEL");
             $q = $this->db->get();
         
             return $q->result();
@@ -664,12 +662,11 @@ class Training_application_model extends MY_Model
     }
 
     // SELECT TRAINING FACILITATOR
-    public function checkTrainingFacilitator($refID, $fiID, $fiLabel) {
+    public function checkTrainingFacilitator($refID, $fiID) {
         $this->db->select("*");
         $this->db->from("TRAINING_FACILITATOR");
         $this->db->where("TF_FACILITATOR_ID", $fiID);
         $this->db->where("TF_TRAINING_REFID", $refID);
-        $this->db->where("TF_FACILITATOR_LABEL", $fiLabel);
         $q = $this->db->get();
         
         return $q->row();
@@ -1048,7 +1045,6 @@ class Training_application_model extends MY_Model
             "TF_TRAINING_REFID" => $refid,
             "TF_FACILITATOR_ID" => $form['facilitator'],
             "TF_TYPE" => $form['type'],
-            "TF_FACILITATOR_LABEL" => strtoupper($form['label'])
         );
 
         return $this->db->insert("TRAINING_FACILITATOR", $data);
@@ -1678,8 +1674,7 @@ class Training_application_model extends MY_Model
     } 
 
     // GET MONTH DROPDOWN
-    public function getMonthList() 
-    {		
+    public function getMonthList() {		
         $this->db->select("to_char(CM_DATE, 'MM') AS CM_MM, to_char(CM_DATE, 'MONTH') AS CM_MONTH");
         $this->db->from("CALENDAR_MAIN");
         $this->db->group_by("to_char(CM_DATE,'MM'), to_char(CM_DATE, 'MONTH')");
@@ -1719,42 +1714,32 @@ class Training_application_model extends MY_Model
     // GET STAFF LIST BASED FROM TRAINING
     public function getStaffTrainingApplication($refid)
     {
-
-        $this->db->select("STH_STAFF_ID, SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, SJS_STATUS_DESC, STH_STATUS, SM_EMAIL_ADDR, TO_CHAR(STH_APPLY_DATE, 'DD/MM/YYYY') AS STHAPPDATE, STH_DEPT_TRAINING_BENEFIT");
-        $this->db->from("STAFF_TRAINING_HEAD");
-        $this->db->join("STAFF_MAIN", "STH_STAFF_ID = SM_STAFF_ID", "LEFT");
-        $this->db->join("STAFF_SERVICE", "STH_STAFF_ID = SS_STAFF_ID", "LEFT");
-        $this->db->join("STAFF_JOB_STATUS", "SS_JOB_STATUS = SJS_STATUS_CODE", "LEFT");
-        $this->db->where("STH_STATUS = 'RECOMMEND'");
-        $this->db->where("STH_TRAINING_REFID", $refid);
-        $this->db->order_by("get_staff_dept(sth_staff_id)");
-        $q = $this->db->get();
-		        
-        return $q->result();
-    }
-
-    // GET STAFF EVA ID
-    public function getStaffTrainingApplicationEvaID($refid, $staff_id)
-    {
-        $query = "SELECT SM_STAFF_ID||' '||SM_STAFF_NAME||' ('||SM_EMAIL_ADDR||')' STAFF
-		FROM STAFF_TRAINING_HEAD,STAFF_MAIN
-		WHERE STH_TRAINING_REFID = '$refid'
-        AND STH_STATUS = 'RECOMMEND'
-        AND NVL(STH_VERIFY_BY,STH_RECOMMEND_BY) = SM_STAFF_ID
-        AND STH_STAFF_ID = '$staff_id'
-        UNION
-        SELECT SM_STAFF_ID||' '||SM_STAFF_NAME||' ('||SM_EMAIL_ADDR||')' STAFF
-        FROM LEAVE_STAFF_HIERARCHY,STAFF_MAIN,STAFF_TRAINING_HEAD
-        WHERE LEAVE_STAFF_HIERARCHY.LSH_STAFF_ID = STH_STAFF_ID
-        AND STH_TRAINING_REFID = '$refid'
-        AND STH_STATUS = 'RECOMMEND'
-        AND STH_VERIFY_BY IS NULL 
-        AND STH_RECOMMEND_BY IS NULL
-        AND NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY,LSH_APPROVE_BY) = SM_STAFF_ID
-        AND STH_STAFF_ID = '$staff_id'";
+        $query = "SELECT 
+        SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, 
+        SJS_STATUS_DESC, STH_STATUS, STAFFEVA, SM_EMAIL_ADDR, 
+        to_char(STH_APPLY_DATE, 'DD/MM/YYYY') AS STHAPPDATE,
+        STH_DEPT_TRAINING_BENEFIT
+        FROM (select *
+              from STAFF_TRAINING_HEAD
+              JOIN STAFF_MAIN ON STH_STAFF_ID = SM_STAFF_ID
+              JOIN STAFF_SERVICE ON STH_STAFF_ID = STAFF_SERVICE.SS_STAFF_ID
+              JOIN STAFF_JOB_STATUS ON SS_JOB_STATUS = SJS_STATUS_CODE
+              where STH_TRAINING_REFID = '$refid'
+              and STH_STATUS = 'RECOMMEND'
+              )
+        LEFT JOIN (SELECT SM_STAFF_ID||' - '||SM_STAFF_NAME||' ('||SM_EMAIL_ADDR||')' AS STAFFEVA, LSH_STAFF_ID
+              FROM LEAVE_STAFF_HIERARCHY, STAFF_MAIN, STAFF_TRAINING_HEAD
+              WHERE LEAVE_STAFF_HIERARCHY.LSH_STAFF_ID = STH_STAFF_ID
+              AND STH_TRAINING_REFID = '$refid'
+              AND STH_STATUS = 'RECOMMEND'
+              AND STH_VERIFY_BY IS NULL 
+              AND STH_RECOMMEND_BY IS NULL
+              AND NVL(LEAVE_STAFF_HIERARCHY.LSH_RECOMMEND_BY,LSH_APPROVE_BY) = SM_STAFF_ID)
+        ON LSH_STAFF_ID = SM_STAFF_ID
+        ORDER BY SM_DEPT_CODE, SM_STAFF_NAME";
 
         $q = $this->db->query($query);
-        return $q->row();
+        return $q->result();
     }
 
     // GET EVALUATOR INFO
