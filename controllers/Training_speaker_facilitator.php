@@ -273,12 +273,36 @@ class Training_speaker_facilitator extends MY_Controller
     }*/
 
     // GENERATE REPORT (ORACLE)
-    public function genReportOther() {
+    public function genReportOtherOra() {
         $formCode = 'ATR021';
         //$formCode = 'WRR147';
         // Format = PDF
         $param = null;
         $this->lib->report($formCode, $param);
+    }
+
+    // GENERATE REPORT (ORACLE)
+    public function genReportOther() {
+        // Load jasperreport library
+		$this->load->library('jasperreport');
+		
+		// get report parameters
+		$param = null;
+		
+		// get report code and format
+		$repCode = 'ATR021';
+		$format = 'pdf';
+		
+		// for report format = excel / word, report will be downloaded as attachment
+		if ($format == 'excel') {
+			$format = 'xlsx';
+			$this->jasperreport->setAttachment();
+		} elseif ($format == 'word') {
+			$format = 'docx';
+			$this->jasperreport->setAttachment();
+		}
+		
+		$this->jasperreport->runReport("/Reports/HRA_AT/" . $repCode,$format,$param);
     }
 
 
