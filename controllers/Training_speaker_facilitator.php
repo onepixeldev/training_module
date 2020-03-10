@@ -302,7 +302,7 @@ class Training_speaker_facilitator extends MY_Controller
 			$this->jasperreport->setAttachment();
 		}
 		
-		$this->jasperreport->runReport("/Reports/HRA_AT/" . $repCode,$format,$param);
+		$this->jasperreport->runReport("/Reports/MyHRIS/HRA_AT/" . $repCode,$format,$param);
     }
 
 
