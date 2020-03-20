@@ -2899,6 +2899,7 @@ class Ext_training_appl extends MY_Controller
         $sth_status = $form['status'];
         $update2Msg = '';
         $update3Msg = '';
+        $sth_complete = '';
 
         // form / input validation
         $rule = array(

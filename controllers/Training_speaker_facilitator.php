@@ -281,7 +281,7 @@ class Training_speaker_facilitator extends MY_Controller
         $this->lib->report($formCode, $param);
     }
 
-    // GENERATE REPORT (ORACLE)
+    // GENERATE REPORT (JASPER)
     public function genReportOther() {
         // Load jasperreport library
 		$this->load->library('jasperreport');
