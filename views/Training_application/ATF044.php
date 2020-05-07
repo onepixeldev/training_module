@@ -739,7 +739,8 @@
 
     // TRAINING SPEAKER
 	// SAVE TRAINING SPEAKER
-	$('#myModalis2').on('click', '.ins_sp_info', function () {
+	$('#myModalis2').on('click', '.ins_sp_info', function (e) {
+		e.preventDefault();
 		var data = $('#formTrainingSpeaker').serialize();
 		msg.wait('#alertInsTrSp');
 		//msg.wait('#alertFooter');
@@ -804,7 +805,8 @@
 	});
 
 	// SAVE UPDATE TRAINING SPEAKER
-	$('#myModalis2').on('click', '.upd_sp_info', function () {
+	$('#myModalis2').on('click', '.upd_sp_info', function (e) {
+		e.preventDefault();
 		var data = $('#formUpdateTrainingSpeaker').serialize();
 		msg.wait('#alertUpdTrSp');
 		//msg.wait('#alertFooter');
@@ -940,7 +942,8 @@
 	});
 
 	// SAVE TRAINING FACILITATOR
-	$('#myModalis2').on('click', '.ins_fi_info', function () {
+	$('#myModalis2').on('click', '.ins_fi_info', function (e) {
+		e.preventDefault();
 		var data = $('#formTrainingFacilitator').serialize();
 		msg.wait('#alertInsTrFi');
 		//msg.wait('#alertFooter');
@@ -1042,7 +1045,8 @@
 	});
 
 	// SAVE TARGET GROUP
-	$('#myModalis').on('click', '.ins_tg_btn', function () {
+	$('#myModalis').on('click', '.ins_tg_btn', function (e) {
+		e.preventDefault();
 		var data = $('#insFormTargetGroup').serialize();
 		msg.wait('#alertInsTg');
 		//msg.wait('#alertFooter');
@@ -1162,7 +1166,8 @@
 	});
 
 	// SAVE INSERT EG POSITION
-	$('#myModalis2').on('click', '.add_eg_pos', function () {
+	$('#myModalis2').on('click', '.add_eg_pos', function (e) {
+		e.preventDefault();
 		var data = $('#formAddEGPos').serialize();
 		msg.wait('#alertAddEGPos');
 		//msg.wait('#alertFooter');
@@ -1310,7 +1315,8 @@
 	});
 
 	// SAVE MODULE SETUP
-	$('#myModalis2').on('click', '.ins_ms', function () {
+	$('#myModalis2').on('click', '.ins_ms', function (e) {
+		e.preventDefault();
 		var data = $('#insModuleSetup').serialize();
 		msg.wait('#alertInsMs');
 		
@@ -1415,7 +1421,8 @@
 	});
 
 	// SAVE UPDATE MODULE SETUP 1
-	$('#myModalis2').on('click', '.upd_ms1', function () {
+	$('#myModalis2').on('click', '.upd_ms1', function (e) {
+		e.preventDefault();
 		var data = $('#formUpdMs1').serialize();
 		msg.wait('#alertUpdMs1');
 		//msg.wait('#alertFooter');
@@ -1472,7 +1479,8 @@
 	});
 
 	// SAVE UPDATE MODULE SETUP 2
-	$('#myModalis2').on('click', '.upd_ms2', function () {
+	$('#myModalis2').on('click', '.upd_ms2', function (e) {
+		e.preventDefault();
 		var data = $('#formUpdMs2').serialize();
 		msg.wait('#alertUpdMs2');
 		//msg.wait('#alertFooter');
@@ -1530,7 +1538,8 @@
 	});
 
 	// SAVE UPDATE MODULE SETUP 3
-	$('#myModalis2').on('click', '.upd_ms3', function () {
+	$('#myModalis2').on('click', '.upd_ms3', function (e) {
+		e.preventDefault();
 		var data = $('#formUpdMs3').serialize();
 		msg.wait('#alertUpdMs3');
 		
@@ -1583,7 +1592,8 @@
 	});
 
 	// SAVE CPD SETUP
-	$('#myModalis2').on('click', '.ins_cpd', function () {
+	$('#myModalis2').on('click', '.ins_cpd', function (e) {
+		e.preventDefault();
 		var data = $('#insCpdSetup').serialize();
 		msg.wait('#alertInsCpd');
 		
@@ -1688,7 +1698,8 @@
 	});
 
 	// SAVE UPDATE CPD SETUP 1
-	$('#myModalis2').on('click', '.upd_cpd1', function () {
+	$('#myModalis2').on('click', '.upd_cpd1', function (e) {
+		e.preventDefault();
 		var data = $('#formUpdCpd1').serialize();
 		msg.wait('#alertUpdCpd1');
 		
@@ -1743,7 +1754,8 @@
 	});
 
 	// SAVE UPDATE CPD SETUP 2
-	$('#myModalis2').on('click', '.upd_cpd2', function () {
+	$('#myModalis2').on('click', '.upd_cpd2', function (e) {
+		e.preventDefault();
 		var data = $('#formUpdCpd2').serialize();
 		msg.wait('#alertUpdCpd2');
 		
@@ -1800,7 +1812,8 @@
 	});
 
 	// SAVE UPDATE CPD SETUP 3
-	$('#myModalis2').on('click', '.upd_cpd3', function () {
+	$('#myModalis2').on('click', '.upd_cpd3', function (e) {
+		e.preventDefault();
 		var data = $('#formUpdCpd3').serialize();
 		msg.wait('#alertUpdCpd3');
 		
@@ -1864,7 +1877,8 @@
 	});
 
 	// SAVE UPDATE CPD SETUP 4
-	$('#myModalis2').on('click', '.upd_cpd4', function () {
+	$('#myModalis2').on('click', '.upd_cpd4', function (e) {
+		e.preventDefault();
 		var data = $('#formUpdCpd4').serialize();
 		msg.wait('#alertUpdCpd4');
 		
@@ -1927,7 +1941,8 @@
 	});
 
 	// SAVE UPDATE CPD SETUP 5
-	$('#myModalis2').on('click', '.upd_cpd5', function () {
+	$('#myModalis2').on('click', '.upd_cpd5', function (e) {
+		e.preventDefault();
 		var data = $('#formUpdCpd5').serialize();
 		msg.wait('#alertUpdCpd5');
 		

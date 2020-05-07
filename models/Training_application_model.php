@@ -131,7 +131,8 @@ class Training_application_model extends MY_Model
         to_char(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
         to_char(TH_CONFIRM_DATE_FROM, 'DD-MM-YYYY') AS TH_CON_DATE_FROM,
         to_char(TH_CONFIRM_DATE_TO, 'DD-MM-YYYY') AS TH_CON_DATE_TO, 
-        TH_FIELD");
+        TH_FIELD,
+        TH_APPROVE_BY"); //start @update 06032020
         $this->db->from('TRAINING_HEAD');
         
         // if(empty($scCode)) {
@@ -1112,14 +1113,22 @@ class Training_application_model extends MY_Model
         $enter_date = 'SYSDATE';
 
         $defScCode = $form['sc_code'];
+        $thHistory = $form['training_setup_history']; 
         $sts = '';
+        $apprBy = '';
 
         if($defScCode == 'ATF044') {
             $sts = 'APPROVE';
         } else {
             $sts = 'ENTRY';
         }
-
+        
+        if($thHistory == 'Y'){
+            $apprBy = 'HRA_ADMIN';
+        }else {
+            $apprBy = $this->staff_id;
+        } 
+        
         //$refID = $refid;
 
         $data = array(
@@ -1152,7 +1161,9 @@ class Training_application_model extends MY_Model
             "TH_PRINT_CERTIFICATE" => $form['print_certificate'],
 
             "TH_ENTER_BY" => $umg,
-            "TH_STATUS" => $sts
+            "TH_STATUS" => $sts,
+                
+            "TH_APPROVE_BY" => $apprBy
         );
 
         //$this->db->set("TH_REF_ID", $refID, false);
@@ -3130,7 +3141,8 @@ class Training_application_model extends MY_Model
 
     // GET COURSE DD EFF LIST
     public function getCourseListEff() {
-        $this->db->select("TH_REF_ID, TH_TRAINING_TITLE, TH_REF_ID||' - '||TH_TRAINING_TITLE COURSE_ID_NAME,TH_REF_ID||' - '||TH_TRAINING_TITLE||'|'||TO_CHAR(TH_DATE_FROM,'DD/MM/YYYY')||' - '||TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') COURSE_DETL");
+        $this->db->select("TH_REF_ID, TH_TRAINING_TITLE, TH_REF_ID||' - '||TH_TRAINING_TITLE COURSE_ID_NAME,TH_REF_ID||' - '||TH_TRAINING_TITLE||'|'||TO_CHAR(TH_DATE_FROM,'DD/MM/YYYY')||' - '||TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') COURSE_DETL,
+                TO_CHAR(TH_DATE_FROM, 'DD/MM/YYYY')||' - '||TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') TH_DATE");
         $this->db->from("TRAINING_HEAD, TRAINING_HEAD_DETL");
         $this->db->where("TH_REF_ID = THD_REF_ID");
         $this->db->where("NVL(THD_EVALUATION,'N') = 'Y'");
@@ -3448,4 +3460,53 @@ class Training_application_model extends MY_Model
         $q = $this->db->get();
         return $q->result();
     }
+    
+     //start update @17/02/2020
+    //--------------------------------------------------------------------------
+    
+    public function getTerasTrainingList($year,$month) {
+        $this->db->select("TH_REF_ID, TH_TRAINING_TITLE, TO_CHAR(TH_DATE_FROM,'DD/MM/YYYY') AS DATE_FROM, TO_CHAR(TH_DATE_TO,'DD/MM/YYYY') AS DATE_TO,
+            TH_DATE_FROM,THD_COORDINATOR||' - '||SM_STAFF_NAME as COOR");
+        $this->db->from("TRAINING_HEAD");
+        $this->db->join("TNA_TRAINING_HEAD","TTH_REF_ID = TH_TRAINING_CODE");
+        $this->db->join("TRAINING_HEAD_DETL","TH_REF_ID = THD_REF_ID","LEFT");
+        $this->db->join("STAFF_MAIN","SM_STAFF_ID = THD_COORDINATOR","LEFT");
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $this->db->where("COALESCE(TTH_STRUCTURED,'N') = 'Y'");
+        $this->db->where("COALESCE(TTH_STATUS,'INACTIVE') = 'ACTIVE'");
+        $this->db->where("TTH_REF_ID LIKE 'TRS%'");
+        //$this->db->where("('$month' IS NULL OR ('$month' IS NOT NULL AND TO_CHAR(TH_DATE_FROM,'MM') = '$month'))");
+        //$this->db->where("('$year' IS NULL OR ('$year' IS NOT NULL AND TO_CHAR(TH_DATE_FROM,'YYYY') = '$year'))");
+        //$this->db->where("TO_CHAR(TH_DATE_FROM,'YYYY') = NVL('$year',TO_CHAR(SYSDATE,'YYYY'))"); 
+        //$this->db->where("TO_CHAR(TH_DATE_FROM,'MM') = NVL('$month',TO_CHAR(SYSDATE,'MM'))"); 
+        
+        if(!empty($month) && !empty($year)) {
+            $this->db->where("((NVL(to_char(TH_DATE_FROM,'MM/YYYY'),'') = '$month'||'/'||'$year'))");
+        } elseif(!empty($month)) {
+            $this->db->where("((NVL(to_char(TH_DATE_FROM,'MM'),'') = '$month'))");
+        } elseif(!empty($year)) {
+            $this->db->where("((NVL(to_char(TH_DATE_FROM,'YYYY'),'') = '$year'))");
+        }
+        
+        $this->db->order_by("TH_DATE_FROM");
+
+        $q = $this->db->get();
+        return $q->result();
+    }//getTerasTrainingList
+    
+    public function getTerasList() {
+        $this->db->select("TTH_REF_ID, TTH_TRAINING_TITLE");
+        $this->db->from("TNA_TRAINING_HEAD");
+        $this->db->where("COALESCE(TTH_STRUCTURED,'N') = 'Y'");
+        $this->db->where("COALESCE(TTH_STATUS,'INACTIVE') = 'ACTIVE'");
+        $this->db->where("TTH_REF_ID LIKE 'TRS%'");
+
+        $this->db->order_by("TTH_REF_ID");
+
+        $q = $this->db->get();
+        return $q->result();
+    }//getTerasList
+    
+    //end update @17/02/2020 -----------------------------------------------------------
+    
 }

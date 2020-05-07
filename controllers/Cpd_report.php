@@ -33,7 +33,7 @@ class Cpd_report extends MY_Controller
         $data['year_list'] = $this->dropdown($this->mdl_pmp->getYearList(), 'CM_YEAR', 'CM_YEAR', '--Please select--');
 
         // FORMAT LIST
-        $data['format_dd'] = array('PDF'=>'PDF', 'EXCEL' =>'SPREADSHEET');
+        $data['format_dd'] = array('PDF'=>'PDF', 'SPREADSHEET' =>'SPREADSHEET');
 
         // CURRENT LOGIN STAFF DEPT
         $staff_dp = $this->mdl_cpd->getStaffDept();

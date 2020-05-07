@@ -1509,6 +1509,14 @@ class Training_application extends MY_Controller
                 $data['OrgCountry'] = '';
             }
             
+            //start @update 06032020
+            if(!empty($data['trInfo']->TH_APPROVE_BY) && $data['trInfo']->TH_APPROVE_BY === 'HRA_ADMIN') {
+                $data['thHistory'] = 'Y';
+            }else {
+                $data['thHistory'] = 'N';
+            }  
+            //end @update 06032020
+            
 
             $data['trInfoDetl'] = $this->mdl->getTrHeadDetl($refID);
             if (!empty($data['trInfoDetl'])) {
@@ -1623,6 +1631,11 @@ class Training_application extends MY_Controller
             'competency_code' => 'max_length[10]', 
             'evaluation_period_from' => 'max_length[30]',
             'evaluation_period_to' => 'max_length[30]', 
+            
+            //start @update 06032020
+            'training_setup_history' => 'max_length[1]',
+            //end @update 06032020
+            
             // 'evaluation_period_from' => $evaluationFrReq,
             // 'evaluation_period_to' => $evaluationToReq, 
 
@@ -5390,6 +5403,7 @@ class Training_application extends MY_Controller
         $this->session->set_userdata('to_year_ai','');
         $this->session->set_userdata('year_bi','');
         $this->session->set_userdata('courseRefid','');
+        $this->session->set_userdata('rep_format_bi','');
 		
     	// get current value 
     	$repCode = $this->input->post('repCode');
@@ -5402,6 +5416,7 @@ class Training_application extends MY_Controller
         $to_year_ai = $this->input->post('to_year_ai');
         $year_bi = $this->input->post('year_bi');
         $courseRefid = $this->input->post('courseRefid');
+        $rep_format_bi = $this->input->post('rep_format_bi');
 
 		// set session value
         $this->session->set_userdata('repCodei', $repCode);
@@ -5414,6 +5429,7 @@ class Training_application extends MY_Controller
         $this->session->set_userdata('to_year_ai', $to_year_ai);
         $this->session->set_userdata('year_bi', $year_bi);
         $this->session->set_userdata('courseRefid', $courseRefid);
+        $this->session->set_userdata('rep_format_bi', $rep_format_bi);
     }
 
     // GENERATE REPORT I
@@ -5433,9 +5449,9 @@ class Training_application extends MY_Controller
 
         $year_bi = $this->session->userdata('year_bi');
         $courseRefid = $this->session->userdata('courseRefid');
-        
+        $rep_format_bi = $this->session->userdata('rep_format_bi');
 
-		if($repCode == 'ATR057') {
+	if($repCode == 'ATR057') {
             $param = array('PARAMFORM' => 'NO', 'DM_DEPT_CODE' => $department_ai, 'YEAR_YEAR' => $year_ai);
             $this->lib->report($repCode, $param);
         } 
@@ -5476,6 +5492,51 @@ class Training_application extends MY_Controller
             $this->lib->report($repCode, $param);
         }
         elseif($repCode == 'ATR061') {
+            
+            if($rep_format_bi == 'EXCEL') {
+                $repCode = 'ATR061';
+            } else {
+                $repCode = 'ATR061';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi);
+            $this->lib->report($repCode, $param, $rep_format_bi);
+        }
+        elseif($repCode == 'ATR062') {
+            
+            if($rep_format_bi == 'EXCEL') {
+                $repCode = 'ATR062';
+            } else {
+                $repCode = 'ATR062';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi);
+            $this->lib->report($repCode, $param, $rep_format_bi);
+        }
+        elseif($repCode == 'ATR063') {
+            
+            if($rep_format_bi == 'EXCEL') {
+                $repCode = 'ATR063';
+            } else {
+                $repCode = 'ATR063';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi);
+            $this->lib->report($repCode, $param, $rep_format_bi);
+        }
+        elseif($repCode == 'ATR064') {
+            
+            if($rep_format_bi == 'EXCEL') {
+                $repCode = 'ATR064';
+            } else {
+                $repCode = 'ATR064';
+            }
+
+            $param = array('PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi);
+            $this->lib->report($repCode, $param, $rep_format_bi);
+        }
+        /*
+        elseif($repCode == 'ATR061') {
             $param = array('PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi);
             $this->lib->report($repCode, $param);
         }
@@ -5490,7 +5551,7 @@ class Training_application extends MY_Controller
         elseif($repCode == 'ATR064') {
             $param = array('PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi);
             $this->lib->report($repCode, $param);
-        }
+        }*/
     }
     
     // SELECT TABLE MODAL COURSE TITLE
@@ -5565,7 +5626,7 @@ class Training_application extends MY_Controller
         $mm_to = $to_month_aii.'/'.$to_year_aii;
         
 
-		if($repCode == 'ATR047') {
+	if($repCode == 'ATR047') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii);
             $this->lib->report($repCode, $param, $rep_for_ii);
         } 
@@ -5664,7 +5725,7 @@ class Training_application extends MY_Controller
 
         $department_biii = $this->session->userdata('department_biii');
         
-		if($repCode == 'ATR110') {
+	if($repCode == 'ATR110') {
             $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR6' => $year_aiii, 'P_PTJ' => $department_aiii, 'P_KURSUS' => $course_titleiii, 'P_STAF' => $staff_idiii);
             $this->lib->report($repCode, $param);
         } 
@@ -5934,7 +5995,7 @@ class Training_application extends MY_Controller
         $re_formatvi = $this->session->userdata('re_formatvi');
         $staff_id_vi = $this->session->userdata('staff_id_vi');
         
-		if($repCode == 'ATR242') {
+        if($repCode == 'ATR242') {
             if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
                 $repCode = 'ATR242X';
             } else {
@@ -6111,4 +6172,403 @@ class Training_application extends MY_Controller
 
         $this->lib->report($repCode, $param, 'PDF');
     }
+    
+    //start update @17/02/2020
+    //--------------------------------------------------------------------------
+    
+    // REPORT VIII
+    public function tarReportviii()
+    { 
+        // clear filter for report
+        $this->session->set_userdata('repCodevi','');
+        $this->session->set_userdata('month_vi','');
+        $this->session->set_userdata('year_vi','');
+        $this->session->set_userdata('month_to_av','');
+        $this->session->set_userdata('aca_nonaca','');
+        $this->session->set_userdata('orga_vi','');
+        $this->session->set_userdata('re_formatvi','');
+        $this->session->set_userdata('staff_id_vi','');
+
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptListAppRpt(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get staff list
+        $data['staff_list'] = $this->dropdown($this->mdl->getCoordinator(), 'SM_STAFF_ID', 'SM_STAFF_ID_NAME', ' ---Please select--- ');
+
+        $this->render($data);
+    }
+    
+    public function ATF081DepartmentSearchResult(){
+		
+	// get available records
+	$data['dept_list'] = $this->mdl->getDeptListAppRpt();
+		
+        $this->renderAjax($data);
+    }//ATF081DepartmentSearchResult()
+    
+    public function ATF081DepartmentSearchResult2(){
+		
+	// get available records
+	$data['dept_list'] = $this->mdl->getDeptListAppRpt();
+		
+        $this->renderAjax($data);
+    }//ATF081DepartmentSearchResult2()
+    
+    public function ATF081DepartmentSearchResult3(){
+		
+	// get available records
+	$data['dept_list'] = $this->mdl->getDeptListAppRpt();
+		
+        $this->renderAjax($data);
+    }//ATF081DepartmentSearchResult3()
+    
+    public function ATF081TrainingSearchResult(){
+	
+        $year = $this->input->post('year');
+        $month = $this->input->post('month');
+        
+	// get available records
+	$data['training_list'] = $this->mdl->getTerasTrainingList($year,$month);
+		
+        $this->renderAjax($data);
+    }//ATF081TrainingSearchResult()
+    
+    public function ATF081TrainingSearchResult2(){
+        
+	// get available records
+	$data['training_list'] = $this->mdl->getTerasList();
+		
+        $this->renderAjax($data);
+    }//ATF081TrainingSearchResult2()
+    
+    public function getDeptName(){
+	$this->isAjax();
+		
+	// get parameter value
+        $sid = $this->input->post('sid',true);
+		
+	// get available records
+       // $postName = $this->mdl->getARF003RecruitmentPostInfo($sid);
+	$deptName = $this->mdl->getQueryDetailInfo("DEPARTMENT_MAIN","DM_DEPT_DESC","DM_DEPT_CODE",$sid);
+		       
+        if (!empty($deptName)) {
+            $success = 1;
+        } else {
+            $success = 0;
+        }
+		
+	$json = array('sts' => $success, 'deptName' => $deptName);
+		
+	echo json_encode($json);
+    } // getDeptName()
+    
+    public function getTrainingName(){
+	$this->isAjax();
+		
+	// get parameter value
+        $sid = $this->input->post('sid',true);
+		
+	// get available records
+       // $postName = $this->mdl->getARF003RecruitmentPostInfo($sid);
+	$trainingName = $this->mdl->getQueryDetailInfo("TRAINING_HEAD","TH_TRAINING_TITLE","TH_REF_ID",$sid);
+		       
+        if (!empty($trainingName)) {
+            $success = 1;
+        } else {
+            $success = 0;
+        }
+		
+	$json = array('sts' => $success, 'trainingName' => $trainingName);
+		
+	echo json_encode($json);
+    } // getTrainingName()
+    
+    public function getTrainingName2(){
+	$this->isAjax();
+		
+	// get parameter value
+        $sid = $this->input->post('sid',true);
+		
+	// get available records
+	$trainingName = $this->mdl->getQueryDetailInfo("TNA_TRAINING_HEAD","TTH_TRAINING_TITLE","TTH_REF_ID",$sid);
+		       
+        if (!empty($trainingName)) {
+            $success = 1;
+        } else {
+            $success = 0;
+        }
+		
+	$json = array('sts' => $success, 'trainingName' => $trainingName);
+		
+	echo json_encode($json);
+    } // getTrainingName2()
+    
+    public function getOrganizerName(){
+	$this->isAjax();
+		
+	// get parameter value
+        $sid = $this->input->post('sid',true);
+		
+	// get available records
+       // $postName = $this->mdl->getARF003RecruitmentPostInfo($sid);
+	$orgName = $this->mdl->getQueryDetailInfo("TRAINING_ORGANIZER_HEAD","TOH_ORG_DESC","TOH_ORG_CODE",$sid);
+		       
+        if (!empty($orgName)) {
+            $success = 1;
+        } else {
+            $success = 0;
+        }
+		
+	$json = array('sts' => $success, 'orgName' => $orgName);
+		
+	echo json_encode($json);
+    } // getOrganizerName()
+    
+    public function getStaffName(){
+	$this->isAjax();
+		
+	// get parameter value
+        $sid = $this->input->post('sid',true);
+		
+	// get available records
+       // $postName = $this->mdl->getARF003RecruitmentPostInfo($sid);
+	$staffName = $this->mdl->getQueryDetailInfo("STAFF_MAIN","SM_STAFF_NAME","SM_STAFF_ID",$sid);
+		       
+        if (!empty($staffName)) {
+            $success = 1;
+        } else {
+            $success = 0;
+        }
+		
+	$json = array('sts' => $success, 'staffName' => $staffName);
+		
+	echo json_encode($json);
+    } // getStaffName()
+    
+    // REPORT PARAM VIII
+    public function setParamviii() {
+	// clear filter for report
+        $this->session->set_userdata('repCodev','');
+        $this->session->set_userdata('trainingID','');
+        $this->session->set_userdata('trainingID2','');
+        $this->session->set_userdata('year','');
+        $this->session->set_userdata('month','');
+        $this->session->set_userdata('department_v','');
+        $this->session->set_userdata('department_v2','');
+        $this->session->set_userdata('department_v3','');
+		
+    	// get current value 
+    	$repCode = $this->input->post('repCode');
+    	$trainingID = $this->input->post('trainingID');
+        $trainingID2 = $this->input->post('trainingID2');
+    	$year = $this->input->post('year');
+        $month = $this->input->post('month');
+        $department_v = $this->input->post('department_v');
+        $department_v2 = $this->input->post('department_v2');
+        $department_v3 = $this->input->post('department_v3');
+
+	// set session value
+        $this->session->set_userdata('repCodev', $repCode);
+        $this->session->set_userdata('department_v', $department_v);
+        $this->session->set_userdata('department_v2', $department_v2);
+        $this->session->set_userdata('department_v3', $department_v3);
+        $this->session->set_userdata('trainingID', $trainingID);
+        $this->session->set_userdata('trainingID2', $trainingID2);
+        $this->session->set_userdata('year', $year);
+        $this->session->set_userdata('month', $month);
+        
+    }//setParamviii
+
+    // GENERATE REPORT VIII
+    public function genReportviii() {
+        $repCode = $this->session->userdata('repCodev');
+        $trainingID = $this->session->userdata('trainingID');
+        $trainingID2 = $this->session->userdata('trainingID2');
+        $year = $this->session->userdata('year');
+        $month = $this->session->userdata('month');
+        $department_v = $this->session->userdata('department_v');
+        $department_v2 = $this->session->userdata('department_v2');
+        $department_v3 = $this->session->userdata('department_v3');
+        
+	if($repCode == 'ATR287') {
+
+            $param = array('PARAMFORM' => 'NO', 'DEPT' => $department_v);
+            $this->lib->report($repCode, $param);
+        } 
+        
+        elseif($repCode == 'ATR287X') {
+
+            $param = array('PARAMFORM' => 'NO', 'DEPT' => $department_v);
+            $this->lib->report($repCode, $param, 'EXCEL');
+        }
+        
+        
+        elseif($repCode == 'ATR288') {
+
+            $param = array('PARAMFORM' => 'NO', 'DEPT' => $department_v);
+            $this->lib->report($repCode, $param);
+        }
+        
+        elseif($repCode == 'ATR288X') {
+
+            $param = array('PARAMFORM' => 'NO', 'DEPT' => $department_v);
+            $this->lib->report($repCode, $param, 'EXCEL');
+            
+        } elseif($repCode == 'ATR289') {
+
+            $param = array('PARAMFORM' => 'NO', 'DEPT' => $department_v2, 'TRAINING_ID' => $trainingID, 'TRAINING_MONTH' => $month, 'TRAINING_YEAR' => $year);
+            $this->lib->report($repCode, $param);
+            
+        } elseif($repCode == 'ATR289X') {
+
+            $param = array('PARAMFORM' => 'NO', 'DEPT' => $department_v2, 'TRAINING_ID' => $trainingID, 'TRAINING_MONTH' => $month, 'TRAINING_YEAR' => $year);
+            $this->lib->report($repCode, $param, 'EXCEL');
+            
+        } elseif($repCode == 'ATR290') {
+
+            $param = array('PARAMFORM' => 'NO', 'DEPT' => $department_v3, 'STRUCTUREDID' => $trainingID2);
+            $this->lib->report($repCode, $param);
+            
+        } elseif($repCode == 'ATR290X') {
+
+            $param = array('PARAMFORM' => 'NO', 'DEPT' => $department_v3, 'STRUCTUREDID' => $trainingID2);
+            $this->lib->report($repCode, $param, 'EXCEL');
+        }
+        
+        
+    }//genReportviii
+    
+    //TAB 1 : REPORTS (tarReport.php)
+    //------------------------------
+    public function ATF081Tab1DepartmentSearchResult(){
+		
+	// get available records
+	$data['dept_list'] = $this->mdl->getDeptListAppRpt();
+		
+        $this->renderAjax($data);
+    }//ATF081Tab1DepartmentSearchResult()
+    
+    //TAB 2 : REPORTS (II) (tarReportii.php)
+    //--------------------------------------
+    public function ATF081Tab2OrganizerSearchResult(){
+		
+	// get available records
+	$data['organizer_list'] = $this->mdl->getOrganizer();
+		
+        $this->renderAjax($data);
+    }//ATF081Tab2OrganizerSearchResult()
+    
+    public function ATF081Tab2StaffSearchResult(){
+		
+	// get available records
+	$data['coordinator_list'] = $this->mdl->getCoordinator();
+		
+        $this->renderAjax($data);
+    }//ATF081Tab2StaffSearchResult()
+    
+    //TAB 3 : REPORTS (III) (tarReportiii.php)
+    //---------------------------------------
+    public function ATF081Tab3DepartmentSearchResult(){
+		
+	// get available records
+	$data['dept_list'] = $this->mdl->getDeptListAppRpt();
+		
+        $this->renderAjax($data);
+    }//ATF081Tab3DepartmentSearchResult()
+    
+    public function ATF081Tab3TrainingSearchResult(){
+	
+        $year = $this->input->post('year');
+        
+	// get available records
+	$data['training_list'] = $this->mdl->courseTitleiii($year);
+		
+        $this->renderAjax($data);
+    }//ATF081Tab3TrainingSearchResult()
+    
+    public function ATF081Tab3StaffSearchResult(){
+		
+	// get available records
+	$data['staff_list'] = $this->mdl->getCoordinator();
+		
+        $this->renderAjax($data);
+    }//ATF081Tab3StaffSearchResult()
+    
+    public function ATF081Tab3BDepartmentSearchResult(){
+		
+	// get available records
+	$data['dept_list'] = $this->mdl->getDeptListAppRpt();
+		
+        $this->renderAjax($data);
+    }//ATF081Tab3BDepartmentSearchResult()
+    
+    //TAB 5 : REPORTS (V) (tarReportv.php)
+    //---------------------------------------
+    public function ATF081Tab5DepartmentSearchResult(){
+		
+	// get available records
+	$data['dept_list'] = $this->mdl->getDeptListAppRpt();
+		
+        $this->renderAjax($data);
+    }//ATF081Tab5DepartmentSearchResult()
+    
+    //TAB 6 : REPORTS (VI) (tarReportvi.php)
+    //---------------------------------------
+    public function ATF081Tab6StaffSearchResult(){
+		
+	// get available records
+	$data['staff_list'] = $this->mdl->getCoordinator();
+		
+        $this->renderAjax($data);
+    }//ATF081Tab6StaffSearchResult()
+    
+    //TAB 7 : REPORTS (VII) (tarReportvii.php)
+    //---------------------------------------
+    public function ATF081Tab7StaffSearchResult(){
+		
+	// get available records
+	$data['staff_list'] = $this->mdl->getCoordinator();
+		
+        $this->renderAjax($data);
+    }//ATF081Tab7StaffSearchResult()
+    
+    public function ATF081Tab7TrainingSearchResult(){
+	
+        $year = $this->input->post('year');
+        
+	// get available records
+	$data['training_list'] = $this->mdl->courseTitleiii($year);
+		
+        $this->renderAjax($data);
+    }//ATF081Tab7TrainingSearchResult()
+    
+    public function ATF166TrainingSearchResult(){
+	
+        $year = $this->input->post('year');
+        
+	// get available records
+	$data['training_list'] = $this->mdl->courseListRptTe($year);
+		
+        $this->renderAjax($data);
+    }//ATF166TrainingSearchResult()
+    
+    public function ATF166Training2SearchResult(){
+	
+        //$year = $this->input->post('year');
+        
+	// get available records
+	$data['training_list'] = $this->mdl->getCourseListEff();
+		
+        $this->renderAjax($data);
+    }//ATF166Training2SearchResult()
+    
+    //end update @17/02/2020 -----------------------------------------------------------
+    
 }

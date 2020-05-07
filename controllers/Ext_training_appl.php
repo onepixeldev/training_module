@@ -417,7 +417,7 @@ class Ext_training_appl extends MY_Controller
         } 
     }
 
-    // SET REPORT PARAM
+    // SET REPORT PARAM oracle
     public function setRepParam() 
     {
 		$this->isAjax();
@@ -430,7 +430,7 @@ class Ext_training_appl extends MY_Controller
 			$staff_id = $this->input->post('staff_id', true);
             $repFormat = 'PDF';
 
-			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','TRAINING_REFID'=>$refid,'STAFFID'=>$staff_id));
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','training_refid'=>$refid,'staffID'=>$staff_id));
         } elseif ($repCode == 'ATR238') {
 			$refid = $this->input->post('refid', true);
             $staff_id = $this->input->post('staff_id', true);
@@ -483,11 +483,36 @@ class Ext_training_appl extends MY_Controller
 		echo json_encode($json);		
     } 
     
-    // GENERATE REPORT
-    public function report()
+    // GENERATE REPORT oracle
+    // public function report()
+    // {
+	// 	$report = $this->encryption->decrypt_array($this->input->get('r'));
+	// 	$this->lib->generate_report($report, false);
+    // }
+
+    // GENERATE REPORT (JASPER)
+    public function report() 
     {
-		$report = $this->encryption->decrypt_array($this->input->get('r'));
-		$this->lib->generate_report($report, false);
+        // Load jasperreport library
+        $this->load->library('jasperreport');
+		
+		// get report parameters
+		$param = $this->encryption->decrypt_array($this->input->get('r'));
+		
+		// get report code
+		$repCode = isset($param['REPORT'])?strtoupper($param['REPORT']):'';
+		$format = isset($param['repFormat'])?strtolower($param['repFormat']):'pdf';
+        
+		// for report format = excel / word, report will be downloaded as attachment
+		if ($format == 'excel') {
+			$format = 'xlsx';
+			$this->jasperreport->setAttachment();
+		} elseif ($format == 'word') {
+			$format = 'docx';
+			$this->jasperreport->setAttachment();
+		}
+		
+		$this->jasperreport->runReport("/Reports/MyHRIS/HRA_AT/" . $repCode,$format,$param);
     }
 
     /*===========================================================
