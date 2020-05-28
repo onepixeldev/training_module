@@ -4296,7 +4296,7 @@ class Training_application extends MY_Controller
     }
 
     // EVALUATION REPORT
-    public function genEvaReport($formCode, $refid) {
+    /*public function genEvaReport($formCode, $refid) {
     	// set param list
     	if (!empty($refid)) {
 			$param = array('PARAMFORM' => 'NO', 'REFID' => $refid);	
@@ -4306,10 +4306,10 @@ class Training_application extends MY_Controller
 		
 		// Format = PDF
         $this->lib->report($formCode, $param);
-    } 
+    }*/ 
 
     // STAFF EVALUATION INDIVIDUAL REPORT
-    public function genStaffEvaReport($refid, $staffID) {
+    /*public function genStaffEvaReport($refid, $staffID) {
     	// set param list
     	if (!empty($refid)) {
             $trDetl = $this->mdl->getTrainingDateFrom($refid);
@@ -4330,7 +4330,7 @@ class Training_application extends MY_Controller
 		
 		// Format = PDF
         $this->lib->report($formCode, $param);
-    }
+    }*/
 
     // STAFF EVALUATION DETAILS
     public function staffEvaluationDetails()
@@ -4732,7 +4732,7 @@ class Training_application extends MY_Controller
     }
 
     // REPORT PARAM
-    public function setParam() {
+    /*public function setParam() {
 		// clear filter for report
         $this->session->set_userdata('repCode2','');
         $this->session->set_userdata('year_i2','');
@@ -4783,7 +4783,7 @@ class Training_application extends MY_Controller
         
 
 		if($repCode == 'ATR079' || $repCode == 'ATR084') {
-            $param = array('PARAMFORM' => 'NO', 'P_YEAR' => $year_i, 'P_DEPT_CODE' => $department, 'P_STAFF_ID' => $staffID, 'P_REF_ID' => $applDateTo, 'P_TRAINING_DATE' => $courseDate);
+            $param = array('PARAMFORM' => 'NO', 'P_YEAR' => $year_i, 'P_DEPT_CODE' => $department, 'P_STAFF_ID' => $staffID, 'P_REF_ID' => $corTitle2, 'P_TRAINING_DATE' => $courseDate);
             $this->lib->report($repCode, $param);
         } elseif($repCode == 'ATR132') {
             $param = array('PARAMFORM' => 'NO', 'YEAR' => $sYear, 'MONTH2' => $sMonth);
@@ -4816,7 +4816,7 @@ class Training_application extends MY_Controller
                 $this->lib->report($rpCode, $param, $format='EXCEL');
             }
         } 
-    } 
+    }*/
 
     /*===========================================================
        Training Secretariat Report - Manual Entry - ATF147
@@ -5451,7 +5451,7 @@ class Training_application extends MY_Controller
         $courseRefid = $this->session->userdata('courseRefid');
         $rep_format_bi = $this->session->userdata('rep_format_bi');
 
-	if($repCode == 'ATR057') {
+	    if($repCode == 'ATR057') {
             $param = array('PARAMFORM' => 'NO', 'DM_DEPT_CODE' => $department_ai, 'YEAR_YEAR' => $year_ai);
             $this->lib->report($repCode, $param);
         } 
@@ -6571,4 +6571,138 @@ class Training_application extends MY_Controller
     
     //end update @17/02/2020 -----------------------------------------------------------
     
+
+    // evaluation report jasper update
+    // SET REPORT PARAM
+    public function setRepParam() 
+    {
+		$this->isAjax();
+		
+		$repCode = $this->input->post('repCode', true);
+		$param = '';
+		
+		if ($repCode == 'ATR276') {
+			$refid = $this->input->post('refid', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REFID' => $refid));
+        } elseif ($repCode == 'STAFF_EVA_REP') {
+            $refid = $this->input->post('refid', true);
+            $staff_id = $this->input->post('staffID', true);
+            $repFormat = 'PDF';
+
+            $trDetl = $this->mdl->getTrainingDateFrom($refid);
+            $hrParm = $this->mdl->getStartDate($refid);
+
+            if($trDetl->TH_DATE_FROM >= $hrParm->HP_PARM_DESC) {
+                $repCode = 'ATR275';
+            } elseif($trDetl->TH_DATE_FROM < $hrParm->HP_PARM_DESC) {
+                $repCode = 'ATR131';
+            }
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','REFID'=>$refid,'STAFFID'=>$staff_id));
+        } elseif($repCode == 'ATR079' || $repCode == 'ATR084') {
+            $year_i = $this->input->post('year_i');
+            $department = $this->input->post('department');
+            $staffID = $this->input->post('staffID');
+            $corTitle2 = $this->input->post('corTitle2');
+            $courseDate = $this->input->post('courseDate');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO', 'P_YEAR' => $year_i, 'P_DEPT_CODE' => $department, 'P_STAFF_ID' => $staffID, 'P_REF_ID' => $corTitle2, 'P_TRAINING_DATE' => $courseDate));
+        } elseif($repCode == 'ATR132') {
+            $sMonth = $this->input->post('sMonth');
+            $sYear = $this->input->post('sYear');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO', 'YEAR' => $sYear, 'MONTH2' => $sMonth));
+        } elseif ($repCode == 'ATR133') {
+            $refid = $this->input->post('corTitle', true);
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','REFID'=>$refid));
+        } elseif ($repCode == 'ATRPDF' || $repCode == 'ATRXLS') {
+            $corTitle = $this->input->post('corTitle', true);
+
+            $getTrDate = $this->mdl->getTrainingDateFrom($corTitle);
+            $trDateFrom = $getTrDate->TH_DATE_FROM;
+
+            $getStartDate = $this->mdl->getStartDate();
+            $evaStartDate = $getStartDate->HP_PARM_DESC;
+
+            if($trDateFrom >= $evaStartDate && $repCode == 'ATRPDF') {
+                $repCode = 'ATR277';
+                $repFormat = 'PDF';
+            } elseif($trDateFrom < $evaStartDate && $repCode == 'ATRPDF') {
+                $repCode = 'ATR185';
+                $repFormat = 'PDF';
+            } elseif($trDateFrom >= $evaStartDate && $repCode == 'ATRXLS') {
+                $repCode = 'ATR277X';
+                $repFormat = 'excel';
+            } elseif($trDateFrom < $evaStartDate && $repCode == 'ATRXLS') {
+                $repCode = 'ATR185X';
+                $repFormat = 'excel';
+            }
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','REFID'=>$corTitle)); 
+        }
+
+
+
+        /*elseif($repCode == 'ATRPDF' || $repCode == 'ATRXLS') {
+            $getTrDate = $this->mdl->getTrainingDateFrom($corTitle);
+            $trDateFrom = $getTrDate->TH_DATE_FROM;
+
+            $getStartDate = $this->mdl->getStartDate();
+            $evaStartDate = $getStartDate->HP_PARM_DESC;
+
+            if($trDateFrom >= $evaStartDate && $repCode == 'ATRPDF') {
+                $rpCode = 'ATR277';
+            } elseif($trDateFrom < $evaStartDate && $repCode == 'ATRPDF') {
+                $rpCode = 'ATR185';
+            } elseif($trDateFrom >= $evaStartDate && $repCode == 'ATRXLS') {
+                $rpCode = 'ATR277X';
+            } elseif($trDateFrom < $evaStartDate && $repCode == 'ATRXLS') {
+                $rpCode = 'ATR185';
+            }
+
+            if($repCode == 'ATRPDF') {
+                $param = array('PARAMFORM' => 'NO', 'REFID' => $corTitle);
+                $this->lib->report($rpCode, $param, $format='pdf');
+            } elseif($repCode == 'ATRXLS') {
+                $param = array('PARAMFORM' => 'NO', 'REFID' => $corTitle);
+                $this->lib->report($rpCode, $param, $format='EXCEL');
+            }
+        }*/
+		
+		$json = array('report' => $param);
+		
+		echo json_encode($json);		
+    }
+    
+    // GENERATE REPORT (JASPER)
+    public function report() 
+    {
+        // Load jasperreport library
+        $this->load->library('jasperreport');
+		
+		// get report parameters
+		$param = $this->encryption->decrypt_array($this->input->get('r'));
+		
+		// get report code
+        $repCode = isset($param['REPORT'])?strtoupper($param['REPORT']):'';
+        
+		$format = isset($param['FORMAT'])?strtolower($param['FORMAT']):'';
+        
+		// for report format = excel / word, report will be downloaded as attachment
+		if ($format == 'excel') {
+			$format = 'xlsx';
+			$this->jasperreport->setAttachment();
+		} elseif ($format == 'word') {
+			$format = 'docx';
+			$this->jasperreport->setAttachment();
+		}
+		
+		$this->jasperreport->runReport("/Reports/MyHRIS/HRA_AT/" . $repCode,$format,$param);
+    }
 }

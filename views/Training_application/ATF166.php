@@ -32,7 +32,7 @@
                     </div>
                 </div>
 
-				<div class="row">
+                <div class="row">
                     <div class="col-sm-2">
                         <div class="form-group text-right">
                             <label><b>Department</b></label>
@@ -69,25 +69,42 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-sm-2">
+                    <div class="form-group">
+                                <label  class="col-md-2 control-label form-group text-right"><b>Course Title </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="corTitle2" name="form[course_title]" class="form-control upper_text_desc get_training_name" value="" placeholder="Course Title">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="corTitle2_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_training_btn">...</button>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                                </div>
+                    </div>
+                    <!--div class="col-sm-2">
                         <div class="form-group text-right">
                             <label><b>Course Title</b></label>
                         </div>
                     </div>
                     
-					<div class="col-sm-5">
-					   	<div class="form-group text-left">
+                    <div class="col-sm-5">
+			<div class="form-group text-left">
                            <div id="loaderCT"></div>
-							<?php echo form_dropdown('form[course_title]', array(''=>'--- Please select year ---'), NULL, 'class="form-control deptFilter" id="corTitle2"') ?>	
-						</div>
-					</div>
-                    <div class="col-sm-4">
-					 	<div class="text-left">   
-							&nbsp;
-						</div>
+                            <?php echo form_dropdown('form[course_title]', array(''=>'--- Please select year ---'), NULL, 'class="form-control deptFilter" id="corTitle2"') ?>	
+			</div>
                     </div>
+                    <div class="col-sm-4">
+                    <div class="text-left">   
+			&nbsp;
+                    </div>
+                    </div-->
                 </div>
-
+                <br>
                 <div class="row">
                     <div class="col-sm-2">
                         <div class="form-group text-right">
@@ -211,7 +228,24 @@
 			<div id="alert"></div>
             <div class="widget-body">
                 <div class="row">
-                    <div class="col-sm-2">
+                    <div class="form-group">
+                                <label  class="col-md-2 control-label form-group text-right"><b>Course Title </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="corTitle" name="form[course_title]" class="form-control upper_text_desc get_training_name2" value="" placeholder="Course Title">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="corTitle_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_training2_btn">...</button>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                                </div>
+                    </div>
+                    <!--div class="col-sm-2">
                         <div class="form-group text-right">
                             <label><b>Course Title</b></label>
                         </div>
@@ -225,7 +259,7 @@
 					 	<div class="text-left">   
 							&nbsp;
 						</div>
-                    </div>
+                    </div-->
                 </div>
                 <br><br>
                 <div class="row">
@@ -268,7 +302,33 @@
     </div>
 </section>
 
+<!-- SEARCH TRAINING page will be displayed here -->
+<div class="modal fade" id="mySearchTrainingModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+			<div class="modal-header btn-primary">
+				<h4 class="modal-title" id="myModalLabel">Training Title
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div id="search_training_list"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-hand-o-left"></i> Close</button>
+			</div>		  
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- end SEARCH TRAINING -->
+
 <script>
+    
+        var dt_traininglist_row = '';
+        var dt_traininglist2_row = '';
+        
 	$(document).ready(function(){
         $('#courseDate').datetimepicker({
             format: 'L',
@@ -295,20 +355,55 @@
 
             //alert(corTitle);
 			
-			$.post('<?php echo $this->lib->class_url('setParam') ?>', {repCode: repCode, year_i: year_i,
-             department: department, staffID: staffID, corTitle2: corTitle2, courseDate: courseDate, 
-             sMonth: sMonth, sYear: sYear}, function (res) {
-				var repURL = '<?php echo $this->lib->class_url('genReport') ?>';
-				//alert(repURL);
-				var mywin = window.open( repURL , 'report');
-			}).fail(function(){
-				msg.danger('Please contact administrator.', '#alert');        
-			});
+			// $.post('<?php echo $this->lib->class_url('setParam') ?>', {repCode: repCode, year_i: year_i,
+            //  department: department, staffID: staffID, corTitle2: corTitle2, courseDate: courseDate, 
+            //  sMonth: sMonth, sYear: sYear}, function (res) {
+			// 	var repURL = '<?php echo $this->lib->class_url('genReport') ?>';
+			// 	//alert(repURL);
+			// 	var mywin = window.open( repURL , 'report');
+			// }).fail(function(){
+			// 	msg.danger('Please contact administrator.', '#alert');        
+			// });
+
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->lib->class_url('setRepParam')?>',
+                data: {'repCode':repCode, 'year_i':year_i, 'department': department, 'staffID':staffID, 'corTitle2':corTitle2, 'courseDate': courseDate, 'sMonth':sMonth, 'sYear': sYear},
+                dataType: 'JSON',
+                success: function(res) {
+                    window.open("report?r="+res.report,"mywin","width=800,height=600");
+                }
+            });
 		});
 
         $('.genReportCor').click(function () {
-			var repCode = $(this).attr('repCode');
+			// var repCode = $(this).attr('repCode');
+            // var corTitle = $("#corTitle").val();
+
+            // if(corTitle == '') {
+            //     $.alert({
+            //         title: 'Alert!',
+            //         content: 'Please select course title.',
+            //         type: 'red',
+            //     });
+            //     return;
+            // }
+
+            // //alert(corTitle);
+			
+			// $.post('<?php //echo $this->lib->class_url('setParam') ?>', {repCode: repCode, corTitle: corTitle}, function (res) {
+			// 	var repURL = '<?php //echo $this->lib->class_url('genReport') ?>';
+			// 	//alert(repURL);
+			// 	var mywin = window.open( repURL , 'report');
+			// }).fail(function(){
+			// 	msg.danger('Please contact administrator.', '#alert');        
+			// });
+
+            // var repCode = $(this).attr('repCode');
+            // var corTitle = $("#corTitle").val();
+
             var corTitle = $("#corTitle").val();
+            var repCode = $(this).attr('repCode');
 
             if(corTitle == '') {
                 $.alert({
@@ -319,16 +414,61 @@
                 return;
             }
 
-            //alert(corTitle);
-			
-			$.post('<?php echo $this->lib->class_url('setParam') ?>', {repCode: repCode, corTitle: corTitle}, function (res) {
-				var repURL = '<?php echo $this->lib->class_url('genReport') ?>';
-				//alert(repURL);
-				var mywin = window.open( repURL , 'report');
-			}).fail(function(){
-				msg.danger('Please contact administrator.', '#alert');        
-			});
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->lib->class_url('setRepParam')?>',
+                data: {'corTitle':corTitle, 'repCode':repCode},
+                dataType: 'JSON',
+                success: function(res) {
+                    window.open("report?r="+res.report,"mywin","width=800,height=600");
+                }
+            });
 		});
+                
+            // Get name
+            $('.get_training_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getTrainingName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#corTitle2_name').val(res.trainingName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#corTitle2_name').val("");
+                    }
+            });
+            
+            // Get name
+            $('.get_training_name2').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getTrainingName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#corTitle_name').val(res.trainingName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#corTitle_name').val("");
+                    }
+            });
+            
     });
 
     $('#year_i').change(function () {
@@ -360,5 +500,98 @@
 								
 			}
 		});
-    });  	
+    });  
+    
+    //start @17/02/2020 -----------------------------------------------------------
+    
+    //... TRAINING TITLE
+    $('.search_training_btn').click(function () {
+    //$('#report_vii').on('click','.search_training_btn', function() {
+	
+        var year = $("#year_i").val();
+        
+		$('#search_training_list').html('');
+		$('#mySearchTrainingModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF166TrainingSearchResult')?>', 
+			//data: '',
+                        data: {'year' : year},
+			success: function(res) {
+                            $('#search_training_list').html(res);
+                            dt_traininglist_row = $('#tbl_training_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_training_list').on('click','.select_training_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('training-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#corTitle2').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#corTitle2_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchTrainingModal').modal('hide');
+			$('#search_training_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    //... TRAINING TITLE
+    $('.search_training2_btn').click(function () {
+    //$('#report_vii').on('click','.search_training_btn', function() {
+	
+        //var year = $("#year_i").val();
+        
+		$('#search_training_list').html('');
+		$('#mySearchTrainingModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF166Training2SearchResult')?>', 
+			data: '',
+                        //data: {'year' : year},
+			success: function(res) {
+                            $('#search_training_list').html(res);
+                            dt_traininglist2_row = $('#tbl_training_list2').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_training_list').on('click','.select_training_btn2', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('training-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#corTitle').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#corTitle_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchTrainingModal').modal('hide');
+			$('#search_training_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    //end @17/02/2020 -----------------------------------------------------------
+    
 </script>

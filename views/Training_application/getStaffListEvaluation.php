@@ -45,7 +45,7 @@
                         <td class="text-center col-md-2">
                             <button type="button" class="btn btn-info text-left btn-xs sta_eva_detl_btn" value='.$refid.'><i class="fa fa-info-circle"></i> Details</button>
                             <button type="button" class="btn btn-success text-left btn-xs sta_eva_edit_btn" value='.$refid.'><i class="fa fa-pencil-square-o"></i> Edit</button>
-                            <button type="button" class="btn btn-danger text-left btn-xs sta_eva_print_btn" value='.$refid.' data-staff-id='.$sle->STF_ID.'><i class="fa fa-print"></i> Print</button>
+                            <button type="button" class="btn btn-danger text-left btn-xs sta_eva_print_btn" value='.$refid.' data-staff-id='.$sle->STF_ID.' data-form-code="STAFF_EVA_REP"><i class="fa fa-print"></i> Print</button>
 						</td>
 					</tr>
                     ';

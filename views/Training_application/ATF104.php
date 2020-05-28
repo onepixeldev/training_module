@@ -493,19 +493,34 @@
     // EVALUATION REPORT
 	$('#staff_training_application').on('click', '.eva_report_btn', function () { 
 		var refid =  $(this).val();
-        var formCode =  $(this).data("form-code");
+		var repCode = $(this).data("form-code");
 
-		var formURL = '<?php echo $this->lib->class_url('genEvaReport') ?>' + '/' + formCode + '/' + refid;
-        var mywin = window.open( formURL , 'report');
+        $.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setRepParam')?>',
+			data: {'refid':refid, 'repCode':repCode},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
 
     // STAFF EVALUATION REPORT
 	$('#staff_training_application').on('click', '.sta_eva_print_btn', function () { 
 		var refid =  $(this).val();
-        var staffID =  $(this).data("staff-id");
+		var staffID =  $(this).data("staff-id");
+		var repCode = $(this).data("form-code");
 
-		var formURL = '<?php echo $this->lib->class_url('genStaffEvaReport') ?>' + '/' + refid + '/' + staffID;
-        var mywin = window.open( formURL , 'report');
+        $.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setRepParam')?>',
+			data: {'refid':refid, 'staffID':staffID, 'repCode':repCode},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
     
     // STAFF EVALUATION DETAILS
