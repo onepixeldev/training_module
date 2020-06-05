@@ -1966,7 +1966,7 @@ class Cpd extends MY_Controller
         $staff_id = $this->input->post('staff_id', true);
         
         // EVA START
-        $eva_start = $this->mdl_cpd->getEvaStart(); 
+        $eva_start = $this->mdl_cpd->getEvaStart();
         if(!empty($eva_start->HP_PARM_DESC)) {
             $dt = $eva_start->HP_PARM_DESC;
             $date = explode('/', $dt);
