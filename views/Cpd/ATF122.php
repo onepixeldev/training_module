@@ -330,6 +330,25 @@
 
 						srow.find('td:eq(10)').text(res.stf_row.SCH_PEMBERAT_LPP);
 						srow.find('td:eq(11)').text(res.stf_row.SCH_PERATUS_LPP);
+
+						// console.log(res.sid);
+						// console.log(res.year);
+						// console.log(res.sname);
+
+						// refresh details tab
+						$.ajax({
+							type: 'POST',
+							url: '<?php echo $this->lib->class_url('getStaffCpdPointDetlList')?>',
+							data: {'staff_id':res.sid, 'selc_date':res.year, 'staff_name':res.sname},
+							success: function(res) {
+								$('#cpd_point_detl').html(res);
+
+								cf_row = $('#tbl_vdetl_list').DataTable({
+									"ordering":false,
+								});
+							}
+						});
+
 					}, 1500);
 				} else {
 					$('.btn').removeAttr('disabled');
@@ -378,7 +397,8 @@
 		// console.log(prorate_svc);
 		
 		if(prorate_svc != '' && $.isNumeric(prorate_svc)) {
-			$('#updStaffCpdPointAlert').addClass('hidden');
+			msg.show('The Prorate Service field is valid.', 'success', '#updStaffCpdPointAlert');
+			// $('#updStaffCpdPointAlert').hide();
 			// console.log();
 
 			$.ajax({
@@ -410,8 +430,8 @@
 		
 		if(prorate_svc != ''  && !$.isNumeric(prorate_svc)) {
 			$('#updStaffCpdPointAlert').removeClass('hidden');
-			msg.show('The Prorate Service field must contain only numbers.', 'warning', '#updStaffCpdPointAlert');
-			console.log('not number');
+			msg.show('Invalid value! The Prorate Service field must contain only numbers.', 'warning', '#updStaffCpdPointAlert');
+			// console.log('not number');
 		 	return;
 		}	
 	});

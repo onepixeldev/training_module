@@ -1440,6 +1440,7 @@ class Cpd extends MY_Controller
         $form = $this->input->post('form', true);
         $sid = $form['staff_id'];
         $year = $form['year'];
+        $sname = $form['sname'];
 
         $successCpdPts = 0;
         $successLnpt = 0;
@@ -1644,7 +1645,7 @@ class Cpd extends MY_Controller
 
             if($successCpdPts == $successLnpt) {
                 $stf_row = $this->mdl_cpd->getStaffCpdPointDetl($sid, $year);
-                $json = array('sts' => 1, 'msg' => $msgCpdPts.$msgLnpt, 'alert' => 'success', 'stf_row' => $stf_row );
+                $json = array('sts' => 1, 'msg' => $msgCpdPts.$msgLnpt, 'alert' => 'success', 'stf_row' => $stf_row, 'sid' => $sid, 'year' => $year, 'sname' => $sname);
             } else {
                 $json = array('sts' => 0, 'msg' => $msgCpdPts.$msgLnpt, 'alert' => 'danger');
             }

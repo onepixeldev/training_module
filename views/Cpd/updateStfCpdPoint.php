@@ -22,7 +22,7 @@
             </div>
 
             <div class="col-md-6">
-                <input name="" placeholder="Name" class="form-control" type="text" value="<?php echo $s_cpd_detl->SM_STAFF_NAME?>" readonly>
+                <input name="form[sname]" placeholder="Name" class="form-control" type="text" value="<?php echo $s_cpd_detl->SM_STAFF_NAME?>" readonly id="sName">
             </div>
         </div>
 
