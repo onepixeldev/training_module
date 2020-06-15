@@ -2742,8 +2742,8 @@ class Training_application_model extends MY_Model
         $this->db->select("TH_REF_ID, 
                             TH_TRAINING_TITLE,
                             TH_TRAINING_VENUE,
-                            to_date(TH_DATE_FROM, 'DD-MM-YYYY') AS TH_DATEFR,
-                            to_date(TH_DATE_TO, 'DD-MM-YYY') AS TH_DATETO, 
+                            to_char(TH_DATE_FROM, 'DD-mm-YYYY') AS TH_DATEFR,
+                            to_char(TH_DATE_TO, 'DD-mm-YYYY') AS TH_DATETO, 
                             TH_ORGANIZER_NAME");
         $this->db->from('TRAINING_HEAD');
         $this->db->where("TH_REF_ID", $refid);
@@ -2780,6 +2780,7 @@ class Training_application_model extends MY_Model
         $curUser = $this->staff_id;
         $curDate = 'SYSDATE';
         $sbhRefid = "to_char(sysdate,'YYYY') || '-' || ltrim(to_char(SERVICE_DETL_SEQ.nextval,'00000000'))";
+        
 
         $data = array(
             "SBH_STAFF_ID" => $sid,
@@ -2788,8 +2789,8 @@ class Training_application_model extends MY_Model
             "SBH_SUBSYSTEM_ID" => 'COURSE',
             "SBH_SUBSYSTEM_REFID" => $refid,
             "SBH_SERVICE_CODE" => $jobCode,
-            "SBH_START_DATE" => $tr_date_from,
-            "SBH_END_DATE" => $tr_date_to,
+            // "SBH_START_DATE" => $tr_date_from,
+            // "SBH_END_DATE" => $tr_date_to,
             "SBH_REMARK" => $sb_remark,
             "SBH_STATUS" => 'APPRV',
             "SBH_ENTER_BY" => $curUser,
@@ -2797,6 +2798,16 @@ class Training_application_model extends MY_Model
             "SBH_DISPLAY" => 'Y',
             "SBH_PENSION_STATUS" => $pensionSts
         );
+
+        if(!empty($tr_date_from)) {
+            $date = "to_date('".$tr_date_from."','DD-mm-YYYY')";
+            $this->db->set("SBH_START_DATE", $date, false);
+        }
+
+        if(!empty($tr_date_to)) {
+            $date = "to_date('".$tr_date_to."','DD-mm-YYYY')";
+            $this->db->set("SBH_END_DATE", $date, false);
+        }
 
         $this->db->set("SBH_REF_ID", $sbhRefid, false);
         $this->db->set("SBH_ENTER_DATE", $curDate, false);

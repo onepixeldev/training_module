@@ -4226,15 +4226,31 @@ class Training_application extends MY_Controller
                 $tr_organizer = '';
             }
 
-            $sb_remark = 'Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.'.
-                            '<br>'.
-                            'Tajuk : '.$tr_title.
-                            '<br>'.
-                            'Tarikh : '.$tr_date_from.' hingga '.$tr_date_to.
-                            '<br>'.
-                            'Tempat : '.$tr_venue.
-                            '<br>'.
-                            'Anjuran : '.$tr_organizer.'';
+            /*$sb_remark2 = nl2br("Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.".
+                            "\r\n".
+                            "Tajuk : ".$tr_title.
+                            "\r\n".
+                            "Tarikh : ".$tr_date_from." hingga ".$tr_date_to.
+                            "\r\n".
+                            "Tempat : ".$tr_venue.
+                            "\r\n".
+                            "Anjuran : ".$tr_organizer."");*/
+            
+            $sb_remark2 = "Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.".
+                            "".
+                            "Tajuk : ".$tr_title.
+                            "".
+                            "Tarikh : ".$tr_date_from." hingga ".$tr_date_to.
+                            "".
+                            "Tempat : ".$tr_venue.
+                            "".
+                            "Anjuran : ".$tr_organizer."";
+
+            $sb_remark = preg_replace("/[\n\r]/","",$sb_remark2); 
+                        
+            // $sb_remark = strtr($sb_remark2, chr(10), chr(32));
+
+            // $sb_remark = preg_replace('/\<br(\s*)?\/?\>/i', "\n", $sb_remark2);                
 
 
             foreach($staffID as $key => $sid) {
@@ -5451,7 +5467,7 @@ class Training_application extends MY_Controller
         $courseRefid = $this->session->userdata('courseRefid');
         $rep_format_bi = $this->session->userdata('rep_format_bi');
 
-	    if($repCode == 'ATR057') {
+	if($repCode == 'ATR057') {
             $param = array('PARAMFORM' => 'NO', 'DM_DEPT_CODE' => $department_ai, 'YEAR_YEAR' => $year_ai);
             $this->lib->report($repCode, $param);
         } 
