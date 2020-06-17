@@ -2780,6 +2780,7 @@ class Training_application_model extends MY_Model
         $curUser = $this->staff_id;
         $curDate = 'SYSDATE';
         $sbhRefid = "to_char(sysdate,'YYYY') || '-' || ltrim(to_char(SERVICE_DETL_SEQ.nextval,'00000000'))";
+        $sb_remark = 'Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.\'|| chr(10) ||\'';
         
 
         $data = array(

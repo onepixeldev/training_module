@@ -4236,17 +4236,20 @@ class Training_application extends MY_Controller
                             "\r\n".
                             "Anjuran : ".$tr_organizer."");*/
             
-            $sb_remark2 = "Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.".
-                            "".
-                            "Tajuk : ".$tr_title.
-                            "".
-                            "Tarikh : ".$tr_date_from." hingga ".$tr_date_to.
-                            "".
-                            "Tempat : ".$tr_venue.
-                            "".
-                            "Anjuran : ".$tr_organizer."";
+            // $sb_remark2 = "Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.".
+            //                 "|| chr(10) ||".
+            //                 "Tajuk : ".$tr_title.
+            //                 "|| chr(10) ||".
+            //                 "Tarikh : ".$tr_date_from." hingga ".$tr_date_to.
+            //                 "|| chr(10) ||".
+            //                 "Tempat : ".$tr_venue.
+            //                 "|| chr(10) ||".
+            //                 "Anjuran : ".$tr_organizer."";
 
-            $sb_remark = preg_replace("/[\n\r]/","",$sb_remark2); 
+            $sb_remark = 'Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.\'|| chr(10) ||\''.
+                            "Tajuk : ".$tr_title;
+
+            //$sb_remark = preg_replace("/[\n\r]/","",$sb_remark2); 
                         
             // $sb_remark = strtr($sb_remark2, chr(10), chr(32));
 
