@@ -4226,30 +4226,15 @@ class Training_application extends MY_Controller
                 $tr_organizer = '';
             }
 
-            /*$sb_remark2 = nl2br("Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.".
-                            "\r\n".
-                            "Tajuk : ".$tr_title.
-                            "\r\n".
-                            "Tarikh : ".$tr_date_from." hingga ".$tr_date_to.
-                            "\r\n".
-                            "Tempat : ".$tr_venue.
-                            "\r\n".
-                            "Anjuran : ".$tr_organizer."");*/
-            
-            // $sb_remark2 = "Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.".
-            //                 "|| chr(10) ||".
-            //                 "Tajuk : ".$tr_title.
-            //                 "|| chr(10) ||".
-            //                 "Tarikh : ".$tr_date_from." hingga ".$tr_date_to.
-            //                 "|| chr(10) ||".
-            //                 "Tempat : ".$tr_venue.
-            //                 "|| chr(10) ||".
-            //                 "Anjuran : ".$tr_organizer."";
-
-            $sb_remark = 'Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.\'|| chr(10) ||\''.
-                            "Tajuk : ".$tr_title;
-
-            //$sb_remark = preg_replace("/[\n\r]/","",$sb_remark2); 
+            $sb_remark = 'Telah menghadiri dengan jayanya Kursus/Bengkel/Seminar/Persidangan.'.
+                            "\n".
+                            'Tajuk : '.$tr_title.
+                            "\n".
+                            'Tarikh : '.$tr_date_from.' hingga '.$tr_date_to.
+                            "\n".
+                            'Tempat : '.$tr_venue.
+                            "\n".
+                            'Anjuran : '.$tr_organizer.'';
                         
             // $sb_remark = strtr($sb_remark2, chr(10), chr(32));
 
