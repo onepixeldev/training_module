@@ -4526,7 +4526,18 @@ class Training_application extends MY_Controller
         $refid = $this->input->post('refid', true);
         $staffID = $this->input->post('stfID', true);
         $evaID = $this->input->post('evaID', true);
-        $from = 'K01715';
+
+        $train_eva_memo = $this->mdl->getTrainEvaMemoDetl();
+        if(!empty($train_eva_memo)) {
+            $from = $train_eva_memo->TEM_SEND_BY;
+            $tem_title = $train_eva_memo->TEM_TITLE;
+            $tem_content = $train_eva_memo->TEM_CONTENT;
+        } else {
+            $from = "";
+            $tem_title = "";
+            $tem_content = "";
+        }
+        
 
         if(!empty($refid) && !empty($staffID)) {
             $data['refid'] = $refid;
@@ -4561,20 +4572,23 @@ class Training_application extends MY_Controller
                 $data['trTitle'] = '';
             }
 
-            $data['title'] = 'Borang Penilaian Keberkesanan Latihan';
+            // $data['title'] = 'Borang Penilaian Keberkesanan Latihan';
+            $data['title'] = $tem_title;
 
             // REPLACE WITH DEFAULT CONTENT
-            $data['content'] = 'Nama : nn'."\r\n".
-                                'Kursus : xxxxxxx'."\r\n".
-                                'Tarikh : dd/mm/yyyy'."\r\n".
-                                'Tempat : kkkkkk'."\r\n"."\r\n".
-                                'Mohon tindakan Tuan/Puan untuk mengisi Borang Penilaian Keberkesanan Latihan terhadap penilaian kendiri staf di bawah seliaan yang '.
-                                'mengikuti latihan dalam tempoh satu (1) minggu dari tarikh penerimaan memo ini. Kegagalan Tuan/Puan dalam membuat penilaian '.
-                                'boleh mengakibatkan mata CPD staf bagi kursus berkenaan tidak akan <b>DIPROSES</b>. '."\r\n"."\r\n".
-                                'Borang penilaian boleh diakses secara atas talian di link berikut : FFFFFF'."\r\n".
-                                'Sekian, terima kasih.'."\r\n"."\r\n".
-                                'Unit Latihan, BSM'."\r\n"."\r\n".
-                                '-- system generated memo --';
+            // $data['content'] = 'Nama : nn'."\r\n".
+            //                     'Kursus : xxxxxxx'."\r\n".
+            //                     'Tarikh : dd/mm/yyyy'."\r\n".
+            //                     'Tempat : kkkkkk'."\r\n"."\r\n".
+            //                     'Mohon tindakan Tuan/Puan untuk mengisi Borang Penilaian Keberkesanan Latihan terhadap penilaian kendiri staf di bawah seliaan yang '.
+            //                     'mengikuti latihan dalam tempoh satu (1) minggu dari tarikh penerimaan memo ini. Kegagalan Tuan/Puan dalam membuat penilaian '.
+            //                     'boleh mengakibatkan mata CPD staf bagi kursus berkenaan tidak akan <b>DIPROSES</b>. '."\r\n"."\r\n".
+            //                     'Borang penilaian boleh diakses secara atas talian di link berikut : FFFFFF'."\r\n".
+            //                     'Sekian, terima kasih.'."\r\n"."\r\n".
+            //                     'Unit Latihan, BSM'."\r\n"."\r\n".
+            //                     '-- system generated memo --';
+
+            $data['content'] = $tem_content;
         } 
 
         $this->renderAjax($data);

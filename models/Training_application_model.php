@@ -3053,6 +3053,18 @@ class Training_application_model extends MY_Model
         }
     }
 
+    // GET STAFF LIST
+    public function getTrainEvaMemoDetl()
+    {
+        $this->db->select("TEM_TITLE, TEM_CONTENT, TEM_SEND_BY");
+        $this->db->from("TRAINING_EVALUATION_MEMO");
+        $this->db->where("TEM_MODULE = 'TRAINING_EVALUATION'");
+        $this->db->where("NVL(TEM_STATUS,'N') = 'Y'");
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
     // GET STAFF INFO
     public function getStaffInfo($staffID) {
         $this->db->select("*");
