@@ -2088,7 +2088,7 @@ class Cpd extends MY_Controller
         if($gen_cpd_sts == 'Y') {
             $json = array('sts' => 0, 'msg' => 'CPD already generated.', 'alert' => 'danger');
         } else {
-            $json = array('sts' => 1, 'msg' => 'Continue process.', 'alert' => 'success');
+                $json = array('sts' => 1, 'msg' => 'Continue process.', 'alert' => 'success');
         }
         echo json_encode($json);
     }
