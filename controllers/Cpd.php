@@ -2129,6 +2129,7 @@ class Cpd extends MY_Controller
                     $success++;
 
                     $sid = $sc->STH_STAFF_ID;
+                    // $sid = 'K01258';
 
                     // UPDATE GENERATE CPD
                     $update_cpd = $this->mdl_cpd->generateCpdMark($refid, $sid, $competency, $mark);
@@ -2178,7 +2179,8 @@ class Cpd extends MY_Controller
                     // CPD KHUSUS
                     $ttlReqCpdKhu = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp1);
                     if (!empty($ttlReqCpdKhu)) {
-                        $jkhu = $ttlReqCpdKhu['REQ_CPD'];
+                        // $jkhu = $ttlReqCpdKhu['REQ_CPD'];
+                        $jkhu = (int)$ttlReqCpdKhu['REQ_CPD'];
                     } else {
                         $jkhu = 0;
                     }
@@ -2194,7 +2196,8 @@ class Cpd extends MY_Controller
                     // CPD TERAS
                     $ttlReqCpdTr = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp3);
                     if (!empty($ttlReqCpdTr)) {
-                        $jteras = $ttlReqCpdTr['REQ_CPD'];
+                        // $jteras = $ttlReqCpdTr['REQ_CPD'];
+                        $jteras = (int)$ttlReqCpdTr['REQ_CPD'];
                     } else {
                         $jteras = 0;
                     }
@@ -2202,7 +2205,8 @@ class Cpd extends MY_Controller
                     // TOTAL UMUM COMPETENCY
                     $ttlUmComp = $this->mdl_cpd->getTtlCpdByCom($sid, $sys_yyyy, $comp2);
                     if (!empty($ttlUmComp)) {
-                        $total_jumum = $ttlUmComp['TTL_CPD'];
+                        // $total_jumum = $ttlUmComp['TTL_CPD'];
+                        $total_jumum = (int)$ttlUmComp['TTL_CPD'];
                     } else {
                         $total_jumum = 0;
                     }
@@ -2210,7 +2214,8 @@ class Cpd extends MY_Controller
                     // TOTAL TERAS COMPETENCY
                     $ttlTrComp = $this->mdl_cpd->getTtlCpdByCom($sid, $sys_yyyy, $comp3);
                     if (!empty($ttlTrComp)) {
-                        $total_jteras = $ttlTrComp['TTL_CPD'];
+                        // $total_jteras = $ttlTrComp['TTL_CPD'];
+                        $total_jteras = (int)$ttlTrComp['TTL_CPD'];
                     } else {
                         $total_jteras = 0;
                     }
@@ -2218,13 +2223,19 @@ class Cpd extends MY_Controller
                     // TOTAL TERAS COMPETENCY
                     $ttlKhuComp = $this->mdl_cpd->getTtlCpdByCom($sid, $sys_yyyy, $comp1);
                     if (!empty($ttlKhuComp)) {
-                        $total_jkhu = $ttlKhuComp['TTL_CPD'];
+                        // $total_jkhu = $ttlKhuComp['TTL_CPD'];
+                        $total_jkhu = (int)$ttlKhuComp['TTL_CPD'];
                     } else {
                         $total_jkhu = 0;
                     }
 
                     $jum_cpd = $total_jkhu+$total_jumum+$total_jteras;
 
+                    
+                    // var_dump($jteras);
+                    // var_dump($jkhu);
+                    // var_dump($jumum);
+                    // exit;
                     // $test_array [] = $total_cpd;                    
                     // var_dump($ttlReqCpd);
 
@@ -2241,7 +2252,7 @@ class Cpd extends MY_Controller
                         $jteras = $sch_jum_teras_min;
                     }
                     
-                    $jumum_mandatory = ($sch_prorate_service/12)*$cp_umum_mandatory;
+                    $jumum_mandatory = (($sch_prorate_service/12)*$cp_umum_mandatory);
 
                     // $jumum 1
                     if($jumum >= $jumum_mandatory && $total_jumum >= $sch_jum_umum_min) {
@@ -2276,6 +2287,7 @@ class Cpd extends MY_Controller
                         } else {
                             $total_jumum = $total_jumum;
                         }
+                        $jumum = $jumum + $total_jumum;
                     }
 
                     // $jumum 5
@@ -2290,6 +2302,11 @@ class Cpd extends MY_Controller
                     } else {
                         $res = 0;
                     }
+
+                    // var_dump($jteras);
+                    // var_dump($jkhu);
+                    // var_dump($jumum);
+                    // exit;
 
                     // UPDATE LNPT INFO
                     $upd_lnpt_info = $this->mdl_cpd->updLnptInfo($sid, $jkhu, $jumum, $jteras, $jum_cpd, $lnptweightage, $res, $sys_yyyy);
@@ -2312,6 +2329,8 @@ class Cpd extends MY_Controller
             } else {
                 $successThCpd = 0;
             }
+
+            $successThCpd++;
 
             if ($success == $successCpd && $success == $successLnpt && $successThCpd > 0) {
                 $json = array('sts' => 1, 'msg' => 'Process completed successfully.', 'alert' => 'success');
