@@ -1610,6 +1610,7 @@ class Cpd extends MY_Controller
                     } else {
                         $total_jumum = $total_jumum;
                     }
+                    $jumum = $jumum+$total_jumum;
                 }
 
                 // $jumum 5
