@@ -2060,7 +2060,177 @@ class Cpd extends MY_Controller
         if ($status == 1) {
             $update = $this->mdl_cpd->saveStaffUpdateCpdMark($form);
 
-            if($update > 0) {
+            $comp1 = 'KHUSUS';
+            $comp2 = 'UMUM';
+            $comp3 = 'TERAS';
+            $sid = $form['staff_id'];
+
+            // TRANSFER INTO STAFF_CPD_HEAD
+            $cpd_point_info = $this->mdl_cpd->getCpdPointInfo($sid);
+
+            if(!empty($cpd_point_info)) {
+                $sch_jum_cpd = (int)$cpd_point_info->SCH_JUM_CPD;
+                $sch_cpd_layak = (int)$cpd_point_info->SCH_CPD_LAYAK;
+                $lnptweightage = (int)$cpd_point_info->CP_LNPT_WEIGHTAGE;
+                $sch_jum_khusus_min = (int)$cpd_point_info->SCH_JUM_KHUSUS_MIN;
+                $sch_jum_umum_min = (int)$cpd_point_info->SCH_JUM_UMUM_MIN;
+                $sch_jum_khusus = (int)$cpd_point_info->SCH_JUM_KHUSUS;
+                $sch_jum_umum = (int)$cpd_point_info->SCH_JUM_UMUM;
+                $sch_jum_teras_min = (int)$cpd_point_info->SCH_JUM_TERAS_MIN;
+                $sch_jum_teras = (int)$cpd_point_info->SCH_JUM_TERAS;
+                $cp_umum_mandatory = (int)$cpd_point_info->CP_UMUM_MANDATORY;
+                $sch_prorate_service = (int)$cpd_point_info->SCH_PRORATE_SERVICE;
+            } else {
+                $sch_jum_cpd = 0;
+                $sch_cpd_layak = 0;
+                $lnptweightage = 0;
+                $sch_jum_khusus_min = 0;
+                $sch_jum_umum_min = 0;
+                $sch_jum_khusus = 0;
+                $sch_jum_umum = 0;
+                $sch_jum_teras_min = 0;
+                $sch_jum_teras = 0;
+                $cp_umum_mandatory = 0;
+                $sch_prorate_service = 0;
+            }
+            
+            $curr_date = $this->mdl_cpd->getCurDate(); 
+            if(!empty($curr_date)) {
+                $sys_yyyy = $curr_date->SYSDATE_YYYY;
+            } else {
+                $sys_yyyy = '';
+            }
+
+            // CPD KHUSUS
+            $ttlReqCpdKhu = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp1);
+            if (!empty($ttlReqCpdKhu)) {
+                $jkhu = $ttlReqCpdKhu['REQ_CPD'];
+            } else {
+                $jkhu = 0;
+            }
+
+            // CPD UMUM
+            $ttlReqCpdUm = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp2);
+            if (!empty($ttlReqCpdUm)) {
+                $jumum = (int)$ttlReqCpdUm['REQ_CPD'];
+            } else {
+                $jumum = 0;
+            }
+
+            // CPD TERAS
+            $ttlReqCpdTr = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp3);
+            if (!empty($ttlReqCpdTr)) {
+                $jteras = $ttlReqCpdTr['REQ_CPD'];
+            } else {
+                $jteras = 0;
+            }
+
+            // TOTAL UMUM COMPETENCY
+            $ttlUmComp = $this->mdl_cpd->getTtlCpdByCom($sid, $sys_yyyy, $comp2);
+            if (!empty($ttlUmComp)) {
+                $total_jumum = $ttlUmComp['TTL_CPD'];
+            } else {
+                $total_jumum = 0;
+            }
+
+            // TOTAL TERAS COMPETENCY
+            $ttlTrComp = $this->mdl_cpd->getTtlCpdByCom($sid, $sys_yyyy, $comp3);
+            if (!empty($ttlTrComp)) {
+                $total_jteras = $ttlTrComp['TTL_CPD'];
+            } else {
+                $total_jteras = 0;
+            }
+
+            // TOTAL TERAS COMPETENCY
+            $ttlKhuComp = $this->mdl_cpd->getTtlCpdByCom($sid, $sys_yyyy, $comp1);
+            if (!empty($ttlKhuComp)) {
+                $total_jkhu = $ttlKhuComp['TTL_CPD'];
+            } else {
+                $total_jkhu = 0;
+            }
+
+            $jum_cpd = $total_jkhu+$total_jumum+$total_jteras;
+
+            // $test_array [] = $total_cpd;                    
+            // var_dump($ttlReqCpd);
+
+            if($jkhu <= $sch_jum_khusus_min) {
+                $jkhu = $jkhu;
+            } else {
+                $jkhu = $sch_jum_khusus_min;
+            }
+
+
+            if($jteras <= $sch_jum_teras_min) {
+                $jteras = $jteras;
+            } else {
+                $jteras = $sch_jum_teras_min;
+            }
+            
+            $jumum_mandatory = ($sch_prorate_service/12)*$cp_umum_mandatory;
+
+            // $jumum 1
+            if($jumum >= $jumum_mandatory && $total_jumum >= $sch_jum_umum_min) {
+                $jumum = $sch_jum_umum_min;
+            }
+
+            // $jumum 2
+            if($jumum < $jumum_mandatory && $total_jumum >= $sch_jum_umum_min) {
+                $jumum = $jumum+($sch_jum_umum_min - $jumum_mandatory);
+            }
+
+            // $jumum 3
+            if($jumum == 0 && $total_jumum >= $sch_jum_umum_min) {
+                $jumum = $sch_jum_umum_min - $jumum_mandatory;
+            }
+
+            // $jumum 4
+            if($jumum == 0 && $total_jumum < $sch_jum_umum_min) {
+                $jumum = $total_jumum-($sch_jum_umum_min - $jumum_mandatory);
+                if($jumum > ($sch_jum_umum_min - $jumum_mandatory)) {
+                    $jumum = $sch_jum_umum_min - $jumum_mandatory;
+                } else {
+                    $jumum = $jumum;
+                }
+            }
+
+            // $total_jumum 1
+            if($jumum < $jumum_mandatory && $total_jumum < $sch_jum_umum_min) {
+                $total_jumum = $total_jumum-($sch_jum_umum_min - $jumum_mandatory);
+                if($total_jumum > ($sch_jum_umum_min - $jumum_mandatory)) {
+                    $total_jumum = $sch_jum_umum_min - $jumum_mandatory;
+                } else {
+                    $total_jumum = $total_jumum;
+                }
+                $jumum = $jumum+$total_jumum;
+            }
+
+            // $jumum 5
+            if($jumum <= 0) {
+                $jumum = 0;
+            }
+            
+            $jumum = round($jumum, 1);
+
+            if(($jumum+$jkhu+$jteras) == $sch_cpd_layak) {
+                $res = $lnptweightage;
+            } else {
+                $res = 0;
+            }
+
+            // UPDATE LNPT INFO
+            $upd_lnpt_info = $this->mdl_cpd->updLnptInfo($sid, $jkhu, $jumum, $jteras, $jum_cpd, $lnptweightage, $res, $sys_yyyy);
+
+            /*if($upd_lnpt_info > 0) {
+                $successLnpt++;
+                $msgLnpt = nl2br("\r\n").'<i class="fa fa-check"></i> <b>Success</b> Record has been saved (STAFF CPD MAIN)';
+                
+            } else {
+                $successLnpt = 0;
+                $msgLnpt = nl2br("\r\n").'<font color="red"><i class="fa fa-times"></i> <font color="red"><b>Fail</b> Fail to save record (STAFF CPD MAIN) </font>';
+            }*/
+
+            if($update > 0 && $upd_lnpt_info > 0) {
                 $json = array('sts' => 1, 'msg' => 'Record has been saved', 'alert' => 'success');
             } else {
                 $json = array('sts' => 0, 'msg' => 'Fail to save record', 'alert' => 'danger');
