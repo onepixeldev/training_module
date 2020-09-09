@@ -226,6 +226,36 @@ class Training_application extends MY_Controller
         $this->render($data);
     }
 
+    // UPDATE CPD INFO
+    /*public function ATF123B()
+    {   
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl->getDeptList(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+
+        $this->render($data);
+    }*/
+
+    public function ATF123B() {
+        $this->cpd->ATF123B();
+    }
+
     // QUERY STAFF TRAINING
     public function ATF041()
     { 

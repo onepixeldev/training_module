@@ -363,7 +363,25 @@
                 ?>
             </div>
         </div>
-
+        
+        <!-- start @update 06032020 -->
+        <div class="alert alert-success fade in">
+            <b>Training Setup (History)</b>
+        </div>
+        <br>
+        <div class="form-group">
+            <label class="col-md-3 control-label">Set as Training Setup (History) ?</label>
+            <div class="col-md-2">
+                <?php
+                    echo form_dropdown('form[training_setup_history]', array(''=>'---Please Select---','Y'=>'YES','N'=>'NO'), $thHistory, 'class="selectpicker form-control field_inpt width-50"')
+                ?>
+            </div>
+            <div class="col-md-7">
+                <b><font color="red">(This Training will not be appeared on Training Calendar if set to 'Yes')</font></b><br>&nbsp; <span id="note"></span>
+            </div>
+        </div>
+        <!-- end @update 06032020 -->
+        
         <div id="alertFooter"></div>
     
     <div class="modal-footer">

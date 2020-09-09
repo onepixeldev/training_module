@@ -481,7 +481,7 @@
 	// TRAINING LIST - HISTORY
 	$('#staff_training_application').on('click','.sta_history_btn', function(){
 		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");
+		var td = thisBtn.closest("tr");;
 		var stfID = td.find(".sid").text();
 		var stfName =  td.find(".sname").text();
 		// alert(stfID);
@@ -660,7 +660,7 @@
 	// AUTO CONFIRMATION
 	$('#staff_training_application').on('click','.auto_conf_btn', function(){
 		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");
+		var td = thisBtn.closest("tr");;
 		var stfID = td.find(".sid").text();
 		var stfName =  td.find(".sname").text();
 		var refid =  $('.tr_refid').html();
@@ -740,7 +740,7 @@
 	// APPLICANT OTHER DETAILS 
 	$('#staff_training_application').on('click', '.detl_conf_btn', function() {
 		var thisBtn = $(this);
-		var td = thisBtn.closest("tr");
+		var td = thisBtn.closest("tr");;
 		var stfID = td.find(".sid").text();
 		var stfName =  td.find(".sname").text();
 		var refid =  $('.tr_refid').html();

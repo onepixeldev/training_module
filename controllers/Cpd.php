@@ -208,6 +208,32 @@ class Cpd extends MY_Controller
         $this->render($data);
     }
 
+    // UPDATE CPD INFO
+    public function ATF123B()
+    {   
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl_cpd->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl_cpd->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl_cpd->getDeptList2(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl_cpd->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl_cpd->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
+
+        $this->render($data);
+    }
+
     // SET REPORT PARAM
     public function setRepParam() {
 		$this->isAjax();
@@ -2885,5 +2911,107 @@ class Cpd extends MY_Controller
         }
          
         echo json_encode($json);
+    }
+
+
+    /*===============================================================
+       UPDATE 09/09/2020
+    ================================================================*/
+
+    // TRAINING LIST
+    public function getTrainingList2()
+    {   
+        // selected filter value
+        $selIntExt = $this->input->post('intExt', true);
+        $selDept = $this->input->post('sDept', true);
+        $selMonth = $this->input->post('sMonth', true);
+        $selYear = $this->input->post('sYear', true);
+        $selSts = $this->input->post('tSts', true);
+
+        // verify filter
+        $disDept = $this->input->post('disDept', true);
+        $disYear = $this->input->post('disYear', true);
+        $disTsts = $this->input->post('disTsts', true);
+        $evaluation = $this->input->post('evaluation', true);
+        $screRpt = $this->input->post('screRpt', true);
+
+        // default filter value
+        //|| empty($selDept) || empty($selMonth) || empty($selYear) || empty($selSts)
+        if (!empty($selIntExt)) {
+            // default internal/external
+            //$defIntExt = '';
+            $defIntExt = $selIntExt;
+        } else {
+            $defIntExt = '';
+            // $curUsrDept = $selDept; 
+            // $defMonth = $selMonth;
+            // $curYear = $selYear;
+            // $defTrSts = $selSts;
+        }
+
+        if (empty($selDept)) {
+            // current user dept
+            // $data['cur_usr_dept'] = $this->mdl->getCurUserDept();
+            // $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+            $curUsrDept = '';
+            if($disDept == '1') {
+                $data['cur_usr_dept'] = $this->mdl_cpd->getCurUserDept();
+                $curUsrDept = $data['cur_usr_dept']->SM_DEPT_CODE;
+            }
+        } else {
+            // $defIntExt = $selIntExt;
+            $curUsrDept = $selDept; 
+            // $defMonth = $selMonth;
+            // $curYear = $selYear;
+            // $defTrSts = $selSts;
+        }
+
+        if (empty($selMonth)) {
+            // default month
+            $defMonth = '';
+        }   else {
+            // $defIntExt = $selIntExt;
+            // $curUsrDept = $selDept; 
+            $defMonth = $selMonth;
+            // $curYear = $selYear;
+            // $defTrSts = $selSts;
+        }
+
+        if (empty($selYear)) {
+            // current year
+            // $data['cur_year'] = $this->mdl->getCurYear();
+            // $curYear = $data['cur_year']->CUR_YEAR;
+            $curYear = '';
+            if($disYear == '1') {
+                $data['cur_year'] = $this->mdl_cpd->getCurYear();
+                $curYear = $data['cur_year']->CUR_YEAR;
+            }
+            
+        } else {
+            // $defIntExt = $selIntExt;
+            // $curUsrDept = $selDept; 
+            // $defMonth = $selMonth;
+            $curYear = $selYear;
+            // $defTrSts = $selSts;
+        }
+
+        if (empty($selSts)) {
+            // default training status
+            $defTrSts = '';
+            if($disTsts == '1') {
+                $defTrSts = '1';
+            }
+        } else {
+            // $defIntExt = $selIntExt;
+            // $curUsrDept = $selDept; 
+            // $defMonth = $selMonth;
+            // $curYear = $selYear;
+            $defTrSts = $selSts;
+        }
+
+        // get available records
+        $data['tr_list'] = $this->mdl_cpd->getTrainingList2($defIntExt, $curUsrDept, $defMonth, $curYear, $defTrSts, $evaluation, $screRpt);
+
+        $this->render($data);
     }
 }

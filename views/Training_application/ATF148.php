@@ -98,9 +98,9 @@
 								<li class="">
                                     <a style="color:#000 !important" href="#s8" data-toggle="tab" aria-expanded="false">CPD Detail</a>
                                 </li>
-								<li class="">
+								<!--<li class="">
                                     <a style="color:#000 !important" href="#s9" data-toggle="tab" aria-expanded="false">Update CPD Info</a>
-                                </li>
+                                </li>--> 
                             </ul>
 							<!-- myTabContent1 -->
                             <div id="myTabContent1" class="tab-content padding-10">
@@ -210,7 +210,7 @@
 									</div>
                                 </div> 
 
-								<div class="tab-pane fade" id="s9">
+								<!--<div class="tab-pane fade" id="s9">
 									<div id="update_cpd_info">
 										<p>
 											<table class="table table-bordered table-hover">
@@ -222,7 +222,7 @@
 											</table>
 										</p>	
 									</div>
-                                </div> 
+                                </div>--> 
 
                             </div>
                             <!-- end myTabContent1 -->
@@ -318,8 +318,9 @@
                         //debugger;
                             if (Cell.text() !== 'error') {
                                 //$(this).find('btn').hide();
-                                $('#tbl_tr_list tbody .approve_training_btn').replaceWith('<button type="button" class="btn btn-primary btn-xs cpd_pts_btn"><i class="fa fa-upload"></i> CPD Point</button>');
-                                $('#tbl_tr_list tbody .postpone_training_btn').replaceWith('<button type="button" class="btn btn-warning btn-xs svc_book_btn"><i class="fa fa-upload"></i> Service Book</button>');
+                                //$('#tbl_tr_list tbody .approve_training_btn').replaceWith('<button type="button" class="btn btn-primary btn-xs cpd_pts_btn"><i class="fa fa-calculator"></i> CPD Point</button>');
+								$('#tbl_tr_list tbody .postpone_training_btn').replaceWith('<button type="button" class="btn btn-warning btn-xs svc_book_btn"><i class="fa fa-upload"></i> Service Book</button>');
+								$('#tbl_tr_list tbody .approve_training_btn').hide();
                                 $('#tbl_tr_list tbody .reject_training_btn').hide();
                                 $('#tbl_tr_list tbody .amend_training_btn').hide();
                             }
@@ -415,6 +416,8 @@
 						$('.field_inpt').prop("disabled", true);
 						$('.save_upd_tr_info').hide();
 						$('#search_str_tr_ver').hide();
+						$('#toggleClear').prop("disabled", true);
+						$('#toggleClear2').prop("disabled", true);
 				
 						$.ajax({
 							type: 'POST',

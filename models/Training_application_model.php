@@ -1635,7 +1635,8 @@ class Training_application_model extends MY_Model
     }
 
     // GET DEPARTMENT LIST
-    public function getDeptList() {
+    public function getDeptList() 
+    {
         $this->db->select("DM_DEPT_CODE, DM_DEPT_DESC, DM_DEPT_CODE ||' - '|| DM_DEPT_DESC AS DEPT_CODE_DESC");
         $this->db->from('DEPARTMENT_MAIN');
 		$this->db->where('NVL(DM_STATUS,\'INACTIVE\')', 'ACTIVE');

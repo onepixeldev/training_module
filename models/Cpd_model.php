@@ -1800,4 +1800,228 @@ class Cpd_model extends MY_Model
         $q = $this->db->get();
         return $q->row();
     }
+
+    /*===============================================================
+       UPDATE 09/09/2020
+    ================================================================*/
+    
+    // GET CURRENT DEFAULT USER DEPARTMENT - STAFF MAIN
+    public function getCurUserDept($staffID = null) 
+    {
+
+        $curUsername = $this->username;
+
+        $this->db->select("SM_STAFF_ID, SM_STAFF_NAME, SM_DEPT_CODE, SM_EMAIL_ADDR");
+        $this->db->from("STAFF_MAIN");
+
+
+
+        if(empty($staffID)) {
+            $this->db->where("SM_APPS_USERNAME", $curUsername);
+        } else {
+            $this->db->where("SM_STAFF_ID", $staffID);
+        }
+        
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET CURRENT DEFAULT YEAR
+    public function getCurYear() 
+    {
+        $this->db->select("to_char(SYSDATE, 'YYYY') AS CUR_YEAR");
+        
+        $this->db->from("DUAL");
+        
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    // GET DEPARTMENT LIST
+    public function getDeptList2() 
+    {
+        $this->db->select("DM_DEPT_CODE, DM_DEPT_DESC, DM_DEPT_CODE ||' - '|| DM_DEPT_DESC AS DEPT_CODE_DESC");
+        $this->db->from('DEPARTMENT_MAIN');
+		$this->db->where('NVL(DM_STATUS,\'INACTIVE\')', 'ACTIVE');
+		$this->db->where('DM_LEVEL <= 2');
+        $this->db->order_by('DM_DEPT_CODE');
+        $q = $this->db->get();
+		        
+        return $q->result();
+    }
+
+    // GET YEAR DROPDOWN
+    public function getYearList() 
+    {		
+        $this->db->select("to_char(CM_DATE, 'YYYY') AS CM_YEAR");
+        $this->db->from("CALENDAR_MAIN");
+		$this->db->where("to_char(CM_DATE, 'YYYY') >= to_char(SYSDATE, 'YYYY') - 15");
+        $this->db->group_by("to_char(CM_DATE, 'YYYY')");
+        $this->db->order_by("to_char(CM_DATE, 'YYYY') DESC");
+        $q = $this->db->get();
+		        
+        return $q->result();
+    } 
+
+    // GET MONTH DROPDOWN
+    public function getMonthList() 
+    {		
+        $this->db->select("to_char(CM_DATE, 'MM') AS CM_MM, to_char(CM_DATE, 'MONTH') AS CM_MONTH");
+        $this->db->from("CALENDAR_MAIN");
+        $this->db->group_by("to_char(CM_DATE,'MM'), to_char(CM_DATE, 'MONTH')");
+        $this->db->order_by("to_char(CM_DATE, 'MM')");
+        $q = $this->db->get();
+		        
+        return $q->result();
+    } 
+
+    // GET TRAINING HEAD BASED ON FILTER
+    public function getTrainingList2($defIntExt = null, $curUsrDept = null, $defMonth = null, $curYear = null, $defTrSts = null, $evaluation = null, $screRpt = null)
+    {
+        if($screRpt == '1') {
+            $this->db->select("TH_REF_ID, 
+                                TH_TRAINING_TITLE, 
+                                TH_TRAINING_DESC, 
+                                TH_TYPE, 
+                                TH_STATUS, 
+                                TH_INTERNAL_EXTERNAL,
+                                TH_LEVEL, 
+                                TH_TRAINING_VENUE, 
+                                TH_TRAINING_COUNTRY, 
+                                TH_ORGANIZER_NAME, 
+                                TH_ORGANIZER_LEVEL, 
+                                TH_ORGANIZER_ADDRESS,
+                                TH_ORGANIZER_POSTCODE, 
+                                TH_ORGANIZER_CITY, 
+                                TH_ORGANIZER_STATE, 
+                                TH_ORGANIZER_COUNTRY, 
+                                TH_SPONSOR, 
+                                to_char(TH_DATE_FROM, 'DD/MM/YYYY') AS TH_DATE_FROM,
+                                to_char(TH_DATE_TO, 'DD/MM/YYYY') AS TH_DATE_TO, 
+                                TH_TOTAL_HOURS, 
+                                TH_TRAINING_FEE, 
+                                to_char(TH_APPLY_CLOSING_DATE, 'DD-MM-YYYY') AS TH_APP_CLOSING_DATE, 
+                                TH_CURRENT_PARTICIPANT, 
+                                TH_MAX_PARTICIPANT,
+                                TH_OPEN, 
+                                TH_DEPT_CODE, 
+                                TH_ENTER_BY, 
+                                TH_ENTER_DATE, 
+                                TH_APPROVE_BY, 
+                                TH_APPROVE_DATE, 
+                                TH_TRAINING_STATE, 
+                                TH_ATTENDANCE_TYPE,
+                                TH_PRINT_CERTIFICATE, 
+                                TH_EVALUATION_COMPULSORY, 
+                                TH_SERVICE_GROUP, 
+                                TH_CATEGORY, 
+                                to_char(TH_EVALUATION_DATE_FROM, 'DD-MM-YYYY') AS TH_EVA_DATE_FROM,
+                                to_char(TH_EVALUATION_DATE_TO, 'DD-MM-YYYY') AS TH_EVA_DATE_TO, 
+                                TH_TRAINING_HISTORY, 
+                                TH_COMPETENCY_CODE, 
+                                TH_TRAINING_CODE, 
+                                TH_OFFER, 
+                                TH_GENERATE_CPD,
+                                to_char(TH_TIME_FROM, 'HH:MI AM') AS TIME_FR, 
+                                to_char(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
+                                to_char(TH_CONFIRM_DATE_FROM, 'DD-MM-YYYY') AS TH_CON_DATE_FROM,
+                                to_char(TH_CONFIRM_DATE_TO, 'DD-MM-YYYY') AS TH_CON_DATE_TO, 
+                                TH_FIELD,
+                                TSR_REFID
+                            ");
+            $this->db->from('TRAINING_HEAD');
+            $this->db->join("TRAINING_SECRETARIAT_REPORT","TH_REF_ID = TSR_REFID","LEFT");
+        } else {
+            $this->db->select("TH_REF_ID, 
+                                TH_TRAINING_TITLE, 
+                                TH_TRAINING_DESC, 
+                                TH_TYPE, 
+                                TH_STATUS, 
+                                TH_INTERNAL_EXTERNAL,
+                                TH_LEVEL, 
+                                TH_TRAINING_VENUE, 
+                                TH_TRAINING_COUNTRY, 
+                                TH_ORGANIZER_NAME, 
+                                TH_ORGANIZER_LEVEL, 
+                                TH_ORGANIZER_ADDRESS,
+                                TH_ORGANIZER_POSTCODE, 
+                                TH_ORGANIZER_CITY, 
+                                TH_ORGANIZER_STATE, 
+                                TH_ORGANIZER_COUNTRY, 
+                                TH_SPONSOR, 
+                                to_char(TH_DATE_FROM, 'DD/MM/YYYY') AS TH_DATE_FROM,
+                                to_char(TH_DATE_TO, 'DD/MM/YYYY') AS TH_DATE_TO, 
+                                TH_TOTAL_HOURS, 
+                                TH_TRAINING_FEE, 
+                                to_char(TH_APPLY_CLOSING_DATE, 'DD-MM-YYYY') AS TH_APP_CLOSING_DATE, 
+                                TH_CURRENT_PARTICIPANT, 
+                                TH_MAX_PARTICIPANT,
+                                TH_OPEN, 
+                                TH_DEPT_CODE, 
+                                TH_ENTER_BY, 
+                                TH_ENTER_DATE, 
+                                TH_APPROVE_BY, 
+                                TH_APPROVE_DATE, 
+                                TH_TRAINING_STATE, 
+                                TH_ATTENDANCE_TYPE,
+                                TH_PRINT_CERTIFICATE, 
+                                TH_EVALUATION_COMPULSORY, 
+                                TH_SERVICE_GROUP, 
+                                TH_CATEGORY, 
+                                to_char(TH_EVALUATION_DATE_FROM, 'DD-MM-YYYY') AS TH_EVA_DATE_FROM,
+                                to_char(TH_EVALUATION_DATE_TO, 'DD-MM-YYYY') AS TH_EVA_DATE_TO, 
+                                TH_TRAINING_HISTORY, 
+                                TH_COMPETENCY_CODE, 
+                                TH_TRAINING_CODE, 
+                                TH_OFFER, 
+                                TH_GENERATE_CPD,
+                                to_char(TH_TIME_FROM, 'HH:MI AM') AS TIME_FR, 
+                                to_char(TH_TIME_TO, 'HH:MI AM') AS TIME_T, 
+                                to_char(TH_CONFIRM_DATE_FROM, 'DD-MM-YYYY') AS TH_CON_DATE_FROM,
+                                to_char(TH_CONFIRM_DATE_TO, 'DD-MM-YYYY') AS TH_CON_DATE_TO, 
+                                TH_FIELD,
+                            ");
+            $this->db->from('TRAINING_HEAD');
+        }
+
+        if(!empty($curUsrDept)) {
+            $this->db->where("TH_DEPT_CODE = '$curUsrDept'");
+        }
+
+        if(!empty($defMonth) && !empty($curYear)) {
+            $this->db->where("((NVL(to_char(TH_DATE_FROM,'MM/YYYY'),'') = '$defMonth'||'/'||'$curYear'))");
+        } elseif(!empty($defMonth)) {
+            $this->db->where("((NVL(to_char(TH_DATE_FROM,'MM'),'') = '$defMonth'))");
+        } elseif(!empty($curYear)) {
+            $this->db->where("((NVL(to_char(TH_DATE_FROM,'YYYY'),'') = '$curYear'))");
+        }
+        
+        if($defIntExt == 'INTERNAL' || $defIntExt == 'EXTERNAL' || $defIntExt == 'EXTERNAL_AGENCY' ) {
+            $this->db->where("TH_INTERNAL_EXTERNAL", $defIntExt);
+        } elseif($defIntExt == '1') {
+            $this->db->where("TH_INTERNAL_EXTERNAL NOT IN ('EXTERNAL_AGENCY')");
+        }
+
+        if($defTrSts == 'POSTPONE' || $defTrSts == 'REJECT' || $defTrSts == 'APPROVE' || $defTrSts == 'ENTRY') {
+            $this->db->where("TH_STATUS", $defTrSts);
+        } elseif(empty($defTrSts)) {
+            $this->db->where("NVL(TH_STATUS,'ENTRY') = 'APPROVE'");
+        }
+        
+        if($evaluation == '1') {
+            $this->db->where("TH_REF_ID IN (SELECT THD_REF_ID
+                                FROM TRAINING_HEAD_DETL
+                                WHERE NVL(THD_EVALUATION,'N') = 'Y')");
+        }
+
+        if($screRpt == '1') {
+            $this->db->where("to_char(to_date(TH_DATE_FROM, 'DD/MM/YYYY'), 'YYYYMMDD') < to_char(to_date(SYSDATE, 'DD/MM/YYYY'), 'YYYYMMDD')");
+            $this->db->where("TH_ORGANIZER_NAME = 'ULAT'");
+        }
+        
+        $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE");
+
+        $q = $this->db->get();
+        return $q->result();
+    }
 }
