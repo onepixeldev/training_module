@@ -177,6 +177,8 @@ $('.tr_details').click(function(){
             $('.field_inpt').prop("disabled", true);
             $('.save_upd_tr_info').hide();
             $('#search_str_tr_ver').hide();
+            $('#toggleClear').prop("disabled", true);
+            $('#toggleClear2').prop("disabled", true);
     
             $.ajax({
                 type: 'POST',
