@@ -5942,7 +5942,7 @@ class Training_application extends MY_Controller
         elseif($repCode == 'ATR221X') {
 
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
-            $this->lib->report($repCode, $param);
+            $this->lib->report($repCode, $param, 'EXCEL');
         }  
         elseif($repCode == 'ATR222') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
@@ -5950,7 +5950,7 @@ class Training_application extends MY_Controller
         }
         elseif($repCode == 'ATR222X') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
-            $this->lib->report($repCode, $param);
+            $this->lib->report($repCode, $param, 'EXCEL');
         }
         elseif($repCode == 'ATR223') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
@@ -5958,7 +5958,7 @@ class Training_application extends MY_Controller
         }
         elseif($repCode == 'ATR223X') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
-            $this->lib->report($repCode, $param);
+            $this->lib->report($repCode, $param, 'EXCEL');
         }
         elseif($repCode == 'ATR224') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
@@ -5966,7 +5966,7 @@ class Training_application extends MY_Controller
         }
         elseif($repCode == 'ATR224X') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
-            $this->lib->report($repCode, $param);
+            $this->lib->report($repCode, $param, 'EXCEL');
         }
         elseif($repCode == 'ATR225') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
@@ -5974,7 +5974,7 @@ class Training_application extends MY_Controller
         }
         elseif($repCode == 'ATR225X') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
-            $this->lib->report($repCode, $param);
+            $this->lib->report($repCode, $param, 'EXCEL');
         }
         elseif($repCode == 'ATR226') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
@@ -5982,7 +5982,7 @@ class Training_application extends MY_Controller
         }
         elseif($repCode == 'ATR226X') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av);
-            $this->lib->report($repCode, $param);
+            $this->lib->report($repCode, $param, 'EXCEL');
         }
         elseif($repCode == 'ATR227') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'DEPARTMENT' => $department_v);
