@@ -609,7 +609,7 @@ class Cpd_model extends MY_Model
 		oci_bind_by_name($sql, ":bind1", $sid, 10);	        //IN
 		oci_bind_by_name($sql, ":bind2", $sys_yyyy, 4);			//IN
 		oci_bind_by_name($sql, ":bind3", $comp, 6);			//IN
-		oci_bind_by_name($sql, ":bindOutput1", $req_cpd, 4);				//OUT
+		oci_bind_by_name($sql, ":bindOutput1", $req_cpd, 6);				//OUT
 		oci_execute($sql, OCI_DEFAULT); 
 		
         $data = array(
@@ -627,7 +627,7 @@ class Cpd_model extends MY_Model
 		oci_bind_by_name($sql, ":bind1", $sid, 10);	        //IN
 		oci_bind_by_name($sql, ":bind2", $sys_yyyy, 4);			//IN
 		oci_bind_by_name($sql, ":bind3", $comp, 6);			//IN
-		oci_bind_by_name($sql, ":bindOutput1", $total, 4);				//OUT
+		oci_bind_by_name($sql, ":bindOutput1", $total, 6);				//OUT
 		oci_execute($sql, OCI_DEFAULT); 
 		
         $data = array(

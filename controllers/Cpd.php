@@ -1151,17 +1151,17 @@ class Cpd extends MY_Controller
                     $cpd_point_info = $this->mdl_cpd->getCpdPointInfo($sid);
 
                     if(!empty($cpd_point_info)) {
-                        $sch_jum_cpd = (int)$cpd_point_info->SCH_JUM_CPD;
-                        $sch_cpd_layak = (int)$cpd_point_info->SCH_CPD_LAYAK;
-                        $lnptweightage = (int)$cpd_point_info->CP_LNPT_WEIGHTAGE;
-                        $sch_jum_khusus_min = (int)$cpd_point_info->SCH_JUM_KHUSUS_MIN;
-                        $sch_jum_umum_min = (int)$cpd_point_info->SCH_JUM_UMUM_MIN;
-                        $sch_jum_khusus = (int)$cpd_point_info->SCH_JUM_KHUSUS;
-                        $sch_jum_umum = (int)$cpd_point_info->SCH_JUM_UMUM;
-                        $sch_jum_teras_min = (int)$cpd_point_info->SCH_JUM_TERAS_MIN;
-                        $sch_jum_teras = (int)$cpd_point_info->SCH_JUM_TERAS;
-                        $cp_umum_mandatory = (int)$cpd_point_info->CP_UMUM_MANDATORY;
-                        $sch_prorate_service = (int)$cpd_point_info->SCH_PRORATE_SERVICE;
+                        $sch_jum_cpd = (float)$cpd_point_info->SCH_JUM_CPD;
+                        $sch_cpd_layak = (float)$cpd_point_info->SCH_CPD_LAYAK;
+                        $lnptweightage = (float)$cpd_point_info->CP_LNPT_WEIGHTAGE;
+                        $sch_jum_khusus_min = (float)$cpd_point_info->SCH_JUM_KHUSUS_MIN;
+                        $sch_jum_umum_min = (float)$cpd_point_info->SCH_JUM_UMUM_MIN;
+                        $sch_jum_khusus = (float)$cpd_point_info->SCH_JUM_KHUSUS;
+                        $sch_jum_umum = (float)$cpd_point_info->SCH_JUM_UMUM;
+                        $sch_jum_teras_min = (float)$cpd_point_info->SCH_JUM_TERAS_MIN;
+                        $sch_jum_teras = (float)$cpd_point_info->SCH_JUM_TERAS;
+                        $cp_umum_mandatory = (float)$cpd_point_info->CP_UMUM_MANDATORY;
+                        $sch_prorate_service = (float)$cpd_point_info->SCH_PRORATE_SERVICE;
                     } else {
                         $sch_jum_cpd = 0;
                         $sch_cpd_layak = 0;
@@ -1194,7 +1194,7 @@ class Cpd extends MY_Controller
                     // CPD UMUM
                     $ttlReqCpdUm = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp2);
                     if (!empty($ttlReqCpdUm)) {
-                        $jumum = (int)$ttlReqCpdUm['REQ_CPD'];
+                        $jumum = (float)$ttlReqCpdUm['REQ_CPD'];
                     } else {
                         $jumum = 0;
                     }
@@ -1291,7 +1291,7 @@ class Cpd extends MY_Controller
                         $jumum = 0;
                     }
                     
-                    $jumum = round($jumum, 1);
+                    $jumum = round($jumum, 2);
 
                     if(($jumum+$jkhu+$jteras) == $sch_cpd_layak) {
                         $res = $lnptweightage;
@@ -1503,17 +1503,17 @@ class Cpd extends MY_Controller
                 $cpd_point_info = $this->mdl_cpd->getCpdPointInfo($sid);
 
                 if(!empty($cpd_point_info)) {
-                    $sch_jum_cpd = (int)$cpd_point_info->SCH_JUM_CPD;
-                    $sch_cpd_layak = (int)$cpd_point_info->SCH_CPD_LAYAK;
-                    $lnptweightage = (int)$cpd_point_info->CP_LNPT_WEIGHTAGE;
-                    $sch_jum_khusus_min = (int)$cpd_point_info->SCH_JUM_KHUSUS_MIN;
-                    $sch_jum_umum_min = (int)$cpd_point_info->SCH_JUM_UMUM_MIN;
-                    $sch_jum_khusus = (int)$cpd_point_info->SCH_JUM_KHUSUS;
-                    $sch_jum_umum = (int)$cpd_point_info->SCH_JUM_UMUM;
-                    $sch_jum_teras_min = (int)$cpd_point_info->SCH_JUM_TERAS_MIN;
-                    $sch_jum_teras = (int)$cpd_point_info->SCH_JUM_TERAS;
-                    $cp_umum_mandatory = (int)$cpd_point_info->CP_UMUM_MANDATORY;
-                    $sch_prorate_service = (int)$cpd_point_info->SCH_PRORATE_SERVICE;
+                    $sch_jum_cpd = (float)$cpd_point_info->SCH_JUM_CPD;
+                    $sch_cpd_layak = (float)$cpd_point_info->SCH_CPD_LAYAK;
+                    $lnptweightage = (float)$cpd_point_info->CP_LNPT_WEIGHTAGE;
+                    $sch_jum_khusus_min = (float)$cpd_point_info->SCH_JUM_KHUSUS_MIN;
+                    $sch_jum_umum_min = (float)$cpd_point_info->SCH_JUM_UMUM_MIN;
+                    $sch_jum_khusus = (float)$cpd_point_info->SCH_JUM_KHUSUS;
+                    $sch_jum_umum = (float)$cpd_point_info->SCH_JUM_UMUM;
+                    $sch_jum_teras_min = (float)$cpd_point_info->SCH_JUM_TERAS_MIN;
+                    $sch_jum_teras = (float)$cpd_point_info->SCH_JUM_TERAS;
+                    $cp_umum_mandatory = (float)$cpd_point_info->CP_UMUM_MANDATORY;
+                    $sch_prorate_service = (float)$cpd_point_info->SCH_PRORATE_SERVICE;
                 } else {
                     $sch_jum_cpd = 0;
                     $sch_cpd_layak = 0;
@@ -1546,7 +1546,7 @@ class Cpd extends MY_Controller
                 // CPD UMUM
                 $ttlReqCpdUm = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp2);
                 if (!empty($ttlReqCpdUm)) {
-                    $jumum = (int)$ttlReqCpdUm['REQ_CPD'];
+                    $jumum = (float)$ttlReqCpdUm['REQ_CPD'];
                 } else {
                     $jumum = 0;
                 }
@@ -1644,7 +1644,7 @@ class Cpd extends MY_Controller
                     $jumum = 0;
                 }
                 
-                $jumum = round($jumum, 1);
+                $jumum = round($jumum, 2);
 
                 if(($jumum+$jkhu+$jteras) == $sch_cpd_layak) {
                     $res = $lnptweightage;
@@ -1796,11 +1796,11 @@ class Cpd extends MY_Controller
             // GET CP
             $c_2 = $this->mdl_cpd->getCp($year, $kump);
             if(!empty($c_2)) {
-                $cpd_layak = (int)$c_2->CP_CPD_LAYAK;
-                $cpd_khusus = (int)$c_2->CP_CPD_KHUSUS_MIN;
-                $cpd_umum = (int)$c_2->CP_CPD_UMUM_MIN;
-                $cpd_teras = (int)$c_2->CP_CPD_TERAS_MIN;
-                $lnpt_weightage = (int)$c_2->CP_LNPT_WEIGHTAGE;
+                $cpd_layak = (float)$c_2->CP_CPD_LAYAK;
+                $cpd_khusus = (float)$c_2->CP_CPD_KHUSUS_MIN;
+                $cpd_umum = (float)$c_2->CP_CPD_UMUM_MIN;
+                $cpd_teras = (float)$c_2->CP_CPD_TERAS_MIN;
+                $lnpt_weightage = (float)$c_2->CP_LNPT_WEIGHTAGE;
             } else {
                 $cpd_layak = 0;
                 $cpd_khusus = 0;
@@ -1812,7 +1812,7 @@ class Cpd extends MY_Controller
             // GET TOTAL CPD MARK
             $c_jum = $this->mdl_cpd->getSumCpdMark($year, $staff_id);
             if(!empty($c_jum)) {
-                $jum_cpd = (int)$c_jum->TTL_CPD_MARK;
+                $jum_cpd = (float)$c_jum->TTL_CPD_MARK;
             } else {
                 $jum_cpd = 0;
             }
@@ -1820,7 +1820,7 @@ class Cpd extends MY_Controller
             // GET TOTAL CPD MARK 2
             $c_khusus = $this->mdl_cpd->getSumCpdMark2($year, $staff_id);
             if(!empty($c_khusus)) {
-                $jum_khusus = (int)$c_khusus->TTL_CPD_MARK2;
+                $jum_khusus = (float)$c_khusus->TTL_CPD_MARK2;
             } else {
                 $jum_khusus = 0;
             }
@@ -1828,7 +1828,7 @@ class Cpd extends MY_Controller
             // GET TOTAL CPD MARK 3
             $c_umum = $this->mdl_cpd->getSumCpdMark3($year, $staff_id);
             if(!empty($c_umum)) {
-                $jum_umum = (int)$c_umum->TTL_CPD_MARK3;
+                $jum_umum = (float)$c_umum->TTL_CPD_MARK3;
             } else {
                 $jum_umum = 0;
             }
@@ -1836,12 +1836,12 @@ class Cpd extends MY_Controller
             // GET TOTAL CPD MARK 4
             $c_teras = $this->mdl_cpd->getSumCpdMark4($year, $staff_id);
             if(!empty($c_teras)) {
-                $jum_teras = (int)$c_teras->TTL_CPD_MARK4;
+                $jum_teras = (float)$c_teras->TTL_CPD_MARK4;
             } else {
                 $jum_teras = 0;
             }
 
-            $sch_cpd_layak = round($prorate_svc/12*$cpd_layak,0);
+            $sch_cpd_layak = round($prorate_svc/12*$cpd_layak,2);
             $sch_jum_khusus_min = round($prorate_svc/12*$cpd_khusus,2);
             $sch_jum_umum_min = round($prorate_svc/12*$cpd_umum, 2);
             $sch_jum_teras_min = round($prorate_svc/12*$cpd_teras, 2);
@@ -2095,17 +2095,17 @@ class Cpd extends MY_Controller
             $cpd_point_info = $this->mdl_cpd->getCpdPointInfo($sid);
 
             if(!empty($cpd_point_info)) {
-                $sch_jum_cpd = (int)$cpd_point_info->SCH_JUM_CPD;
-                $sch_cpd_layak = (int)$cpd_point_info->SCH_CPD_LAYAK;
-                $lnptweightage = (int)$cpd_point_info->CP_LNPT_WEIGHTAGE;
-                $sch_jum_khusus_min = (int)$cpd_point_info->SCH_JUM_KHUSUS_MIN;
-                $sch_jum_umum_min = (int)$cpd_point_info->SCH_JUM_UMUM_MIN;
-                $sch_jum_khusus = (int)$cpd_point_info->SCH_JUM_KHUSUS;
-                $sch_jum_umum = (int)$cpd_point_info->SCH_JUM_UMUM;
-                $sch_jum_teras_min = (int)$cpd_point_info->SCH_JUM_TERAS_MIN;
-                $sch_jum_teras = (int)$cpd_point_info->SCH_JUM_TERAS;
-                $cp_umum_mandatory = (int)$cpd_point_info->CP_UMUM_MANDATORY;
-                $sch_prorate_service = (int)$cpd_point_info->SCH_PRORATE_SERVICE;
+                $sch_jum_cpd = (float)$cpd_point_info->SCH_JUM_CPD;
+                $sch_cpd_layak = (float)$cpd_point_info->SCH_CPD_LAYAK;
+                $lnptweightage = (float)$cpd_point_info->CP_LNPT_WEIGHTAGE;
+                $sch_jum_khusus_min = (float)$cpd_point_info->SCH_JUM_KHUSUS_MIN;
+                $sch_jum_umum_min = (float)$cpd_point_info->SCH_JUM_UMUM_MIN;
+                $sch_jum_khusus = (float)$cpd_point_info->SCH_JUM_KHUSUS;
+                $sch_jum_umum = (float)$cpd_point_info->SCH_JUM_UMUM;
+                $sch_jum_teras_min = (float)$cpd_point_info->SCH_JUM_TERAS_MIN;
+                $sch_jum_teras = (float)$cpd_point_info->SCH_JUM_TERAS;
+                $cp_umum_mandatory = (float)$cpd_point_info->CP_UMUM_MANDATORY;
+                $sch_prorate_service = (float)$cpd_point_info->SCH_PRORATE_SERVICE;
             } else {
                 $sch_jum_cpd = 0;
                 $sch_cpd_layak = 0;
@@ -2138,7 +2138,7 @@ class Cpd extends MY_Controller
             // CPD UMUM
             $ttlReqCpdUm = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp2);
             if (!empty($ttlReqCpdUm)) {
-                $jumum = (int)$ttlReqCpdUm['REQ_CPD'];
+                $jumum = (float)$ttlReqCpdUm['REQ_CPD'];
             } else {
                 $jumum = 0;
             }
@@ -2236,7 +2236,7 @@ class Cpd extends MY_Controller
                 $jumum = 0;
             }
             
-            $jumum = round($jumum, 1);
+            $jumum = round($jumum, 2);
 
             if(($jumum+$jkhu+$jteras) == $sch_cpd_layak) {
                 $res = $lnptweightage;
@@ -2341,17 +2341,17 @@ class Cpd extends MY_Controller
                     $cpd_point_info = $this->mdl_cpd->getCpdPointInfo($sid);
 
                     if(!empty($cpd_point_info)) {
-                        $sch_jum_cpd = (int)$cpd_point_info->SCH_JUM_CPD;
-                        $sch_cpd_layak = (int)$cpd_point_info->SCH_CPD_LAYAK;
-                        $lnptweightage = (int)$cpd_point_info->CP_LNPT_WEIGHTAGE;
-                        $sch_jum_khusus_min = (int)$cpd_point_info->SCH_JUM_KHUSUS_MIN;
-                        $sch_jum_umum_min = (int)$cpd_point_info->SCH_JUM_UMUM_MIN;
-                        $sch_jum_khusus = (int)$cpd_point_info->SCH_JUM_KHUSUS;
-                        $sch_jum_umum = (int)$cpd_point_info->SCH_JUM_UMUM;
-                        $sch_jum_teras_min = (int)$cpd_point_info->SCH_JUM_TERAS_MIN;
-                        $sch_jum_teras = (int)$cpd_point_info->SCH_JUM_TERAS;
-                        $cp_umum_mandatory = (int)$cpd_point_info->CP_UMUM_MANDATORY;
-                        $sch_prorate_service = (int)$cpd_point_info->SCH_PRORATE_SERVICE;
+                        $sch_jum_cpd = (float)$cpd_point_info->SCH_JUM_CPD;
+                        $sch_cpd_layak = (float)$cpd_point_info->SCH_CPD_LAYAK;
+                        $lnptweightage = (float)$cpd_point_info->CP_LNPT_WEIGHTAGE;
+                        $sch_jum_khusus_min = (float)$cpd_point_info->SCH_JUM_KHUSUS_MIN;
+                        $sch_jum_umum_min = (float)$cpd_point_info->SCH_JUM_UMUM_MIN;
+                        $sch_jum_khusus = (float)$cpd_point_info->SCH_JUM_KHUSUS;
+                        $sch_jum_umum = (float)$cpd_point_info->SCH_JUM_UMUM;
+                        $sch_jum_teras_min = (float)$cpd_point_info->SCH_JUM_TERAS_MIN;
+                        $sch_jum_teras = (float)$cpd_point_info->SCH_JUM_TERAS;
+                        $cp_umum_mandatory = (float)$cpd_point_info->CP_UMUM_MANDATORY;
+                        $sch_prorate_service = (float)$cpd_point_info->SCH_PRORATE_SERVICE;
                     } else {
                         $sch_jum_cpd = 0;
                         $sch_cpd_layak = 0;
@@ -2377,7 +2377,7 @@ class Cpd extends MY_Controller
                     $ttlReqCpdKhu = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp1);
                     if (!empty($ttlReqCpdKhu)) {
                         // $jkhu = $ttlReqCpdKhu['REQ_CPD'];
-                        $jkhu = (int)$ttlReqCpdKhu['REQ_CPD'];
+                        $jkhu = (float)$ttlReqCpdKhu['REQ_CPD'];
                     } else {
                         $jkhu = 0;
                     }
@@ -2385,7 +2385,7 @@ class Cpd extends MY_Controller
                     // CPD UMUM
                     $ttlReqCpdUm = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp2);
                     if (!empty($ttlReqCpdUm)) {
-                        $jumum = (int)$ttlReqCpdUm['REQ_CPD'];
+                        $jumum = (float)$ttlReqCpdUm['REQ_CPD'];
                     } else {
                         $jumum = 0;
                     }
@@ -2394,7 +2394,7 @@ class Cpd extends MY_Controller
                     $ttlReqCpdTr = $this->mdl_cpd->getTtlReqCpd($sid, $sys_yyyy, $comp3);
                     if (!empty($ttlReqCpdTr)) {
                         // $jteras = $ttlReqCpdTr['REQ_CPD'];
-                        $jteras = (int)$ttlReqCpdTr['REQ_CPD'];
+                        $jteras = (float)$ttlReqCpdTr['REQ_CPD'];
                     } else {
                         $jteras = 0;
                     }
@@ -2403,7 +2403,7 @@ class Cpd extends MY_Controller
                     $ttlUmComp = $this->mdl_cpd->getTtlCpdByCom($sid, $sys_yyyy, $comp2);
                     if (!empty($ttlUmComp)) {
                         // $total_jumum = $ttlUmComp['TTL_CPD'];
-                        $total_jumum = (int)$ttlUmComp['TTL_CPD'];
+                        $total_jumum = (float)$ttlUmComp['TTL_CPD'];
                     } else {
                         $total_jumum = 0;
                     }
@@ -2412,7 +2412,7 @@ class Cpd extends MY_Controller
                     $ttlTrComp = $this->mdl_cpd->getTtlCpdByCom($sid, $sys_yyyy, $comp3);
                     if (!empty($ttlTrComp)) {
                         // $total_jteras = $ttlTrComp['TTL_CPD'];
-                        $total_jteras = (int)$ttlTrComp['TTL_CPD'];
+                        $total_jteras = (float)$ttlTrComp['TTL_CPD'];
                     } else {
                         $total_jteras = 0;
                     }
@@ -2421,7 +2421,7 @@ class Cpd extends MY_Controller
                     $ttlKhuComp = $this->mdl_cpd->getTtlCpdByCom($sid, $sys_yyyy, $comp1);
                     if (!empty($ttlKhuComp)) {
                         // $total_jkhu = $ttlKhuComp['TTL_CPD'];
-                        $total_jkhu = (int)$ttlKhuComp['TTL_CPD'];
+                        $total_jkhu = (float)$ttlKhuComp['TTL_CPD'];
                     } else {
                         $total_jkhu = 0;
                     }
@@ -2492,7 +2492,7 @@ class Cpd extends MY_Controller
                         $jumum = 0;
                     }
                     
-                    $jumum = round($jumum, 1);
+                    $jumum = round($jumum, 2);
 
                     if(($jumum+$jkhu+$jteras) == $sch_cpd_layak) {
                         $res = $lnptweightage;
