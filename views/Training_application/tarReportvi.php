@@ -47,7 +47,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[aca_nonaca]', array('AKA'=>'ACADEMIC STAFF', 'NAKA'=>'NON-ACADEMIC STAFF', ''=>'ALL'), '', 'class="form-control" id="aca_nonaca"') ?>	
+                                    <?php echo form_dropdown('form[aca_nonaca]', array('Y'=>'ACADEMIC STAFF', 'N'=>'NON-ACADEMIC STAFF', ''=>'ALL'), '', 'class="form-control" id="aca_nonaca"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -359,7 +359,24 @@
                 <div class="panel-body" id="summary">
                     <div class="row">
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label"><b>Staff ID </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="staff_id_vi" name="form[staff_id_vi]" class="form-control upper_text_desc get_staff_name" value="" placeholder="Staff ID">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="staff_id_vi_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_staff_tab6_btn">...</button>
+                                </div>
+                                <div class="col-sm-1">
+                                <div class="text-left">   
+                                    &nbsp;
+                                </div>
+                                </div>
+                            </div>
+                            <!--div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><b>Staff ID</b></label>
                                 </div>
@@ -373,9 +390,9 @@
                                 <div class="text-left">   
                                     &nbsp;
                                 </div>
-                            </div>
+                            </div-->
                         </div>
-
+                        <br>
                         <div class="row">
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
@@ -403,3 +420,38 @@
     </div>
 </p>
 <!-- END -->
+
+<script>
+	$(document).ready(function(){	
+           
+            // Uppercase username
+            $('.upper_text_desc').keyup(function() {
+		var upperCaseVal = $(this).val().toUpperCase();
+			
+		$(this).val($.trim(upperCaseVal));
+            });
+            
+            // Get name
+            $('.get_staff_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getStaffName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#staff_id_vi_name').val(res.staffName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#staff_id_vi_name').val("");
+                    }
+            });
+            
+	});
+</script>
