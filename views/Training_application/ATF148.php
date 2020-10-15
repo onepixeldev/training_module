@@ -361,8 +361,9 @@
                             //debugger;
                                 if (Cell.text() !== 'error') {
                                     //$(this).find('btn').hide();
-                                    $('#tbl_tr_list tbody .approve_training_btn').replaceWith('<button type="button" class="btn btn-primary btn-xs cpd_pts_btn"><i class="fa fa-calculator"></i> CPD Point</button>');
+                                    //$('#tbl_tr_list tbody .approve_training_btn').replaceWith('<button type="button" class="btn btn-primary btn-xs cpd_pts_btn"><i class="fa fa-calculator"></i> CPD Point</button>');
                                     $('#tbl_tr_list tbody .postpone_training_btn').replaceWith('<button type="button" class="btn btn-warning btn-xs svc_book_btn"><i class="fa fa-upload"></i> Service Book</button>');
+									$('#tbl_tr_list tbody .approve_training_btn').hide();
                                     $('#tbl_tr_list tbody .reject_training_btn').hide();
                                     $('#tbl_tr_list tbody .amend_training_btn').hide();
                                 }
