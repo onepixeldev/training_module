@@ -1171,10 +1171,10 @@
 			msg.warning('Please select Course Title', '#printOfferMemoAlert');
 			return;
 		}
-		if(sendDate == '') {
+		/*if(sendDate == '') {
 			msg.warning('Please select Date of sending email', '#printOfferMemoAlert');
 			return;
-		}
+		}*/
 		if(refNo == '') {
 			msg.warning('Please fill in Referrence No.', '#printOfferMemoAlert');
 			return;

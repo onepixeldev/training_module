@@ -4158,7 +4158,7 @@ class Training_application extends MY_Controller
         $sendDate = $this->input->post('sendDate');
         $refNo = $this->input->post('refNo');
         
-        if(!empty($refid) && !empty($sendDate) && !empty($refNo)) {
+        if(!empty($refid) && !empty($refNo)) {
             // set session value
             $this->session->set_userdata('refid_mem', $refid);
             $this->session->set_userdata('send_date_mem', $sendDate);

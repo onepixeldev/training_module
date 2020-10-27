@@ -33,7 +33,7 @@ class Cpd_report extends MY_Controller
         $data['year_list'] = $this->dropdown($this->mdl_pmp->getYearList(), 'CM_YEAR', 'CM_YEAR', '--Please select--');
 
         // FORMAT LIST
-        $data['format_dd'] = array('PDF'=>'PDF', 'SPREADSHEET' =>'SPREADSHEET');
+        $data['format_dd'] = array('PDF'=>'PDF', 'EXCEL' =>'EXCEL');
 
         // CURRENT LOGIN STAFF DEPT
         $staff_dp = $this->mdl_cpd->getStaffDept();
@@ -81,7 +81,7 @@ class Cpd_report extends MY_Controller
         $data['year_list'] = $this->dropdown($this->mdl_pmp->getYearList(), 'CM_YEAR', 'CM_YEAR', '--Please select--');
 
         // FORMAT LIST
-        $data['format_dd'] = array('PDF'=>'PDF', 'EXCEL' =>'SPREADSHEET');
+        $data['format_dd'] = array('PDF'=>'PDF', 'EXCEL' =>'EXCEL');
 
         // SECTOR LIST
         $data['sec_list'] = $this->dropdown($this->mdl_cpd->getSector(), 'SC_CLASS_SECTOR', 'SC_CLASS_SECTOR', ' ---Please select--- ');
@@ -104,7 +104,7 @@ class Cpd_report extends MY_Controller
         $data['year_list'] = $this->dropdown($this->mdl_pmp->getYearList(), 'CM_YEAR', 'CM_YEAR', '--Please select--');
 
         // FORMAT LIST
-        $data['format_dd'] = array('PDF'=>'PDF', 'EXCEL' =>'SPREADSHEET');
+        $data['format_dd'] = array('PDF'=>'PDF', 'EXCEL' =>'EXCEL');
 
         $this->render($data);
     }
@@ -427,10 +427,34 @@ class Cpd_report extends MY_Controller
     } 
     
     // GENERATE REPORT
-    public function report(){
+    public function reportOracle(){
 		$report = $this->encryption->decrypt_array($this->input->get('r'));
 		$this->lib->generate_report($report, false);
     }
+	
+		// Calling Jasper Reports
+	public function report(){
+		// Load jasperreport library
+		$this->load->library('jasperreport');
+		
+		// get report parameters
+		$param = $this->encryption->decrypt_array($this->input->get('r'));
+		
+		// get report code and format
+		$repCode = isset($param['REPORT'])?strtoupper($param['REPORT']):'';
+		$format = isset($param['FORMAT'])?strtolower($param['FORMAT']):'pdf';
+		
+		// for report format = excel / word, report will be downloaded as attachment
+		if ($format == 'excel') {
+			$format = 'xlsx';
+			$this->jasperreport->setAttachment();
+		} elseif ($format == 'word') {
+			$format = 'docx';
+			$this->jasperreport->setAttachment();
+		}
+		
+		$this->jasperreport->runReport("/Reports/MyHRIS/HRA_AT/" . $repCode,$format,$param);
+	}
 
     // VALIDATE HRD
     public function validateHrd() {
