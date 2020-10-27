@@ -1635,7 +1635,8 @@ class Training_application_model extends MY_Model
     }
 
     // GET DEPARTMENT LIST
-    public function getDeptList() {
+    public function getDeptList() 
+    {
         $this->db->select("DM_DEPT_CODE, DM_DEPT_DESC, DM_DEPT_CODE ||' - '|| DM_DEPT_DESC AS DEPT_CODE_DESC");
         $this->db->from('DEPARTMENT_MAIN');
 		$this->db->where('NVL(DM_STATUS,\'INACTIVE\')', 'ACTIVE');
@@ -3531,48 +3532,5 @@ class Training_application_model extends MY_Model
     }//getTerasList
     
     //end update @17/02/2020 -----------------------------------------------------------
-    
-    // for ATF008Q 
-    public function getQueryDetailInfo($tableName, $fieldName, $fieldWhereName, $fieldWhereValue){
-        $this->db->select($fieldName);
-        $this->db->where($fieldWhereName, $fieldWhereValue);
-        $query = $this->db->get($tableName);
-        if ($query->num_rows() > 0) {
-            if ($query->row()->$fieldName == '' or $query->row()->$fieldName == null){
-                return '-';
-            }else{
-                return $query->row()->$fieldName;
-            }
-        }
-		
-        return '-';
-    } // getQueryDetailInfo
-    // for ATF008Q 
-    
-    // for ATF008Q
-    // GET ORGANIZER DETAILS QUERY SCREEN
-    public function getOrganizerName_Query($organizerCode = null) {
-        $this->db->select("TOH_ORG_CODE, TOH_ORG_DESC, TOH_ORG_CODE ||' - '|| TOH_ORG_DESC AS TOH_ORG_CODE_DESC, TOH_ADDRESS, TOH_POSTCODE, TOH_CITY, SM_STATE_DESC, CM_COUNTRY_DESC");
-        $this->db->from('TRAINING_ORGANIZER_HEAD, STATE_MAIN, COUNTRY_MAIN');
-        $this->db->where("TOH_STATE=SM_STATE_CODE");
-        $this->db->where("TOH_COUNTRY=CM_COUNTRY_CODE");
-        //$this->db->where("NVL(TOH_EXTERNAL_AGENCY,'N') <> 'Y'");
-
-        if(!empty($organizerCode)) {
-            $this->db->where("TOH_ORG_CODE", $organizerCode);
-            $q = $this->db->get();
-        
-            return $q->row();
-        } 
-        else {
-            $this->db->order_by("2");
-            $q = $this->db->get();
-        
-            return $q->result();
-        }
-        
-        
-    }//getOrganizerName_Query
-    // for ATF008Q
     
 }
