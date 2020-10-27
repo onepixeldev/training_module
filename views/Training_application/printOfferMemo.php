@@ -40,7 +40,7 @@
 
         <div class="form-group">
             <div id="loaderMdl2"></div>
-            <label class="col-md-3 control-label">Date of sending email <b><font color="red">*</font></b> </label>
+            <label class="col-md-3 control-label">Date of sending email </label>
             <div class="col-md-4">
                 <?php
                     echo form_dropdown('form[date_of_sending_email]', array(''=>'--- Please select Course Title ---'), '', 'class="selectpicker form-control width-50" id="sendDate"')
