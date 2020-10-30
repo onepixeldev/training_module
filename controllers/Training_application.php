@@ -4330,7 +4330,7 @@ class Training_application extends MY_Controller
     }
 
     // EVALUATION REPORT
-    /*public function genEvaReport($formCode, $refid) {
+    public function genEvaReport($formCode, $refid) {
     	// set param list
     	if (!empty($refid)) {
 			$param = array('PARAMFORM' => 'NO', 'REFID' => $refid);	
@@ -4340,7 +4340,7 @@ class Training_application extends MY_Controller
 		
 		// Format = PDF
         $this->lib->report($formCode, $param);
-    }*/ 
+    }
 
     // STAFF EVALUATION INDIVIDUAL REPORT
     /*public function genStaffEvaReport($refid, $staffID) {
