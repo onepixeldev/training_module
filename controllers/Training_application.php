@@ -4331,6 +4331,7 @@ class Training_application extends MY_Controller
 
     // EVALUATION REPORT
     public function genEvaReport($formCode, $refid) {
+        
     	// set param list
     	if (!empty($refid)) {
 			$param = array('PARAMFORM' => 'NO', 'REFID' => $refid);	
