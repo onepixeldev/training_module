@@ -114,7 +114,6 @@ class Conference_lmp_model extends MY_Model
             $this->db->order_by("SM_STAFF_NAME");
         }
         
-
         $q = $this->db->get();
         return $q->result();
     }
@@ -155,12 +154,12 @@ class Conference_lmp_model extends MY_Model
         if($mod == 'APP_REPORT') {
             $this->db->where("(SCR_STAFF_ID IN (SELECT SM_STAFF_ID FROM STAFF_MAIN WHERE SM_STAFF_ID = SCR_STAFF_ID AND SM_DEPT_CODE = $deptCode) AND SCR_STATUS='VERIFY_HOD') 
             OR (SCR_STAFF_ID IN (SELECT DM_DIRECTOR 
-            FROM DEPARTMENT_MAIN WHERE DM_DIRECTOR = SCR_STAFF_ID AND DM_LEVEL IN (1,2) AND DM_DEPT_CODE = $deptCode) 
-            AND SCR_STATUS = 'APPLY')");
+            FROM DEPARTMENT_MAIN WHERE DM_DIRECTOR = '$staff_id' AND DM_LEVEL IN (1,2) AND DM_DEPT_CODE = $deptCode) 
+            AND SCR_STATUS = 'APPLY')");         
         }
         $this->db->order_by("SCR_APPLY_DATE DESC");
         
-
+        //FROM DEPARTMENT_MAIN WHERE DM_DIRECTOR = SCR_STAFF_ID AND DM_LEVEL IN (1,2) AND DM_DEPT_CODE = $deptCode) 
         $q = $this->db->get();
         return $q->result();
     } 
