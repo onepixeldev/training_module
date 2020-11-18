@@ -1163,18 +1163,17 @@
 
 	// PRINT OFFER MEMO
 	$('#myModalis').on('click', '.print_mem_btn', function () { 
+		//alert('test');
 		var refid =  $('#courseTitle').val();
 		var sendDate =  $('#sendDate').val();
 		var refNo =  $('#refNo').val();
-		//alert(refid+' '+sendDate+' '+refNo);
+		var repCode = 'ATR250';
+
 		if(refid == '') {
 			msg.warning('Please select Course Title', '#printOfferMemoAlert');
 			return;
 		}
-		/*if(sendDate == '') {
-			msg.warning('Please select Date of sending email', '#printOfferMemoAlert');
-			return;
-		}*/
+
 		if(refNo == '') {
 			msg.warning('Please fill in Referrence No.', '#printOfferMemoAlert');
 			return;
@@ -1182,24 +1181,17 @@
 
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('setOfferMemoParam')?>',
-			data: {'refid' : refid, 'sendDate' : sendDate, 'refNo' : refNo},
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'refid' : refid, 'sendDate' : sendDate, 'refNo' : refNo,'repCode':repCode},
 			dataType: 'JSON',
 			beforeSend: function() {
 				msg.wait('#printOfferMemoAlert');
 				$('.btn').attr('disabled', 'disabled');
 			},
 			success: function(res) {
-				if(res.sts == 1) {
-					var repURL = '<?php echo $this->lib->class_url('printOfferReport') ?>';
-					var mywin = window.open( repURL , 'report');
-					msg.success('Offer Memo printed', '#printOfferMemoAlert');
-					$('.btn').removeAttr('disabled');
-				} else {
-					msg.danger('Fail to print Offer Memo', '#printOfferMemoAlert');
-					$('.btn').removeAttr('disabled');
-				}
-								
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+				msg.success('Memo has been generated.', '#printOfferMemoAlert');
+				$('.btn').removeAttr('disabled');			
 			},
 			error: function() {
 				$('.btn').removeAttr('disabled');

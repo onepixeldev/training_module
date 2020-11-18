@@ -4173,7 +4173,7 @@ class Training_application extends MY_Controller
     }
 
     // PRINT OFFER MEMO
-    public function printOfferReport() {
+    /* function printOfferReport() {
         $refid = $this->session->userdata('refid_mem');
         $sendDate = $this->session->userdata('send_date_mem');
         $refNo = $this->session->userdata('ref_no');
@@ -4181,7 +4181,7 @@ class Training_application extends MY_Controller
         $param = array('PARAMFORM' => 'NO', 'TRAINING_REFID' => $refid, 'TARIKH_SEND' => $sendDate, 'RUJUKAN' => $refNo);
 
         $this->lib->report($formCode, $param);
-    }
+    }*/
 
     // VERIFY TRAINING SERVICE BOOK
     public function verifySvcBook(){
@@ -4330,8 +4330,7 @@ class Training_application extends MY_Controller
     }
 
     // EVALUATION REPORT
-    public function genEvaReport($formCode, $refid) {
-        
+    /*public function genEvaReport($formCode, $refid) {
     	// set param list
     	if (!empty($refid)) {
 			$param = array('PARAMFORM' => 'NO', 'REFID' => $refid);	
@@ -4341,7 +4340,7 @@ class Training_application extends MY_Controller
 		
 		// Format = PDF
         $this->lib->report($formCode, $param);
-    }
+    }*/ 
 
     // STAFF EVALUATION INDIVIDUAL REPORT
     /*public function genStaffEvaReport($refid, $staffID) {
@@ -5500,7 +5499,7 @@ class Training_application extends MY_Controller
         $courseRefid = $this->session->userdata('courseRefid');
         $rep_format_bi = $this->session->userdata('rep_format_bi');
 
-	if($repCode == 'ATR057') {
+	    if($repCode == 'ATR057') {
             $param = array('PARAMFORM' => 'NO', 'DM_DEPT_CODE' => $department_ai, 'YEAR_YEAR' => $year_ai);
             $this->lib->report($repCode, $param);
         } 
@@ -6697,7 +6696,6 @@ class Training_application extends MY_Controller
         }
 
 
-
         /*elseif($repCode == 'ATRPDF' || $repCode == 'ATRXLS') {
             $getTrDate = $this->mdl->getTrainingDateFrom($corTitle);
             $trDateFrom = $getTrDate->TH_DATE_FROM;
@@ -6980,4 +6978,130 @@ class Training_application extends MY_Controller
 
         $this->render($data);
     }//ATF008QListposition()
+
+    // REPORT PARAM
+    public function setReportParamTrainAppl()
+    {
+        $this->isAjax();
+		
+		$repCode = $this->input->post('repCode', true);
+		$param = '';
+		
+		if ($repCode == 'ATR250') {
+			$refid = $this->input->post('refid', true);
+            $sendDate = $this->input->post('sendDate', true);
+            $refNo = $this->input->post('refNo', true);
+            $repFormat = 'PDF';
+
+			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_REFID' => $refid, 'TARIKH_SEND' => $sendDate, 'RUJUKAN' => $refNo));
+        } elseif ($repCode == 'ATR057') {
+			$year_ai = $this->input->post('year_ai');
+    	    $department_ai = $this->input->post('department_ai');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'DM_DEPT_CODE' => $department_ai, 'YEAR_YEAR' => $year_ai));
+        } elseif ($repCode == 'ATR058LIST') {
+            $choice_ai = $this->input->post('choice_ai');
+			$year_ai = $this->input->post('year_ai');
+            $repFormat = 'PDF';
+            
+            if($choice_ai == 'A') {
+                $newRepCode = 'ATR058';
+            } elseif($choice_ai == 'Y') {
+                $newRepCode = 'ATR058B';
+            } else {
+                $newRepCode = 'ATR058C';
+            }
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$newRepCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai));
+        } elseif ($repCode == 'ATR059') {
+			$year_ai = $this->input->post('year_ai');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai));
+        } elseif ($repCode == 'ATR060') {
+			$year_ai = $this->input->post('year_ai');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai));
+        } elseif ($repCode == 'ATR085') {
+			$year_ai = $this->input->post('year_ai');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai));
+        } elseif ($repCode == 'ATR086') {
+			$year_ai = $this->input->post('year_ai');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai));
+        } elseif ($repCode == 'ATR065') {
+            $year_ai = $this->input->post('year_ai');
+            $fr_month_ai = $this->input->post('fr_month_ai');
+            $fr_year_ai = $this->input->post('fr_year_ai');
+            $to_month_ai = $this->input->post('to_month_ai');
+            $to_year_ai = $this->input->post('to_year_ai');
+            $mm_from = $fr_month_ai.'/'.$fr_year_ai;
+            $mm_to = $to_month_ai.'/'.$to_year_ai;
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'MONTH_FROM' => $mm_from, 'MONTH_TO' => $mm_to));
+        } elseif ($repCode == 'ATR072') {
+			$year_ai = $this->input->post('year_ai');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_ai));
+        } elseif ($repCode == 'ATR061') {
+            $year_bi = $this->input->post('year_bi');
+            $courseRefid = $this->input->post('courseRefid');
+            $rep_format_bi = $this->input->post('rep_format_bi');
+
+            if ($rep_format_bi == 'PDF'){
+                $repFormat = 'PDF';
+            } elseif ($rep_format_bi == 'EXCEL'){
+                $repFormat = 'EXCEL';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
+        } elseif ($repCode == 'ATR062') {
+            $year_bi = $this->input->post('year_bi');
+            $courseRefid = $this->input->post('courseRefid');
+            $rep_format_bi = $this->input->post('rep_format_bi');
+
+            if ($rep_format_bi == 'PDF'){
+                $repFormat = 'PDF';
+            } elseif ($rep_format_bi == 'EXCEL'){
+                $repFormat = 'EXCEL';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
+        } elseif ($repCode == 'ATR063') {
+            $year_bi = $this->input->post('year_bi');
+            $courseRefid = $this->input->post('courseRefid');
+            $rep_format_bi = $this->input->post('rep_format_bi');
+
+            if ($rep_format_bi == 'PDF'){
+                $repFormat = 'PDF';
+            } elseif ($rep_format_bi == 'EXCEL'){
+                $repFormat = 'EXCEL';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
+        } elseif ($repCode == 'ATR064') {
+            $year_bi = $this->input->post('year_bi');
+            $courseRefid = $this->input->post('courseRefid');
+            $rep_format_bi = $this->input->post('rep_format_bi');
+
+            if ($rep_format_bi == 'PDF'){
+                $repFormat = 'PDF';
+            } elseif ($rep_format_bi == 'EXCEL'){
+                $repFormat = 'EXCEL';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
+        }
+		
+		$json = array('report' => $param);
+		
+		echo json_encode($json);
+    }
 }

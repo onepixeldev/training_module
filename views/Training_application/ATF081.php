@@ -50,6 +50,9 @@
                                 <li class="">
                                     <a style="color:#000 !important" href="#s7" data-toggle="tab" aria-expanded="false">Reports (VII)</a>
                                 </li>
+                                <li class="">
+                                    <a style="color:#000 !important" href="#s8" data-toggle="tab" aria-expanded="false">Reports (VIII)</a>
+                                </li>
                             </ul>
 							<!-- myTabContent1 -->
                             <div id="myTabContent1" class="tab-content padding-10">
@@ -88,6 +91,11 @@
 									<div id="report_vii">
 									</div>
                                 </div>
+                                
+                                <div class="tab-pane fade" id="s8">
+									<div id="report_viii">
+									</div>
+                                </div>
 
                             </div>
                             <!-- end myTabContent1 -->
@@ -122,15 +130,123 @@
 </div>
 <!-- end ADD / EDIT / DELETE -->
 
+<!-- SEARCH DEPT page will be displayed here -->
+<div class="modal fade" id="mySearchDeptModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+			<div class="modal-header btn-primary">
+				<h4 class="modal-title" id="myModalLabel">Department
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div id="search_dept_list"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-hand-o-left"></i> Close</button>
+			</div>		  
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- end SEARCH DEPT -->
+
+<!-- SEARCH TRAINING page will be displayed here -->
+<div class="modal fade" id="mySearchTrainingModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+			<div class="modal-header btn-primary">
+				<h4 class="modal-title" id="myModalLabel">Training Title
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div id="search_training_list"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-hand-o-left"></i> Close</button>
+			</div>		  
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- end SEARCH TRAINING -->
+
+<!-- SEARCH ORGANIZER page will be displayed here -->
+<div class="modal fade" id="mySearchOrganizerModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+			<div class="modal-header btn-primary">
+				<h4 class="modal-title" id="myModalLabel">Organizer
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div id="search_organizer_list"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-hand-o-left"></i> Close</button>
+			</div>		  
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- end SEARCH ORGANIZER -->
+
+<!-- SEARCH STAFF page will be displayed here -->
+<div class="modal fade" id="mySearchStaffModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+			<div class="modal-header btn-primary">
+				<h4 class="modal-title" id="myModalLabel">Staff
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div id="search_staff_list"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-hand-o-left"></i> Close</button>
+			</div>		  
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- end SEARCH STAFF -->
+
 <script>
 	var tr_row = '';
     
 	//var intExt = '1';
 	var disDept = '1';
 	var disYear = '1';
-    var evaluation = '1';
+        var evaluation = '1';
 	//var dt_row2 = '';
-	
+        
+        //start add @17/02/2020
+        //--------------------------------------------------------------------------
+        var dt_deptlist_row = '';
+        var dt_deptlist_row2 = '';
+        var dt_deptlist_row3 = '';
+        var dt_traininglist_row = '';
+        var dt_traininglist_row2 = '';
+        var dt_depttab1list_row = '';
+        var dt_organizertab2list_row = '';
+        var dt_stafftab2list_row = '';
+        var dt_depttab3list_row = '';
+        var dt_trainingtab3list_row = '';
+        var dt_stafftab3list_row = '';
+        var dt_depttab3blist_row = '';
+        var dt_depttab5list_row = '';
+        var dt_stafftab6list_row = '';
+        var dt_stafftab7list_row = '';
+        var dt_trainingtab7list_row = '';
+	//end @17/02/2020 -----------------------------------------------------------
+        
 	$(document).ready(function(){
 		// navigate to selected tab
 		<?php
@@ -251,7 +367,7 @@
             $('#report_vii').html(res);
 		},
     });
-
+    
     // REPORT I (A)
     $('#report_i').on('click', '.genReporti', function () {
         var repCode = $(this).attr('repCode');
@@ -264,14 +380,22 @@
         // var to_year_ai = $("#to_year_ai").val();
         var year_bi = $("#year_bi").val();
         var courseRefid = $("#courseRefid").val();
-
         // alert(repCode+' '+year_ai+' '+department_ai+' '+choice_ai+' '+fr_month_ai+' '+fr_year_ai+' '+to_month_ai+' '+to_year_ai+' '+year_bi+' '+courseRefid);
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'year_ai': year_ai, 'department_ai': department_ai, 'choice_ai': choice_ai, 'year_bi': year_bi, 'courseRefid': courseRefid},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+				//window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
         
-        $.post('<?php echo $this->lib->class_url('setParami') ?>', {repCode: repCode, year_ai: year_ai, department_ai: department_ai, 
+        /*$.post('<?php //echo $this->lib->class_url('setReportParam') ?>', {repCode: repCode, year_ai: year_ai, department_ai: department_ai, 
         choice_ai: choice_ai, year_bi: year_bi, courseRefid: courseRefid}, function (res) {
-            var repURL = '<?php echo $this->lib->class_url('genReporti') ?>';
-            //alert(repURL);
-            var mywin = window.open( repURL , 'report');
+            window.open("report?r="+res.report,"mywin","width=800,height=600");
         }).fail(function(){
             $.alert({
                 title: 'Error!',
@@ -279,10 +403,53 @@
                 type: 'red',
             });
             // msg.danger('Please contact administrator.', '#alert');     
-        });
+        });*/
+    });
+    
+    // REPORT I (Program / Facilitator Evaluation)
+    $('#report_i').on('click', '.genReportBi', function () {
+        var repCode = $(this).attr('repCode');
+		var rep_format_bi = $("#rep_format_bi").val();
+        var year_bi = $("#year_bi").val();
+        var courseRefid = $("#courseRefid").val();
+        
+        if (courseRefid.length == 0) {
+			$.alert({
+				title: 'Alert!',
+				content: 'Please select Course Title',
+				type: 'red'
+			});
+			return;
+		}
+                
+        // alert(repCode+' '+year_ai+' '+department_ai+' '+choice_ai+' '+fr_month_ai+' '+fr_year_ai+' '+to_month_ai+' '+to_year_ai+' '+year_bi+' '+courseRefid);
+        //rep_code: repCode, 
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'rep_format_bi' : rep_format_bi, 'year_bi' : year_bi, 'courseRefid' : courseRefid},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+				//window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
+
+        /*$.post('<?php //echo $this->lib->class_url('setReportParamTrainAppl') ?>', {repCode: repCode, rep_format_bi : rep_format_bi, year_bi : year_bi, courseRefid : courseRefid}, function (res) {
+            window.open("report?r="+res.report,"mywin","width=800,height=600");
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
+            });
+            // msg.danger('Please contact administrator.', '#alert');     
+        });*/
         
     });
-	
+    
+        /*
 	// REPORT I (Program / Facilitator Evaluation)
 	$('#report_i').on('click','.genReportBi', function() {
 		var repCode = $(this).attr('repCode');
@@ -320,7 +487,8 @@
 			}
 		});	
 	});	
-
+        */
+           
     // REPORT I
     $('#report_i').on('click', '.genReportMMi', function () {
         var repCode = $(this).attr('repCode');
@@ -328,6 +496,7 @@
         var fr_year_ai = $("#fr_year_ai").val(); 
         var to_month_ai = $("#to_month_ai").val(); 
         var to_year_ai = $("#to_year_ai").val();
+		//alert(repCode);
 
         if(fr_month_ai == '' || fr_year_ai == '' || to_month_ai == '' || to_year_ai == '') {
             $.alert({
@@ -338,11 +507,9 @@
             return;
         }
 
-        $.post('<?php echo $this->lib->class_url('setParami') ?>', {repCode: repCode, fr_month_ai: fr_month_ai, 
+        $.post('<?php echo $this->lib->class_url('setReportParam') ?>', {repCode: repCode, fr_month_ai: fr_month_ai, 
         fr_year_ai: fr_year_ai, to_month_ai: to_month_ai, to_year_ai: to_year_ai}, function (res) {
-            var repURL = '<?php echo $this->lib->class_url('genReporti') ?>';
-            //alert(repURL);
-            var mywin = window.open( repURL , 'report');
+            window.open("report?r="+res.report,"mywin","width=800,height=600");
         }).fail(function(){
             $.alert({
                 title: 'Error!',
@@ -608,9 +775,7 @@
         });
     });
     
-
     // REPORT VII
-
     $('#report_vii').on('click', '.genReportvii', function () {
         var repCode = $(this).attr('repCode');
         var staffID = $("#staff_id_vii").val(); 
@@ -670,6 +835,7 @@
     // POPULATE UNIT - REPORT VII
 	$('#report_vii').on('change','#departmentvii', function() {
 		var deptCode = $(this).val();
+                
 		$('#unitLoader').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
 		$('#unitvii').html('');
 		//alert(deptCode);
@@ -694,4 +860,725 @@
 			}
 		});
     });
+    
+    //start add @17/02/2020
+    //--------------------------------------------------------------------------
+    
+    $.ajax({
+		type: 'POST',
+		url: '<?php echo $this->lib->class_url('tarReportviii')?>',
+		data: '',
+		beforeSend: function() {
+			$('#report_viii').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
+		},
+		success: function(res) {
+            $('#report_viii').html(res);
+		},
+    });
+    
+    //... DEPARTMENT
+    $('#report_viii').on('click','.search_dept_btn', function() {
+		
+		$('#search_dept_list').html('');
+		$('#mySearchDeptModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081DepartmentSearchResult')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_dept_list').html(res);
+                            dt_deptlist_row = $('#tbl_dept_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_dept_list').on('click','.select_dept_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('dept-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#deptCode').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#dept_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchDeptModal').modal('hide');
+			$('#search_dept_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    //... DEPARTMENT
+    $('#report_viii').on('click','.search_dept_btn2', function() {
+		
+		$('#search_dept_list').html('');
+		$('#mySearchDeptModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081DepartmentSearchResult2')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_dept_list').html(res);
+                            dt_deptlist_row2 = $('#tbl_dept_list2').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_dept_list').on('click','.select_dept_btn2', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('dept-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#deptCode2').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#dept_name2').val(sname);
+			
+			// Hide search modal
+			$('#mySearchDeptModal').modal('hide');
+			$('#search_dept_list').html('');
+		}	       
+    });
+    
+    //... DEPARTMENT
+    $('#report_viii').on('click','.search_dept_btn3', function() {
+		
+		$('#search_dept_list').html('');
+		$('#mySearchDeptModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081DepartmentSearchResult3')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_dept_list').html(res);
+                            dt_deptlist_row3 = $('#tbl_dept_list3').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_dept_list').on('click','.select_dept_btn3', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('dept-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#deptCode3').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#dept_name3').val(sname);
+			
+			// Hide search modal
+			$('#mySearchDeptModal').modal('hide');
+			$('#search_dept_list').html('');
+		}	       
+    });
+    
+    //... TRAINING
+    $('#report_viii').on('click','.search_training_btn', function() {
+		
+                var year = $("#year2").val(); 
+                var month = $("#month_from").val();
+		$('#search_training_list').html('');
+		$('#mySearchTrainingModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081TrainingSearchResult')?>', 
+			//data: '',
+                        data: {'year' : year, 'month' : month},
+			success: function(res) {
+                            $('#search_training_list').html(res);
+                            dt_traininglist_row = $('#tbl_training_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_training_list').on('click','.select_training_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('training-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#trainingCode').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#training_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchTrainingModal').modal('hide');
+			$('#search_training_list').html('');
+		}	       
+    });
+    
+    //... TRAINING
+    $('#report_viii').on('click','.search_training_btn2', function() {
+
+		$('#search_training_list').html('');
+		$('#mySearchTrainingModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081TrainingSearchResult2')?>', 
+			data: '',
+                        //data: {'year' : year, 'month' : month},
+			success: function(res) {
+                            $('#search_training_list').html(res);
+                            dt_traininglist_row2 = $('#tbl_training_list2').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_training_list').on('click','.select_training_btn2', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('training-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#trainingCode2').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#training_name2').val(sname);
+			
+			// Hide search modal
+			$('#mySearchTrainingModal').modal('hide');
+			$('#search_training_list').html('');
+		}	       
+    });
+    
+    // REPORT VIII
+    $('#report_viii').on('click', '.genReportviii', function () {
+  
+        var repCode = $(this).attr('repCode');
+        var department_v = $("#deptCode").val(); 
+        var department_v2 = $("#deptCode2").val();
+        var trainingID = $("#trainingCode").val();
+        var year = $("#year2").val();
+        var month = $("#month_from").val();
+        var department_v3 = $("#deptCode3").val();
+        var trainingID2 = $("#trainingCode2").val();
+
+        $.post('<?php echo $this->lib->class_url('setParamviii') ?>', {repCode: repCode, department_v: department_v,
+            department_v2: department_v2, department_v3: department_v3, trainingID: trainingID, trainingID2: trainingID2, year: year, month: month}, function (res) {
+            var repURL = '<?php echo $this->lib->class_url('genReportviii') ?>';
+            //alert(repURL);
+            var mywin = window.open( repURL , 'report');
+        }).fail(function(){
+            $.alert({
+                title: 'Error!',
+                content: 'Please contact administrator.',
+                type: 'red',
+            });
+            // msg.danger('Please contact administrator.', '#alert');        
+        });
+        
+    });
+    
+    // TAB 1 : REPORTS (tarReport.php)
+    // -------------------------------
+    //... DEPARTMENT
+    $('#report_i').on('click','.search_dept_tab1_btn', function() {
+		
+		$('#search_dept_list').html('');
+		$('#mySearchDeptModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab1DepartmentSearchResult')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_dept_list').html(res);
+                            dt_depttab1list_row = $('#tbl_dept_tab1_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_dept_list').on('click','.select_deptTab1_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('dept-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#department_ai').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#department_ai_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchDeptModal').modal('hide');
+			$('#search_dept_list').html('');
+		}	       
+    });
+    //---------------------------------
+   
+    // TAB 2 : REPORTS (II) (tarReportii.php)
+    // --------------------------------------
+    
+    //... DEPARTMENT
+    $('#report_ii').on('click','.search_organizer_tab2_btn', function() {
+		
+		$('#search_organizer_list').html('');
+		$('#mySearchOrganizerModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab2OrganizerSearchResult')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_organizer_list').html(res);
+                            dt_organizertab2list_row = $('#tbl_organizer_tab2_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_organizer_list').on('click','.select_orgTab2_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('org-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#org_codeii').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#org_codeii_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchOrganizerModal').modal('hide');
+			$('#search_organizer_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    //... COORDINATOR / STAFF
+    $('#report_ii').on('click','.search_staff_tab2_btn', function() {
+		
+		$('#search_staff_list').html('');
+		$('#mySearchStaffModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab2StaffSearchResult')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_staff_list').html(res);
+                            dt_stafftab2list_row = $('#tbl_staff_tab2_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_staff_list').on('click','.select_staffTab2_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('staff-id');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#coor_ii').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#coor_ii_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchStaffModal').modal('hide');
+			$('#search_staff_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    // TAB 3 : REPORTS III (tarReportiii.php)
+    // --------------------------------------
+    //... DEPARTMENT
+    $('#report_iii').on('click','.search_dept_tab3_btn', function() {
+		
+		$('#search_dept_list').html('');
+		$('#mySearchDeptModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab3DepartmentSearchResult')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_dept_list').html(res);
+                            dt_depttab3list_row = $('#tbl_dept_tab3_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_dept_list').on('click','.select_deptTab3_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('dept-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#department_aiii').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#department_aiii_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchDeptModal').modal('hide');
+			$('#search_dept_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    //... TRAINING TITLE
+    $('#report_iii').on('click','.search_training_tab3_btn', function() {
+	
+        var year = $("#year_aiii").val();
+        
+		$('#search_training_list').html('');
+		$('#mySearchTrainingModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab3TrainingSearchResult')?>', 
+			//data: '',
+                        data: {'year' : year},
+			success: function(res) {
+                            $('#search_training_list').html(res);
+                            dt_trainingtab3list_row = $('#tbl_training_tab3_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_training_list').on('click','.select_training_tab3_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('training-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#course_titleiii').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#course_titleiii_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchTrainingModal').modal('hide');
+			$('#search_training_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    //... STAFF
+    $('#report_iii').on('click','.search_staff_tab3_btn', function() {
+		
+		$('#search_staff_list').html('');
+		$('#mySearchStaffModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab3StaffSearchResult')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_staff_list').html(res);
+                            dt_stafftab3list_row = $('#tbl_staff_tab3_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_staff_list').on('click','.select_staffTab3_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('staff-id');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#staff_idiii').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#staff_idiii_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchStaffModal').modal('hide');
+			$('#search_staff_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    //... DEPARTMENT
+    $('#report_iii').on('click','.search_dept_tab3b_btn', function() {
+		
+		$('#search_dept_list').html('');
+		$('#mySearchDeptModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab3BDepartmentSearchResult')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_dept_list').html(res);
+                            dt_depttab3blist_row = $('#tbl_dept_tab3b_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_dept_list').on('click','.select_deptTab3B_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('dept-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#department_biii').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#department_biii_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchDeptModal').modal('hide');
+			$('#search_dept_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    // TAB 5 : REPORTS (V) (tarReportv.php)
+    // --------------------------------------
+    //... DEPARTMENT
+    $('#report_v').on('click','.search_dept_tab5_btn', function() {
+		
+		$('#search_dept_list').html('');
+		$('#mySearchDeptModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab5DepartmentSearchResult')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_dept_list').html(res);
+                            dt_depttab5list_row = $('#tbl_dept_tab5_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_dept_list').on('click','.select_deptTab5_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('dept-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#department_v').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#department_v_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchDeptModal').modal('hide');
+			$('#search_dept_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    // TAB 6 : REPORTS (VI) (tarReportvi.php)
+    // --------------------------------------
+    
+    //... STAFF
+    $('#report_vi').on('click','.search_staff_tab6_btn', function() {
+		
+		$('#search_staff_list').html('');
+		$('#mySearchStaffModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab6StaffSearchResult')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_staff_list').html(res);
+                            dt_stafftab6list_row = $('#tbl_staff_tab6_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_staff_list').on('click','.select_staffTab6_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('staff-id');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#staff_id_vi').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#staff_id_vi_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchStaffModal').modal('hide');
+			$('#search_staff_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    // TAB 7 : REPORTS (VII) (tarReportvii.php)
+    // --------------------------------------
+    
+    //... STAFF
+    $('#report_vii').on('click','.search_staff_tab7_btn', function() {
+		
+		$('#search_staff_list').html('');
+		$('#mySearchStaffModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab7StaffSearchResult')?>', 
+			data: '',
+                        //data: {'deptID' : dept},
+			success: function(res) {
+                            $('#search_staff_list').html(res);
+                            dt_stafftab7list_row = $('#tbl_staff_tab7_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_staff_list').on('click','.select_staffTab7_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('staff-id');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#staff_id_vii').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#staff_id_vii_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchStaffModal').modal('hide');
+			$('#search_staff_list').html('');
+		}	       
+    });
+    //---------------------------------
+    
+    //... TRAINING TITLE
+    $('#report_vii').on('click','.search_training_tab7_btn', function() {
+	
+        var year = $("#year_avii").val();
+        
+		$('#search_training_list').html('');
+		$('#mySearchTrainingModal').modal('show');
+			
+		$.ajax({
+			type: 'POST',  
+			url: '<?php echo $this->lib->class_url('ATF081Tab7TrainingSearchResult')?>', 
+			//data: '',
+                        data: {'year' : year},
+			success: function(res) {
+                            $('#search_training_list').html(res);
+                            dt_trainingtab7list_row = $('#tbl_training_tab7_list').DataTable({
+				"ordering":false
+                            });
+			}
+		});
+    });
+        
+    $('#search_training_list').on('click','.select_training_tab7_btn', function() {
+		var thisBtn = $(this);
+		var sID = thisBtn.parents('tr').data('training-code');
+		var sname = thisBtn.parent().siblings(':eq(2)').html();
+
+		if (sID) {
+			$('#alertSearch').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+			
+			// Assign new value to ID and Name
+                        $('#course_titleavii').val(sID);
+                        
+			//$('input[name="form[department]"]').val(sID);
+			$('#course_titleavii_name').val(sname);
+			
+			// Hide search modal
+			$('#mySearchTrainingModal').modal('hide');
+			$('#search_training_list').html('');
+		}	       
+    });
+    //---------------------------------
+ 
+    //end @17/02/2020 -----------------------------------------------------------
+    
+    
+    
 </script>
