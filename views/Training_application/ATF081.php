@@ -421,8 +421,8 @@
 			});
 			return;
 		}
-                
-        // alert(repCode+' '+year_ai+' '+department_ai+' '+choice_ai+' '+fr_month_ai+' '+fr_year_ai+' '+to_month_ai+' '+to_year_ai+' '+year_bi+' '+courseRefid);
+            
+        // alert(repCode+' '+rep_format_bi+' '+year_bi+' '+courseRefid);
         //rep_code: repCode, 
 
 		$.ajax({
@@ -432,7 +432,6 @@
 			dataType: 'JSON',
 			success: function(res) {
 				window.open("report?r="+res.report,"mywin","width=800,height=600");
-				//window.open("report?r="+res.report,"mywin","width=800,height=600");
 			}
 		});
 
@@ -469,7 +468,7 @@
 		$(this).attr('disabled', 'disabled');
 		$.ajax({
 			type: 'POST',
-			url: '<?php echo $this->lib->class_url('setRepParam')?>',
+			url: '<?php //echo $this->lib->class_url('setRepParam')?>',
 			data: {'rep_code': repCode, 'rep_format' : repFormat, 'rep_year' : year_bi, 'course_rid' : courseRefid},
 			dataType: 'json',
 			success: function(res) {
@@ -507,17 +506,28 @@
             return;
         }
 
-        $.post('<?php echo $this->lib->class_url('setReportParam') ?>', {repCode: repCode, fr_month_ai: fr_month_ai, 
-        fr_year_ai: fr_year_ai, to_month_ai: to_month_ai, to_year_ai: to_year_ai}, function (res) {
-            window.open("report?r="+res.report,"mywin","width=800,height=600");
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');      
-        });
+        // $.post('<?php //echo $this->lib->class_url('setReportParamTrainAppl') ?>', {repCode: repCode, fr_month_ai: fr_month_ai, 
+        // fr_year_ai: fr_year_ai, to_month_ai: to_month_ai, to_year_ai: to_year_ai}, function (res) {
+        //     window.open("report?r="+res.report,"mywin","width=800,height=600");
+        // }).fail(function(){
+        //     $.alert({
+        //         title: 'Error!',
+        //         content: 'Please contact administrator.',
+        //         type: 'red',
+        //     });
+        //     // msg.danger('Please contact administrator.', '#alert');      
+        // });
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'fr_month_ai': fr_month_ai, 'fr_year_ai': fr_year_ai, 'to_month_ai': to_month_ai, 'to_year_ai': to_year_ai},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+				//window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
 
     // REPORT I - POPULATE COURSE TITLE LIST
@@ -584,20 +594,31 @@
 
         // alert(repCode+' '+year_aii+' '+organizer_ii+' '+rep_for_ii+' '+fr_month_aii+' '+fr_year_aii+' '+to_month_aii+' '+to_year_aii+' '+org_codeii+' '+sector_ii+' '+coor_ii);
         
-        $.post('<?php echo $this->lib->class_url('setParamii') ?>', {repCode: repCode, year_aii: year_aii, organizer_ii: organizer_ii, 
-        rep_for_ii: rep_for_ii, fr_month_aii: fr_month_aii, fr_year_aii: fr_year_aii, to_month_aii: to_month_aii, to_year_aii: to_year_aii, 
-        org_codeii: org_codeii, sector_ii: sector_ii, coor_ii: coor_ii}, function (res) {
-            var repURL = '<?php echo $this->lib->class_url('genReportii') ?>';
-            //alert(repURL);
-            var mywin = window.open( repURL , 'report');
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');     
-        });
+        // $.post('<?php //echo $this->lib->class_url('setParamii') ?>', {repCode: repCode, year_aii: year_aii, organizer_ii: organizer_ii, 
+        // rep_for_ii: rep_for_ii, fr_month_aii: fr_month_aii, fr_year_aii: fr_year_aii, to_month_aii: to_month_aii, to_year_aii: to_year_aii, 
+        // org_codeii: org_codeii, sector_ii: sector_ii, coor_ii: coor_ii}, function (res) {
+        //     var repURL = '<?php //echo $this->lib->class_url('genReportii') ?>';
+        //     //alert(repURL);
+        //     var mywin = window.open( repURL , 'report');
+        // }).fail(function(){
+        //     $.alert({
+        //         title: 'Error!',
+        //         content: 'Please contact administrator.',
+        //         type: 'red',
+        //     });
+        //     // msg.danger('Please contact administrator.', '#alert');     
+        // });
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'year_aii': year_aii, 'organizer_ii': organizer_ii, 'rep_for_ii': rep_for_ii, 'fr_month_aii': fr_month_aii, 'fr_year_aii': fr_year_aii, 'to_month_aii': to_month_aii, 'to_year_aii': to_year_aii, 'org_codeii': org_codeii, 'sector_ii': sector_ii, 'coor_ii': coor_ii},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+				//window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
 
     // REPORT III

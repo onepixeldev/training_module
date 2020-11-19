@@ -36,7 +36,25 @@
                     <div class="row">
 
                         <div class="row">
-                            <div class="col-sm-2">
+                            <br>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label"><b>Department </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="department_aiii" name="form[department_aiii]" class="form-control upper_text_desc get_dept_name" value="" placeholder="Department">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="department_aiii_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_dept_tab3_btn">...</button>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                                </div>
+                            </div>
+                            <!--div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><b>Department / Faculty</b></label>
                                 </div>
@@ -50,11 +68,28 @@
                                 <div class="text-left">   
                                     &nbsp;
                                 </div>
-                            </div>
+                            </div-->
                         </div>
-
+                        <br>
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label"><b>Course Title </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="course_titleiii" name="form[course_titleiii]" class="form-control upper_text_desc get_training_name" value="" placeholder="Course Title">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="course_titleiii_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_training_tab3_btn">...</button>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                                </div>
+                            </div>
+                            <!--div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><b>Course Title</b></label>
                                 </div>
@@ -69,11 +104,28 @@
                                 <div class="text-left">   
                                     &nbsp;
                                 </div>
-                            </div>
+                            </div-->
                         </div>
-
+                        <br>
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label"><b>Staff ID </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="staff_idiii" name="form[staff_idiii]" class="form-control upper_text_desc get_staff_name" value="" placeholder="Staff ID">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="staff_idiii_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_staff_tab3_btn">...</button>
+                                </div>
+                                <div class="col-sm-1">
+                                <div class="text-left">   
+                                    &nbsp;
+                                </div>
+                                </div>
+                            </div>
+                            <!--div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><b>Staff ID</b></label>
                                 </div>
@@ -87,9 +139,9 @@
                                 <div class="text-left">   
                                     &nbsp;
                                 </div>
-                            </div>
+                            </div-->
                         </div>
-
+                        <br>
                         <div class="row">
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
@@ -273,7 +325,24 @@
                 <div class="panel-body" id="summary">
                     <div class="row">
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label"><b>Department </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="department_biii" name="form[department_biii]" class="form-control upper_text_desc get_dept_name2" value="" placeholder="Department">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="department_biii_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_dept_tab3b_btn">...</button>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                                </div>
+                            </div>
+                            <!--div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><b>Department</b></label>
                                 </div>
@@ -287,9 +356,9 @@
                                 <div class="text-left">   
                                     &nbsp;
                                 </div>
-                            </div>
+                            </div-->
                         </div>
-
+                        <br>
                         <div class="row">
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
@@ -386,5 +455,102 @@
             format: 'L',
             format: 'DD-MM-YYYY'
         });
+        
+        // Uppercase username
+            $('.upper_text_desc').keyup(function() {
+		var upperCaseVal = $(this).val().toUpperCase();
+			
+		$(this).val($.trim(upperCaseVal));
+            });
+            
+            // Get name
+            $('.get_dept_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getDeptName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#department_aiii_name').val(res.deptName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#department_aiii_name').val("");
+                    }
+            });
+            
+            // Get name
+            $('.get_training_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getTrainingName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#course_titleiii_name').val(res.trainingName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#course_titleiii_name').val("");
+                    }
+            });
+            
+            // Get name
+            $('.get_staff_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getStaffName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#staff_idiii_name').val(res.staffName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#staff_idiii_name').val("");
+                    }
+            });
+            
+            // Get name
+            $('.get_dept_name2').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getDeptName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#department_biii_name').val(res.deptName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#department_biii_name').val("");
+                    }
+            });
+            
+            
 	});
 </script>

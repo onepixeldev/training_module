@@ -11,7 +11,7 @@
             <div class="panel panel-default text-right">
                 <div class="panel-body" id="summary">
                     <div class="row">
-                        <div class="col-sm-8">
+                        <!--div class="col-sm-8"-->
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><font color="red"><b>Year</b></font></label>
@@ -27,11 +27,11 @@
                                     &nbsp;
                                 </div>
                             </div>
-                        </div>
+                        <!--/div-->
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-8">
+                        <!--div class="col-sm-8"-->
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><font color="blue"><b>Month</b></font></label>
@@ -57,11 +57,29 @@
                                     &nbsp;
                                 </div>
                             </div>
-                        </div>
+                        <!--/div-->
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-8">
+                        <div class="form-group">
+                        <!--div class="col-sm-8"-->
+                                <label class="col-md-2 control-label"><font color="green"><b>Department </b></font></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="department_v" name="form[department_v]" class="form-control upper_text_desc get_dept_name" value="" placeholder="Department">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="department_v_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_dept_tab5_btn">...</button>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                                </div>
+                        </div>
+                        <!--div class="col-sm-8">
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><font color="green"><b>Department</b></font></label>
@@ -77,11 +95,11 @@
                                     &nbsp;
                                 </div>
                             </div>
-                        </div>
+                        </div-->
                     </div>
-
+                    <br>
                     <div class="row">
-                        <div class="col-sm-8">
+                        <!--div class="col-sm-8"-->
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><font color="brown"><b>Quarter (year)</b></font></label>
@@ -97,11 +115,11 @@
                                     &nbsp;
                                 </div>
                             </div>
-                        </div>
+                        <!--/div-->
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-8">
+                        <!--div class="col-sm-8"-->
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><b>Quarter (month)</b></label>
@@ -123,7 +141,7 @@
                                     &nbsp;
                                 </div>
                             </div>
-                        </div>
+                        <!--/div-->
                     </div>
 
                 </div>
@@ -419,3 +437,37 @@
     </div>
 </p>
 <!-- END -->
+
+<script>
+	$(document).ready(function(){
+            
+            // Uppercase username
+            $('.upper_text_desc').keyup(function() {
+		var upperCaseVal = $(this).val().toUpperCase();
+			
+		$(this).val($.trim(upperCaseVal));
+            });
+            
+            // Get name
+            $('.get_dept_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getDeptName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#department_v_name').val(res.deptName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#department_v_name').val("");
+                    }
+            });
+	});
+</script>

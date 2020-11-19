@@ -52,7 +52,19 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-2">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label"><b>Department </b></label>
+                            <div class="col-md-2">
+                                <input type="text" id="department_ai" name="form[department_ai]" class="form-control upper_text_desc get_dept_name" value="" placeholder="Department">
+                            </div>
+                            <div class="col-md-7">
+                                <input type="text" id="department_ai_name" class="form-control" placeholder="Description" value="" readonly>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-warning search_dept_tab1_btn">...</button>
+                            </div>
+                        </div>
+                        <!--div class="col-sm-2">
                             <div class="form-group text-right">
                                 <label><b>Department</b></label>
                             </div>
@@ -66,7 +78,7 @@
                             <div class="text-left">   
                                 &nbsp;
                             </div>
-                        </div>
+                        </div-->
                     </div>
 
                 </div>
@@ -406,7 +418,7 @@
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group text-left">
-                                    <input name="form[refid]" class="form-control" value="" type="text" id="courseRefid">	
+                                    <input name="form[refid]" class="form-control upper_text_desc get_training_name" value="" type="text" id="courseRefid">	
                                 </div>
                             </div>
                             <div class="col-sm-5">
@@ -434,7 +446,7 @@
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[eval_rep_format]', array('PDF' => 'PDF', 'EXCEL' => 'EXCEL'), 'PDF', 'class="form-control" id="rep_format_bi" style="width: 100%"') ?>	
+                                    <?php echo form_dropdown('form[eval_rep_format]', array('PDF'=>'PDF', 'EXCEL'=>'EXCEL'), '', 'class="form-control" id="rep_format_bi"') ?>
                                 </div>
                             </div>
                             <div class="col-sm-8">
@@ -531,3 +543,63 @@
     </div>
 </p>
 <!-- END -->
+
+<script>
+  
+	$(document).ready(function(){
+            
+            
+        // Uppercase username
+            $('.upper_text_desc').keyup(function() {
+		var upperCaseVal = $(this).val().toUpperCase();
+			
+		$(this).val($.trim(upperCaseVal));
+            });
+            
+            // Get name
+            $('.get_dept_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getDeptName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#department_ai_name').val(res.deptName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#department_ai_name').val("");
+                    }
+            });
+            
+            $('.get_training_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getTrainingName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#courseTitle').val(res.trainingName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#courseTitle').val("");
+                    }
+            });
+            
+            
+        });
+        
+</script>

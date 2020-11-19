@@ -15,7 +15,24 @@
                 <div class="panel-body" id="summary">
                     <div class="row">
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label"><b>Staff ID </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="staff_id_vii" name="form[staff_id_vii]" class="form-control upper_text_desc get_staff_name" value="" placeholder="Staff ID">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="staff_id_vii_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_staff_tab7_btn">...</button>
+                                </div>
+                                <div class="col-sm-1">
+                                <div class="text-left">   
+                                    &nbsp;
+                                </div>
+                                </div>
+                            </div>
+                            <!--div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><b>Staff ID</b></label>
                                 </div>
@@ -29,9 +46,9 @@
                                 <div class="text-left">   
                                     &nbsp;
                                 </div>
-                            </div>
+                            </div-->
                         </div>
-
+                        <br>
                         <div class="row">
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
@@ -75,6 +92,24 @@
                 <div class="panel-body" id="summary">
 
                     <div class="row">
+                        <!--div class="form-group">
+                        <!--div class="col-sm-8"-->
+                                <!--label class="col-md-2 control-label"><b>Department </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="departmentvii" name="form[departmentvii]" class="form-control upper_text_desc get_dept_name" value="" placeholder="Department">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="departmentvii_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_dept_tab7_btn">...</button>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                                </div-->
+                        <!--/div-->
                         <div class="col-sm-8">
                             <div class="col-sm-4">
                                 <div class="form-group text-right">
@@ -88,7 +123,7 @@
                             </div>
                         </div>
                     </div>
-
+                  
                     <div class="row">
                         <div class="col-sm-8">
                             <div class="col-sm-4">
@@ -182,7 +217,19 @@
                 <div class="panel-body" id="summary">
 
                     <div class="row">
-                        <div class="col-sm-8">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label"><b>Year </b></label>
+                            <div class="col-md-4">
+                                    <?php echo form_dropdown('form[yearavii]', $year_list, '', 'class="form-control" id="year_avii"') ?>
+                            </div>
+                            <div class="col-sm-6">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                            </div>
+                        </div>
+                        
+                        <!--div class="col-sm-8">
                             <div class="col-sm-4">
                                 <div class="form-group text-right">
                                     <label><b>Year</b></label>
@@ -193,11 +240,28 @@
                                     <?php echo form_dropdown('form[yearavii]', $year_list, '', 'class="form-control" id="year_avii"') ?>	
                                 </div>
                             </div>
-                        </div>
+                        </div-->
                     </div>
-
+                    <br>
                     <div class="row">
-                        <div class="col-sm-8">
+                        <div class="form-group">
+                                <label class="col-md-2 control-label"><b>Course Title </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="course_titleavii" name="form[course_titleavii]" class="form-control upper_text_desc get_training_name" value="" placeholder="Course Title">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="course_titleavii_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_training_tab7_btn">...</button>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                                </div>
+                        </div>
+                        <!--div class="col-sm-8">
                             <div class="col-sm-4">
                                 <div class="form-group text-right">
                                     <label><b>Course Title</b></label>
@@ -209,11 +273,22 @@
                                     <?php echo form_dropdown('form[course_titleavii]', array(''=>'--- Please select year ---'), '', 'class="form-control" id="course_titleavii"') ?>	
                                 </div>
                             </div>
-                        </div>
+                        </div-->
                     </div>
-
+                    <br>
                     <div class="row">
-                        <div class="col-sm-8">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label"><b>Date From </b></label>
+                            <div class="col-md-4">
+                                    <input name="form[date_course_fromvii]" placeholder="DD-MM-YYYY" class="form-control" value="" type="text" id="date_course_fromvii">
+                            </div>
+                            <div class="col-sm-6">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                            </div>
+                        </div>
+                        <!--div class="col-sm-8">
                             <div class="col-sm-4">
                                 <div class="form-group text-right">
                                     <label><b>Date From</b></label>
@@ -224,11 +299,22 @@
                                     <input name="form[date_course_fromvii]" placeholder="DD-MM-YYYY" class="form-control" value="" type="text" id="date_course_fromvii">	
                                 </div>
                             </div>
-                        </div>
+                        </div-->
                     </div>
-
+                    <br>
                     <div class="row">
-                        <div class="col-sm-8">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label"><b>Status </b></label>
+                            <div class="col-md-4">
+                                    <?php echo form_dropdown('form[status_bvii]', array(''=>'--- Please Select ---', 'APPLY'=>'APPLY', 'VERIFY'=>'VERIFY', 'RECOMMEND'=>'RECOMMEND', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL'), '', 'class="form-control" id="status_bvii"') ?>
+                            </div>
+                            <div class="col-sm-6">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                            </div>
+                        </div>
+                        <!--div class="col-sm-8">
                             <div class="col-sm-4">
                                 <div class="form-group text-right">
                                     <label><b>Status</b></label>
@@ -239,9 +325,9 @@
                                     <?php echo form_dropdown('form[status_bvii]', array(''=>'--- Please Select ---', 'APPLY'=>'APPLY', 'VERIFY'=>'VERIFY', 'RECOMMEND'=>'RECOMMEND', 'APPROVE'=>'APPROVE', 'REJECT'=>'REJECT', 'CANCEL'=>'CANCEL'), '', 'class="form-control" id="status_bvii"') ?>	
                                 </div>
                             </div>
-                        </div>
+                        </div-->
                     </div>
-
+                    <br>
                     <div class="row">
                         <div class="col-sm-2">
                             <div class="form-group text-right">
@@ -339,5 +425,57 @@ $(document).ready(function(){
         format: 'L',
         format: 'DD-MM-YYYY'
     });
+    
+    // Uppercase username
+            $('.upper_text_desc').keyup(function() {
+		var upperCaseVal = $(this).val().toUpperCase();
+			
+		$(this).val($.trim(upperCaseVal));
+            });
+            
+            // Get name
+            $('.get_staff_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getStaffName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#staff_id_vii_name').val(res.staffName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#staff_id_vii_name').val("");
+                    }
+            });
+            
+            // Get name
+            $('.get_training_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getTrainingName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#course_titleavii_name').val(res.trainingName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#course_titleavii_name').val("");
+                    }
+            });
+            
 });
 </script>

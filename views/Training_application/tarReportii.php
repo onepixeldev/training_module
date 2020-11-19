@@ -291,7 +291,24 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label"><b>Organizer </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="org_codeii" name="form[org_codeii]" class="form-control upper_text_desc get_organizer_name" value="" placeholder="Organizer">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="org_codeii_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_organizer_tab2_btn">...</button>
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="text-left">   
+                                    &nbsp;
+                                </div>
+                            </div>
+                            <!--div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><b>Organizer</b></label>
                                 </div>
@@ -305,9 +322,9 @@
                                 <div class="text-left">   
                                     &nbsp;
                                 </div>
-                            </div>
+                            </div-->
                         </div>
-
+                        <br>
                         <div class="row">
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
@@ -327,7 +344,25 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label"><b>Coordinator </b></label>
+                                <div class="col-md-2">
+                                    <input type="text" id="coor_ii" name="form[coor_ii]" class="form-control upper_text_desc get_staff_name" value="" placeholder="Coordinator">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" id="coor_ii_name" class="form-control" placeholder="Description" value="" readonly>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning search_staff_tab2_btn">...</button>
+                                </div>
+                                <div class="col-sm-1">
+                                <div class="text-left">   
+                                    &nbsp;
+                                </div>
+                                </div>
+                            </div>
+                         
+                            <!--div class="col-sm-2">
                                 <div class="form-group text-right">
                                     <label><b>Coordinator</b></label>
                                 </div>
@@ -341,9 +376,9 @@
                                 <div class="text-left">   
                                     &nbsp;
                                 </div>
-                            </div>
+                            </div-->
                         </div>
-
+                        <br>
                         <div class="row">
                             <div class="col-sm-2">
                                 <div class="form-group text-right">
@@ -379,5 +414,59 @@
             format: 'L',
             format: 'YYYY'
         });
+        
+        // Uppercase username
+            $('.upper_text_desc').keyup(function() {
+		var upperCaseVal = $(this).val().toUpperCase();
+			
+		$(this).val($.trim(upperCaseVal));
+            });
+            
+            // Get name
+            $('.get_organizer_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getOrganizerName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#org_codeii_name').val(res.orgName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#org_codeii_name').val("");
+                    }
+            });
+            
+            // Get name
+            $('.get_staff_name').keyup(function() {
+		var thisFld = $(this);
+		var sid = thisFld.val();
+			
+                    if (sid.trim().length > 5) {
+                            $.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('getStaffName')?>',
+				data: {'sid' : sid},
+				dataType: 'json',
+				success: function(res) {
+                                    if (res.sts == 1) {
+					$('#coor_ii_name').val(res.staffName);
+                                    }				
+				}
+                            });
+                    } else {
+                        $('#coor_ii_name').val("");
+                    }
+            });
+            
+        
+        
 	});
 </script>

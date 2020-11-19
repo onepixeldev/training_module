@@ -7061,7 +7061,7 @@ class Training_application extends MY_Controller
                 $repFormat = 'EXCEL';
             }
             
-            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REFID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
         } elseif ($repCode == 'ATR062') {
             $year_bi = $this->input->post('year_bi');
             $courseRefid = $this->input->post('courseRefid');
@@ -7073,7 +7073,7 @@ class Training_application extends MY_Controller
                 $repFormat = 'EXCEL';
             }
             
-            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REFID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
         } elseif ($repCode == 'ATR063') {
             $year_bi = $this->input->post('year_bi');
             $courseRefid = $this->input->post('courseRefid');
@@ -7085,7 +7085,7 @@ class Training_application extends MY_Controller
                 $repFormat = 'EXCEL';
             }
             
-            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REFID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
         } elseif ($repCode == 'ATR064') {
             $year_bi = $this->input->post('year_bi');
             $courseRefid = $this->input->post('courseRefid');
@@ -7096,8 +7096,50 @@ class Training_application extends MY_Controller
             } elseif ($rep_format_bi == 'EXCEL'){
                 $repFormat = 'EXCEL';
             }
-            
-            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REF_ID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REFID' => $courseRefid, 'YEAR_YEAR' => $year_bi));
+        } elseif ($repCode == 'ATR047') {
+            $year_aii = $this->input->post('year_aii');
+            $organizer_ii = $this->input->post('organizer_ii');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii));
+        } elseif ($repCode == 'ATR047X') {
+            $year_aii = $this->input->post('year_aii');
+            $organizer_ii = $this->input->post('organizer_ii');
+            $repFormat = 'EXCEL';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii));
+        } elseif ($repCode == 'ATR087') {
+            $year_aii = $this->input->post('year_aii');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii));
+        } elseif ($repCode == 'ATR108') {
+            $year_aii = $this->input->post('year_aii');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii));
+        } elseif ($repCode == 'ATR109') {
+            $year_aii = $this->input->post('year_aii');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii));
+        } elseif ($repCode == 'ATR113') {
+            $year_aii = $this->input->post('year_aii');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_aii));
+        } elseif ($repCode == 'ATR123') {
+            $year_aii = $this->input->post('year_aii');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_aii));
+
+            // elseif($repCode == 'ATR123') {
+            //     $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii, 'TRAINING_MONTH' => $mm_from, 'TRAINING_MONTH2' => $mm_to, 'P_PTJ' => $org_codeii, 'SECTOR' => $sector_ii, 'COORDINATOR' => $coor_ii);
+            //     $this->lib->report($repCode, $param, $rep_for_ii);
+            // }
         }
 		
 		$json = array('report' => $param);

@@ -47,7 +47,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group text-left">
-                                    <?php echo form_dropdown('form[aca_nonaca]', array('Y'=>'ACADEMIC STAFF', 'N'=>'NON-ACADEMIC STAFF', ''=>'ALL'), '', 'class="form-control" id="aca_nonaca"') ?>	
+                                    <?php echo form_dropdown('form[aca_nonaca]', array('AKA'=>'ACADEMIC STAFF', 'NAKA'=>'NON-ACADEMIC STAFF', ''=>'ALL'), '', 'class="form-control" id="aca_nonaca"') ?>	
                                 </div>
                             </div>
                             <div class="col-sm-4">
