@@ -329,6 +329,20 @@
                     </div>
                     <br>
                     <div class="row">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label"><b>Format </b></label>
+                            <div class="col-md-4">
+                                    <?php echo form_dropdown('form[format_vii]', array('PDF'=>'PDF', 'EXCEL'=>'EXCEL'), '', 'class="form-control" id="format_vii"') ?>
+                            </div>
+                            <div class="col-sm-6">
+                                    <div class="text-left">   
+                                        &nbsp;
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
                         <div class="col-sm-2">
                             <div class="form-group text-right">
                                 <label><b>ATR037</b></label>

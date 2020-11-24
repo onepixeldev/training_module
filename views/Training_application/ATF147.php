@@ -309,11 +309,21 @@
 	// GENERATE REPORT FORM
 	$('#training_list').on('click','.scre_gen_rpt_btn', function () {
 			var refid = $(this).val();
-			var formCode =  $(this).data("form-code");
+			var repCode =  $(this).data("form-code");
             //alert(formCode);
 			
-			var formURL = '<?php echo $this->lib->class_url('genEvaReport') ?>' + '/' + formCode + '/' + refid;
-        	var mywin = window.open( formURL , 'report');
+			// var formURL = '<?php echo $this->lib->class_url('genEvaReport') ?>' + '/' + formCode + '/' + refid;
+        	// var mywin = window.open( formURL , 'report');
+
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+				data: {'repCode': repCode, 'refid': refid},
+				dataType: 'JSON',
+				success: function(res) {
+					window.open("report?r="+res.report,"mywin","width=800,height=600");
+				}
+			});
 	});
 
 	// ADD SECRET DUTY MODAL

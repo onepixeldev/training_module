@@ -4340,10 +4340,10 @@ class Training_application extends MY_Controller
 		
 		// Format = PDF
         $this->lib->report($formCode, $param);
-    }*/ 
+    } 
 
     // STAFF EVALUATION INDIVIDUAL REPORT
-    /*public function genStaffEvaReport($refid, $staffID) {
+    public function genStaffEvaReport($refid, $staffID) {
     	// set param list
     	if (!empty($refid)) {
             $trDetl = $this->mdl->getTrainingDateFrom($refid);
@@ -5674,7 +5674,7 @@ class Training_application extends MY_Controller
         $mm_to = $to_month_aii.'/'.$to_year_aii;
         
 
-	if($repCode == 'ATR047') {
+	    if($repCode == 'ATR047') {
             $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii);
             $this->lib->report($repCode, $param, $rep_for_ii);
         } 
@@ -5773,7 +5773,7 @@ class Training_application extends MY_Controller
 
         $department_biii = $this->session->userdata('department_biii');
         
-	if($repCode == 'ATR110') {
+	    if($repCode == 'ATR110') {
             $param = array('PARAMFORM' => 'NO', 'YEAR_YEAR6' => $year_aiii, 'P_PTJ' => $department_aiii, 'P_KURSUS' => $course_titleiii, 'P_STAF' => $staff_idiii);
             $this->lib->report($repCode, $param);
         } 
@@ -6445,7 +6445,7 @@ class Training_application extends MY_Controller
         $department_v2 = $this->session->userdata('department_v2');
         $department_v3 = $this->session->userdata('department_v3');
         
-	if($repCode == 'ATR287') {
+	    if($repCode == 'ATR287') {
 
             $param = array('PARAMFORM' => 'NO', 'DEPT' => $department_v);
             $this->lib->report($repCode, $param);
@@ -7132,16 +7132,497 @@ class Training_application extends MY_Controller
             $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_aii));
         } elseif ($repCode == 'ATR123') {
             $year_aii = $this->input->post('year_aii');
+            $organizer_ii = $this->input->post('organizer_ii');
+            $org_codeii = $this->input->post('org_codeii');
+            $sector_ii = $this->input->post('sector_ii');
+            $coor_ii = $this->input->post('coor_ii');
+
+            $fr_month_aii = $this->input->post('fr_month_aii');
+            $fr_year_aii = $this->input->post('fr_year_aii');
+            $to_month_aii = $this->input->post('to_month_aii');
+            $to_year_aii = $this->input->post('to_year_aii');
+        
+            $mm_from = $fr_month_aii.'/'.$fr_year_aii;
+            $mm_to = $to_month_aii.'/'.$to_year_aii;
+
             $repFormat = 'PDF';
 
-            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR' => $year_aii));
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii, 'TRAINING_MONTH' => $mm_from, 'TRAINING_MONTH2' => $mm_to, 'P_PTJ' => $org_codeii, 'SECTOR' => $sector_ii, 'COORDINATOR' => $coor_ii));
+        } elseif ($repCode == 'ATR123X') {
+            $year_aii = $this->input->post('year_aii');
+            $organizer_ii = $this->input->post('organizer_ii');
+            $org_codeii = $this->input->post('org_codeii');
+            $sector_ii = $this->input->post('sector_ii');
+            $coor_ii = $this->input->post('coor_ii');
 
-            // elseif($repCode == 'ATR123') {
-            //     $param = array('PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii, 'TRAINING_MONTH' => $mm_from, 'TRAINING_MONTH2' => $mm_to, 'P_PTJ' => $org_codeii, 'SECTOR' => $sector_ii, 'COORDINATOR' => $coor_ii);
-            //     $this->lib->report($repCode, $param, $rep_for_ii);
-            // }
+            $fr_month_aii = $this->input->post('fr_month_aii');
+            $fr_year_aii = $this->input->post('fr_year_aii');
+            $to_month_aii = $this->input->post('to_month_aii');
+            $to_year_aii = $this->input->post('to_year_aii');
+        
+            $mm_from = $fr_month_aii.'/'.$fr_year_aii;
+            $mm_to = $to_month_aii.'/'.$to_year_aii;
+
+            $repFormat = 'EXCEL';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_aii, 'P_OPTION' => $organizer_ii, 'TRAINING_MONTH' => $mm_from, 'TRAINING_MONTH2' => $mm_to, 'P_PTJ' => $org_codeii, 'SECTOR' => $sector_ii, 'COORDINATOR' => $coor_ii));
+        } elseif ($repCode == 'ATR110') {
+            $year_aiii = $this->input->post('year_aiii');
+            $department_aiii =$this->input->post('department_aiii');
+            $course_titleiii = $this->input->post('course_titleiii');
+            $staff_idiii =$this->input->post('staff_idiii');
+
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR6' => $year_aiii, 'P_PTJ' => $department_aiii, 'P_KURSUS' => $course_titleiii, 'P_STAF' => $staff_idiii));
+        } elseif ($repCode == 'ATR111') {
+            $year_aiii = $this->input->post('year_aiii');
+            $department_aiii =$this->input->post('department_aiii');
+            $course_titleiii = $this->input->post('course_titleiii');
+            $staff_idiii =$this->input->post('staff_idiii');
+
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'YEAR_YEAR6' => $year_aiii, 'P_PTJ' => $department_aiii, 'P_KURSUS' => $course_titleiii, 'P_STAF' => $staff_idiii));
+        } elseif ($repCode == 'ATR147') {
+            $date_course_fromiii = $this->input->post('date_course_fromiii');
+
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'P_TH_DATE_FROM' => $date_course_fromiii));
+        } elseif ($repCode == 'ATR141') {
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO'));
+        } elseif ($repCode == 'ATR144') {
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO'));
+        } elseif ($repCode == 'ATR142') {
+            $department_biii = $this->input->post('department_biii');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'DEPARTMENT' => $department_biii));
+        } elseif ($repCode == 'ATR143') {
+            $department_biii = $this->input->post('department_biii');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'DEPARTMENT' => $department_biii));
+        } elseif ($repCode == 'ATR145') {
+            $department_biii = $this->input->post('department_biii');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'DEPARTMENT' => $department_biii));
+        } elseif ($repCode == 'ATR146') {
+            $department_biii = $this->input->post('department_biii');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'DEPARTMENT' => $department_biii));
+        } elseif ($repCode == 'ATRCOURSEINDUCTION') {
+            $induction_courseiv = $this->input->post('induction_courseiv');
+            $repFormat = 'PDF';
+
+            if($induction_courseiv == 'LULUS') {
+                $newRepCode = 'ATR126';
+            } elseif($induction_courseiv == 'GAGAL') {
+                $newRepCode = 'ATR088';
+            } elseif($induction_courseiv == 'PENGECUALIAN') {
+                $newRepCode = 'ATR127';
+            } else {
+                $newRepCode = 'ATR124';
+            }
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$newRepCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'STATUS' => $induction_courseiv));
+        } elseif ($repCode == 'ATRTESTINDUCTION') {
+            $induction_test_sts = $this->input->post('induction_test_sts');
+            $pnp_course_sts = $this->input->post('pnp_course_sts');
+            $repFormat = 'PDF';
+            
+            if(!empty($induction_test_sts) && !empty($pnp_course_sts)) {
+                $newRepCode = 'ATR125';
+            } elseif(empty($induction_test_sts) && empty($pnp_course_sts)) {
+                $newRepCode = 'ATR119';
+            }
+
+            // var_dump($pnp_course_sts);
+            // exit;
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$newRepCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'STATUS' => $induction_test_sts, 'STATUS2' => $pnp_course_sts));
+        } elseif ($repCode == 'ATR206') {
+            $year_avi = $this->input->post('year_avi');
+            $repFormat = 'PDF';
+
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO','P_YEAR' => $year_avi));
+        } elseif ($repCode == 'ATR220'||$repCode == 'ATR220X') {
+            $year_av = $this->input->post('year_av');
+
+            if($repCode == 'ATR220X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av));
+        } elseif ($repCode == 'ATR221'||$repCode == 'ATR221X') {
+            $year_av = $this->input->post('year_av');
+            $month_from_av = $this->input->post('month_from_av');
+            $month_to_av = $this->input->post('month_to_av');
+
+            if($repCode == 'ATR221X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av, 'TRAINING_MONTH2' => $month_to_av));
+        } elseif ($repCode == 'ATR222'||$repCode == 'ATR222X') {
+            $year_av = $this->input->post('year_av');
+            $month_from_av = $this->input->post('month_from_av');
+
+            if($repCode == 'ATR222X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av));
+        } elseif ($repCode == 'ATR223'||$repCode == 'ATR223X') {
+            $year_av = $this->input->post('year_av');
+            $month_from_av = $this->input->post('month_from_av');
+
+            if($repCode == 'ATR223X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av));
+        } elseif ($repCode == 'ATR224'||$repCode == 'ATR224X') {
+            $year_av = $this->input->post('year_av');
+            $month_from_av = $this->input->post('month_from_av');
+
+            if($repCode == 'ATR224X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av));
+        } elseif ($repCode == 'ATR225'||$repCode == 'ATR225X') {
+            $year_av = $this->input->post('year_av');
+            $month_from_av = $this->input->post('month_from_av');
+
+            if($repCode == 'ATR225X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av));
+        } elseif ($repCode == 'ATR226'||$repCode == 'ATR226X') {
+            $year_av = $this->input->post('year_av');
+            $month_from_av = $this->input->post('month_from_av');
+
+            if($repCode == 'ATR226X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'TRAINING_MONTH' => $month_from_av));
+        } elseif ($repCode == 'ATR227'||$repCode == 'ATR227X') {
+            $year_av = $this->input->post('year_av');
+            $department_v = $this->input->post('department_v');
+
+            if($repCode == 'ATR227X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'DEPARTMENT' => $department_v));
+        } elseif ($repCode == 'ATR228'||$repCode == 'ATR228X') {
+            $year_av = $this->input->post('year_av');
+            $quarter_v = $this->input->post('quarter_v');
+            $quarter_month_av = $this->input->post('quarter_month_av');
+            $quarter_month_bv = $this->input->post('quarter_month_bv');
+            $quarter_month_cv = $this->input->post('quarter_month_cv');
+
+            if($repCode == 'ATR228X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'TRAINING_YEAR' => $year_av, 'SUKU_TAHUN' => $quarter_v, 'SUKU_BULAN1' => $quarter_month_av, 'SUKU_BULAN2' => $quarter_month_bv, 'SUKU_BULAN3' => $quarter_month_cv));
+        } elseif ($repCode == 'ATR242') {
+            $year_vi = $this->input->post('year_vi');
+            $month_vi = $this->input->post('month_vi');
+            $aca_nonaca = $this->input->post('aca_nonaca');
+            $orga_vi = $this->input->post('orga_vi');
+            $re_formatvi = $this->input->post('re_formatvi');
+
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR242X';
+                $repFormat = 'EXCEL';
+            } else {
+                $repCode = 'ATR242';
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi));
+        } elseif ($repCode == 'ATR243') {
+            $year_vi = $this->input->post('year_vi');
+            $month_vi = $this->input->post('month_vi');
+            $aca_nonaca = $this->input->post('aca_nonaca');
+            $orga_vi = $this->input->post('orga_vi');
+            $re_formatvi = $this->input->post('re_formatvi');
+
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR243X';
+                $repFormat = 'EXCEL';
+            } else {
+                $repCode = 'ATR243';
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi));
+        } elseif ($repCode == 'ATR244') {
+            $year_vi = $this->input->post('year_vi');
+            $month_vi = $this->input->post('month_vi');
+            $aca_nonaca = $this->input->post('aca_nonaca');
+            $orga_vi = $this->input->post('orga_vi');
+            $re_formatvi = $this->input->post('re_formatvi');
+
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR244X';
+                $repFormat = 'EXCEL';
+            } else {
+                $repCode = 'ATR244';
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi));
+        } elseif ($repCode == 'ATR245') {
+            $year_vi = $this->input->post('year_vi');
+            $month_vi = $this->input->post('month_vi');
+            $aca_nonaca = $this->input->post('aca_nonaca');
+            $orga_vi = $this->input->post('orga_vi');
+            $re_formatvi = $this->input->post('re_formatvi');
+
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR245X';
+                $repFormat = 'EXCEL';
+            } else {
+                $repCode = 'ATR245';
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi));
+        } elseif ($repCode == 'ATR246') {
+            $year_vi = $this->input->post('year_vi');
+            $month_vi = $this->input->post('month_vi');
+            $aca_nonaca = $this->input->post('aca_nonaca');
+            $orga_vi = $this->input->post('orga_vi');
+            $re_formatvi = $this->input->post('re_formatvi');
+
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR246X';
+                $repFormat = 'EXCEL';
+            } else {
+                $repCode = 'ATR246';
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi));
+        } elseif ($repCode == 'ATR247') {
+            $year_vi = $this->input->post('year_vi');
+            $month_vi = $this->input->post('month_vi');
+            $aca_nonaca = $this->input->post('aca_nonaca');
+            $orga_vi = $this->input->post('orga_vi');
+            $re_formatvi = $this->input->post('re_formatvi');
+
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR247X';
+                $repFormat = 'EXCEL';
+            } else {
+                $repCode = 'ATR247';
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi));
+        } elseif ($repCode == 'ATR248') {
+            $year_vi = $this->input->post('year_vi');
+            $month_vi = $this->input->post('month_vi');
+            $aca_nonaca = $this->input->post('aca_nonaca');
+            $orga_vi = $this->input->post('orga_vi');
+            $re_formatvi = $this->input->post('re_formatvi');
+
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR248X';
+                $repFormat = 'EXCEL';
+            } else {
+                $repCode = 'ATR248';
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi));
+        } elseif ($repCode == 'ATR267') {
+            $year_vi = $this->input->post('year_vi');
+            $month_vi = $this->input->post('month_vi');
+            $aca_nonaca = $this->input->post('aca_nonaca');
+            $orga_vi = $this->input->post('orga_vi');
+            $re_formatvi = $this->input->post('re_formatvi');
+
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR267X';
+                $repFormat = 'EXCEL';
+            } else {
+                $repCode = 'ATR267';
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'AKEPT_YEAR' => $year_vi, 'AKEPT_MONTH' => $month_vi, 'AKA_NAKA' => $aca_nonaca, 'AKEPT_ORGANIZER' => $orga_vi));
+        } elseif ($repCode == 'ATR268') {
+            $staff_id_vi = $this->input->post('staff_id_vi');
+            $re_formatvi = $this->input->post('re_formatvi');
+
+            if($re_formatvi == 'EXCEL' || $re_formatvi == 'SPREADSHEET') {
+                $repCode = 'ATR268X';
+                $repFormat = 'EXCEL';
+            } else {
+                $repCode = 'ATR268';
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'P_STH_STAFF_ID' => $staff_id_vi));
+        } elseif ($repCode == 'ATR044') {
+            $staffID = $this->input->post('staffID');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'P_STH_STAFF_ID' => $staffID));
+        } elseif ($repCode == 'ATR045') {
+            $department = $this->input->post('department');
+            $unit = $this->input->post('unit');
+            $statusavii = $this->input->post('statusavii');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'P_SM_DEPT_CODE' => $department, 'P_SM_UNIT' => $unit, 'P_STH_STATUS' => $statusavii));
+        } elseif ($repCode == 'ATR037') {
+            $year = $this->input->post('year');
+            $courseTitle = $this->input->post('courseTitle');
+            $dateFrom = $this->input->post('dateFrom');
+            $statusbvii = $this->input->post('statusbvii');
+            $format_vii = $this->input->post('format_vii');
+
+            if ($format_vii == 'EXCEL') {
+                $repCode = 'ATR037X'; 
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'P_YEAR' => $year, 'P_TH_REF_ID' => $courseTitle, 'P_TH_DATE_FROM' => $dateFrom, 'P_STH_STATUS' => $statusbvii));
+        } elseif ($repCode == 'ATR038') {
+            $year = $this->input->post('year');
+            $courseTitle = $this->input->post('courseTitle');
+            $dateFrom = $this->input->post('dateFrom');
+            $statusbvii = $this->input->post('statusbvii');
+            $format_vii = $this->input->post('format_vii');
+
+            if ($format_vii == 'EXCEL') {
+                $repCode = 'ATR038X'; 
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'P_YEAR' => $year, 'P_TH_REF_ID' => $courseTitle, 'P_TH_DATE_FROM' => $dateFrom, 'P_STH_STATUS' => $statusbvii));
+        } elseif ($repCode == 'ATR080') {
+            $year = $this->input->post('year');
+            $courseTitle = $this->input->post('courseTitle');
+            $dateFrom = $this->input->post('dateFrom');
+            $statusbvii = $this->input->post('statusbvii');
+            $format_vii = $this->input->post('format_vii');
+
+            if ($format_vii == 'EXCEL') {
+                $repCode = 'ATR080X'; 
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'P_YEAR' => $year, 'P_TH_REF_ID' => $courseTitle, 'P_TH_DATE_FROM' => $dateFrom, 'P_STH_STATUS' => $statusbvii));
+        } elseif ($repCode == 'ATR249') {
+            $year = $this->input->post('year');
+            $courseTitle = $this->input->post('courseTitle');
+            $dateFrom = $this->input->post('dateFrom');
+            $statusbvii = $this->input->post('statusbvii');
+            $format_vii = $this->input->post('format_vii');
+
+            if ($format_vii == 'EXCEL') {
+                $repCode = 'ATR249X'; 
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'P_YEAR' => $year, 'P_TH_REF_ID' => $courseTitle, 'P_TH_DATE_FROM' => $dateFrom, 'P_STH_STATUS' => $statusbvii));
+        } elseif ($repCode == 'ATR287'||$repCode == 'ATR287X') {
+            $department_v = $this->input->post('department_v');
+
+            if($repCode == 'ATR287X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'DEPT' => $department_v));
+        } elseif ($repCode == 'ATR288'||$repCode == 'ATR288X') {
+            $department_v = $this->input->post('department_v');
+
+            if($repCode == 'ATR288X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'DEPT' => $department_v));
+        } elseif ($repCode == 'ATR289'||$repCode == 'ATR289X') {
+            $department_v2 = $this->input->post('department_v2');
+            $trainingID = $this->input->post('trainingID');
+            $month = $this->input->post('month');
+            $year = $this->input->post('year');
+
+            if($repCode == 'ATR289X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'DEPT' => $department_v2, 'TRAINING_ID' => $trainingID, 'TRAINING_MONTH' => $month, 'TRAINING_YEAR' => $year));
+        } elseif ($repCode == 'ATR290'||$repCode == 'ATR290X') {
+            $department_v3 = $this->input->post('department_v2');
+            $trainingID2 = $this->input->post('trainingID');
+
+            if($repCode == 'ATR290X') {
+                $repFormat = 'EXCEL';
+            } else {
+                $repFormat = 'PDF';
+            }
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'DEPT' => $department_v3, 'STRUCTUREDID' => $trainingID2));
+        } 
+
+        // Borang Laporan Urusetia Kursus 
+        elseif ($repCode == 'ATR251') {
+            $refid = $this->input->post('refid');
+            $repFormat = 'PDF';
+            
+            $param = $this->encryption->encrypt_array(array('REPORT'=>$repCode, 'FORMAT'=>$repFormat, 'PARAMFORM' => 'NO', 'REFID' => $refid));
         }
-		
+
+
 		$json = array('report' => $param);
 		
 		echo json_encode($json);

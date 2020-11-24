@@ -392,18 +392,6 @@
 				//window.open("report?r="+res.report,"mywin","width=800,height=600");
 			}
 		});
-        
-        /*$.post('<?php //echo $this->lib->class_url('setReportParam') ?>', {repCode: repCode, year_ai: year_ai, department_ai: department_ai, 
-        choice_ai: choice_ai, year_bi: year_bi, courseRefid: courseRefid}, function (res) {
-            window.open("report?r="+res.report,"mywin","width=800,height=600");
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');     
-        });*/
     });
     
     // REPORT I (Program / Facilitator Evaluation)
@@ -434,18 +422,6 @@
 				window.open("report?r="+res.report,"mywin","width=800,height=600");
 			}
 		});
-
-        /*$.post('<?php //echo $this->lib->class_url('setReportParamTrainAppl') ?>', {repCode: repCode, rep_format_bi : rep_format_bi, year_bi : year_bi, courseRefid : courseRefid}, function (res) {
-            window.open("report?r="+res.report,"mywin","width=800,height=600");
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');     
-        });*/
-        
     });
     
         /*
@@ -632,20 +608,17 @@
         var department_biii = $("#department_biii").val();
 
         // alert(repCode+' '+year_aiii+' '+department_aiii+' '+course_titleiii+' '+staff_idiii+' '+date_course_fromiii+' '+department_biii);
-        
-        $.post('<?php echo $this->lib->class_url('setParamiii') ?>', {repCode: repCode, year_aiii: year_aiii, department_aiii: department_aiii, 
-        course_titleiii: course_titleiii, staff_idiii: staff_idiii, date_course_fromiii: date_course_fromiii, department_biii: department_biii}, function (res) {
-            var repURL = '<?php echo $this->lib->class_url('genReportiii') ?>';
-            //alert(repURL);
-            var mywin = window.open( repURL , 'report');
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');        
-        });
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'year_aiii': year_aiii, 'department_aiii': department_aiii, 'course_titleiii': course_titleiii, 'staff_idiii': staff_idiii, 'date_course_fromiii': date_course_fromiii, 'department_biii': department_biii},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+				//window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
 
     // POPULATE COURSE TITLE - REPORT III
@@ -681,21 +654,16 @@
         var repCode = $(this).attr('repCode');
         var induction_courseiv = $("#induction_courseiv").val(); 
         var year_avi = $("#year_avi").val();
-
-        // alert(repCode+' '+induction_courseiv+' '+induction_test_sts+' '+pnp_course_sts+' '+year_avi);
-        
-        $.post('<?php echo $this->lib->class_url('setParamiv') ?>', {repCode: repCode, induction_courseiv: induction_courseiv, year_avi: year_avi}, function (res) {
-            var repURL = '<?php echo $this->lib->class_url('genReportiv') ?>';
-            //alert(repURL);
-            var mywin = window.open( repURL , 'report');
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');        
-        });
+		
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'induction_courseiv': induction_courseiv, 'year_avi': year_avi},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
 
     // REPORT IV - ATR125 / ATR119
@@ -704,39 +672,15 @@
         var induction_test_sts = $("#induction_test_sts").val(); 
         var pnp_course_sts = $("#pnp_course_sts").val(); 
 
-        // alert(repCode+' '+induction_courseiv+' '+induction_test_sts+' '+pnp_course_sts+' '+year_avi);
-
-        // if(induction_test_sts == '') {
-        //     $.alert({
-        //         title: 'Alert!',
-        //         content: 'Please select <b>General induction test status</b>',
-        //         type: 'red',
-        //     });
-        //     return;
-        // }
-
-        // if(pnp_course_sts == '') {
-        //     $.alert({
-        //         title: 'Alert!',
-        //         content: 'Please select <b>P & P course status</b>',
-        //         type: 'red',
-        //     });
-        //     return;
-        // }
-        
-        $.post('<?php echo $this->lib->class_url('setParamiv') ?>', {repCode: repCode, induction_test_sts: induction_test_sts, 
-        pnp_course_sts: pnp_course_sts}, function (res) {
-            var repURL = '<?php echo $this->lib->class_url('genReportiv') ?>';
-            //alert(repURL);
-            var mywin = window.open( repURL , 'report');
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');        
-        });
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'induction_test_sts': induction_test_sts, 'pnp_course_sts': pnp_course_sts},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
 
     // REPORT V
@@ -751,22 +695,17 @@
         var quarter_month_bv = $("#quarter_month_bv").val();
         var quarter_month_cv = $("#quarter_month_cv").val();
 
-        // alert(repCode+' '+year_aiii+' '+department_aiii+' '+course_titleiii+' '+staff_idiii+' '+date_course_fromiii+' '+department_biii);
-        
-        $.post('<?php echo $this->lib->class_url('setParamv') ?>', {repCode: repCode, year_av: year_av, month_from_av: month_from_av, 
-            month_to_av: month_to_av, department_v: department_v, quarter_v: quarter_v, quarter_month_av: quarter_month_av,
-            quarter_month_bv: quarter_month_bv, quarter_month_cv: quarter_month_cv}, function (res) {
-            var repURL = '<?php echo $this->lib->class_url('genReportv') ?>';
-            //alert(repURL);
-            var mywin = window.open( repURL , 'report');
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');        
-        });
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'year_av': year_av, 'month_from_av': month_from_av, 
+            'month_to_av': month_to_av, 'department_v': department_v, 'quarter_v': quarter_v, 'quarter_month_av': quarter_month_av,
+            'quarter_month_bv': quarter_month_bv, 'quarter_month_cv': quarter_month_cv},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
     
     // REPORT VI
@@ -779,21 +718,16 @@
         var re_formatvi = $("#re_formatvi").val(); 
         var staff_id_vi = $("#staff_id_vi").val();
 
-        // alert(month_vi+' '+year_vi+' '+aca_nonaca+' '+orga_vi+' '+re_formatvi+' '+staff_id_vi);
-        
-        $.post('<?php echo $this->lib->class_url('setParamvi') ?>', {repCode: repCode, month_vi: month_vi, year_vi: year_vi, 
-            aca_nonaca: aca_nonaca, orga_vi: orga_vi, re_formatvi: re_formatvi, staff_id_vi: staff_id_vi}, function (res) {
-            var repURL = '<?php echo $this->lib->class_url('genReportvi') ?>';
-            //alert(repURL);
-            var mywin = window.open( repURL , 'report');
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');        
-        });
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'month_vi': month_vi, 'year_vi': year_vi, 
+            'aca_nonaca': aca_nonaca, 'orga_vi': orga_vi, 're_formatvi': re_formatvi, 'staff_id_vi': staff_id_vi},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
     
     // REPORT VII
@@ -807,22 +741,18 @@
         var courseTitle = $("#course_titleavii").val();
         var dateFrom = $("#date_course_fromvii").val();
         var statusbvii = $("#status_bvii").val();
+		var format_vii = $("#format_vii").val();
 
-        // alert(month_vi+' '+year_vi+' '+aca_nonaca+' '+orga_vi+' '+re_formatvi+' '+staff_id_vi);
-        
-        $.post('<?php echo $this->lib->class_url('setParamvii') ?>', {repCode: repCode, staffID: staffID, department: department, 
-            unit: unit, statusavii: statusavii, year: year, courseTitle: courseTitle, dateFrom: dateFrom, statusbvii: statusbvii}, function (res) {
-            var repURL = '<?php echo $this->lib->class_url('genReportvii') ?>';
-            //alert(repURL);
-            var mywin = window.open( repURL , 'report');
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');        
-        });
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'format_vii': format_vii, 'staffID': staffID, 'department': department, 
+            'unit': unit, 'statusavii': statusavii, 'year': year, 'courseTitle': courseTitle, 'dateFrom': dateFrom, 'statusbvii': statusbvii},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
 
     // POPULATE COURSE TITLE - REPORT VII
@@ -1112,20 +1042,30 @@
         var department_v3 = $("#deptCode3").val();
         var trainingID2 = $("#trainingCode2").val();
 
-        $.post('<?php echo $this->lib->class_url('setParamviii') ?>', {repCode: repCode, department_v: department_v,
-            department_v2: department_v2, department_v3: department_v3, trainingID: trainingID, trainingID2: trainingID2, year: year, month: month}, function (res) {
-            var repURL = '<?php echo $this->lib->class_url('genReportviii') ?>';
-            //alert(repURL);
-            var mywin = window.open( repURL , 'report');
-        }).fail(function(){
-            $.alert({
-                title: 'Error!',
-                content: 'Please contact administrator.',
-                type: 'red',
-            });
-            // msg.danger('Please contact administrator.', '#alert');        
-        });
+        // $.post('<?php echo $this->lib->class_url('setParamviii') ?>', {repCode: repCode, department_v: department_v,
+        //     department_v2: department_v2, department_v3: department_v3, trainingID: trainingID, trainingID2: trainingID2, year: year, month: month}, function (res) {
+        //     var repURL = '<?php echo $this->lib->class_url('genReportviii') ?>';
+        //     //alert(repURL);
+        //     var mywin = window.open( repURL , 'report');
+        // }).fail(function(){
+        //     $.alert({
+        //         title: 'Error!',
+        //         content: 'Please contact administrator.',
+        //         type: 'red',
+        //     });
+        //     // msg.danger('Please contact administrator.', '#alert');        
+        // });
         
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo $this->lib->class_url('setReportParamTrainAppl')?>',
+			data: {'repCode': repCode, 'department_v': department_v,
+            'department_v2': department_v2, 'department_v3': department_v3, 'trainingID': trainingID, 'trainingID2': trainingID2, 'year': year, 'month': month},
+			dataType: 'JSON',
+			success: function(res) {
+				window.open("report?r="+res.report,"mywin","width=800,height=600");
+			}
+		});
     });
     
     // TAB 1 : REPORTS (tarReport.php)
