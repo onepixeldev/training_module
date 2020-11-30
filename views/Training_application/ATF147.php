@@ -312,7 +312,7 @@
 			var repCode =  $(this).data("form-code");
             //alert(formCode);
 			
-			// var formURL = '<?php echo $this->lib->class_url('genEvaReport') ?>' + '/' + formCode + '/' + refid;
+			// var formURL = '<?php //echo $this->lib->class_url('genEvaReport') ?>' + '/' + formCode + '/' + refid;
         	// var mywin = window.open( formURL , 'report');
 
 			$.ajax({
