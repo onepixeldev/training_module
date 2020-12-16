@@ -260,6 +260,8 @@
 		var td = thisBtn.closest("tr");
 		var staff_id = td.find(".staff_id").text();
 		var refid = td.find(".refid").text();
+                var servCode = thisBtn.parents('tr').data('service-code');
+                var servDesc = thisBtn.parents('tr').data('service-desc');
 		var mod = 'RMIC';
 		crName = '';
 		crStaffName = '';
@@ -305,7 +307,7 @@
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
-			data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
+			data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod, 'sCode' : servCode, 'sDesc' : servDesc},
 			beforeSend: function() {
 				$('.nav-tabs li:eq(1) a').tab('show');
 				$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
@@ -331,8 +333,10 @@
 				} else {
 					$('#details #rsh_btn').addClass('hidden');
 					
-					$('#details #allw_detl2').removeClass('hidden');
-					$('#details #allw_detl').addClass('hidden');
+					// $('#details #allw_detl2').removeClass('hidden');
+					// $('#details #allw_detl').addClass('hidden');
+					$('#details #allw_detl2').addClass('hidden');
+					$('#details #allw_detl').removeClass('hidden');
 					// alert('hide');
 				}
 			}
@@ -812,6 +816,8 @@
 		crStaffName = '';
 		crName = $('#crName').val();
 		mod = 'RMIC';
+                servCode = $('#svc_code').val();
+		servDesc = $('#svc_desc').val();
 		msg.wait('#alertStaffConDetlAppVer');
 		msg.wait('#alertStaffConDetlAppVerFooter');
 		// alert(data);
@@ -831,7 +837,7 @@
 						$.ajax({
 							type: 'POST',
 							url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
-							data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
+							data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod, 'sCode' : servCode, 'sDesc' : servDesc},
 							beforeSend: function() {
 								$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 							},
@@ -856,8 +862,10 @@
 								} else {
 									$('#details #rsh_btn').addClass('hidden');
 									
-									$('#details #allw_detl2').removeClass('hidden');
-									$('#details #allw_detl').addClass('hidden');
+									// $('#details #allw_detl2').removeClass('hidden');
+									// $('#details #allw_detl').addClass('hidden');
+									$('#details #allw_detl2').addClass('hidden');
+									$('#details #allw_detl').removeClass('hidden');
 									// alert('hide');
 								}
 							}
@@ -1263,14 +1271,17 @@
 		// alert('ALLOWANCE DETL OTHERS');
 		var staff_id = $('.allowance_detl2').data('staff-id');
 		var refid = $('.allowance_detl2').data('refid');
+		var servCode = $('.allowance_detl2').data('serv-code');
+		var servDesc = $('.allowance_detl2').data('serv-desc');
 		// alert(refid+' '+staff_id);
+		// alert('TEST');
 
 		$('#details #allowance_detl').html('<center><i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:black"></i></center>');
 	
 		$.ajax({
 			type: 'POST',
 			url: '<?php echo $this->lib->class_url('allowanceDetlRmic')?>',
-			data: {'staff_id' : staff_id, 'refid' : refid},
+			data: {'staff_id' : staff_id, 'refid' : refid, 'sCode' : servCode, 'sDesc' : servDesc},
 			success: function(res) {
 				$('#details #allowance_detl').html(res);
 				$('html, body').animate(
@@ -1288,6 +1299,8 @@
 	$('#details').on('click','.calculate_amt_oth_vc', function(){
 		var staff_id = $('.calculate_amt_oth_vc').data('staff-id');
 		var refid = $('.calculate_amt_oth_vc').data('refid');
+                var servCode = $('.calculate_amt_oth_vc').data('serv-code');
+                var servDesc = $('.calculate_amt_oth_vc').data('serv-desc');
 		var mod = 'RMIC';
 
 		var allwCodeArr = [];
@@ -1371,7 +1384,7 @@
 								$.ajax({
 									type: 'POST',
 									url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
-									data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
+									data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod, 'sCode' : servCode, 'sDesc' : servDesc},
 									beforeSend: function() {
 										$('.nav-tabs li:eq(1) a').tab('show');
 										$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
@@ -1439,6 +1452,8 @@
 		var thisBtn = $(this);
 		var refid = $('.save_allw_detl_oth_vc').data("refid");
 		var staff_id = $('.save_allw_detl_oth_vc').data("staff-id");
+                var servCode = $('.save_allw_detl_oth_vc').data("serv-code");
+                var servDesc = $('.save_allw_detl_oth_vc').data("serv-desc");
 		var mod = 'RMIC';
 
 		var allwCodeArr = [];
@@ -1522,7 +1537,7 @@
 								$.ajax({
 									type: 'POST',
 									url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
-									data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
+									data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod, 'sCode' : servCode, 'sDesc' : servDesc},
 									beforeSend: function() {
 										$('.nav-tabs li:eq(1) a').tab('show');
 										$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
@@ -1943,6 +1958,8 @@
 		refid = $('#crRefid').val();
 		crStaffName = '';
 		crName = $('#crName').val();
+                servCode = $('#svc_code').val();
+		servDesc = $('#svc_desc').val();
 		mod = 'RMIC';
 		msg.wait('#alertStaffResearchInfo');
 		// msg.wait('#alertStaffConDetlAppVerFooter');
@@ -1965,7 +1982,7 @@
 						$.ajax({
 							type: 'POST',
 							url: '<?php echo $this->lib->class_url('staffConferenceDetlAppVer')?>',
-							data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod},
+							data: {'staffID' : staff_id, 'refid' : refid, 'crName' : crName, 'crStaffName' : crStaffName, 'mod' : mod, 'sCode' : servCode, 'sDesc' : servDesc},
 							beforeSend: function() {
 								$('#details').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>').show();
 							},

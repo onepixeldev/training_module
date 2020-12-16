@@ -1261,12 +1261,19 @@ class Conference_pmp extends MY_Controller
 
     // GENERATE REPORT PMP
     public function genReportPmpAtt() {
-        $repCode = $this->session->userdata('repCode');
-    	$crStaffID = $this->session->userdata('crStaffID');
-        $crRefID = $this->session->userdata('crRefID');
+		
+		$repFormat = $this->input->post('repFormat', true);
+		$repCode = $this->input->post('repCode', true);
+		
+		$crStaffID = $this->input->post('crStaffID', true);
+		$crRefID = $this->input->post('crRefID', true);
+		
 
-        $param = array('PARAMFORM' => 'NO', 'STAFF_ID' => $crStaffID, 'CONFERENCE_ID' => $crRefID);
-        $this->lib->report($repCode, $param);
+		$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO', 'STAFF_ID' => $crStaffID, 'CONFERENCE_ID' => $crRefID));
+        // $param = array('PARAMFORM' => 'NO', 'STAFF_ID' => $crStaffID, 'CONFERENCE_ID' => $crRefID);
+       	$json = array('report' => $param);
+		
+		echo json_encode($json);		
     } 
 
     // ADD STAFF CONFERENCE LEAVE
@@ -2494,8 +2501,13 @@ class Conference_pmp extends MY_Controller
         $crName = $this->input->post('crName', true);
         $crStaffName = $this->input->post('crStaffName', true);
         $mod = $this->input->post('mod', true);
+        $svc_code = $this->input->post('sCode', true);
+        $svc_desc = $this->input->post('sDesc', true);
 
         if(empty($crStaffName) && !empty($staffID)) {
+            
+            $data['svc_code'] = $svc_code;
+            $data['svc_desc'] = $svc_desc;
             // get staff name
             $data['stf_detl'] = $this->mdl_pmp->getStaffList($staffID);
 
@@ -2818,7 +2830,7 @@ class Conference_pmp extends MY_Controller
             'applied_rm_research' => 'max_length[40]'
         );
 
-        $exclRule = array('staff_id');
+        $exclRule = array('staff_id','svc_code','svc_desc');
         
         list($status, $err) = $this->validation('form', $form, $exclRule, $rule);
 
@@ -2875,6 +2887,9 @@ class Conference_pmp extends MY_Controller
     public function allowanceDetlResearch() {
         $staff_id = $this->input->post('staff_id', true);
         $refid = $this->input->post('refid', true);
+        $svc_code = $this->input->post('sCode', true);
+        $svc_desc = $this->input->post('sDesc', true);
+        
         $data['total_sca_amount_rm'] = 0;
         $data['total_sca_amount_foreign'] = 0;
         $data['total_sca_amt_rm_approve_hod'] = 0;
@@ -2889,6 +2904,9 @@ class Conference_pmp extends MY_Controller
         if(!empty($staff_id) && !empty($refid)) {
             $data['staff_id'] = $staff_id;
             $data['refid'] = $refid;  
+            $data['svc_code'] = $svc_code;
+            $data['svc_desc'] = $svc_desc;
+            
             $data['research_allw_detl'] = $this->mdl_pmp->getStaffConAllowance($refid, $staff_id);
 
             if(!empty($data['research_allw_detl'])) {
@@ -2957,6 +2975,8 @@ class Conference_pmp extends MY_Controller
     public function allowanceDetlOthers() {
         $staff_id = $this->input->post('staff_id', true);
         $refid = $this->input->post('refid', true);
+        $svc_code = $this->input->post('sCode', true);
+        $svc_desc = $this->input->post('sDesc', true);
         $data['total_sca_amount_rm'] = 0;
         $data['total_sca_amount_foreign'] = 0;
         $data['total_sca_amt_rm_approve_hod'] = 0;
@@ -2967,6 +2987,8 @@ class Conference_pmp extends MY_Controller
         if(!empty($staff_id) && !empty($refid)) {
             $data['staff_id'] = $staff_id;
             $data['refid'] = $refid;  
+            $data['svc_code'] = $svc_code;
+            $data['svc_desc'] = $svc_desc;
             $data['other_allw_detl'] = $this->mdl_pmp->getStaffConAllowance($refid, $staff_id);
 
             // sponsor & total amount
@@ -4626,6 +4648,7 @@ class Conference_pmp extends MY_Controller
         elseif($repCode == 'ATR107') {
             $refid = $this->input->post('refid', true);
 			$cm_status = $this->input->post('cm_status', true);
+			// $sYear = $this->input->post('sYear', true);
             $repFormat = 'PDF';
 
 			$param = $this->encryption->encrypt_array(array('REPORT'=>$repCode,'FORMAT'=>$repFormat,'PARAMFORM' => 'NO','P_CONFERENCE_STATUS2'=>$cm_status, 'CONFERENCE_ID'=>$refid));
@@ -4815,11 +4838,33 @@ class Conference_pmp extends MY_Controller
     } 
     
     // GENERATE REPORT
-    public function report(){
+    public function reportORACLE(){
 		$report = $this->encryption->decrypt_array($this->input->get('r'));
 		$this->lib->generate_report($report, false);
     }
     
+	public function report(){
+		// Load jasperreport library
+		$this->load->library('jasperreport');
+		
+		// get report parameters
+		$param = $this->encryption->decrypt_array($this->input->get('r'));
+		
+		// get report code and format
+		$repCode = isset($param['REPORT'])?strtoupper($param['REPORT']):'';
+		$format = isset($param['FORMAT'])?strtolower($param['FORMAT']):'pdf';
+		
+		// for report format = excel / word, report will be downloaded as attachment
+		if ($format == 'excel') {
+			$format = 'xlsx';
+			$this->jasperreport->setAttachment();
+		} elseif ($format == 'word') {
+			$format = 'docx';
+			$this->jasperreport->setAttachment();
+		}
+		
+		$this->jasperreport->runReport("/Reports/MyHRIS/HRA_AT/" . $repCode,$format,$param);		
+	}
     /*===========================================================
        CONFERENCE QUERY (ATF101)
     =============================================================*/
@@ -5164,6 +5209,8 @@ class Conference_pmp extends MY_Controller
     public function allowanceDetlRmic() {
         $staff_id = $this->input->post('staff_id', true);
         $refid = $this->input->post('refid', true);
+        $svc_code = $this->input->post('sCode', true);
+        $svc_desc = $this->input->post('sDesc', true);
         $data['total_sca_amount_rm'] = 0;
         $data['total_sca_amount_foreign'] = 0;
         $data['total_sca_amt_rm_approve_hod'] = 0;
@@ -5176,6 +5223,8 @@ class Conference_pmp extends MY_Controller
         if(!empty($staff_id) && !empty($refid)) {
             $data['staff_id'] = $staff_id;
             $data['refid'] = $refid;  
+            $data['svc_code'] = $svc_code;
+            $data['svc_desc'] = $svc_desc;
             $data['other_allw_detl'] = $this->mdl_pmp->getStaffConAllowance($refid, $staff_id);
 
             if(!empty($data['other_allw_detl'])) {

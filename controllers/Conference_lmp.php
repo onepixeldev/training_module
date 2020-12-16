@@ -202,11 +202,36 @@ class Conference_lmp extends MY_Controller
     } 
 
     // GENERATE REPORT
-    public function report(){
+    public function reportold(){
 		$report = $this->encryption->decrypt_array($this->input->get('r'));
 		$this->lib->generate_report($report, false);
     }
 
+	public function report(){
+		// Load jasperreport library
+		$this->load->library('jasperreport');
+		
+		// get report parameters
+		$param = $this->encryption->decrypt_array($this->input->get('r'));
+		
+		// get report code and format
+		$repCode = isset($param['REPORT'])?strtoupper($param['REPORT']):'';
+		$format = isset($param['FORMAT'])?strtolower($param['FORMAT']):'pdf';
+		
+		// for report format = excel / word, report will be downloaded as attachment
+		if ($format == 'excel') {
+			$format = 'xlsx';
+			$this->jasperreport->setAttachment();
+		} elseif ($format == 'word') {
+			$format = 'docx';
+			$this->jasperreport->setAttachment();
+		}
+		
+	
+			$this->jasperreport->runReport("/Reports/MyHRIS/HRA_AT/" . $repCode,$format,$param);
+			
+		
+	}
     // CONFERENCE REPORT PART II
     public function getConRepPart2() {
         $refid = $this->input->post('refid', true);
@@ -1175,11 +1200,20 @@ class Conference_lmp extends MY_Controller
 
             $data['con_rep_partiv'] = $this->mdl_lmp->getConRepDetl($refid, $staff_id);
             $data['def_app_amd_rejc_by'] = $this->mdl_lmp->getAppRejcStaff();
+
+            // var_dump($data['def_app_amd_rejc_by']);
+            // exit();
             
             // TNC (A&A) Amendment / Approval
             if(empty($data['con_rep_partiv']->SCR_TNCA_VERIFY_BY)) {
-                $data['app_amd_by_id'] = $data['def_app_amd_rejc_by']->SM_STAFF_ID;
-                $data['app_amd_by_name'] = $data['def_app_amd_rejc_by']->SM_STAFF_NAME;
+
+                if(!empty($data['def_app_amd_rejc_by'])) {
+                    $data['app_amd_by_id'] = $data['def_app_amd_rejc_by']->SM_STAFF_ID;
+                    $data['app_amd_by_name'] = $data['def_app_amd_rejc_by']->SM_STAFF_NAME;
+                } else {
+                    $data['app_amd_by_id'] = '';
+                    $data['app_amd_by_name'] = '';
+                }
             } else {
                 $data['app_amd_by_id'] = $data['con_rep_partiv']->SCR_TNCA_VERIFY_BY;
 
@@ -1193,8 +1227,16 @@ class Conference_lmp extends MY_Controller
 
             // TNC (A&A) Reject
             if(empty($data['con_rep_partiv']->SCR_TNCA_REJECT_BY)) {
-                $data['rejc_by_id'] = $data['def_app_amd_rejc_by']->SM_STAFF_ID;
-                $data['rejc_by_name'] = $data['def_app_amd_rejc_by']->SM_STAFF_NAME;
+                // $data['rejc_by_id'] = $data['def_app_amd_rejc_by']->SM_STAFF_ID;
+                // $data['rejc_by_name'] = $data['def_app_amd_rejc_by']->SM_STAFF_NAME;
+
+                if(!empty($data['def_app_amd_rejc_by'])) {
+                    $data['rejc_by_id'] = $data['def_app_amd_rejc_by']->SM_STAFF_ID;
+                    $data['rejc_by_name'] = $data['def_app_amd_rejc_by']->SM_STAFF_NAME;
+                } else {
+                    $data['rejc_by_id'] = '';
+                    $data['rejc_by_name'] = '';
+                }
             } else {
                 $data['rejc_by_id'] = $data['con_rep_partiv']->SCR_TNCA_REJECT_BY;
 
@@ -1320,9 +1362,14 @@ class Conference_lmp extends MY_Controller
         $rejectMsg = '';
         $memoMsg = '';
         // tnca_reject_send_memo (:SCR_STAFF_ID,:SCR_REFID,:SCR_TNCA_REJECT_BY,:SCR_HOD_VERIFY_BY);
+        // var_dump($staff_id);
+        // var_dump($refid);
+        // var_dump($rjc_by);
+        // exit();
 
         if(!empty($staff_id) && !empty($refid) && !empty($rjc_by)) {
-            $update = $this->mdl_lmp->getRejectRepMemContent($refid, $staff_id, $rjc_remark, $rjc_by, $rjc_date);
+            //$update = $this->mdl_lmp->getRejectRepMemContent($refid, $staff_id, $rjc_remark, $rjc_by, $rjc_date);
+            $update = $this->mdl_lmp->rejectConferenceReport($refid, $staff_id, $rjc_remark, $rjc_by, $rjc_date);
 
             if($update > 0) {
                 $rejectSts++;
@@ -1343,7 +1390,8 @@ class Conference_lmp extends MY_Controller
                 }
 
                 // CONTENT REJECT MEMO DETAILS
-                $memoDetl = $this->mdl_lmp->getRepMemContent($refid, $staff_id, $rjc_by);
+                // $memoDetl = $this->mdl_lmp->getRepMemContent($refid, $staff_id, $rjc_by);
+                $memoDetl = $this->mdl_lmp->getRejectRepMemContent($refid, $staff_id, $rjc_by);
 
                 // GET HOD & CC MEMO
                 $hod = $this->mdl_lmp->getHod($staff_id);

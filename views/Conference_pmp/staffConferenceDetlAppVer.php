@@ -10,7 +10,18 @@
             <input name="form[staff_name]" class="form-control" type="text" value="<?php echo $crStaffName?>" id="staff_name" readonly>
         </div>
     </div>
+    
+    <div class="form-group">
+        <label class="col-md-2 control-label">Service Code</label>
+        <div class="col-md-2">
+            <input name="form[svc_code]" class="form-control" type="text" value="<?php echo $svc_code?>" id="svc_code" readonly>
+        </div>
 
+        <div class="col-md-8">
+            <input name="form[svc_desc]" class="form-control" type="text" value="<?php echo $svc_desc?>" id="svc_desc" readonly>
+        </div>
+    </div>
+    
     <div class="form-group">
         <label class="col-md-2 control-label">Conference Title</label>
         <div class="col-md-2">
@@ -128,10 +139,10 @@
         </div>
         
         <div class="col-md-2 hidden" id="allw_detl">
-            <button type="button" class="btn btn-primary allowance_detl" data-refid="<?php echo $refid?>" data-staff-id="<?php echo $staffID?>"><i class="fa fa-info-circle"></i> Allowance Detail</button>
+            <button type="button" class="btn btn-primary allowance_detl" data-refid="<?php echo $refid?>" data-staff-id="<?php echo $staffID?>" data-serv-code="<?php echo $svc_code?>" data-serv-desc="<?php echo $svc_desc?>"><i class="fa fa-info-circle"></i> Allowance Detail</button>
         </div>
         <div class="col-md-2 hidden" id="allw_detl2">
-            <button type="button" class="btn btn-primary allowance_detl2" data-refid="<?php echo $refid?>" data-staff-id="<?php echo $staffID?>"><i class="fa fa-info-circle"></i> Allowance Detail</button>
+            <button type="button" class="btn btn-primary allowance_detl2" data-refid="<?php echo $refid?>" data-staff-id="<?php echo $staffID?>" data-serv-code="<?php echo $svc_code?>" data-serv-desc="<?php echo $svc_desc?>"><i class="fa fa-info-circle"></i> Allowance Detail</button>
         </div>
     </div>
 
