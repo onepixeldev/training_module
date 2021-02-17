@@ -1022,8 +1022,8 @@ class Ext_training_model extends MY_Model
             "TH_TRAINING_TITLE" => $form['training_title'],
             "TH_TRAINING_DESC" => $form['training_description'],
             "TH_TRAINING_VENUE" => $form['venue'],
-            "TH_TRAINING_COUNTRY" => $form['country'],
-            "TH_TRAINING_STATE" => $form['state'],
+            //"TH_TRAINING_COUNTRY" => $form['country'],
+            //"TH_TRAINING_STATE" => $form['state'],
             "TH_TOTAL_HOURS" => $form['total_hours'],
             "TH_TRAINING_FEE" => $form['fee'],
             "TH_INTERNAL_EXTERNAL" => $form['internal_external'],
@@ -1043,6 +1043,18 @@ class Ext_training_model extends MY_Model
 
             "TH_ENTER_BY" => $umg,
         );
+
+        if(empty($form['country'])) {
+            $this->db->set("TH_TRAINING_COUNTRY", "", true);
+        } else {
+            $this->db->set("TH_TRAINING_COUNTRY", $form['country'], true);
+        }
+
+        if(empty($form['state'])) {
+            $this->db->set("TH_TRAINING_STATE", "", true);
+        } else {
+            $this->db->set("TH_TRAINING_STATE", $form['state'], true);
+        }
 
         $this->db->set("TH_DEPT_CODE", $staff_dept_code, false);
         $this->db->set("TH_ENTER_DATE", $enter_date, false);
