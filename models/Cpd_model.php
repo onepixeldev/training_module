@@ -2024,4 +2024,39 @@ class Cpd_model extends MY_Model
         $q = $this->db->get();
         return $q->result();
     }
+
+    /*===============================================================
+       UPDATE 23/02/2021
+    ================================================================*/
+    
+    // GET TRAINING LIST 6
+    public function getTrainingList6($dept, $month, $year)
+    {
+        $this->db->select("TH_REF_ID,
+        TH_TRAINING_TITLE,
+        TO_CHAR(TH_DATE_FROM, 'DD/MM/YYYY') TH_DATE_FROM2,
+        TO_CHAR(TH_DATE_TO, 'DD/MM/YYYY') TH_DATE_TO2,
+        TH_TRAINING_FEE
+        ");
+        $this->db->from("TRAINING_HEAD");
+
+        if(!empty($dept)) {
+            $this->db->where("TH_DEPT_CODE", $dept);
+        }
+
+        if(!empty($month)) {
+            $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'MM'),'') = '$month'");
+        }
+
+        if (!empty($year)) {
+            $this->db->where("COALESCE(TO_CHAR(TH_DATE_FROM,'YYYY'),'') = '$year'");
+        }
+        
+        $this->db->where("TH_STATUS = 'APPROVE'");
+        $this->db->where("TH_INTERNAL_EXTERNAL = 'EXTERNAL_AGENCY'");
+        $this->db->order_by("TH_DATE_FROM, TH_DATE_TO, TH_TRAINING_TITLE, TH_REF_ID");
+        $q = $this->db->get();
+        
+        return $q->result();
+    }
 }

@@ -80,7 +80,7 @@
                                     <a style="color:#000 !important" href="#s2" data-toggle="tab" aria-expanded="false">Staff List</a>
                                 </li>
                                 <li class="">
-                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false">CPD Point</a>
+                                    <a style="color:#000 !important" href="#s3" data-toggle="tab" aria-expanded="false" class="hidden">CPD Point</a>
                                 </li>
                                 <li class="">
                                     <a style="color:#000 !important" href="#s4" data-toggle="tab" aria-expanded="false">Service Book</a>
@@ -114,7 +114,7 @@
 									</div>
                                 </div> 
 
-                                <div class="tab-pane fade" id="s3">
+                                <div class="hidden tab-pane fade" id="s3">
 									<div id="update_cpd_info">
 										<p>
 											<table class="table table-bordered table-hover">
@@ -126,7 +126,7 @@
 											</table>
 										</p>	
 									</div>
-                                </div> 
+                                </div>
 
                                 <div class="tab-pane fade" id="s4">
 									<div id="staff_training_svc_book">

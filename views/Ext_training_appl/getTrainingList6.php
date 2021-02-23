@@ -30,7 +30,7 @@
 
                                     <button type="button" class="btn btn-info text-left btn-block btn-xs select_training_btn"><i class="fa fa-info-circle"></i> Details</button>
 
-                                    <button type="button" class="btn btn-success text-left btn-block btn-xs cpd_pts_btn"><i class="fa fa fa-upload"></i> CPD Point</button>
+                                    <button type="button" class="hidden btn btn-success text-left btn-block btn-xs cpd_pts_btn"><i class="fa fa fa-upload"></i> CPD Point</button>
 
                                     <button type="button" class="btn btn-warning text-left btn-block btn-xs svc_book_btn"><i class="fa fa-book"></i> Service Book</button>
                                     

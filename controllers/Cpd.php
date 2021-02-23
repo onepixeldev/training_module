@@ -282,10 +282,34 @@ class Cpd extends MY_Controller
     } 
     
     // GENERATE REPORT
-    public function report(){
+    public function reportOracle(){
 		$report = $this->encryption->decrypt_array($this->input->get('r'));
 		$this->lib->generate_report($report, false);
     }
+	
+	// Calling Jasper Reports
+	public function report(){
+		// Load jasperreport library
+		$this->load->library('jasperreport');
+		
+		// get report parameters
+		$param = $this->encryption->decrypt_array($this->input->get('r'));
+		
+		// get report code and format
+		$repCode = isset($param['REPORT'])?strtoupper($param['REPORT']):'';
+		$format = isset($param['FORMAT'])?strtolower($param['FORMAT']):'pdf';
+		
+		// for report format = excel / word, report will be downloaded as attachment
+		if ($format == 'excel') {
+			$format = 'xlsx';
+			$this->jasperreport->setAttachment();
+		} elseif ($format == 'word') {
+			$format = 'docx';
+			$this->jasperreport->setAttachment();
+		}
+		
+		$this->jasperreport->runReport("/Reports/MyHRIS/HRA_AT/" . $repCode,$format,$param);
+	}
 
     // AUTO SEARCH STAFF ID
     public function staffKeyUp()
@@ -3011,6 +3035,71 @@ class Cpd extends MY_Controller
 
         // get available records
         $data['tr_list'] = $this->mdl_cpd->getTrainingList2($defIntExt, $curUsrDept, $defMonth, $curYear, $defTrSts, $evaluation, $screRpt);
+
+        $this->render($data);
+    }
+
+    /*===============================================================
+       UPDATE 23/02/2021
+    ================================================================*/
+
+    // TRAINING LIST 6
+    public function getTrainingList6()
+    {   
+        // selected filter value
+        $dept = $this->input->post('sDept', true);
+        $month = $this->input->post('sMonth', true);
+        $year = $this->input->post('sYear', true);
+
+        // var_dump($dept.' '.$month.' '.$year);
+        // exit;
+        // get available records
+        $data['tr_list'] = $this->mdl_cpd->getTrainingList6($dept, $month, $year);
+
+        $this->render($data);
+    }
+
+    // UPDATE CPD INFO EXTRNAl TRAINING
+    public function ATF123EX()
+    {
+        $refid = $this->input->post('refid', true);
+
+        if(!empty($refid)) {
+
+            $data['refid'] = $refid;
+
+            // TRAINING INFO
+            $data['tr_detl'] = $this->mdl_cpd->getTrainingDetl($refid);
+
+            // STAFF CPD MARK LIST
+            $data['stf_list'] = $this->mdl_cpd->getStaffTrCpd($refid);
+        }
+        
+        $this->render($data);
+    }
+
+    // UPDATE CPD INFO EXTRNAl TRAINING
+    public function ATF123EXB()
+    {   
+        // default value filter
+        // default dept
+        $data['cur_usr_dept'] = $this->mdl_cpd->getCurUserDept();
+        $data['curUsrDept'] = $data['cur_usr_dept']->SM_DEPT_CODE;
+        // default month
+        $data['defMonth'] = '';
+        // default year
+        $data['cur_year'] = $this->mdl_cpd->getCurYear();
+        $data['curYear'] = $data['cur_year']->CUR_YEAR;
+
+
+        // get department dd list
+        $data['dept_list'] = $this->dropdown($this->mdl_cpd->getDeptList2(), 'DM_DEPT_CODE', 'DEPT_CODE_DESC', ' ---Please select--- ');
+        //get year dd list
+        $data['year_list'] = $this->dropdown($this->mdl_cpd->getYearList(), 'CM_YEAR', 'CM_YEAR', ' ---Please select--- ');
+        //get month dd list
+        $data['month_list'] = $this->dropdown($this->mdl_cpd->getMonthList(), 'CM_MM', 'CM_MONTH', ' ---Please select--- ');
+        //get training status list
+        //$data['tr_sts_list'] = array('ENTRY'=>'ENTRY', 'APPROVE'=>'APPROVE', 'POSTPONE'=>'POSTPONE');
 
         $this->render($data);
     }
